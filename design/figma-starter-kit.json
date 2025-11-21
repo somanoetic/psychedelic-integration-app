@@ -1,0 +1,469 @@
+{
+  "name": "Psychedelic Integration App - Design System",
+  "version": "1.0.0",
+  "description": "Complete design system with colors, typography, and components for the Psychedelic Integration App",
+
+  "colors": {
+    "background": {
+      "level0": {
+        "name": "Background/Level 0",
+        "value": "#1a1a2e",
+        "description": "Primary background - deep indigo"
+      },
+      "level1": {
+        "name": "Background/Level 1",
+        "value": "#252542",
+        "description": "Cards and elevated surfaces"
+      },
+      "level2": {
+        "name": "Background/Level 2",
+        "value": "#303050",
+        "description": "Elevated components"
+      },
+      "level3": {
+        "name": "Background/Level 3",
+        "value": "#3a3a60",
+        "description": "Modals and highest elevation"
+      }
+    },
+    "primary": {
+      "lavender": {
+        "name": "Primary/Lavender",
+        "value": "#9d84b7",
+        "description": "Primary accent color"
+      },
+      "cream": {
+        "name": "Primary/Cream",
+        "value": "#f4f1de",
+        "description": "Primary text color"
+      },
+      "sage": {
+        "name": "Primary/Sage",
+        "value": "#8b9a8b",
+        "description": "Secondary accent"
+      }
+    },
+    "semantic": {
+      "success": {
+        "name": "Semantic/Success",
+        "value": "#6b8e6b",
+        "description": "Success states, completions"
+      },
+      "warning": {
+        "name": "Semantic/Warning",
+        "value": "#d4a574",
+        "description": "Warnings, cautions"
+      },
+      "error": {
+        "name": "Semantic/Error",
+        "value": "#c17b7b",
+        "description": "Errors, destructive actions"
+      },
+      "info": {
+        "name": "Semantic/Info",
+        "value": "#7b8fb8",
+        "description": "Information, neutral states"
+      }
+    },
+    "text": {
+      "primary": {
+        "name": "Text/Primary",
+        "value": "#f4f1de",
+        "opacity": 0.9,
+        "description": "Primary text"
+      },
+      "secondary": {
+        "name": "Text/Secondary",
+        "value": "#f4f1de",
+        "opacity": 0.7,
+        "description": "Secondary text"
+      },
+      "tertiary": {
+        "name": "Text/Tertiary",
+        "value": "#f4f1de",
+        "opacity": 0.5,
+        "description": "Tertiary text"
+      },
+      "disabled": {
+        "name": "Text/Disabled",
+        "value": "#f4f1de",
+        "opacity": 0.3,
+        "description": "Disabled text"
+      }
+    }
+  },
+
+  "typography": {
+    "displayLarge": {
+      "name": "Display/Large",
+      "fontSize": 57,
+      "lineHeight": 64,
+      "fontWeight": 400,
+      "letterSpacing": 0
+    },
+    "displayMedium": {
+      "name": "Display/Medium",
+      "fontSize": 45,
+      "lineHeight": 52,
+      "fontWeight": 400,
+      "letterSpacing": 0
+    },
+    "displaySmall": {
+      "name": "Display/Small",
+      "fontSize": 36,
+      "lineHeight": 44,
+      "fontWeight": 400,
+      "letterSpacing": 0
+    },
+    "headlineLarge": {
+      "name": "Headline/Large",
+      "fontSize": 32,
+      "lineHeight": 40,
+      "fontWeight": 400,
+      "letterSpacing": 0
+    },
+    "headlineMedium": {
+      "name": "Headline/Medium",
+      "fontSize": 28,
+      "lineHeight": 36,
+      "fontWeight": 400,
+      "letterSpacing": 0
+    },
+    "headlineSmall": {
+      "name": "Headline/Small",
+      "fontSize": 24,
+      "lineHeight": 32,
+      "fontWeight": 400,
+      "letterSpacing": 0
+    },
+    "titleLarge": {
+      "name": "Title/Large",
+      "fontSize": 22,
+      "lineHeight": 28,
+      "fontWeight": 500,
+      "letterSpacing": 0
+    },
+    "titleMedium": {
+      "name": "Title/Medium",
+      "fontSize": 16,
+      "lineHeight": 24,
+      "fontWeight": 500,
+      "letterSpacing": 0.15
+    },
+    "titleSmall": {
+      "name": "Title/Small",
+      "fontSize": 14,
+      "lineHeight": 20,
+      "fontWeight": 500,
+      "letterSpacing": 0.1
+    },
+    "bodyLarge": {
+      "name": "Body/Large",
+      "fontSize": 16,
+      "lineHeight": 24,
+      "fontWeight": 400,
+      "letterSpacing": 0.5
+    },
+    "bodyMedium": {
+      "name": "Body/Medium",
+      "fontSize": 14,
+      "lineHeight": 20,
+      "fontWeight": 400,
+      "letterSpacing": 0.25
+    },
+    "bodySmall": {
+      "name": "Body/Small",
+      "fontSize": 12,
+      "lineHeight": 16,
+      "fontWeight": 400,
+      "letterSpacing": 0.4
+    },
+    "labelLarge": {
+      "name": "Label/Large",
+      "fontSize": 14,
+      "lineHeight": 20,
+      "fontWeight": 500,
+      "letterSpacing": 0.1
+    },
+    "labelMedium": {
+      "name": "Label/Medium",
+      "fontSize": 12,
+      "lineHeight": 16,
+      "fontWeight": 500,
+      "letterSpacing": 0.5
+    },
+    "labelSmall": {
+      "name": "Label/Small",
+      "fontSize": 11,
+      "lineHeight": 16,
+      "fontWeight": 500,
+      "letterSpacing": 0.5
+    }
+  },
+
+  "spacing": {
+    "xxs": 4,
+    "xs": 8,
+    "s": 12,
+    "m": 16,
+    "l": 24,
+    "xl": 32,
+    "xxl": 48,
+    "xxxl": 64
+  },
+
+  "borderRadius": {
+    "small": 8,
+    "medium": 12,
+    "large": 16,
+    "xlarge": 24,
+    "round": 999
+  },
+
+  "shadows": {
+    "elevation1": {
+      "name": "Shadow/Elevation 1",
+      "x": 0,
+      "y": 2,
+      "blur": 4,
+      "spread": 0,
+      "color": "#000000",
+      "opacity": 0.2
+    },
+    "elevation2": {
+      "name": "Shadow/Elevation 2",
+      "x": 0,
+      "y": 4,
+      "blur": 8,
+      "spread": 0,
+      "color": "#000000",
+      "opacity": 0.25
+    },
+    "elevation3": {
+      "name": "Shadow/Elevation 3",
+      "x": 0,
+      "y": 8,
+      "blur": 16,
+      "spread": 0,
+      "color": "#000000",
+      "opacity": 0.3
+    }
+  },
+
+  "components": {
+    "buttons": {
+      "primary": {
+        "name": "Button/Primary",
+        "background": "#9d84b7",
+        "textColor": "#1a1a2e",
+        "height": 48,
+        "paddingHorizontal": 16,
+        "borderRadius": 8,
+        "typography": "titleMedium",
+        "states": {
+          "hover": {
+            "background": "#b099c9"
+          },
+          "pressed": {
+            "background": "#8a6fa4"
+          },
+          "disabled": {
+            "opacity": 0.4
+          }
+        }
+      },
+      "secondary": {
+        "name": "Button/Secondary",
+        "background": "#303050",
+        "textColor": "#f4f1de",
+        "borderWidth": 1,
+        "borderColor": "#9d84b766",
+        "height": 48,
+        "paddingHorizontal": 16,
+        "borderRadius": 8,
+        "typography": "titleMedium"
+      },
+      "text": {
+        "name": "Button/Text",
+        "background": "transparent",
+        "textColor": "#9d84b7",
+        "height": 48,
+        "paddingHorizontal": 16,
+        "typography": "titleMedium"
+      }
+    },
+    "inputs": {
+      "textInput": {
+        "name": "Input/Text",
+        "background": "#252542",
+        "borderWidth": 1,
+        "borderColor": "#f4f1de33",
+        "borderRadius": 12,
+        "height": 56,
+        "paddingHorizontal": 16,
+        "typography": "bodyLarge",
+        "states": {
+          "focus": {
+            "borderColor": "#9d84b7"
+          },
+          "error": {
+            "borderColor": "#c17b7b"
+          },
+          "disabled": {
+            "opacity": 0.5
+          }
+        }
+      },
+      "textArea": {
+        "name": "Input/Text Area",
+        "background": "#252542",
+        "borderWidth": 1,
+        "borderColor": "#f4f1de33",
+        "borderRadius": 12,
+        "minHeight": 120,
+        "padding": 16,
+        "typography": "bodyLarge"
+      }
+    },
+    "cards": {
+      "base": {
+        "name": "Card/Base",
+        "background": "#252542",
+        "borderRadius": 12,
+        "padding": 20,
+        "shadow": "elevation1"
+      },
+      "interactive": {
+        "name": "Card/Interactive",
+        "background": "#252542",
+        "borderRadius": 12,
+        "padding": 20,
+        "shadow": "elevation1",
+        "states": {
+          "hover": {
+            "background": "#2a2a48"
+          },
+          "pressed": {
+            "background": "#222238"
+          }
+        }
+      },
+      "status": {
+        "name": "Card/Status",
+        "background": "#252542",
+        "borderRadius": 12,
+        "padding": 20,
+        "borderLeftWidth": 4,
+        "shadow": "elevation1",
+        "variants": {
+          "active": {
+            "borderLeftColor": "#9d84b7"
+          },
+          "complete": {
+            "borderLeftColor": "#6b8e6b"
+          },
+          "warning": {
+            "borderLeftColor": "#d4a574"
+          }
+        }
+      }
+    },
+    "navigation": {
+      "tabBar": {
+        "name": "Navigation/Tab Bar",
+        "background": "#252542",
+        "height": 72,
+        "borderTopWidth": 1,
+        "borderTopColor": "#f4f1de1a",
+        "iconSize": 24,
+        "typography": "labelSmall",
+        "activeColor": "#9d84b7",
+        "inactiveColor": "#f4f1de80"
+      },
+      "topBar": {
+        "name": "Navigation/Top Bar",
+        "background": "#1a1a2e",
+        "height": 56,
+        "typography": "headlineSmall",
+        "iconSize": 24,
+        "borderBottomWidth": 1,
+        "borderBottomColor": "#f4f1de1a"
+      }
+    },
+    "lists": {
+      "listItem": {
+        "name": "List/Item",
+        "minHeight": 64,
+        "paddingVertical": 16,
+        "paddingHorizontal": 16,
+        "borderBottomWidth": 1,
+        "borderBottomColor": "#f4f1de1a",
+        "titleTypography": "titleLarge",
+        "subtitleTypography": "bodyMedium",
+        "iconSize": 40
+      }
+    },
+    "modals": {
+      "modal": {
+        "name": "Modal/Standard",
+        "background": "#3a3a60",
+        "borderRadius": 16,
+        "padding": 24,
+        "shadow": "elevation3",
+        "maxWidthPercent": 90,
+        "backdropColor": "#00000080"
+      },
+      "bottomSheet": {
+        "name": "Modal/Bottom Sheet",
+        "background": "#3a3a60",
+        "borderTopLeftRadius": 16,
+        "borderTopRightRadius": 16,
+        "padding": 24,
+        "shadow": "elevation3",
+        "handleWidth": 32,
+        "handleHeight": 4,
+        "backdropColor": "#00000080"
+      }
+    },
+    "progress": {
+      "linear": {
+        "name": "Progress/Linear",
+        "height": 4,
+        "borderRadius": 2,
+        "backgroundColor": "#f4f1de33",
+        "fillColor": "#9d84b7"
+      },
+      "circular": {
+        "name": "Progress/Circular",
+        "size": 40,
+        "strokeWidth": 4,
+        "color": "#9d84b7"
+      }
+    }
+  },
+
+  "frames": {
+    "mobile": {
+      "name": "iPhone 12 Pro",
+      "width": 390,
+      "height": 844,
+      "safeArea": {
+        "top": 44,
+        "bottom": 34,
+        "left": 0,
+        "right": 0
+      }
+    },
+    "tablet": {
+      "name": "iPad Pro 11",
+      "width": 834,
+      "height": 1194,
+      "safeArea": {
+        "top": 24,
+        "bottom": 20,
+        "left": 0,
+        "right": 0
+      }
+    }
+  }
+}

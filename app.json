@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Psychetelia",
+    "name": "Psycheteleos",
     "slug": "psychedelic-integration-app",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -14,7 +14,8 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.psycheteliaapp",
+      "bundleIdentifier": "com.anonymous.psycheteleosapp",
+      "buildNumber": "4",
       "runtimeVersion": {
         "policy": "appVersion"
       },
@@ -23,7 +24,7 @@
       }
     },
     "android": {
-      "package": "com.anonymous.psycheteliaapp",
+      "package": "com.anonymous.psycheteleosapp",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#F5F1E8"
@@ -43,7 +44,10 @@
     "extra": {
       "eas": {
         "projectId": "51f2a410-267f-47c9-a2c8-f77b168d782c"
-      }
+      },
+      "supabaseUrl": "https://hxpyeudklnqtwspmdsuz.supabase.co",
+      "supabaseAnonKey": "[SUPABASE_ANON_KEY_REDACTED]",
+      "anthropicApiKey": "[ANTHROPIC_API_KEY_REDACTED]"
     },
     "owner": "alleviationtherapeutics",
     "updates": {

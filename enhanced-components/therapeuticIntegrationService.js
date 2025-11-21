@@ -1,5 +1,7 @@
-import { ANTHROPIC_API_KEY } from '@env';
+import config from '../lib/config';
 import { exercises } from '../content/exercises';
+
+const ANTHROPIC_API_KEY = config.anthropicApiKey;
 
 class TherapeuticIntegrationService {
   constructor() {

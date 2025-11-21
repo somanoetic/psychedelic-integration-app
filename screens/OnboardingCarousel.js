@@ -19,7 +19,7 @@ const ONBOARDING_SLIDES = [
   {
     id: '1',
     emoji: '🌟',
-    title: 'Welcome to Noesis',
+    title: 'Welcome to Psycheteleos',
     subtitle: 'Direct Knowing Through Integration',
     description: 'Your companion for psychedelic integration and therapeutic healing. A safe space to process experiences, develop insights, and cultivate lasting growth.',
     gradient: [colors.cream, colors.sand],

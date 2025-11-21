@@ -1,5 +1,5 @@
 /**
- * Psychetelia Design System - Color Palette
+ * Psycheteleos Design System - Color Palette
  * Blending warm/earthy with modern wellness aesthetics
  */
 

@@ -1,0 +1,46 @@
+╔═══════════════════════════════════════════════════════════════════╗
+║                 QUICK REFERENCE - SHARE WITH TESTERS              ║
+╚═══════════════════════════════════════════════════════════════════╝
+
+📱 SHAREABLE LINK (Send this to friends):
+─────────────────────────────────────────────────────────────────────
+exp://u.expo.dev/51f2a410-267f-47c9-a2c8-f77b168d782c?channel-name=preview
+
+
+🌐 PROJECT DASHBOARD:
+─────────────────────────────────────────────────────────────────────
+https://expo.dev/accounts/alleviationtherapeutics/projects/psychedelic-integration-app
+
+
+📊 LATEST UPDATE INFO:
+─────────────────────────────────────────────────────────────────────
+https://expo.dev/accounts/alleviationtherapeutics/projects/psychedelic-integration-app/updates/f9a7091a-6eed-4e14-8af0-ab9b78ff73fa
+
+
+🔄 TO UPDATE APP:
+─────────────────────────────────────────────────────────────────────
+npx eas-cli update --branch preview --message "Your update message"
+
+
+🗄️ VIEW FEEDBACK:
+─────────────────────────────────────────────────────────────────────
+1. https://supabase.com/dashboard
+2. Select project: hxpyeudklnqtwspmdsuz
+3. Table Editor → "feedback" table
+
+
+⚠️  BEFORE SHARING - RUN THIS SQL IN SUPABASE:
+─────────────────────────────────────────────────────────────────────
+See: database/create_feedback_table.sql
+Or: SHARE_WITH_TESTERS.md (has full SQL)
+
+
+✅ TESTER INSTRUCTIONS (copy/paste):
+─────────────────────────────────────────────────────────────────────
+1. Install "Expo Go" app (free on App Store/Play Store)
+2. Tap this link: exp://u.expo.dev/51f2a410-267f-47c9-a2c8-f77b168d782c?channel-name=preview
+3. Create account and test!
+4. Use blue feedback button to report bugs/features
+
+
+═══════════════════════════════════════════════════════════════════

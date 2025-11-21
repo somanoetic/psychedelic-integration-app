@@ -1,4 +1,6 @@
-import { ANTHROPIC_API_KEY } from '@env';
+import config from '../lib/config';
+
+const ANTHROPIC_API_KEY = config.anthropicApiKey;
 
 class FallbackIntegrationService {
   constructor() {

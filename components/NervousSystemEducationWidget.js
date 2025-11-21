@@ -1,19 +1,63 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  Dimensions
+  Dimensions,
+  ActivityIndicator
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import educationProgressService from '../lib/educationProgressService';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const NervousSystemEducationWidget = ({ onComplete, onSkip }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [userResponses, setUserResponses] = useState({});
+  const [loading, setLoading] = useState(true);
+
+  // Load saved progress on mount
+  useEffect(() => {
+    loadProgress();
+  }, []);
+
+  // Auto-save progress whenever state changes
+  useEffect(() => {
+    if (!loading) {
+      saveProgress();
+    }
+  }, [currentSlide, userResponses]);
+
+  const loadProgress = async () => {
+    try {
+      const progress = await educationProgressService.getProgress('nervous_system');
+      if (progress && !progress.completed) {
+        setCurrentSlide(progress.current_step || 0);
+        if (progress.progress_data) {
+          setUserResponses(progress.progress_data.userResponses || {});
+        }
+      }
+    } catch (error) {
+      console.error('Error loading nervous system education progress:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const saveProgress = async () => {
+    try {
+      await educationProgressService.autoSave(
+        'nervous_system',
+        currentSlide,
+        educationSlides.length,
+        { userResponses }
+      );
+    } catch (error) {
+      console.error('Error saving nervous system education progress:', error);
+    }
+  };
 
   const educationSlides = [
     {
@@ -227,10 +271,23 @@ const NervousSystemEducationWidget = ({ onComplete, onSkip }) => {
     }
   ];
 
-  const nextSlide = () => {
+  const nextSlide = async () => {
     if (currentSlide < educationSlides.length - 1) {
       setCurrentSlide(currentSlide + 1);
     } else {
+      // Mark as completed before finishing
+      try {
+        await educationProgressService.saveProgress(
+          'nervous_system',
+          educationSlides.length,
+          educationSlides.length,
+          { userResponses },
+          true // completed
+        );
+        console.log('[Nervous System Education] Marked as completed');
+      } catch (error) {
+        console.error('Error marking nervous system education complete:', error);
+      }
       onComplete();
     }
   };

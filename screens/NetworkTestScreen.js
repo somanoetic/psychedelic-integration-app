@@ -9,8 +9,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../lib/supabase';
-import { ANTHROPIC_API_KEY } from '@env';
+import config from '../lib/config';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
+
+const ANTHROPIC_API_KEY = config.anthropicApiKey;
 
 const NetworkTestScreen = ({ navigation }) => {
   const [testing, setTesting] = useState(false);

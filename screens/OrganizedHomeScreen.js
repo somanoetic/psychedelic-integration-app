@@ -12,8 +12,11 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ActivityIndicator, Appbar } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../lib/supabase';
 import FeedbackButton from '../components/FeedbackButton';
+import HuxleyWelcomeDialog from '../components/HuxleyWelcomeDialog';
+import HuxleyCornerWidget from '../components/HuxleyCornerWidget';
 import { colors, gradients, shadows, spacing, borderRadius } from '../theme/colors';
 
 const { width } = Dimensions.get('window');
@@ -23,10 +26,23 @@ const OrganizedHomeScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [recentSessions, setRecentSessions] = useState([]);
   const [userRole, setUserRole] = useState('patient'); // patient | therapist | admin
+  const [showWelcomeDialog, setShowWelcomeDialog] = useState(false);
 
   useEffect(() => {
     loadUserData();
+    checkWelcomeDialog();
   }, []);
+
+  const checkWelcomeDialog = async () => {
+    try {
+      // Always show Huxley welcome - it's the main navigation!
+      setTimeout(() => {
+        setShowWelcomeDialog(true);
+      }, 500);
+    } catch (error) {
+      console.error('Error showing welcome dialog:', error);
+    }
+  };
 
   const loadUserData = async () => {
     try {
@@ -325,7 +341,7 @@ const OrganizedHomeScreen = ({ navigation }) => {
       colors={[colors.cream, colors.sand]}
       style={styles.welcomeContainer}
     >
-      <Text style={styles.welcomeTitle}>Welcome to Noesis</Text>
+      <Text style={styles.welcomeTitle}>Welcome to Psycheteleos</Text>
       <Text style={styles.welcomeSubtitle}>
         Direct knowing through integration
       </Text>
@@ -336,7 +352,7 @@ const OrganizedHomeScreen = ({ navigation }) => {
     return (
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
         <Appbar.Header style={styles.appbar}>
-          <Appbar.Content title="Noesis" titleStyle={styles.appbarTitle} />
+          <Appbar.Content title="Psycheteleos" titleStyle={styles.appbarTitle} />
         </Appbar.Header>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
@@ -349,7 +365,7 @@ const OrganizedHomeScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       <Appbar.Header style={styles.appbar}>
-        <Appbar.Content title="Noesis" titleStyle={styles.appbarTitle} />
+        <Appbar.Content title="Psycheteleos" titleStyle={styles.appbarTitle} />
         <Appbar.Action
           icon="cog"
           onPress={() => navigation.navigate('NetworkTest')}
@@ -370,6 +386,32 @@ const OrganizedHomeScreen = ({ navigation }) => {
       </ScrollView>
 
       <FeedbackButton />
+
+      {/* Persistent Huxley Corner Widget */}
+      <HuxleyCornerWidget
+        onPress={() => setShowWelcomeDialog(true)}
+        showPulse={false}
+      />
+
+      <HuxleyWelcomeDialog
+        visible={showWelcomeDialog}
+        onDismiss={() => setShowWelcomeDialog(false)}
+        onNavigate={(route) => {
+          setShowWelcomeDialog(false);
+          // Check if it's a tab screen or stack screen
+          if (route === 'Education' || route === 'AllSessions') {
+            // These are tab screens, navigate directly
+            navigation.navigate(route);
+          } else {
+            // These are stack screens (ExperienceMapping, ExerciseLibrary)
+            // Navigate to parent stack navigator
+            const parent = navigation.getParent();
+            if (parent) {
+              parent.navigate(route);
+            }
+          }
+        }}
+      />
     </SafeAreaView>
   );
 };

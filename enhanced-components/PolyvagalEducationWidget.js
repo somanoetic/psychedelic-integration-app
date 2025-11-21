@@ -1,18 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   ScrollView,
   Animated,
-  Dimensions
+  Dimensions,
+  ActivityIndicator
 } from 'react-native';
+import educationProgressService from '../lib/educationProgressService';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const PolyvagalEducationWidget = ({ onComplete, onSkip }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [showExercise, setShowExercise] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Load saved progress on mount
+  useEffect(() => {
+    loadProgress();
+  }, []);
+
+  // Auto-save progress whenever step changes
+  useEffect(() => {
+    if (!loading) {
+      saveProgress();
+    }
+  }, [currentStep]);
+
+  const loadProgress = async () => {
+    try {
+      const progress = await educationProgressService.getProgress('nervous_system');
+      if (progress && !progress.completed) {
+        setCurrentStep(progress.current_step || 0);
+      }
+    } catch (error) {
+      console.error('Error loading nervous system education progress:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const saveProgress = async () => {
+    try {
+      await educationProgressService.autoSave(
+        'nervous_system',
+        currentStep,
+        educationSteps.length,
+        {}
+      );
+    } catch (error) {
+      console.error('Error saving nervous system education progress:', error);
+    }
+  };
 
   const educationSteps = [
     {
@@ -63,11 +104,16 @@ const PolyvagalEducationWidget = ({ onComplete, onSkip }) => {
     }
   ];
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep < educationSteps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      // Education complete, show assessment
+      // Mark as completed
+      try {
+        await educationProgressService.markComplete('nervous_system', {});
+      } catch (error) {
+        console.error('Error marking nervous system education complete:', error);
+      }
       onComplete();
     }
   };
@@ -172,6 +218,15 @@ const PolyvagalEducationWidget = ({ onComplete, onSkip }) => {
     );
   };
 
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <ActivityIndicator size="large" color="#10b981" />
+        <Text style={styles.loadingText}>Loading your progress...</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
@@ -213,6 +268,15 @@ const styles = {
     flex: 1,
     backgroundColor: '#ffffff',
     maxHeight: SCREEN_HEIGHT * 0.9,
+  },
+  centerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#6b7280',
   },
   content: {
     flex: 1,

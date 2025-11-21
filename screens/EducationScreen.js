@@ -9,11 +9,14 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
+import ConversationalEducation from '../components/ConversationalEducation';
 import PolyvagalEducationWidget from '../enhanced-components/PolyvagalEducationWidget';
 import PolyvagalMappingWidgetAI from '../enhanced-components/PolyvagalMappingWidgetAI';
-import TriggersAndGlimmersWidget from '../enhanced-components/TriggersAndGlimmersWidget';
-import RegulatingResourcesWidget from '../enhanced-components/RegulatingResourcesWidget';
-import IFSPartsWorkChatAI from '../enhanced-components/IFSPartsWorkChatAI';
+import TriggersAndGlimmersWidgetAI from '../enhanced-components/TriggersAndGlimmersWidgetAI';
+import RegulatingResourcesWidgetAI from '../enhanced-components/RegulatingResourcesWidgetAI';
+import IFSPartsWorkChatWithContext from '../enhanced-components/IFSPartsWorkChatWithContext';
+import IFSPartsEducationWidget from '../components/IFSPartsEducationWidget';
+import GroundingExercisesWidget from '../components/GroundingExercisesWidget';
 import userRoleService from '../lib/userRoleService';
 import { educationTopics, getTopicById } from '../content/education';
 
@@ -21,6 +24,7 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const EducationScreen = ({ navigation }) => {
   const [selectedTopic, setSelectedTopic] = useState(null);
+  const [showConversational, setShowConversational] = useState(true);
   const [userRole, setUserRole] = useState({ role: 'user', verified: false });
   const [canAccessTraining, setCanAccessTraining] = useState(false);
 
@@ -53,10 +57,21 @@ const EducationScreen = ({ navigation }) => {
         <ScrollView contentContainerStyle={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Integration Education</Text>
-          <Text style={styles.headerSubtitle}>
-            Learn the foundations of psychedelic integration
-          </Text>
+          <View style={styles.headerTop}>
+            <View style={styles.headerTextContainer}>
+              <Text style={styles.headerTitle}>Integration Education</Text>
+              <Text style={styles.headerSubtitle}>
+                Learn the foundations of psychedelic integration
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={styles.conversationalToggle}
+              onPress={() => setShowConversational(true)}
+            >
+              <MaterialIcons name="chat" size={24} color="#8b5cf6" />
+              <Text style={styles.conversationalToggleText}>Guided</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* Quick Start */}
@@ -251,6 +266,26 @@ const EducationScreen = ({ navigation }) => {
       );
     }
 
+    // Special case: IFS basics (Parts Work education)
+    if (selectedTopic === 'ifs_basics') {
+      return (
+        <IFSPartsEducationWidget
+          onComplete={handleEducationComplete}
+          onSkip={handleEducationComplete}
+        />
+      );
+    }
+
+    // Special case: Grounding practices
+    if (selectedTopic === 'grounding_practices') {
+      return (
+        <GroundingExercisesWidget
+          onComplete={handleEducationComplete}
+          onSkip={handleEducationComplete}
+        />
+      );
+    }
+
     // Special case: Use AI-powered interactive widget for polyvagal mapping
     if (selectedTopic === 'polyvagal_mapping') {
       return (
@@ -261,30 +296,30 @@ const EducationScreen = ({ navigation }) => {
       );
     }
 
-    // Special case: Use interactive widget for triggers & glimmers
+    // Special case: Use AI-enhanced interactive widget for triggers & glimmers
     if (selectedTopic === 'triggers_glimmers') {
       return (
-        <TriggersAndGlimmersWidget
+        <TriggersAndGlimmersWidgetAI
           onComplete={handleEducationComplete}
           onSkip={handleEducationComplete}
         />
       );
     }
 
-    // Special case: Use interactive widget for regulating resources
+    // Special case: Use AI-enhanced interactive widget for regulating resources
     if (selectedTopic === 'regulating_resources') {
       return (
-        <RegulatingResourcesWidget
+        <RegulatingResourcesWidgetAI
           onComplete={handleEducationComplete}
           onSkip={handleEducationComplete}
         />
       );
     }
 
-    // Special case: Use AI-powered IFS chat
+    // Special case: Use AI-powered IFS chat with context system
     if (selectedTopic === 'ifs_chat') {
       return (
-        <IFSPartsWorkChatAI
+        <IFSPartsWorkChatWithContext
           onComplete={handleEducationComplete}
           onSkip={handleEducationComplete}
         />
@@ -348,6 +383,20 @@ const EducationScreen = ({ navigation }) => {
     return renderSelectedTopic();
   }
 
+  if (showConversational) {
+    return (
+      <ConversationalEducation
+        navigation={navigation}
+        onSelectTopic={(topicId) => {
+          handleTopicPress(topicId);
+        }}
+        onViewAllTopics={() => {
+          setShowConversational(false);
+        }}
+      />
+    );
+  }
+
   return renderEducationHub();
 };
 
@@ -365,6 +414,15 @@ const styles = {
     borderBottomWidth: 1,
     borderBottomColor: '#e5e7eb',
   },
+  headerTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  headerTextContainer: {
+    flex: 1,
+    marginRight: 12,
+  },
   headerTitle: {
     fontSize: 28,
     fontWeight: '700',
@@ -375,6 +433,22 @@ const styles = {
     fontSize: 16,
     color: colors.textSecondary,
     lineHeight: 24,
+  },
+  conversationalToggle: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 8,
+    borderRadius: 12,
+    backgroundColor: '#faf5ff',
+    borderWidth: 2,
+    borderColor: '#8b5cf6',
+    minWidth: 60,
+  },
+  conversationalToggleText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#8b5cf6',
+    marginTop: 2,
   },
   section: {
     marginTop: 32,

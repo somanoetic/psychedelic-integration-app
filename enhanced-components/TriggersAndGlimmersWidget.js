@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Alert
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 /**
  * Triggers & Glimmers Mapping Widget
@@ -317,7 +318,7 @@ They're small but powerful cues of safety. Let's find yours!`,
   const progress = ((currentStep + 1) / mappingSteps.length) * 100;
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={onSkip}>
@@ -370,7 +371,7 @@ They're small but powerful cues of safety. Let's find yours!`,
           </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

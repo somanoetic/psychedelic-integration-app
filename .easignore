@@ -1,0 +1,96 @@
+# Documentation and guides
+*.md
+BUGS_AND_FEATURE_REQUESTS.md
+BUG_FIXES.md
+BUILD_IOS_INTERNAL.md
+CONTENT_MANAGEMENT_SETUP.md
+CONVERSATION_IMPROVEMENTS.md
+CORE_BELIEFS_INVENTORY.md
+DEPLOYMENT_GUIDE.md
+DESKTOP_24_7_SETUP.md
+EASY_SHARING_GUIDE.md
+EDUCATIONAL_ONBOARDING.md
+EDUCATION_SECTION_COMPLETE.md
+ENHANCED_FEATURES_GUIDE.md
+ENHANCED_IMPLEMENTATION.md
+FIGMA_DESIGN_SYSTEM.md
+FIX_FOR_EXPO_GO.md
+INTEGRATION_FRAMEWORK.md
+IOS_TESTING_GUIDE.md
+META_AND_PRACTICE_FIXES.md
+NERVOUS_SYSTEM_ADAPTATION.md
+ORACLE_CLOUD_SETUP.md
+PROFESSIONAL_ACCESS_CONTROL.md
+QUICK_REFERENCE.txt
+SCENARIO_TRAINING_COMPLETE.md
+SHARE_WITH_TESTERS.md
+VM_SETUP_GUIDE.md
+BETA_FIXES_2025-10-25.md
+ACCESSING_TRAINING_SCENARIOS.md
+
+# PDFs and reference materials
+*.pdf
+
+# Design files (exclude source files but keep required assets)
+design/*.mp4
+design/*.mov
+design/*.pdf
+design/figma-starter-kit.json
+design/COMPONENT_REFERENCE.md
+design/HOW_TO_USE_FIGMA_STARTER.md
+design/INFINITE_KNOT_CANVA_GUIDE.md
+design/huxley-final-basic.png
+design/splash4-canva/
+IFS-resources/
+
+# Debug and test files (only root-level test files, not screens/)
+debug/
+bugs
+NetworkBypassTest.js
+/NetworkTestScreen.js
+JSXTest.js
+
+# QR codes and build artifacts
+*.png.bak
+qr-code*.png
+qr-code.txt
+generate-qr.js
+
+# SSH keys
+*.key
+*.key.pub
+ssh-key-*.pub
+
+# Video files (large)
+*.mp4
+*.mov
+
+# Training data
+training-data/
+
+# Git
+.git/
+.github/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment
+.env.local
+.env.*.local
+
+# Claude assistant
+.claude/
+
+# Temporary files
+nul

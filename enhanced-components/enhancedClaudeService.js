@@ -1,5 +1,7 @@
-import { ANTHROPIC_API_KEY } from '@env';
+import config from '../lib/config';
 import ScenarioTrainingSystem from '../lib/scenarioTrainingSystem';
+
+const ANTHROPIC_API_KEY = config.anthropicApiKey;
 
 class IntegrationGuideService {
   constructor() {

@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Alert
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 /**
  * Regulating Resources Mapping Widget
@@ -328,7 +329,7 @@ The goal is flexible access to both, depending on what you need in the moment.`,
   const progress = ((currentStep + 1) / mappingSteps.length) * 100;
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={onSkip}>
@@ -381,7 +382,7 @@ The goal is flexible access to both, depending on what you need in the moment.`,
           </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

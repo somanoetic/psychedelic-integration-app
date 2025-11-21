@@ -18,6 +18,7 @@ import SimpleEnhancedConversationScreen from './screens/SimpleEnhancedConversati
 import EnhancedConversationScreen from './screens/EnhancedConversationScreen';
 import EducationScreen from './screens/EducationScreen';
 import OrganizedHomeScreen from './screens/OrganizedHomeScreen';
+import ConversationalHomeScreen from './components/ConversationalHomeScreen';
 import AllSessionsScreen from './screens/AllSessionsScreen';
 import ExperienceMappingScreen from './screens/ExperienceMappingScreen';
 import TherapeuticIntegrationScreen from './screens/TherapeuticIntegrationScreen';
@@ -28,8 +29,22 @@ import SessionToolsScreen from './screens/SessionToolsScreen';
 import SessionDetailScreen from './screens/SessionDetailScreen';
 import InteractiveSessionMindMap from './screens/InteractiveSessionMindMap';
 import QuickNetworkTest from './screens/QuickNetworkTest';
-import NetworkTestScreen from './NetworkTestScreen';
+import NetworkTestScreen from './screens/NetworkTestScreen';
 import ExerciseLibraryScreen from './screens/ExerciseLibraryScreen';
+
+// Conversational Components
+import ConversationalSessionTools from './components/ConversationalSessionTools';
+import ConversationalAllSessions from './components/ConversationalAllSessions';
+import ConversationalExerciseLibrary from './components/ConversationalExerciseLibrary';
+import ConversationalTriggeredSupport from './components/ConversationalTriggeredSupport';
+import ConversationalJournalEntry from './components/ConversationalJournalEntry';
+import DailyJournal from './components/DailyJournal';
+import ConversationalNervousSystemMapping from './components/ConversationalNervousSystemMapping';
+import ConversationalTriggersGlimmers from './components/ConversationalTriggersGlimmers';
+import ConversationalRegulatingResources from './components/ConversationalRegulatingResources';
+import CoreBeliefsAssessment from './components/CoreBeliefsAssessment';
+import IFSPartsWorkChatWithContext from './enhanced-components/IFSPartsWorkChatWithContext';
+import GlimmerSwiper from './components/GlimmerSwiper';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -76,7 +91,7 @@ const MainTabs = () => {
     >
       <Tab.Screen
         name="Sessions"
-        component={OrganizedHomeScreen}
+        component={ConversationalHomeScreen}
         options={{ title: 'Home' }}
       />
       <Tab.Screen
@@ -86,7 +101,7 @@ const MainTabs = () => {
       />
       <Tab.Screen
         name="AllSessions"
-        component={AllSessionsScreen}
+        component={ConversationalAllSessions}
         options={{ title: 'Sessions' }}
       />
     </Tab.Navigator>
@@ -124,7 +139,14 @@ export default function App() {
 
   const checkOnboardingStatus = async () => {
     try {
-      const completed = await AsyncStorage.getItem('onboarding_completed');
+      // Add timeout to prevent infinite loading
+      const timeoutPromise = new Promise((resolve) => {
+        setTimeout(() => resolve(null), 3000); // 3 second timeout
+      });
+
+      const storagePromise = AsyncStorage.getItem('onboarding_completed');
+      const completed = await Promise.race([storagePromise, timeoutPromise]);
+
       setOnboardingComplete(completed === 'true');
     } catch (error) {
       console.error('Error checking onboarding status:', error);
@@ -206,7 +228,7 @@ export default function App() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingTitle}>Psychetelia</Text>
+        <Text style={styles.loadingTitle}>Psycheteleos</Text>
         <Text style={styles.debugText}>{debugInfo}</Text>
         <Text style={styles.debugHint}>
           If stuck here, check console logs or try restarting
@@ -278,7 +300,7 @@ export default function App() {
               />
               <Stack.Screen
                 name="SessionTools"
-                component={SessionToolsScreen}
+                component={ConversationalSessionTools}
                 options={{
                   headerShown: false,
                   title: 'Session Tools'
@@ -319,10 +341,82 @@ export default function App() {
               />
               <Stack.Screen
                 name="ExerciseLibrary"
-                component={ExerciseLibraryScreen}
+                component={ConversationalExerciseLibrary}
                 options={{
                   headerShown: false,
                   title: 'Exercise Library'
+                }}
+              />
+              <Stack.Screen
+                name="TriggeredSupport"
+                component={ConversationalTriggeredSupport}
+                options={{
+                  headerShown: false,
+                  title: 'Triggered Support'
+                }}
+              />
+              <Stack.Screen
+                name="JournalEntry"
+                component={ConversationalJournalEntry}
+                options={{
+                  headerShown: false,
+                  title: 'Journal Entry'
+                }}
+              />
+              <Stack.Screen
+                name="DailyJournal"
+                component={DailyJournal}
+                options={{
+                  headerShown: false,
+                  title: 'Daily Journal'
+                }}
+              />
+              <Stack.Screen
+                name="IFSChat"
+                component={IFSPartsWorkChatWithContext}
+                options={{
+                  headerShown: false,
+                  title: 'IFS Parts Work'
+                }}
+              />
+              <Stack.Screen
+                name="NervousSystemMapping"
+                component={ConversationalNervousSystemMapping}
+                options={{
+                  headerShown: false,
+                  title: 'Nervous System Mapping'
+                }}
+              />
+              <Stack.Screen
+                name="TriggersGlimmers"
+                component={ConversationalTriggersGlimmers}
+                options={{
+                  headerShown: false,
+                  title: 'Triggers & Glimmers'
+                }}
+              />
+              <Stack.Screen
+                name="RegulatingResources"
+                component={ConversationalRegulatingResources}
+                options={{
+                  headerShown: false,
+                  title: 'Regulating Resources'
+                }}
+              />
+              <Stack.Screen
+                name="CoreBeliefs"
+                component={CoreBeliefsAssessment}
+                options={{
+                  headerShown: false,
+                  title: 'Core Beliefs Assessment'
+                }}
+              />
+              <Stack.Screen
+                name="GlimmerSwiper"
+                component={GlimmerSwiper}
+                options={{
+                  headerShown: false,
+                  title: 'Glimmer Swiper'
                 }}
               />
             </>

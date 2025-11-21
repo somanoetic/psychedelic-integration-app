@@ -1,17 +1,65 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
+  ActivityIndicator
 } from 'react-native';
+import educationProgressService from '../lib/educationProgressService';
 
 const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [userResponses, setUserResponses] = useState({});
   const [identifiedParts, setIdentifiedParts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Load saved progress on mount
+  useEffect(() => {
+    loadProgress();
+  }, []);
+
+  // Auto-save progress whenever state changes
+  useEffect(() => {
+    if (!loading) {
+      saveProgress();
+    }
+  }, [currentSlide, userResponses, identifiedParts]);
+
+  const loadProgress = async () => {
+    try {
+      const progress = await educationProgressService.getProgress('ifs_parts');
+      if (progress && !progress.completed) {
+        setCurrentSlide(progress.current_step || 0);
+        if (progress.progress_data) {
+          setUserResponses(progress.progress_data.userResponses || {});
+          setIdentifiedParts(progress.progress_data.identifiedParts || []);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading IFS education progress:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const saveProgress = async () => {
+    try {
+      await educationProgressService.autoSave(
+        'ifs_parts',
+        currentSlide,
+        educationSlides.length,
+        {
+          userResponses,
+          identifiedParts
+        }
+      );
+    } catch (error) {
+      console.error('Error saving IFS education progress:', error);
+    }
+  };
 
   const educationSlides = [
     {
@@ -187,10 +235,19 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
     }
   ];
 
-  const nextSlide = () => {
+  const nextSlide = async () => {
     if (currentSlide < educationSlides.length - 1) {
       setCurrentSlide(currentSlide + 1);
     } else {
+      // Mark as completed
+      try {
+        await educationProgressService.markComplete('ifs_parts', {
+          userResponses,
+          identifiedParts
+        });
+      } catch (error) {
+        console.error('Error marking IFS education complete:', error);
+      }
       onComplete();
     }
   };
@@ -204,10 +261,21 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
   const handlePartsIdentification = (partType, partName) => {
     const newPart = { type: partType, name: partName, timestamp: Date.now() };
     setIdentifiedParts([...identifiedParts, newPart]);
-    
+
     setUserResponses({
       ...userResponses,
       [educationSlides[currentSlide].id]: [...(userResponses[educationSlides[currentSlide].id] || []), newPart]
+    });
+  };
+
+  const handleRemovePart = (index) => {
+    const updatedParts = identifiedParts.filter((_, i) => i !== index);
+    setIdentifiedParts(updatedParts);
+
+    // Update user responses as well
+    setUserResponses({
+      ...userResponses,
+      [educationSlides[currentSlide].id]: updatedParts
     });
   };
 
@@ -308,15 +376,30 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
                 <View key={index} style={styles.promptCard}>
                   <Text style={styles.promptQuestion}>{prompt.question}</Text>
                   <View style={styles.examplesRow}>
-                    {prompt.examples.map((example, exampleIndex) => (
-                      <TouchableOpacity
-                        key={exampleIndex}
-                        style={styles.exampleButton}
-                        onPress={() => handlePartsIdentification(prompt.question, example)}
-                      >
-                        <Text style={styles.exampleButtonText}>{example}</Text>
-                      </TouchableOpacity>
-                    ))}
+                    {prompt.examples.map((example, exampleIndex) => {
+                      const isSelected = identifiedParts.some(part => part.name === example);
+                      return (
+                        <TouchableOpacity
+                          key={exampleIndex}
+                          style={[
+                            styles.exampleButton,
+                            isSelected && styles.exampleButtonSelected
+                          ]}
+                          onPress={() => handlePartsIdentification(prompt.question, example)}
+                          activeOpacity={0.6}
+                        >
+                          <Text style={[
+                            styles.exampleButtonText,
+                            isSelected && styles.exampleButtonTextSelected
+                          ]}>
+                            {example}
+                          </Text>
+                          {isSelected && (
+                            <MaterialIcons name="check-circle" size={16} color="#10b981" style={styles.checkIcon} />
+                          )}
+                        </TouchableOpacity>
+                      );
+                    })}
                   </View>
                 </View>
               ))}
@@ -325,11 +408,20 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
             {identifiedParts.length > 0 && (
               <View style={styles.identifiedPartsContainer}>
                 <Text style={styles.identifiedTitle}>Your Identified Parts:</Text>
-                {identifiedParts.map((part, index) => (
-                  <View key={index} style={styles.identifiedPart}>
-                    <Text style={styles.identifiedPartText}>{part.name}</Text>
-                  </View>
-                ))}
+                <View style={styles.identifiedPartsGrid}>
+                  {identifiedParts.map((part, index) => (
+                    <View key={index} style={styles.identifiedPart}>
+                      <Text style={styles.identifiedPartText}>{part.name}</Text>
+                      <TouchableOpacity
+                        onPress={() => handleRemovePart(index)}
+                        style={styles.removePartButton}
+                      >
+                        <MaterialIcons name="close" size={16} color="#1e40af" />
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+                </View>
+                <Text style={styles.tapToRemoveHint}>Tap the X to remove a selection</Text>
               </View>
             )}
           </View>
@@ -412,6 +504,15 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
     }
   };
 
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <ActivityIndicator size="large" color="#a855f7" />
+        <Text style={styles.loadingText}>Loading your progress...</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -471,6 +572,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#ffffff',
+  },
+  centerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#6b7280',
   },
   header: {
     flexDirection: 'row',
@@ -651,6 +761,8 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   exampleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#ffffff',
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -658,10 +770,22 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#d1d5db',
   },
+  exampleButtonSelected: {
+    backgroundColor: '#d1fae5',
+    borderColor: '#10b981',
+    borderWidth: 2,
+  },
   exampleButtonText: {
     fontSize: 12,
     color: '#374151',
     fontWeight: '500',
+  },
+  exampleButtonTextSelected: {
+    color: '#065f46',
+    fontWeight: '600',
+  },
+  checkIcon: {
+    marginLeft: 4,
   },
   identifiedPartsContainer: {
     width: '100%',
@@ -676,16 +800,35 @@ const styles = StyleSheet.create({
     color: '#1e40af',
     marginBottom: 12,
   },
+  identifiedPartsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
   identifiedPart: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: '#dbeafe',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-    marginBottom: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: '#3b82f6',
   },
   identifiedPartText: {
     fontSize: 14,
     color: '#1e40af',
+    fontWeight: '500',
+    marginRight: 6,
+  },
+  removePartButton: {
+    padding: 2,
+  },
+  tapToRemoveHint: {
+    fontSize: 12,
+    color: '#3b82f6',
+    marginTop: 12,
+    fontStyle: 'italic',
   },
   practicesContainer: {
     width: '100%',
