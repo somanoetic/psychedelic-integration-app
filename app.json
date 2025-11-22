@@ -29,7 +29,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#F5F1E8"
       },
-      "runtimeVersion": "1.0.0",
+      "runtimeVersion": "1.1.0",
       "softwareKeyboardLayoutMode": "resize",
       "navigationBar": {
         "visible": "immersive",
