@@ -30,12 +30,7 @@
         "backgroundColor": "#F5F1E8"
       },
       "runtimeVersion": "1.1.0",
-      "softwareKeyboardLayoutMode": "resize",
-      "navigationBar": {
-        "visible": "immersive",
-        "barStyle": "dark-content",
-        "backgroundColor": "#F5F1E8"
-      }
+      "softwareKeyboardLayoutMode": "resize"
     },
     "web": {
       "bundler": "metro",
@@ -54,7 +49,8 @@
       "url": "https://u.expo.dev/51f2a410-267f-47c9-a2c8-f77b168d782c"
     },
     "plugins": [
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-font"
     ]
   }
 }

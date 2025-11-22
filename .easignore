@@ -94,3 +94,7 @@ yarn-error.log*
 
 # Temporary files
 nul
+
+# Native folders (using Prebuild/CNG)
+android/
+ios/
