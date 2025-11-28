@@ -98,3 +98,6 @@ nul
 # Native folders (using Prebuild/CNG)
 android/
 ios/
+
+# Node modules (EAS installs from package.json)
+node_modules/
