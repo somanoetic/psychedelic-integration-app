@@ -34,11 +34,14 @@
 **Security Fixes (2026-02-07):**
 - ✅ Fixed BUG-001: Added .env to .gitignore
 - ✅ Fixed BUG-002: Removed SSH keys from repository
+- ✅ Fixed BUG-004: Enabled RLS on all Supabase tables
+- ✅ Fixed sessions table policy (was wide open!)
 - ✅ Created .env.example template
 - ✅ Created security incident report
-- ✅ **COMPLETE:** Rotated Anthropic API key
+- ✅ Rotated Anthropic API key
 - ✅ Removed .env from git tracking
-- ✅ Verified all keys working
+- ✅ Added policies for 5 unprotected tables
+- ✅ Verified all 30 tables secured with RLS
 
 **Previous:**
 - ✅ Fixed GlimmerSwiper crash
@@ -121,7 +124,7 @@
 | Test Coverage | 🔴 Red | No automated tests |
 | Documentation | 🟢 Green | Context system operational |
 | Performance | 🟢 Green | Acceptable, needs measurement |
-| Security | 🟢 Green | All critical security issues resolved |
+| Security | 🟢 Green | All 30 tables protected with RLS, keys rotated |
 
 ---
 

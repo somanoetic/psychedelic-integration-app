@@ -65,6 +65,44 @@ SSH key files (ssh-key-2025-10-17.key and .pub) were in project directory. Publi
 
 ---
 
+### BUG-004: Supabase RLS Disabled - ALL DATA EXPOSED
+**Priority:** P0 - Critical (Security - DATA BREACH RISK)
+**Status:** ✅ RESOLVED
+**Reported:** 2026-02-07
+**Resolved:** 2026-02-07
+**Assigned:** Completed
+
+**Description:**
+Row Level Security (RLS) was DISABLED on 5 database tables, and the sessions table had an overly permissive policy allowing any authenticated user to access all sessions.
+
+**Resolution:**
+1. ✅ Enabled RLS on 5 unprotected tables (entities, entity_connections, integration_steps, scenario_categories, symbol_meanings)
+2. ✅ Fixed sessions table policy (was `USING (true)`, now checks `user_id`)
+3. ✅ Added proper policies for all 5 previously unprotected tables
+4. ✅ Verified all 30 tables now have RLS enabled with policies
+5. ✅ Documented fix in SECURITY_INCIDENT_2026-02-07.md
+
+**Final Status:**
+- ✅ All 30 tables: RLS enabled
+- ✅ All 30 tables: Security policies in place
+- ✅ Sessions table: Now properly checks user ownership
+- ⚠️ Supabase key rotation: Recommended but optional (RLS now provides protection)
+
+**Verification:**
+```sql
+SELECT tablename, rowsecurity, COUNT(*) as policies
+FROM pg_tables
+LEFT JOIN pg_policies USING (tablename)
+WHERE schemaname = 'public'
+GROUP BY tablename, rowsecurity;
+-- Result: All 30 tables show rls_enabled=true, policies>0
+```
+
+**Time to Fix:** 45 minutes (with walkthrough)
+**Files Changed:** Database policies via SQL
+
+---
+
 ### BUG-003: VM Server Not Accessible Externally
 **Priority:** P0 - Critical (Infrastructure)
 **Status:** Open
@@ -190,6 +228,7 @@ If you discover a P0 bug:
 
 ---
 
-**Current Count:** 1 active, 3 resolved (2 today)
+**Current Count:** 1 active, 4 resolved (3 today!)
 **File Status:** Under limit (300 lines)
-**✅ KEY ROTATION:** Anthropic key rotated successfully!
+**🎉 MAJOR WIN:** All critical security issues resolved!
+**✅ SECURITY STATUS:** All databases protected with RLS
