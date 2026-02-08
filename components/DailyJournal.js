@@ -9,8 +9,11 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
-  Alert
+  Alert,
+  Image,
+  Keyboard
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
 import dailyJournalAIService from '../lib/dailyJournalAIService';
@@ -25,11 +28,30 @@ const DailyJournal = ({ onComplete }) => {
   const [loading, setLoading] = useState(false);
   const [phase, setPhase] = useState('journaling'); // 'journaling', 'discussion', 'suggestions', 'complete'
   const [saving, setSaving] = useState(false);
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
   const scrollViewRef = useRef(null);
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     // Start the conversation
     initializeJournal();
+  }, []);
+
+  // Track keyboard visibility to adjust bottom padding
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      () => setKeyboardVisible(true)
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => setKeyboardVisible(false)
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
   }, []);
 
   const initializeJournal = async () => {
@@ -246,18 +268,32 @@ const DailyJournal = ({ onComplete }) => {
   };
 
   const renderMessage = (message) => {
+    if (message.isAI) {
+      return (
+        <View key={message.id} style={styles.aiMessageRow}>
+          <Image
+            source={require('../assets/images/huxley therapist.png')}
+            style={styles.huxleyAvatar}
+            resizeMode="contain"
+          />
+          <View style={[styles.messageBubble, styles.aiMessage]}>
+            <Text style={[styles.messageText, styles.aiMessageText]}>
+              {message.text}
+            </Text>
+            <Text style={styles.timestamp}>
+              {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </Text>
+          </View>
+        </View>
+      );
+    }
+
     return (
       <View
         key={message.id}
-        style={[
-          styles.messageBubble,
-          message.isAI ? styles.aiMessage : styles.userMessage
-        ]}
+        style={[styles.messageBubble, styles.userMessage]}
       >
-        <Text style={[
-          styles.messageText,
-          message.isAI ? styles.aiMessageText : styles.userMessageText
-        ]}>
+        <Text style={[styles.messageText, styles.userMessageText]}>
           {message.text}
         </Text>
         <Text style={styles.timestamp}>
@@ -363,9 +399,16 @@ const DailyJournal = ({ onComplete }) => {
         {messages.map(renderMessage)}
 
         {loading && (
-          <View style={[styles.messageBubble, styles.aiMessage]}>
-            <ActivityIndicator size="small" color="#6366f1" />
-            <Text style={styles.aiMessageText}>Huxley is typing...</Text>
+          <View style={styles.aiMessageRow}>
+            <Image
+              source={require('../assets/images/huxley therapist.png')}
+              style={styles.huxleyAvatar}
+              resizeMode="contain"
+            />
+            <View style={[styles.messageBubble, styles.aiMessage]}>
+              <ActivityIndicator size="small" color="#6366f1" />
+              <Text style={styles.aiMessageText}>Huxley is typing...</Text>
+            </View>
           </View>
         )}
       </ScrollView>
@@ -374,7 +417,7 @@ const DailyJournal = ({ onComplete }) => {
       {renderActionButtons()}
 
       {/* Input Area */}
-      <View style={styles.inputContainer}>
+      <View style={[styles.inputContainer, { paddingBottom: keyboardVisible ? 12 : Math.max(insets.bottom, 12) + 12 }]}>
         <TextInput
           style={styles.input}
           value={inputText}
@@ -444,6 +487,17 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 80
   },
+  aiMessageRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 12
+  },
+  huxleyAvatar: {
+    width: 40,
+    height: 40,
+    marginRight: 8,
+    marginTop: 4
+  },
   messageBubble: {
     maxWidth: '80%',
     padding: 12,
@@ -460,7 +514,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderBottomLeftRadius: 4,
     borderWidth: 1,
-    borderColor: '#e5e7eb'
+    borderColor: '#e5e7eb',
+    marginBottom: 0,
+    flex: 1
   },
   messageText: {
     fontSize: 16,

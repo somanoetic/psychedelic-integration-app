@@ -8,7 +8,8 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
-  ActivityIndicator
+  ActivityIndicator,
+  Image
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { IFSAIService } from '../lib/ifsAIService';
@@ -25,7 +26,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
  * - Links protectors to exiles
  * - Saves session history
  */
-const IFSPartsWorkChatWithContext = ({ onComplete, onSkip }) => {
+const IFSPartsWorkChatWithContext = ({ navigation, onComplete, onSkip }) => {
   const [currentPhase, setCurrentPhase] = useState('check_in');
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState('');
@@ -113,14 +114,9 @@ Is one of these parts active right now, or is this a new part wanting attention?
   const getIntroMessage = () => {
     return `Welcome to IFS Parts Work.
 
-This AI-guided session will help you get to know one of your parts using the Six F's framework:
+This AI-guided session will help you get to know one of your parts - those inner voices, feelings, or patterns that shape your experience.
 
-**Find** - Locate the part
-**Focus** - Attend to it
-**Flesh Out** - Learn its story
-**Feel Toward** - Check your Self energy
-**BeFriend** - Build connection
-**Fears** - Understand concerns
+We'll explore together at your pace, starting with noticing what's present, then getting curious about it, understanding its role, and building a relationship with it.
 
 I'll guide you gently through each step. You're in control the whole time.`;
   };
@@ -173,7 +169,11 @@ All parts have positive intentions, even when their methods cause problems. This
     } else if (option === 'Start Working With a Part') {
       await initializeSession();
     } else if (option === 'Back to Home') {
-      if (onSkip) onSkip();
+      if (onSkip) {
+        onSkip();
+      } else if (navigation) {
+        navigation.goBack();
+      }
     } else if (option === 'Save This Session') {
       await handleComplete();
     } else if (option === 'Work With Another Part') {
@@ -711,52 +711,62 @@ This is a beginning. Parts work is about ongoing relationship. You can return to
   const renderMessage = (message) => {
     const isUser = message.sender === 'user';
 
+    // Assistant messages with Huxley avatar
+    if (!isUser) {
+      return (
+        <View key={message.id} style={styles.assistantMessageRow}>
+          <Image
+            source={require('../assets/images/huxley therapist.png')}
+            style={styles.huxleyAvatar}
+            resizeMode="contain"
+          />
+          <View style={[styles.messageBubble, styles.assistantBubble]}>
+            <Text style={[styles.messageText, styles.assistantText]}>
+              {message.text}
+            </Text>
+
+            {/* Render options if present */}
+            {message.options && (
+              <View style={styles.optionsContainer}>
+                {message.options.map((option, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.optionButton}
+                    onPress={() => handleOptionSelect(option)}
+                  >
+                    <Text style={styles.optionText}>{option}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+
+            <View style={styles.messageFooter}>
+              <Text style={[styles.timestamp, styles.assistantTimestamp]}>
+                {message.timestamp}
+              </Text>
+              {message.isAI && (
+                <Text style={styles.aiIndicator}>AI</Text>
+              )}
+            </View>
+          </View>
+        </View>
+      );
+    }
+
+    // User messages
     return (
       <View
         key={message.id}
-        style={[
-          styles.messageContainer,
-          isUser ? styles.userMessageContainer : styles.assistantMessageContainer
-        ]}
+        style={[styles.messageContainer, styles.userMessageContainer]}
       >
-        <View
-          style={[
-            styles.messageBubble,
-            isUser ? styles.userBubble : styles.assistantBubble
-          ]}
-        >
-          <Text style={[
-            styles.messageText,
-            isUser ? styles.userText : styles.assistantText
-          ]}>
+        <View style={[styles.messageBubble, styles.userBubble]}>
+          <Text style={[styles.messageText, styles.userText]}>
             {message.text}
           </Text>
-
-          {/* Render options if present */}
-          {message.options && !isUser && (
-            <View style={styles.optionsContainer}>
-              {message.options.map((option, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={styles.optionButton}
-                  onPress={() => handleOptionSelect(option)}
-                >
-                  <Text style={styles.optionText}>{option}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
-
           <View style={styles.messageFooter}>
-            <Text style={[
-              styles.timestamp,
-              isUser ? styles.userTimestamp : styles.assistantTimestamp
-            ]}>
+            <Text style={[styles.timestamp, styles.userTimestamp]}>
               {message.timestamp}
             </Text>
-            {message.isAI && !isUser && (
-              <Text style={styles.aiIndicator}>AI</Text>
-            )}
           </View>
         </View>
       </View>
@@ -781,7 +791,13 @@ This is a beginning. Parts work is about ongoing relationship. You can return to
       >
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity onPress={onSkip}>
+          <TouchableOpacity onPress={() => {
+            if (onSkip) {
+              onSkip();
+            } else if (navigation) {
+              navigation.goBack();
+            }
+          }}>
             <Text style={styles.backButton}>← Back</Text>
           </TouchableOpacity>
           <View style={styles.headerCenter}>
@@ -807,13 +823,19 @@ This is a beginning. Parts work is about ongoing relationship. You can return to
 
           {/* Typing indicator */}
           {isTyping && (
-            <View style={[styles.messageContainer, styles.assistantMessageContainer]}>
+            <View style={styles.assistantMessageRow}>
+              <Image
+                source={require('../assets/images/huxley therapist.png')}
+                style={styles.huxleyAvatar}
+                resizeMode="contain"
+              />
               <View style={[styles.messageBubble, styles.assistantBubble]}>
                 <View style={styles.typingIndicator}>
                   <View style={styles.typingDot} />
                   <View style={[styles.typingDot, styles.typingDot2]} />
                   <View style={[styles.typingDot, styles.typingDot3]} />
                 </View>
+                <Text style={styles.typingText}>Huxley is thinking...</Text>
               </View>
             </View>
           )}
@@ -924,6 +946,23 @@ const styles = StyleSheet.create({
   assistantMessageContainer: {
     alignItems: 'flex-start',
   },
+  assistantMessageRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 16,
+  },
+  huxleyAvatar: {
+    width: 36,
+    height: 36,
+    marginRight: 8,
+    marginTop: 4,
+  },
+  typingText: {
+    fontSize: 14,
+    color: '#9ca3af',
+    fontStyle: 'italic',
+    marginTop: 4,
+  },
   messageBubble: {
     maxWidth: '80%',
     borderRadius: 16,
@@ -938,6 +977,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 4,
     borderWidth: 1,
     borderColor: '#e5e7eb',
+    flex: 1,
   },
   messageText: {
     fontSize: 15,

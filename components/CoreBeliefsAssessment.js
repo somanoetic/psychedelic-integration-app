@@ -9,8 +9,10 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-  TextInput
+  TextInput,
+  Image
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
 import { supabase } from '../lib/supabase';
@@ -386,9 +388,11 @@ const CoreBeliefsAssessment = ({ user, onComplete }) => {
         ]}
       >
         {message.isAI && (
-          <View style={styles.avatarContainer}>
-            <MaterialIcons name="psychology" size={20} color="#8b5cf6" />
-          </View>
+          <Image
+            source={require('../assets/images/huxley therapist.png')}
+            style={styles.huxleyAvatar}
+            resizeMode="contain"
+          />
         )}
         <View style={[styles.messageBubble, message.isAI ? styles.aiBubble : styles.userBubble]}>
           <Text style={[styles.messageText, message.isAI ? styles.aiText : styles.userText]}>
@@ -417,8 +421,15 @@ const CoreBeliefsAssessment = ({ user, onComplete }) => {
           {messages.map(renderMessage)}
           {loading && (
             <View style={styles.loadingContainer}>
-              <ActivityIndicator size="small" color="#8b5cf6" />
-              <Text style={styles.loadingText}>Huxley is thinking...</Text>
+              <Image
+                source={require('../assets/images/huxley therapist.png')}
+                style={styles.huxleyAvatar}
+                resizeMode="contain"
+              />
+              <View style={styles.loadingBubble}>
+                <ActivityIndicator size="small" color="#8b5cf6" />
+                <Text style={styles.loadingText}>Huxley is thinking...</Text>
+              </View>
             </View>
           )}
         </ScrollView>
@@ -748,14 +759,21 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     flexDirection: 'row-reverse'
   },
-  avatarContainer: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#ede9fe',
-    justifyContent: 'center',
-    alignItems: 'center',
+  huxleyAvatar: {
+    width: 40,
+    height: 40,
+    marginRight: 8,
     marginTop: 4
+  },
+  loadingBubble: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    borderRadius: 16,
+    padding: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8
   },
   messageBubble: {
     maxWidth: '75%',

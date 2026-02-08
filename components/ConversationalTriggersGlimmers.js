@@ -9,8 +9,10 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
-  Alert
+  Alert,
+  Image
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
 import triggersGlimmersAIService from '../lib/triggersGlimmersAIService';
@@ -26,6 +28,7 @@ const ConversationalTriggersGlimmers = ({ onComplete }) => {
   const [phase, setPhase] = useState('intro');
   const [saving, setSaving] = useState(false);
   const scrollViewRef = useRef(null);
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     initializeExploration();
@@ -120,19 +123,41 @@ const ConversationalTriggersGlimmers = ({ onComplete }) => {
     }
   };
 
-  const renderMessage = (message) => (
-    <View
-      key={message.id}
-      style={[styles.messageBubble, message.isAI ? styles.aiMessage : styles.userMessage]}
-    >
-      <Text style={[styles.messageText, message.isAI ? styles.aiMessageText : styles.userMessageText]}>
-        {message.text}
-      </Text>
-      <Text style={styles.timestamp}>
-        {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-      </Text>
-    </View>
-  );
+  const renderMessage = (message) => {
+    if (message.isAI) {
+      return (
+        <View key={message.id} style={styles.aiMessageRow}>
+          <Image
+            source={require('../assets/images/huxley therapist.png')}
+            style={styles.huxleyAvatar}
+            resizeMode="contain"
+          />
+          <View style={[styles.messageBubble, styles.aiMessage]}>
+            <Text style={[styles.messageText, styles.aiMessageText]}>
+              {message.text}
+            </Text>
+            <Text style={styles.timestamp}>
+              {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </Text>
+          </View>
+        </View>
+      );
+    }
+
+    return (
+      <View
+        key={message.id}
+        style={[styles.messageBubble, styles.userMessage]}
+      >
+        <Text style={[styles.messageText, styles.userMessageText]}>
+          {message.text}
+        </Text>
+        <Text style={styles.timestamp}>
+          {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        </Text>
+      </View>
+    );
+  };
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={100}>
@@ -147,9 +172,16 @@ const ConversationalTriggersGlimmers = ({ onComplete }) => {
       <ScrollView ref={scrollViewRef} style={styles.messagesContainer} contentContainerStyle={styles.messagesContent}>
         {messages.map(renderMessage)}
         {loading && (
-          <View style={[styles.messageBubble, styles.aiMessage]}>
-            <ActivityIndicator size="small" color="#ec4899" />
-            <Text style={styles.aiMessageText}>Huxley is typing...</Text>
+          <View style={styles.aiMessageRow}>
+            <Image
+              source={require('../assets/images/huxley therapist.png')}
+              style={styles.huxleyAvatar}
+              resizeMode="contain"
+            />
+            <View style={[styles.messageBubble, styles.aiMessage]}>
+              <ActivityIndicator size="small" color="#ec4899" />
+              <Text style={styles.aiMessageText}>Huxley is typing...</Text>
+            </View>
           </View>
         )}
       </ScrollView>
@@ -159,7 +191,7 @@ const ConversationalTriggersGlimmers = ({ onComplete }) => {
         <Text style={styles.doneButtonText}>Save My Mapping</Text>
       </TouchableOpacity>
 
-      <View style={styles.inputContainer}>
+      <View style={[styles.inputContainer, { paddingBottom: Math.max(insets.bottom, 12) + 12 }]}>
         <TextInput
           style={styles.input}
           value={inputText}
@@ -197,9 +229,11 @@ const styles = StyleSheet.create({
   headerSubtitle: { fontSize: 14, color: '#6b7280', marginLeft: 36 },
   messagesContainer: { flex: 1 },
   messagesContent: { padding: 16, paddingBottom: 80 },
-  messageBubble: { maxWidth: '80%', padding: 12, borderRadius: 16, marginBottom: 12 },
+  aiMessageRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 12 },
+  huxleyAvatar: { width: 36, height: 36, marginRight: 8, marginTop: 4 },
+  messageBubble: { maxWidth: '75%', padding: 12, borderRadius: 16, marginBottom: 12 },
   userMessage: { alignSelf: 'flex-end', backgroundColor: '#ec4899', borderBottomRightRadius: 4 },
-  aiMessage: { alignSelf: 'flex-start', backgroundColor: '#fff', borderBottomLeftRadius: 4, borderWidth: 1, borderColor: '#e5e7eb' },
+  aiMessage: { alignSelf: 'flex-start', backgroundColor: '#fff', borderBottomLeftRadius: 4, borderWidth: 1, borderColor: '#e5e7eb', flex: 1, marginBottom: 0 },
   messageText: { fontSize: 16, lineHeight: 22, marginBottom: 4 },
   userMessageText: { color: '#fff' },
   aiMessageText: { color: '#1f2937' },

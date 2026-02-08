@@ -12,6 +12,7 @@ import {
   Alert,
   Image
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
 import nervousSystemMappingAIService from '../lib/nervousSystemMappingAIService';
@@ -32,6 +33,7 @@ const ConversationalNervousSystemMapping = ({ onComplete }) => {
   });
   const [saving, setSaving] = useState(false);
   const scrollViewRef = useRef(null);
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     initializeMapping();
@@ -264,18 +266,32 @@ Take your time with this. When you're done, the app will show you a digital vers
   };
 
   const renderMessage = (message) => {
+    if (message.isAI) {
+      return (
+        <View key={message.id} style={styles.aiMessageRow}>
+          <Image
+            source={require('../assets/images/huxley therapist.png')}
+            style={styles.huxleyAvatar}
+            resizeMode="contain"
+          />
+          <View style={[styles.messageBubble, styles.aiMessage]}>
+            <Text style={[styles.messageText, styles.aiMessageText]}>
+              {message.text}
+            </Text>
+            <Text style={styles.timestamp}>
+              {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </Text>
+          </View>
+        </View>
+      );
+    }
+
     return (
       <View
         key={message.id}
-        style={[
-          styles.messageBubble,
-          message.isAI ? styles.aiMessage : styles.userMessage
-        ]}
+        style={[styles.messageBubble, styles.userMessage]}
       >
-        <Text style={[
-          styles.messageText,
-          message.isAI ? styles.aiMessageText : styles.userMessageText
-        ]}>
+        <Text style={[styles.messageText, styles.userMessageText]}>
           {message.text}
         </Text>
         <Text style={styles.timestamp}>
@@ -332,8 +348,8 @@ Take your time with this. When you're done, the app will show you a digital vers
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={100}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
       {/* Header */}
       <View style={styles.header}>
@@ -360,9 +376,16 @@ Take your time with this. When you're done, the app will show you a digital vers
         {messages.map(renderMessage)}
 
         {loading && (
-          <View style={[styles.messageBubble, styles.aiMessage]}>
-            <ActivityIndicator size="small" color="#8b5cf6" />
-            <Text style={styles.aiMessageText}>Huxley is typing...</Text>
+          <View style={styles.aiMessageRow}>
+            <Image
+              source={require('../assets/images/huxley therapist.png')}
+              style={styles.huxleyAvatar}
+              resizeMode="contain"
+            />
+            <View style={[styles.messageBubble, styles.aiMessage]}>
+              <ActivityIndicator size="small" color="#8b5cf6" />
+              <Text style={styles.aiMessageText}>Huxley is typing...</Text>
+            </View>
           </View>
         )}
       </ScrollView>
@@ -371,7 +394,7 @@ Take your time with this. When you're done, the app will show you a digital vers
       {renderStateButtons()}
 
       {/* Input Area */}
-      <View style={styles.inputContainer}>
+      <View style={[styles.inputContainer, { paddingBottom: Math.max(insets.bottom, 12) + 12 }]}>
         <TextInput
           style={styles.input}
           value={inputText}
@@ -441,6 +464,17 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 100
   },
+  aiMessageRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 12
+  },
+  huxleyAvatar: {
+    width: 40,
+    height: 40,
+    marginRight: 8,
+    marginTop: 4
+  },
   messageBubble: {
     maxWidth: '80%',
     padding: 12,
@@ -457,7 +491,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderBottomLeftRadius: 4,
     borderWidth: 1,
-    borderColor: '#e5e7eb'
+    borderColor: '#e5e7eb',
+    marginBottom: 0,
+    flex: 1
   },
   messageText: {
     fontSize: 16,
@@ -552,7 +588,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     fontSize: 16,
     color: '#1f2937',
-    maxHeight: 120,
+    maxHeight: 80,
     marginRight: 12
   },
   sendButton: {

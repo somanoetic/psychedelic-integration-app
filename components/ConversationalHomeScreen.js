@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -213,9 +214,11 @@ const ConversationalHomeScreen = ({ navigation, user }) => {
                 ]}
               >
                 {message.isAI && (
-                  <View style={[styles.avatarSmall, { backgroundColor: `${avatar.color}20` }]}>
-                    <MaterialIcons name={avatar.icon} size={20} color={avatar.color} />
-                  </View>
+                  <Image
+                    source={require('../assets/images/huxley therapist.png')}
+                    style={styles.huxleyAvatar}
+                    resizeMode="contain"
+                  />
                 )}
                 <View
                   style={[
@@ -232,11 +235,14 @@ const ConversationalHomeScreen = ({ navigation, user }) => {
 
             {isSending && (
               <View style={[styles.messageBubbleContainer, styles.aiMessageContainer]}>
-                <View style={[styles.avatarSmall, { backgroundColor: `${avatar.color}20` }]}>
-                  <MaterialIcons name={avatar.icon} size={20} color={avatar.color} />
-                </View>
+                <Image
+                  source={require('../assets/images/huxley therapist.png')}
+                  style={styles.huxleyAvatar}
+                  resizeMode="contain"
+                />
                 <View style={[styles.messageBubble, styles.aiMessage]}>
-                  <ActivityIndicator size="small" color={avatar.color} />
+                  <ActivityIndicator size="small" color="#8b5cf6" />
+                  <Text style={styles.typingText}>Huxley is typing...</Text>
                 </View>
               </View>
             )}
@@ -350,13 +356,16 @@ const styles = StyleSheet.create({
     maxWidth: '80%',
     flexDirection: 'row-reverse',
   },
-  avatarSmall: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
+  huxleyAvatar: {
+    width: 40,
+    height: 40,
     marginRight: 8,
+  },
+  typingText: {
+    fontSize: 14,
+    color: '#6b7280',
+    fontStyle: 'italic',
+    marginTop: 4,
   },
   messageBubble: {
     borderRadius: 20,

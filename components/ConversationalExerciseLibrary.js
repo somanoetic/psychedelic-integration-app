@@ -7,6 +7,7 @@ import {
   ScrollView,
   Animated,
   TextInput,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -99,10 +100,12 @@ const ConversationalExerciseLibrary = ({ navigation }) => {
   const renderHuxleyMessage = (message) => (
     <View style={styles.huxleyBubble}>
       <View style={styles.huxleyHeader}>
-        <View style={[styles.huxleyAvatarSmall, { backgroundColor: `${avatar.color}20` }]}>
-          <MaterialIcons name={avatar.icon} size={24} color={avatar.color} />
-        </View>
-        <Text style={styles.huxleyName}>{avatar.name}</Text>
+        <Image
+          source={require('../assets/images/huxley therapist.png')}
+          style={styles.huxleyAvatar}
+          resizeMode="contain"
+        />
+        <Text style={styles.huxleyName}>Huxley</Text>
       </View>
       <Text style={styles.huxleyText}>{message}</Text>
     </View>
@@ -334,12 +337,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 12,
   },
-  huxleyAvatarSmall: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
+  huxleyAvatar: {
+    width: 40,
+    height: 40,
     marginRight: 10,
   },
   huxleyName: {
