@@ -106,17 +106,32 @@ Key points about implementing this decision.
 - Decision: Split large docs into 300-line files
 - [View ADR →](2026-02-07-modular-context-system.md)
 
+**ADR-002: React Native + Expo for Mobile Development** (2026-02-08)
+- Status: Accepted (Retrospective)
+- Decision: Use React Native 0.81.5 + Expo ~54.0.25
+- [View ADR →](2026-02-08-react-native-expo-stack.md)
+
+**ADR-003: Supabase for Backend Infrastructure** (2026-02-08)
+- Status: Accepted (Retrospective)
+- Decision: Use Supabase (PostgreSQL, Auth, RLS)
+- [View ADR →](2026-02-08-supabase-backend.md)
+
+**ADR-004: Claude API for AI Features** (2026-02-08)
+- Status: Accepted (Retrospective)
+- Decision: Use Anthropic Claude API (Sonnet model)
+- [View ADR →](2026-02-08-claude-api-ai-integration.md)
+
 ### Planned ADRs
 
-**ADR-002: Distribution Strategy (VM vs EAS)**
+**ADR-005: Distribution Strategy (VM vs EAS)**
 - Status: Proposed
 - To be decided: Week of Feb 7-14
 - Options: Fix VM networking vs. Move to Expo EAS
 
-**ADR-003: AI Integration Approach**
+**ADR-006: Testing Strategy**
 - Status: Future
 - To be decided: During Next Phase
-- Options: Simple prompts vs. Complex conversational
+- Options: Jest + Detox vs. alternatives
 
 ---
 
@@ -176,15 +191,19 @@ Key points about implementing this decision.
 
 ### By Category
 
-**Infrastructure:**
+**Infrastructure & DevOps:**
 - ADR-001: Modular Context System (Accepted)
-- ADR-002: Distribution Strategy (Proposed)
+- ADR-005: Distribution Strategy (Proposed)
+
+**Mobile Development:**
+- ADR-002: React Native + Expo Stack (Accepted)
+
+**Backend & Database:**
+- ADR-003: Supabase Backend (Accepted)
 
 **AI/ML:**
-- ADR-003: AI Integration Approach (Future)
-
-**Database:**
-- TBD
+- ADR-004: Claude API Integration (Accepted)
+- ADR-006: Testing Strategy (Future)
 
 **UI/UX:**
 - TBD

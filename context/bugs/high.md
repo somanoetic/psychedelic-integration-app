@@ -96,7 +96,8 @@ On some Android devices, navigation buttons may overlap with app content, especi
 **Priority:** P1 - High (DevOps)
 **Status:** In Progress
 **Reported:** 2026-02-07 (migrated)
-**Assigned:** Current sprint
+**Started:** 2026-02-08
+**Assigned:** Active - Git cleanup
 
 **Description:**
 Many untracked files, large binary files in repo, security files exposed.

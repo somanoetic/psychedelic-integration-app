@@ -105,9 +105,10 @@ GROUP BY tablename, rowsecurity;
 
 ### BUG-003: VM Server Not Accessible Externally
 **Priority:** P0 - Critical (Infrastructure)
-**Status:** Open
+**Status:** ✅ RESOLVED
 **Reported:** 2026-02-07 (migrated from old docs)
-**Assigned:** Unassigned
+**Resolved:** 2026-02-08
+**Assigned:** Completed
 
 **Description:**
 Development server running on Oracle Cloud VM (129.80.86.121) not accessible from external networks, preventing app sharing with testers.
@@ -155,15 +156,14 @@ Development server running on Oracle Cloud VM (129.80.86.121) not accessible fro
 3. Free tier available
 4. Good for testing
 
-**Next Steps:**
-1. Try simple HTTP server on VM to isolate issue
-2. If VM network complex, move to EAS immediately
-3. Document chosen solution
+**Resolution:**
+- ✅ Decided to use Expo free tier for development
+- ✅ Unblocks tester access
+- ✅ Simpler than debugging Oracle Cloud networking
+- ✅ Can scale to paid EAS if needed later
 
-**Notes:**
-- Blocking tester access currently
-- Local Windows dev server works fine as temp solution
-- May be Oracle Cloud-specific networking
+**Outcome:**
+Using Expo free tier allows app sharing without VM networking complexity. Team can now test externally.
 
 ---
 
@@ -228,7 +228,8 @@ If you discover a P0 bug:
 
 ---
 
-**Current Count:** 1 active, 4 resolved (3 today!)
+**Current Count:** 0 active, 5 resolved (4 today!)
 **File Status:** Under limit (300 lines)
-**🎉 MAJOR WIN:** All critical security issues resolved!
+**🎉 MAJOR WIN:** All critical bugs resolved!
 **✅ SECURITY STATUS:** All databases protected with RLS
+**✅ INFRASTRUCTURE:** Expo free tier unblocks testing
