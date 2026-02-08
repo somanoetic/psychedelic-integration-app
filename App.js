@@ -19,6 +19,8 @@ import EnhancedConversationScreen from './screens/EnhancedConversationScreen';
 import EducationScreen from './screens/EducationScreen';
 import OrganizedHomeScreen from './screens/OrganizedHomeScreen';
 import ConversationalHomeScreen from './components/ConversationalHomeScreen';
+import GridHomeScreen from './components/GridHomeScreen';
+import HuxleyChatScreen from './components/HuxleyChatScreen';
 import AllSessionsScreen from './screens/AllSessionsScreen';
 import ExperienceMappingScreen from './screens/ExperienceMappingScreen';
 import TherapeuticIntegrationScreen from './screens/TherapeuticIntegrationScreen';
@@ -45,6 +47,10 @@ import ConversationalRegulatingResources from './components/ConversationalRegula
 import CoreBeliefsAssessment from './components/CoreBeliefsAssessment';
 import IFSPartsWorkChatWithContext from './enhanced-components/IFSPartsWorkChatWithContext';
 import GlimmerSwiper from './components/GlimmerSwiper';
+import TriggerTracker from './components/TriggerTracker';
+import GlimmerTracker from './components/GlimmerTracker';
+import CurriculumTracker from './components/CurriculumTracker';
+import HabitTracker from './components/HabitTracker';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -61,12 +67,14 @@ const MainTabs = () => {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
-          if (route.name === 'Sessions') {
-            iconName = 'chat';
-          } else if (route.name === 'Education') {
+          if (route.name === 'Home') {
+            iconName = 'home';
+          } else if (route.name === 'Journal') {
+            iconName = 'edit';
+          } else if (route.name === 'Learn') {
             iconName = 'school';
-          } else if (route.name === 'AllSessions') {
-            iconName = 'list';
+          } else if (route.name === 'History') {
+            iconName = 'history';
           }
 
           return <MaterialIcons name={iconName} size={size} color={color} />;
@@ -90,19 +98,24 @@ const MainTabs = () => {
       })}
     >
       <Tab.Screen
-        name="Sessions"
-        component={ConversationalHomeScreen}
+        name="Home"
+        component={GridHomeScreen}
         options={{ title: 'Home' }}
       />
       <Tab.Screen
-        name="Education"
+        name="Journal"
+        component={DailyJournal}
+        options={{ title: 'Journal' }}
+      />
+      <Tab.Screen
+        name="Learn"
         component={EducationScreen}
         options={{ title: 'Learn' }}
       />
       <Tab.Screen
-        name="AllSessions"
+        name="History"
         component={ConversationalAllSessions}
-        options={{ title: 'Sessions' }}
+        options={{ title: 'History' }}
       />
     </Tab.Navigator>
   );
@@ -256,6 +269,7 @@ export default function App() {
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             {(session && session.user) || bypassAuth ? (
             <>
+              <Stack.Screen name="HuxleyChat" component={HuxleyChatScreen} />
               <Stack.Screen name="MainTabs" component={MainTabs} />
               {/* Dual Mode Conversation Screens */}
               <Stack.Screen 
@@ -417,6 +431,38 @@ export default function App() {
                 options={{
                   headerShown: false,
                   title: 'Glimmer Swiper'
+                }}
+              />
+              <Stack.Screen
+                name="TriggerTracker"
+                component={TriggerTracker}
+                options={{
+                  headerShown: false,
+                  title: 'Log a Trigger'
+                }}
+              />
+              <Stack.Screen
+                name="GlimmerTracker"
+                component={GlimmerTracker}
+                options={{
+                  headerShown: false,
+                  title: 'Capture a Glimmer'
+                }}
+              />
+              <Stack.Screen
+                name="CurriculumTracker"
+                component={CurriculumTracker}
+                options={{
+                  headerShown: false,
+                  title: 'Your Progress'
+                }}
+              />
+              <Stack.Screen
+                name="HabitTracker"
+                component={HabitTracker}
+                options={{
+                  headerShown: false,
+                  title: 'Habit Tracker'
                 }}
               />
             </>
