@@ -39,3 +39,15 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+
+# Large files - PDFs stored externally
+knowledge-base/
+
+# Backup files
+*.backup
+*.bak
+
+# Temporary files
+nul
+temp/
+tmp/

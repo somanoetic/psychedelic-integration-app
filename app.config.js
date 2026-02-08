@@ -1,8 +1,8 @@
-{
+export default {
   "expo": {
     "name": "Psycheteleos",
     "slug": "psychedelic-integration-app",
-    "version": "1.2.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -15,7 +15,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.psycheteleosapp",
-      "buildNumber": "5",
+      "buildNumber": "4",
       "runtimeVersion": {
         "policy": "appVersion"
       },
@@ -29,7 +29,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#F5F1E8"
       },
-      "runtimeVersion": "1.2.0",
+      "runtimeVersion": "1.1.0",
       "softwareKeyboardLayoutMode": "resize"
     },
     "web": {
@@ -53,4 +53,4 @@
       "expo-font"
     ]
   }
-}
+};
