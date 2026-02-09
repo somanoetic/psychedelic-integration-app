@@ -40,8 +40,9 @@ yarn-error.*
 
 app-example
 
-# Large files - PDFs stored externally
+# Large files - PDFs and media stored externally
 knowledge-base/
+IFS-resources/
 
 # Backup files
 *.backup
