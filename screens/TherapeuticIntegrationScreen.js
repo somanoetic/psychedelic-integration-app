@@ -14,7 +14,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 import { supabase } from '../lib/supabase';
-import TherapeuticIntegrationService from '../enhanced-components/therapeuticIntegrationService';
+import TherapeuticIntegrationService from '../lib/therapeuticIntegrationService';
 import EmbeddedPracticeWidget from '../enhanced-components/EmbeddedPracticeWidget';
 
 const TherapeuticIntegrationScreen = ({ navigation, route }) => {

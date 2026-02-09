@@ -14,7 +14,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 import { supabase } from '../lib/supabase';
-import ExperienceMappingService from '../enhanced-components/experienceMappingService';
+import ExperienceMappingService from '../lib/experienceMappingService';
 
 const ExperienceMappingScreen = ({ navigation, route }) => {
   console.log('ExperienceMappingScreen route params:', route.params);

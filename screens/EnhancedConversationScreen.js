@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../lib/supabase';
-import IntegrationGuideService from '../enhanced-components/enhancedClaudeService';
+import IntegrationGuideService from '../lib/enhancedClaudeService';
 import EmbeddedPracticeWidget from '../enhanced-components/EmbeddedPracticeWidget';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 
