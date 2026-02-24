@@ -1,8 +1,8 @@
 # Project Status
 
-**Last Updated:** 2026-02-09 (Afternoon)
+**Last Updated:** 2026-02-24
 **Version:** 1.1.0 (Build 4)
-**Phase:** AI System Improvements Phase 1
+**Phase:** AI System Improvements Phase 1 — Complete
 
 ---
 
@@ -21,14 +21,55 @@
 - **NEW:** Complete AI architecture documentation (FEAT-202)
 
 ### What's In Progress 🚧
-- None currently
+- Phase 2: RAG Integration planning (next up)
+- Nervous System Check-in feature (database schema ready)
 
 ### What's Blocked 🚫
 - None currently
 
+### Recently Completed ✅ (Phase 1)
+- FEAT-201: Code Organization Cleanup
+- FEAT-202: AI Architecture Documentation
+- FEAT-203: AI Monitoring & Observability (Sentry + MetricsService)
+- FEAT-204: AI Testing Infrastructure (477 tests passing, 81 skipped component tests)
+- Test infrastructure overhaul: jest config, mocks, ESM→CJS, service alignment
+- BUG-105 through BUG-109: All SetIntentionScreen UX bugs resolved
+
 ---
 
 ## Recent Accomplishments (Last 30 Days)
+
+**Test Infrastructure Overhaul (2026-02-24):**
+- ✅ Fixed jest.config.js: removed broken jest-expo preset, added babel-jest transform
+- ✅ Fixed jest.setup.js: manual AsyncStorage/React Native/Supabase mocks
+- ✅ Converted all test files from ESM to CommonJS
+- ✅ Rewrote 6 test suites to align with actual service implementations:
+  - `intentionGuidanceAIService` — 67 tests (was 33 failures, now 0)
+  - `feat-102-flow` — 16 tests (was 7 failures, now 0)
+  - `metricsService` — 41 tests (was 18 failures, now 0)
+  - `metricsIntegration` — 26 tests (was 17 failures, now 0)
+  - `monitoringFlow` — 15 tests (was 5 failures, now 0)
+  - `intentionGuidanceService` — 12 tests (was 5 failures, now 0)
+- ✅ Fixed cross-suite mock interference (masterContextService, conversationalRouting)
+- ✅ All 477 tests passing across 13 suites, 81 component tests properly skipped
+- 🎯 **Impact:** Test suite went from 37 passing → 477 passing. Solid CI foundation.
+
+**BUG-105 through BUG-109 Confirmed Resolved (2026-02-24):**
+- ✅ BUG-105: Session creation navigates to new session
+- ✅ BUG-106: KeyboardAvoidingView on SetIntentionScreen
+- ✅ BUG-107: Huxley avatar + theme in IntentionMessageBubble
+- ✅ BUG-108: Auto-scroll on new messages, keyboard, content change
+- ✅ BUG-109: AsyncStorage draft persistence + back nav alert
+
+**Phase 1 Complete — FEAT-203 & FEAT-204 (2026-02-24):**
+- ✅ FEAT-203: Installed `@sentry/react-native ~7.2.0` — error tracking now active
+- ✅ FEAT-204: Created 205 unit tests across 4 critical AI services
+  - `huxleyKnowledgeBase.js` — 53 tests, 100% coverage
+  - `conversationalRoutingService.js` — 48 tests, 99% coverage
+  - `masterContextService.js` — 43 tests
+  - `enhancedClaudeService.js` — 30+ tests, 88% coverage
+- ✅ Created shared test fixtures (`__tests__/helpers/aiTestFixtures.js`)
+- 🎯 **Impact:** All 4 Phase 1 features complete. Foundation solid for Phase 2.
 
 **FEAT-202: AI Architecture Documentation Complete (2026-02-09 Afternoon):**
 - ✅ Created comprehensive AI architecture documentation (~1,550 lines total)
@@ -125,7 +166,7 @@
 - Many untracked/unstaged files in git
 - Large documentation files (now being addressed)
 - Some screens still need styling updates
-- Testing infrastructure not yet set up
+- ~~Testing infrastructure not yet set up~~ ✅ Done (FEAT-204)
 
 ---
 
@@ -180,7 +221,7 @@
 |-----------|--------|-------|
 | Build Status | 🟢 Green | Builds successfully |
 | Critical Bugs | 🟡 Yellow | 1 active (BUG-003 VM connectivity) |
-| Test Coverage | 🔴 Red | No automated tests |
+| Test Coverage | 🟢 Green | 477 tests passing, 13 suites, 81 skipped (component) |
 | Documentation | 🟢 Green | Context system operational |
 | Performance | 🟢 Green | Acceptable, needs measurement |
 | Security | 🟢 Green | All 30 tables protected with RLS, keys rotated |
@@ -196,4 +237,4 @@
 
 ---
 
-**Next Status Update:** 2026-02-14
+**Next Status Update:** 2026-03-03

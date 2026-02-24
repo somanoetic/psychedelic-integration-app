@@ -168,6 +168,56 @@ PM2 process manager showing 438+ restarts for expo server, indicating instabilit
 
 ---
 
+### BUG-105: Session Creation Doesn't Navigate Into Session
+**Priority:** P1 - High (Navigation/UX)
+**Status:** ✅ RESOLVED
+**Reported:** 2026-02-17
+**Resolved:** 2026-02-24
+
+**Resolution:** `AllSessionsScreen.createNewSession()` navigates directly to the new session after creation.
+
+---
+
+### BUG-106: Keyboard Covers Text Input in SetIntentionScreen
+**Priority:** P1 - High (Usability)
+**Status:** ✅ RESOLVED
+**Reported:** 2026-02-17
+**Resolved:** 2026-02-24
+
+**Resolution:** `KeyboardAvoidingView` with proper `keyboardVerticalOffset` implemented in SetIntentionScreen. Also resolves BUG-102 for this screen.
+
+---
+
+### BUG-107: SetIntentionScreen Needs Huxley Theme + Avatar
+**Priority:** P1 - High (Design/Branding)
+**Status:** ✅ RESOLVED
+**Reported:** 2026-02-17
+**Resolved:** 2026-02-24
+
+**Resolution:** Huxley avatar displayed in `IntentionMessageBubble` for AI messages. Noesis/Huxley theme applied throughout.
+
+---
+
+### BUG-108: Chat Doesn't Auto-Scroll When Huxley Responds
+**Priority:** P1 - High (UX)
+**Status:** ✅ RESOLVED
+**Reported:** 2026-02-17
+**Resolved:** 2026-02-24
+
+**Resolution:** `IntentionConversation` implements auto-scroll on new messages, keyboard show, content size change, and input focus.
+
+---
+
+### BUG-109: Conversation Lost on Back Navigation (No Auto-Save)
+**Priority:** P1 - High (Data Loss)
+**Status:** ✅ RESOLVED
+**Reported:** 2026-02-17
+**Resolved:** 2026-02-24
+
+**Resolution:** Draft persistence via AsyncStorage (`intention_draft_${userId}_${sessionId}`), back navigation "Save Draft?" alert, and persisted state across navigation.
+
+---
+
 ## Recently Resolved
 
 ### BUG-100: EAS Build Validation Errors
@@ -198,5 +248,5 @@ Review these during next bug triage session.
 
 ---
 
-**Current Count:** 4 active, 1 resolved
+**Current Count:** 2 active (BUG-101, BUG-104), 7 resolved
 **File Status:** Under limit (110 lines / 300 max)
