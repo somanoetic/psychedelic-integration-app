@@ -1,7 +1,7 @@
 # High Priority Bugs (P1)
 
 **File Size Limit:** 300 lines
-**Last Updated:** 2026-02-07
+**Last Updated:** 2026-02-24
 
 ---
 
@@ -248,5 +248,5 @@ Review these during next bug triage session.
 
 ---
 
-**Current Count:** 2 active (BUG-101, BUG-104), 7 resolved
-**File Status:** Under limit (110 lines / 300 max)
+**Current Count:** 3 active (BUG-101, BUG-102, BUG-104), 7 resolved
+**File Status:** Under limit (300 max)

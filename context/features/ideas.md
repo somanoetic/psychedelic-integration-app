@@ -7,6 +7,79 @@
 
 ## High Impact Ideas
 
+### FEAT-314: Expand Nervous System Modalities (Somatic Experiencing + ANS)
+**Priority:** Medium
+**Status:** Idea - Future Enhancement
+**Estimated Effort:** 2-3 weeks
+**Target:** Q3 2026
+
+**Concept:**
+Expand beyond Polyvagal Theory to include other evidence-based ANS approaches, particularly Somatic Experiencing (SE) and complementary nervous system frameworks.
+
+**Additional Modalities to Integrate:**
+- **Somatic Experiencing (Peter Levine)**: Trauma resolution through body awareness
+  - Pendulation (moving between activation and regulation)
+  - Titration (working with small doses of activation)
+  - Completion of survival responses
+  - Resource building and resilience
+
+- **Neuroception**: Extend polyvagal understanding
+  - Safety/danger/life-threat detection
+  - Co-regulation and social engagement
+
+- **Window of Tolerance (Dan Siegel)**:
+  - Hyperarousal zone (above window)
+  - Hypoarousal zone (below window)
+  - Optimal arousal zone (within window)
+  - Visual tracking over time
+
+- **Embodiment Practices**:
+  - Grounding techniques (5-4-3-2-1, etc.)
+  - Orienting exercises
+  - Boundary work
+  - Resourcing practices
+
+**Implementation Ideas:**
+- Extend existing `polyvagalAIService` to include SE concepts
+- Add "Window of Tolerance" visualization alongside polyvagal ladder
+- Integrate pendulation exercises into nervous system check-ins
+- Create SE-informed body scan practices
+- Track completion of activation cycles
+- Add somatic resources library
+
+**Why This Matters:**
+- Polyvagal + SE are highly complementary
+- SE adds practical completion practices for stuck activation
+- Window of Tolerance is more accessible language for some users
+- Deepens the nervous system regulation toolkit
+- Aligns with trauma-informed integration practices
+
+**Research Foundation:**
+- Peter Levine's "Waking the Tiger" and "In an Unspoken Voice"
+- Dan Siegel's "The Developing Mind"
+- Pat Ogden's Sensorimotor Psychotherapy
+- Strong evidence base for SE in trauma treatment
+
+**Dependencies:**
+- FEAT-104 (Polyvagal Ladder Visualization) should be complete first
+- Core nervous system mapping already exists
+- Would extend, not replace, existing polyvagal implementation
+
+**Next Steps:**
+1. Research SE framework integration points
+2. Consult with SE practitioners on accurate implementation
+3. Design window of tolerance visualization
+4. Create SE-informed practice library
+5. Test with users familiar with both approaches
+
+**Notes:**
+- Don't dilute polyvagal foundation - add complementary layers
+- Ensure clinical accuracy for SE concepts
+- Consider certification/training resources for users to deepen learning
+- Potential partnership with SE training organizations
+
+---
+
 ### FEAT-301: "Huxley" AI Guide Character
 **Priority:** Medium
 **Status:** Idea - Needs Exploration
@@ -257,6 +330,56 @@ Track biometrics during breathwork and meditation.
 - API access
 - Device partnerships
 - Complex integration
+
+---
+
+### FEAT-313: Cognitive Bias Modification (CBM) Integration
+**Priority:** Medium-High
+**Status:** Idea - Research Complete ✅
+**Estimated Effort:** 4-5 months (3 phases)
+**Target:** Q2 2026
+
+**Concept:**
+Evidence-based cognitive bias modification training to help users retrain automatic thought patterns during the neuroplastic window after psychedelic experiences.
+
+**Key Features:**
+- Interpretation bias modification (CBM-I) scenarios
+- Attention training (visual probe tasks)
+- AI-personalized scenarios from journal entries
+- Integration with nervous system mapping, core beliefs, IFS
+- Progress tracking and bias score analytics
+
+**Innovation:** 🌟
+- **First psychedelic + CBM protocol** (no published research exists)
+- AI-generated personalized scenarios (novel LLM application)
+- Multi-modal integration (CBM + polyvagal + IFS + journaling)
+
+**Evidence Base:**
+- Strong research for CBM in anxiety/depression (mobile apps validated)
+- Strong research for psychedelics + cognitive flexibility
+- Natural synergy: belief relaxation + cognitive retraining
+
+**Documentation:**
+- **Research:** [CBM-strategy.md](CBM-strategy.md) - Complete literature review & analysis
+- **Feature Spec:** [FEAT-313-cbm-integration.md](FEAT-313-cbm-integration.md) - Full implementation plan
+
+**3-Phase Roadmap:**
+1. **Phase 1 (2-3 months):** Core CBM-I + ABM, pre-built scenarios, progress tracking
+2. **Phase 2 (1-2 months):** AI personalization, Claude API integration
+3. **Phase 3 (1 month):** Adaptive training, research dashboard
+
+**Next Steps:**
+1. ✅ Research complete (comprehensive strategy doc created)
+2. Stakeholder review and prioritization decision
+3. Design mockups (Noesis aesthetic)
+4. Create pre-built scenario library (content work)
+5. Move to planned.md when committed to timeline
+
+**Why This Matters:**
+- Fills research gap in integration science
+- Provides daily self-guided therapeutic practice
+- Leverages neuroplasticity window for lasting change
+- Potential research partnership opportunity
 
 ---
 

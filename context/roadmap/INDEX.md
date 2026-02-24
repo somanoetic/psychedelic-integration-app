@@ -1,6 +1,6 @@
 # Roadmap Index
 
-**Last Updated:** 2026-02-07
+**Last Updated:** 2026-02-24
 
 ---
 
@@ -14,6 +14,7 @@ The roadmap is organized into three time horizons to keep planning focused and r
 |------|-----------|-------------|
 | [current-phase.md](current-phase.md) | Next 2-4 weeks | Active work and immediate next steps |
 | [next-phase.md](next-phase.md) | 4-8 weeks | Committed work for upcoming phase |
+| [phase-3-evidence-based-interventions.md](phase-3-evidence-based-interventions.md) | Q2 2026 | CBM + Evidence-Based Modalities |
 | [future.md](future.md) | 8+ weeks | Long-term vision and possibilities |
 
 ---
@@ -39,12 +40,12 @@ The roadmap is organized into three time horizons to keep planning focused and r
 
 ## Current Phase
 
-**Status:** Context System Setup & Bug Triage
-**Duration:** 2026-02-07 to 2026-02-21 (2 weeks)
+**Status:** UX Polish & Core Features
+**Duration:** 2026-02-24 to 2026-03-21 (4 weeks)
 **Goals:**
-1. Organize project tracking
-2. Fix critical bugs
-3. Define next phase priorities
+1. RAG integration (knowledge base → AI services)
+2. Nervous system check-in polish
+3. UX consistency & bug fixes
 
 [View Details →](current-phase.md)
 
@@ -52,14 +53,30 @@ The roadmap is organized into three time horizons to keep planning focused and r
 
 ## Next Phase (Preview)
 
-**Tentative Focus:** UX Polish & Core Features
-**Duration:** 2026-02-21 to 2026-03-21 (4 weeks)
+**Tentative Focus:** Outcome Measurement & Advanced Features
+**Duration:** 2026-03-21 to 2026-04-18 (4 weeks)
 **Themes:**
-1. Complete session preparation flow
-2. AI guidance features
-3. Visual design improvements
+1. Assessment integration (PHQ-9, GAD-7, PCL-5)
+2. Progress dashboard & visualizations
+3. Multi-model support & A/B testing
 
 [View Details →](next-phase.md)
+
+---
+
+## Phase 3 (High Priority)
+
+**Focus:** Evidence-Based Therapeutic Interventions
+**Duration:** 2026-04-01 to 2026-08-31 (5 months)
+**Themes:**
+1. **Cognitive Bias Modification** - Novel psychedelic + CBM integration
+2. Evidence-based journaling protocols
+3. Integration frameworks (EMBARK, timeline)
+4. Subliminal system enhancement
+
+**Status:** Planned (High Priority)
+
+[View Details →](phase-3-evidence-based-interventions.md)
 
 ---
 
@@ -100,33 +117,48 @@ The roadmap is organized into three time horizons to keep planning focused and r
 - ✅ Curriculum tracker
 - ✅ Multiple conversational components
 
+**Phase: Foundation & AI Improvements (Feb 7-24, 2026)**
+- ✅ Context management system
+- ✅ Security fixes (RLS, key rotation, git cleanup)
+- ✅ AI code organization (FEAT-201)
+- ✅ AI architecture documentation (FEAT-202)
+- ✅ AI monitoring & observability (FEAT-203)
+- ✅ Testing infrastructure — 477 tests (FEAT-204)
+- ✅ Session checklist (FEAT-101)
+- ✅ AI intention guidance (FEAT-102)
+- ✅ BUG-105 through BUG-109 resolved
+
 ---
 
 ## Milestones
 
+### Completed Milestones
+
+**Milestone 1: Context System Complete** ✅
+- Completed: 2026-02-08
+
+**Milestone 2: Critical Bugs Resolved** ✅
+- Completed: 2026-02-08 (all P0s resolved)
+
+**Milestone 3: Session Prep Flow Complete** ✅
+- Completed: 2026-02-24 (checklist + intention guidance)
+
+**Milestone 4: AI System Foundation** ✅
+- Completed: 2026-02-24 (docs, monitoring, 477 tests)
+
 ### Upcoming Milestones
 
-**Milestone 1: Context System Complete**
-- Target: 2026-02-07
-- Status: In Progress (90%)
-
-**Milestone 2: Critical Bugs Resolved**
-- Target: 2026-02-14
-- Status: Not Started
-
-**Milestone 3: Session Prep Flow Complete**
-- Target: 2026-02-28
+**Milestone 5: RAG Integration Live**
+- Target: 2026-03-09
 - Status: Planned
 
-### Future Milestones
-
-**Milestone 4: AI Guidance Live**
-- Target: 2026-03-15
+**Milestone 6: Nervous System Check-in Polished**
+- Target: 2026-03-16
 - Status: Planned
 
-**Milestone 5: Testing Infrastructure**
-- Target: 2026-04-15
-- Status: Future
+**Milestone 7: UX Audit Complete**
+- Target: 2026-03-21
+- Status: Planned
 
 ---
 
@@ -134,15 +166,17 @@ The roadmap is organized into three time horizons to keep planning focused and r
 
 **Phase Success Criteria:**
 
-**Current Phase:**
-- [ ] Context system in use
-- [ ] All P0 bugs resolved
-- [ ] Roadmap defined for next 8 weeks
+**Prior Phase (Foundation):**
+- [x] Context system in use
+- [x] All P0 bugs resolved
+- [x] Roadmap defined for next 8 weeks
+- [x] 477 tests passing
+- [x] AI architecture documented
 
-**Next Phase:**
-- [ ] Session prep flow complete
-- [ ] AI guidance working
-- [ ] Visual design improved
+**Current Phase (UX Polish & Core):**
+- [ ] RAG integration live
+- [ ] Nervous system check-in polished
+- [ ] Visual design audit complete
 
 **Overall (6 months):**
 - [ ] App working smoothly
@@ -190,6 +224,8 @@ The roadmap is organized into three time horizons to keep planning focused and r
 
 - [Current Phase (2 weeks)](current-phase.md)
 - [Next Phase (4-8 weeks)](next-phase.md)
+- [Phase 3: Evidence-Based Interventions](phase-3-evidence-based-interventions.md)
+- [Evidence-Based Feature Queue](evidence-based-feature-queue.md) - 📚 All researched opportunities
 - [Future Vision (8+ weeks)](future.md)
 - [Features Backlog](../features/INDEX.md)
 - [Bugs Tracker](../bugs/INDEX.md)

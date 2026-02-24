@@ -1,7 +1,7 @@
 # Medium & Low Priority Bugs (P2-P3)
 
 **File Size Limit:** 300 lines
-**Last Updated:** 2026-02-07
+**Last Updated:** 2026-02-24
 
 ---
 
@@ -56,28 +56,138 @@ tsconfig.json#include property updated during recent changes, need to verify all
 
 ### BUG-203: Lack of Automated Testing
 **Priority:** P2 - Medium (Technical Debt)
-**Status:** Open
+**Status:** ✅ RESOLVED
 **Reported:** 2026-02-07 (migrated)
+**Resolved:** 2026-02-24
 
 **Description:**
 No automated tests currently in project.
 
+**Resolution:**
+- ✅ Jest configured (jest.config.js, jest.setup.js)
+- ✅ 477 tests passing across 13 suites
+- ✅ 81 component tests properly skipped (need React Native renderer)
+- ✅ Shared test fixtures created
+- ✅ 80%+ coverage on 4 critical AI services
+- See FEAT-204 in `context/features/ai-system-improvements.md`
+
+---
+
+### BUG-204: Selectors Missing Visual Affordance (Session Type & Framework)
+**Priority:** P2 - Medium (UX Polish)
+**Status:** Open
+**Reported:** 2026-02-17
+**Screen:** SetIntentionScreen
+
+**Description:**
+The session type and framework selector fields show no visual indicator that they have multiple options (e.g. no chevron ▼ or arrow). Users may not realise they are tappable/expandable dropdowns.
+
+**Affected Fields:**
+- Session type selector
+- Framework selector
+
+**Proposed Fix:**
+Add a `▼` chevron icon (e.g. `MaterialIcons name="keyboard-arrow-down"`) to the right side of each selector field. Consider using `MaterialIcons name="expand-more"` consistently with the rest of the app.
+
+**Estimated Effort:** 1-2 hours
+
+---
+
+### BUG-205: 'Learn More About Privacy' Not Linked
+**Priority:** P2 - Medium (Pre-Production Required)
+**Status:** Open
+**Reported:** 2026-02-17
+**Screen:** SetIntentionScreen (privacy opt-in section)
+
+**Description:**
+The "Learn more about privacy" link in the intention saving section is not connected to any documentation. Tapping it does nothing (or renders a placeholder).
+
 **Impact:**
-- Difficult to catch regressions
-- Manual testing only
-- Slows development velocity over time
+- Users cannot understand the privacy model before opting in
+- Must be resolved before production release
+- Relates to BUG-304 (Missing Privacy Policy)
 
-**Proposed Solution:**
-1. Set up Jest for unit tests
-2. Set up Detox/Maestro for E2E tests
-3. Add test scripts to package.json
-4. Start with critical flows
-5. Build coverage incrementally
+**Proposed Fix:**
+Link to: (a) an in-app privacy screen, or (b) a web URL with the privacy policy. At minimum, show a modal explaining the opt-in storage model until a full privacy policy exists.
 
-**Estimated Effort:** 1 week initial setup, ongoing
+**Estimated Effort:** 2-4 hours (in-app modal) or 30 min (link to URL once policy exists)
 
-**Notes:**
-- See [FEAT-201](../features/planned.md) for testing strategy feature
+---
+
+### BUG-206: VirtualizedList Nested in ScrollView Warning
+**Priority:** P2 - Medium (Performance)
+**Status:** Open
+**Reported:** 2026-02-17
+**Screen:** SetIntentionScreen
+
+**Description:**
+Console warning: `VirtualizedLists should never be nested inside plain ScrollViews with the same orientation`. A FlatList or similar VirtualizedList component is rendered inside a ScrollView in SetIntentionScreen.
+
+**Impact:**
+- Can break windowing/recycling — performance degrades with long lists
+- Console noise
+- May cause scroll jank on lower-end devices
+
+**Proposed Fix:**
+Replace the outer `ScrollView` with `FlatList` (using `ListHeaderComponent` / `ListFooterComponent` for non-list content), or use `ScrollView` throughout without any VirtualizedList nested inside it.
+
+**Estimated Effort:** 2-4 hours
+
+---
+
+### BUG-208: Opening Statement Has No Variability
+**Priority:** P2 - Medium (Experience Quality)
+**Status:** Open
+**Reported:** 2026-02-17
+**Screen:** SetIntentionScreen
+
+**Description:**
+Huxley's opening welcome message is always the same. Users who open the screen multiple times will see identical first messages, making Huxley feel scripted and robotic.
+
+**Impact:**
+- Repeated use feels stale
+- Undermines the "warm, attuned guide" persona
+- The prompt already supports variability — the AI just needs different seed prompts
+
+**Proposed Fix:**
+In `buildIntentionPrompt()` (`lib/intentionGuidanceAIService.js`), when `stage === 'welcome'`, add a randomly selected variation hint to the prompt, e.g.:
+
+```js
+const welcomeVariants = [
+  "Start with a warm, grounding check-in.",
+  "Open by acknowledging the courage it takes to do this work.",
+  "Begin with a brief body-awareness invitation before asking about their session.",
+  "Start with genuine curiosity about what brought them here today.",
+];
+const variant = welcomeVariants[Math.floor(Math.random() * welcomeVariants.length)];
+// append variant to prompt
+```
+
+**Estimated Effort:** 1-2 hours
+
+---
+
+### BUG-207: Missing ai_metrics Table (PGRST205 Error)
+**Priority:** P2 - Medium (Observability)
+**Status:** Open
+**Reported:** 2026-02-17
+
+**Description:**
+Every AI call logs this error:
+```
+ERROR [Metrics] Error inserting metrics: {"code": "PGRST205", "message": "Could not find the table 'public.ai_metrics' in the schema cache"}
+```
+The `metricsService.logAIMetric()` call in `intentionGuidanceAIService.js` is trying to write to a `public.ai_metrics` table that doesn't exist in the database.
+
+**Impact:**
+- No AI usage metrics being tracked (cost, latency, token counts)
+- Error noise in logs on every AI call
+- Non-blocking — AI still works, metrics just don't persist
+
+**Proposed Fix:**
+Create the `ai_metrics` table via migration. Check `lib/metricsService.js` for the expected schema and create a matching Supabase migration.
+
+**Estimated Effort:** 2-3 hours (schema + migration + RLS)
 
 ---
 
@@ -241,5 +351,5 @@ Systematically updated to Noesis aesthetic. A few screens remain (see BUG-101).
 
 ---
 
-**Current Count:** 3 P2, 5 P3 (8 total)
-**File Status:** Under limit (200 lines / 300 max)
+**Current Count:** 5 P2 active, 5 P3 active (10 total), 2 resolved
+**File Status:** Under limit (300 max)

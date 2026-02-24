@@ -1,98 +1,88 @@
 # Features In Progress
 
 **File Size Limit:** 300 lines
-**Last Updated:** 2026-02-07
+**Last Updated:** 2026-02-24
 
 ---
 
 ## Active Development
 
-### FEAT-001: Context Management System
+### FEAT-205: Knowledge Base Processing
 **Priority:** High
-**Status:** ✅ Complete
-**Started:** 2026-02-07
-**Completed:** 2026-02-08
-**Assigned:** Documentation generation skill
+**Status:** Planned (starting this week)
+**Target:** Week of 2026-02-24
+**Assigned:** Unassigned
 
 **User Story:**
-As a developer, I want organized, modular documentation so that I can quickly find bugs, features, and roadmap information.
+As a developer, I want to convert the 1.5GB knowledge base (276 PDFs) into searchable embeddings so that AI services can reference real therapeutic protocols.
 
 **Requirements:**
-- [x] Create context/ directory structure
-- [x] Write comprehensive README
-- [x] Create STATUS.md file
-- [x] Build bug tracking system (critical, high, medium-low)
-- [x] Build feature tracking system (in-progress, planned, ideas)
-- [x] Build roadmap system (current, next, future)
-- [x] Build decisions log (ADRs)
-- [x] Document migration from old files
-
-**Technical Implementation:**
-- Markdown files in `context/` directory
-- Max 300 lines per file
-- Index files for navigation
-- Templates for consistency
-- Weekly update cadence
-
-**Progress:**
-- ✅ Directory structure created
-- ✅ README with templates complete
-- ✅ Bug tracking system complete
-- ✅ Feature tracking system complete
-- ✅ Roadmap files complete
-- ✅ Decision log complete with 4 ADRs
-- ✅ Migration documentation complete
-
-**Final Deliverables:**
-- Complete context/ directory structure
-- 4 ADRs documenting major architectural decisions:
-  - ADR-001: Modular Context System
-  - ADR-002: React Native + Expo
-  - ADR-003: Supabase Backend
-  - ADR-004: Claude API Integration
-- All INDEX files updated and organized
-- STATUS.md updated with completion
+- [ ] Convert PDFs to markdown with YAML frontmatter
+- [ ] Create protocol schema
+- [ ] Set up Supabase pgvector extension
+- [ ] Generate and store embeddings
+- [ ] Create similarity search functions
 
 **Dependencies:**
-- None
+- Supabase pgvector extension must be enabled
 
-**Estimated Effort:** 1 day
-**Actual Effort:** ~6 hours total
+**Estimated Effort:** 5 days
 
-**Outcome:**
-✅ **SUCCESS!** Context system fully operational and battle-tested. All project tracking now lives in organized, discoverable files under 300 lines each. ADRs provide historical context for major decisions.
-
-**Notes:**
-- Files staying well under 300 line limit
-- Easy to navigate with INDEX files
-- ADRs provide excellent historical context
-- Ready to archive old BUGS_AND_FEATURE_REQUESTS.md
+See `context/features/ai-system-improvements.md` for full spec.
 
 ---
 
-## Recently Completed
-
-### FEAT-000: GlimmerSwiper Game
-**Priority:** Medium
-**Status:** Complete
-**Completed:** 2026-02-XX
-**Assigned:** Previous sprint
+### FEAT-206: RAG System Integration
+**Priority:** High
+**Status:** Planned (following FEAT-205)
+**Target:** Week of 2026-03-02
+**Assigned:** Unassigned
 
 **User Story:**
-As a user, I want a fun, engaging way to track positive moments (glimmers) so that I build awareness of what brings me joy.
+As a user, I want AI responses grounded in real therapeutic research so that guidance is evidence-based.
 
-**Implementation:**
-- Swiper-style card game
-- Track glimmers in database
-- Visual, interactive UI
-- Fixed crash issues
+**Requirements:**
+- [ ] Create RAG service class
+- [ ] Integrate into 2-3 AI services (IFS, Polyvagal, Nervous System)
+- [ ] Test and optimize retrieval quality
+- [ ] Document RAG patterns and rollout plan
 
-**Outcome:**
-- ✅ Feature launched successfully
-- ✅ Users can log glimmers
-- ✅ Crash bug fixed (BUG-000)
+**Dependencies:**
+- FEAT-205 (knowledge base processing)
 
-**Commit:** Added Glimmer Swiper game
+**Estimated Effort:** 5 days
+
+---
+
+## Recently Completed (Last 30 Days)
+
+### FEAT-101: Session Day Checklist ✅
+**Completed:** 2026-02-24
+**Deliverables:** SessionChecklistScreen, sessionChecklistService, useSessionChecklist hook
+
+### FEAT-102: AI Intention Guidance ✅
+**Completed:** 2026-02-24
+**Deliverables:** SetIntentionScreen, intentionGuidanceAIService, intentionGuidanceService
+
+### FEAT-201: Code Organization Cleanup ✅
+**Completed:** 2026-02-09
+**Deliverables:** Services reorganized to lib/, duplicates removed
+
+### FEAT-202: AI Architecture Documentation ✅
+**Completed:** 2026-02-09
+**Deliverables:** AI_ARCHITECTURE.md, PROMPT_ENGINEERING.md (~1,550 lines)
+
+### FEAT-203: AI Monitoring & Observability ✅
+**Completed:** 2026-02-24
+**Deliverables:** MetricsService, AdminMetricsDashboard
+
+### FEAT-204: AI Testing Infrastructure ✅
+**Completed:** 2026-02-24
+**Deliverables:** 477 tests passing, jest config, shared fixtures
+
+### FEAT-001: Context Management System ✅
+**Completed:** 2026-02-08
+**Deliverables:** Full context/ directory with tracking system
 
 ---
 
@@ -118,17 +108,10 @@ As a user, I want a fun, engaging way to track positive moments (glimmers) so th
 
 ### When Complete
 - Mark complete with date
-- Document in changelog
 - Move to "Recently Completed" section
 - Archive after 30 days
 
-### If Blocked
-- Mark as blocked with reason
-- Identify what's needed to unblock
-- Escalate if blocker external
-- Consider deferring if long-term block
-
 ---
 
-**Current Count:** 1 active, 1 completed this month
-**File Status:** Under limit (100 lines / 300 max)
+**Current Count:** 2 planned to start, 7 completed this month
+**File Status:** Under limit (300 max)

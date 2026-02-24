@@ -30,7 +30,7 @@
 ### Recently Completed ✅ (Phase 1)
 - FEAT-201: Code Organization Cleanup
 - FEAT-202: AI Architecture Documentation
-- FEAT-203: AI Monitoring & Observability (Sentry + MetricsService)
+- FEAT-203: AI Monitoring & Observability (MetricsService + dashboard; Sentry removed due to version mismatch)
 - FEAT-204: AI Testing Infrastructure (477 tests passing, 81 skipped component tests)
 - Test infrastructure overhaul: jest config, mocks, ESM→CJS, service alignment
 - BUG-105 through BUG-109: All SetIntentionScreen UX bugs resolved
@@ -62,7 +62,8 @@
 - ✅ BUG-109: AsyncStorage draft persistence + back nav alert
 
 **Phase 1 Complete — FEAT-203 & FEAT-204 (2026-02-24):**
-- ✅ FEAT-203: Installed `@sentry/react-native ~7.2.0` — error tracking now active
+- ✅ FEAT-203: MetricsService + admin dashboard operational
+  - Sentry removed: `@sentry/react-native 7.x` had version mismatch with `@sentry/core 10.x` causing Metro bundling failure. Package uninstalled, import commented out in App.js. Re-add when compatible version available.
 - ✅ FEAT-204: Created 205 unit tests across 4 critical AI services
   - `huxleyKnowledgeBase.js` — 53 tests, 100% coverage
   - `conversationalRoutingService.js` — 48 tests, 99% coverage
@@ -163,41 +164,42 @@
 - Database Tables: 10+ active tables
 
 **Technical Debt:**
-- Many untracked/unstaged files in git
-- Large documentation files (now being addressed)
-- Some screens still need styling updates
-- ~~Testing infrastructure not yet set up~~ ✅ Done (FEAT-204)
+- Some screens still need Noesis styling updates (BUG-101)
+- Missing ai_metrics table (BUG-207)
+- No E2E tests yet (unit tests solid at 477)
+- Privacy policy / terms of service needed before production (BUG-304)
 
 ---
 
-## This Week's Focus
+## This Week's Focus (Feb 24 - Mar 2)
 
 ### Top 3 Priorities
-1. **Context System Setup** - Organize bugs, features, roadmap
-2. **Bug Triage** - Review and categorize from BUGS_AND_FEATURE_REQUESTS.md
-3. **Roadmap Clarity** - Define current phase goals
+1. **RAG Knowledge Base Processing** (FEAT-205) - Convert PDFs, set up pgvector
+2. **Create ai_metrics table** (BUG-207) - Unblock metrics persistence
+3. **UX Polish** - Fix BUG-204 (selector affordance), BUG-208 (opening variability)
 
 ### Goals for This Week
-- [ ] Complete context management system
-- [ ] Migrate critical bugs to new system
-- [ ] Define next 2-4 week roadmap
-- [ ] Update git repository (commit context files)
+- [ ] Start PDF-to-markdown conversion pipeline
+- [ ] Enable Supabase pgvector extension
+- [ ] Create ai_metrics database table
+- [ ] Fix 1-2 P2 UI bugs
 
 ---
 
 ## Next Phase Preview
 
-**Focus Areas (Next 4 Weeks):**
-1. Critical bug fixes
-2. UX consistency across all screens
-3. Testing infrastructure setup
-4. Performance optimization
+**Current Phase: UX Polish & Core Features (Feb 24 - Mar 21)**
+1. RAG integration (knowledge base → AI services)
+2. Nervous system check-in polish
+3. UX consistency audit & bug fixes
+4. Visual design improvements
 
 **Success Criteria:**
-- Zero critical bugs
-- All screens follow Noesis aesthetic
-- Basic test coverage in place
-- App performance baseline established
+- RAG retrieving relevant protocols
+- 2-3 AI services using RAG
+- Nervous system check-in polished
+- All screens audited for Noesis aesthetic
+- P2 bug count reduced by 50%+
 
 ---
 
@@ -219,8 +221,8 @@
 
 | Indicator | Status | Notes |
 |-----------|--------|-------|
-| Build Status | 🟢 Green | Builds successfully |
-| Critical Bugs | 🟡 Yellow | 1 active (BUG-003 VM connectivity) |
+| Build Status | 🟢 Green | Builds successfully (Sentry removed to fix bundling) |
+| Critical Bugs | 🟢 Green | All resolved (BUG-003 resolved via Expo free tier) |
 | Test Coverage | 🟢 Green | 477 tests passing, 13 suites, 81 skipped (component) |
 | Documentation | 🟢 Green | Context system operational |
 | Performance | 🟢 Green | Acceptable, needs measurement |

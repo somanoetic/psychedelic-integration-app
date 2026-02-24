@@ -1,6 +1,6 @@
 # Bug Tracker Index
 
-**Last Updated:** 2026-02-07
+**Last Updated:** 2026-02-24
 
 ---
 
@@ -12,11 +12,11 @@ Bugs are organized by priority across three files to keep each manageable.
 
 | File | Priority | Description | Count |
 |------|----------|-------------|-------|
-| [critical.md](critical.md) | P0 | Show-stoppers, crashes, security issues | 3 |
-| [high.md](high.md) | P1 | Major issues affecting key features | 4 |
-| [medium-low.md](medium-low.md) | P2-P3 | Minor issues, polish, edge cases | 6 |
+| [critical.md](critical.md) | P0 | Show-stoppers, crashes, security issues | 0 active (5 resolved) |
+| [high.md](high.md) | P1 | Major issues affecting key features | 3 active (7 resolved) |
+| [medium-low.md](medium-low.md) | P2-P3 | Minor issues, polish, edge cases | 10 active (2 resolved) |
 
-**Total Active Bugs:** 13
+**Total Active Bugs:** 13 (14 resolved)
 
 ---
 
@@ -53,30 +53,35 @@ Bugs are organized by priority across three files to keep each manageable.
 ## Quick Stats
 
 **By Status:**
-- Open: 10
-- In Progress: 2
-- Blocked: 1
-- Resolved (last 30 days): 3
+- Open: 13
+- In Progress: 0
+- Blocked: 0
+- Resolved (last 30 days): 14
 
 **By Category:**
-- Infrastructure: 3
-- UI/UX: 4
-- Security: 2
-- Performance: 2
-- Platform-specific: 2
+- Infrastructure: 1 open (BUG-104)
+- UI/UX: 5 open (BUG-101, BUG-204, BUG-206, BUG-208)
+- Security: 0 open (all resolved)
+- Performance: 2 open (BUG-301, BUG-302)
+- Platform-specific: 1 open (BUG-102)
+- Observability: 1 open (BUG-207)
+- Documentation/Legal: 3 open (BUG-303, BUG-304, BUG-305)
 
 ---
 
 ## Recent Activity
 
-**This Week:**
-- Fixed: GlimmerSwiper crash
-- Fixed: Config loading issues
-- New: Context system migration needed
+**Week of 2026-02-24:**
+- Resolved: BUG-105 (session creation navigation)
+- Resolved: BUG-106 (keyboard covers input)
+- Resolved: BUG-107 (Huxley theme/avatar)
+- Resolved: BUG-108 (auto-scroll on messages)
+- Resolved: BUG-109 (conversation draft persistence)
+- Resolved: BUG-203 (no automated testing — 477 tests now passing)
 
-**Last Week:**
-- Fixed: EAS Build validation errors
-- Fixed: Android version numbering
+**Week of 2026-02-08:**
+- Resolved: BUG-001, BUG-002, BUG-003, BUG-004 (all P0 security/infra)
+- Resolved: BUG-103 (git repository cleanup)
 
 ---
 

@@ -1,6 +1,6 @@
 # Feature Backlog Index
 
-**Last Updated:** 2026-02-07
+**Last Updated:** 2026-02-24
 
 ---
 
@@ -12,11 +12,12 @@ Features organized by status across three files to keep each manageable.
 
 | File | Status | Description | Count |
 |------|--------|-------------|-------|
-| [in-progress.md](in-progress.md) | Active Work | Currently being developed | 1 |
-| [planned.md](planned.md) | Committed | Scheduled for next 1-2 phases | 8 |
-| [ideas.md](ideas.md) | Backlog | Future considerations | 15+ |
+| [in-progress.md](in-progress.md) | Active Work | Currently being developed | 2 (+ 7 recently completed) |
+| [planned.md](planned.md) | Committed | Scheduled for next 1-2 phases | 5 remaining |
+| [ideas.md](ideas.md) | Backlog | Future considerations | 16+ |
+| [ai-system-improvements.md](ai-system-improvements.md) | AI Roadmap | 4-phase AI improvement plan | Phase 1 complete, Phase 2 next |
 
-**Total Features Tracked:** 24+
+**Total Features Tracked:** 25+
 
 ---
 
@@ -45,7 +46,7 @@ Features organized by status across three files to keep each manageable.
 ## Quick Stats
 
 **By Category:**
-- AI/ML Features: 6
+- AI/ML Features: 7
 - UI/UX Improvements: 7
 - Infrastructure: 4
 - Content: 4
@@ -53,6 +54,7 @@ Features organized by status across three files to keep each manageable.
 
 **By Priority:**
 - High: 8
+- Medium-High: 1
 - Medium: 10
 - Low: 6+
 
@@ -66,15 +68,13 @@ Features organized by status across three files to keep each manageable.
 
 ## Feature Movement
 
-### This Week
-- **Moved to In Progress:** Context Management System
-- **Moved to Planned:** Testing Infrastructure
-- **Completed:** GlimmerSwiper game
+### This Period (Feb 7-24)
+- **Completed:** FEAT-001 (Context System), FEAT-101 (Checklist), FEAT-102 (Intention Guidance)
+- **Completed:** FEAT-201-204 (AI System Improvements Phase 1)
+- **Starting:** FEAT-205 (Knowledge Base Processing), FEAT-206 (RAG Integration)
 
-### Last Month
-- Completed: 5 features
-- Moved to planned: 3 features
-- Added to ideas: 8 features
+### Previously
+- Completed: GlimmerSwiper game, Noesis rebrand, core app features
 
 ---
 

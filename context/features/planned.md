@@ -1,76 +1,30 @@
 # Planned Features
 
 **File Size Limit:** 300 lines
-**Last Updated:** 2026-02-07
+**Last Updated:** 2026-02-24
 
 ---
 
 ## High Priority - Next Phase (Weeks 1-4)
 
-### FEAT-101: Complete Session Day Checklist
+### FEAT-101: Complete Session Day Checklist ✅
 **Priority:** High
-**Status:** Planned
-**Target Phase:** Phase 1 (Week 2)
-**Estimated Effort:** 3-4 days
+**Status:** Complete
+**Completed:** 2026-02-24
 
-**User Story:**
-As a user preparing for a psychedelic session, I want a comprehensive checklist so that I don't forget important preparation steps.
-
-**Requirements:**
-- [ ] Design checklist UI
-- [ ] Physical preparation items (fasting, hydration, etc.)
-- [ ] Safety & support items (sitter, emergency contacts)
-- [ ] Mental/emotional preparation items
-- [ ] Practical logistics items
-- [ ] Customizable checklist per user
-- [ ] Track completion status
-- [ ] Save templates for different substances/settings
-
-**Technical Notes:**
-- Store checklist templates in database
-- User can customize default template
-- Progress tracking per session
-
-**Dependencies:**
-- Session preparation screen exists
-
-**Estimated Effort:** 3-4 days
+Implemented: SessionChecklistScreen, sessionChecklistService, useSessionChecklist hook.
+See `context/features/in-progress.md` for details.
 
 ---
 
-### FEAT-102: AI Guidance in Set Your Intention Screen
+### FEAT-102: AI Guidance in Set Your Intention Screen ✅
 **Priority:** High
-**Status:** Planned
-**Target Phase:** Phase 1 (Week 3-4)
-**Estimated Effort:** 4-5 days
+**Status:** Complete
+**Completed:** 2026-02-24
 
-**User Story:**
-As a user, I want AI-powered guidance to help me formulate meaningful intentions so that I approach my session with clarity.
-
-**Requirements:**
-- [ ] Intention setting UI design
-- [ ] Claude API integration for guidance
-- [ ] Prompt templates based on session type
-- [ ] Example intentions library
-- [ ] Philosophical/therapeutic frameworks
-- [ ] Privacy controls (optional storage)
-- [ ] Gentle guidance, not prescriptive
-
-**Example Prompts:**
-- "What are you hoping to learn about yourself?"
-- "What relationship or pattern are you exploring?"
-- "What question are you bringing to this experience?"
-
-**Technical Notes:**
-- Use Claude API for personalized prompts
-- Suggest intentions based on user's journal history (optional)
-- Don't store raw intentions unless user opts in
-
-**Dependencies:**
-- Claude API setup (exists)
-- Intention setting screen
-
-**Estimated Effort:** 4-5 days
+Implemented: SetIntentionScreen, intentionGuidanceAIService, intentionGuidanceService, IntentionConversation, IntentionMessageBubble.
+See `context/features/in-progress.md` for details.
+See ADR-007 for design decision (brevity over depth).
 
 ---
 
@@ -141,32 +95,14 @@ As a user, I want polyvagal state tracking integrated throughout the app so that
 
 ## Medium Priority - Next Phase (Weeks 5-8)
 
-### FEAT-201: Testing Infrastructure
+### FEAT-201 (planned): Testing Infrastructure ✅
 **Priority:** Medium
-**Status:** Planned
-**Target Phase:** Phase 4 (Week 15-16)
-**Estimated Effort:** 1 week
+**Status:** Complete (delivered as FEAT-204 in AI System Improvements)
+**Completed:** 2026-02-24
 
-**User Story:**
-As a developer, I want automated tests so that I can catch regressions and develop with confidence.
-
-**Requirements:**
-- [ ] Set up Jest for unit tests
-- [ ] Set up Detox/Maestro for E2E tests
-- [ ] Write tests for core functions
-- [ ] Test critical user flows
-- [ ] Add to CI/CD pipeline
-- [ ] Document testing procedures
-
-**Technical Notes:**
-- Start with critical flows first
-- Build coverage incrementally
-- Aim for 50%+ coverage eventually
-
-**Dependencies:**
-- None
-
-**Estimated Effort:** 1 week initial setup, ongoing
+477 tests passing across 13 suites. Jest configured with shared fixtures.
+See `context/features/ai-system-improvements.md` FEAT-204 for details.
+Note: E2E tests (Detox/Maestro) still future work.
 
 ---
 
@@ -288,5 +224,5 @@ See [ideas.md](ideas.md) for:
 
 ---
 
-**Current Count:** 8 features planned
-**File Status:** ✅ Under limit (< 300 lines)
+**Current Count:** 4 features still planned (FEAT-103, 104, 202, 203, 204), 3 completed
+**File Status:** Under limit (300 max)

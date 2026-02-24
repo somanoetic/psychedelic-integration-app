@@ -1,6 +1,6 @@
 # Architecture Decision Records (ADRs)
 
-**Last Updated:** 2026-02-07
+**Last Updated:** 2026-02-24
 
 ---
 
@@ -121,17 +121,21 @@ Key points about implementing this decision.
 - Decision: Use Anthropic Claude API (Sonnet model)
 - [View ADR →](2026-02-08-claude-api-ai-integration.md)
 
+**ADR-007: Intention as Goalpost — Brevity Over Depth** (2026-02-17)
+- Status: Accepted
+- Decision: Intention-setting should be 3 exchanges max, directional not prescriptive
+- [View ADR →](2026-02-17-intention-as-goalpost.md)
+
 ### Planned ADRs
 
 **ADR-005: Distribution Strategy (VM vs EAS)**
-- Status: Proposed
-- To be decided: Week of Feb 7-14
-- Options: Fix VM networking vs. Move to Expo EAS
+- Status: Informally resolved (using Expo free tier; see BUG-003)
+- Formal ADR still pending
 
 **ADR-006: Testing Strategy**
-- Status: Future
-- To be decided: During Next Phase
-- Options: Jest + Detox vs. alternatives
+- Status: Informally resolved (Jest + babel-jest; see FEAT-204)
+- 477 tests passing; E2E strategy (Detox/Maestro) still TBD
+- Formal ADR still pending
 
 ---
 
@@ -203,7 +207,10 @@ Key points about implementing this decision.
 
 **AI/ML:**
 - ADR-004: Claude API Integration (Accepted)
-- ADR-006: Testing Strategy (Future)
+- ADR-007: Intention as Goalpost (Accepted)
+
+**Testing:**
+- ADR-006: Testing Strategy (Informally resolved)
 
 **UI/UX:**
 - TBD

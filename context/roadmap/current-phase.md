@@ -1,166 +1,139 @@
-# Current Phase: Context System & Foundation
+# Current Phase: UX Polish & Core Features
 
-**Phase Duration:** 2026-02-07 to 2026-02-21 (2 weeks)
-**Status:** In Progress (Day 1)
-**Last Updated:** 2026-02-07
-
----
-
-## Phase Goals
-
-1. **Organize Project Tracking** - Create lightweight context management system
-2. **Fix Critical Bugs** - Address P0 security and infrastructure issues
-3. **Define Next Phase** - Clear roadmap for next 4-8 weeks
+**Phase Duration:** 2026-02-24 to 2026-03-21 (4 weeks)
+**Status:** In Progress
+**Last Updated:** 2026-02-24
 
 ---
 
-## This Week (Week 1: Feb 7-14)
+## Phase Overview
 
-### Top Priorities
+**Theme:** Complete core user flows, integrate RAG, and improve visual design
 
-**1. Complete Context System** ⏳ In Progress
-- [x] Create directory structure
-- [x] Write README with templates
-- [x] Build bug tracking (critical, high, medium-low)
-- [x] Build feature tracking (in-progress, planned, ideas)
-- [ ] Build roadmap tracking (current, next, future)
-- [ ] Create decision log template
-- [ ] Test system with team
-
-**2. Fix Security Issues** ✅ Complete (with follow-up)
-- [x] Add .env to .gitignore
-- [x] Remove SSH key from project
-- [x] Verify secrets in git history (FOUND - see incident report)
-- [x] Create .env.example template
-- [x] Document in SECURITY_INCIDENT_2026-02-07.md
-- [ ] 🚨 **FOLLOW-UP:** Rotate API keys within 24-48 hours
-
-**3. Git Repository Cleanup** 📦
-- [ ] Update .gitignore
-- [ ] Commit documentation files
-- [ ] Review untracked files
-- [ ] Organize folder structure
-
-### Secondary Tasks
-
-**4. Bug Triage**
-- [ ] Review old BUGS_AND_FEATURE_REQUESTS.md
-- [ ] Migrate remaining items to new system
-- [ ] Close or archive resolved items
-- [ ] Prioritize active bugs
-
-**5. Documentation**
-- [ ] Archive old tracking files
-- [ ] Update main README to reference context/
-- [ ] Document context system usage
+**Goals:**
+1. **RAG Integration** - Connect 1.5GB knowledge base to AI services
+2. **UX Polish** - Consistent Noesis aesthetic, fix remaining P1/P2 bugs
+3. **Nervous System Check-in** - Complete and polish (database schema ready)
 
 ---
 
-## Next Week (Week 2: Feb 14-21)
+## Completed Prior Phase (Phase 1: Foundation & AI Improvements)
 
-### Planned Focus
+**Duration:** 2026-02-07 to 2026-02-24
+**Status:** Complete
 
-**1. Critical Bug Fixes**
-- [ ] Resolve BUG-003: VM connectivity OR move to EAS
-- [ ] Fix any P0 bugs discovered
-- [ ] Address 1-2 P1 bugs
+All deliverables shipped:
+- FEAT-201: Code organization cleanup
+- FEAT-202: AI architecture documentation (~1,550 lines)
+- FEAT-203: AI monitoring & observability (MetricsService + dashboard)
+- FEAT-204: AI testing infrastructure (477 tests passing)
+- FEAT-101: Session day checklist (implemented)
+- FEAT-102: AI intention guidance (SetIntentionScreen + services)
+- BUG-105 through BUG-109: All resolved
+- Context system, security fixes, git cleanup — all done
 
-**2. Roadmap Planning**
-- [ ] Define next phase priorities
-- [ ] Estimate effort for planned features
-- [ ] Set milestones for next 8 weeks
+---
 
-**3. UX Audit**
-- [ ] Audit screens for Noesis aesthetic consistency
-- [ ] Document which screens need updates
-- [ ] Plan UX improvements
+## Week 1 (Feb 24 - Mar 2): RAG Knowledge Base Processing
+
+### Primary Focus
+**FEAT-205: Knowledge Base Processing**
+- [ ] Convert PDFs to markdown
+- [ ] Create protocol schema with YAML frontmatter
+- [ ] Set up Supabase pgvector extension
+- [ ] Generate and store embeddings
+
+### Secondary
+- [ ] Create `ai_metrics` table (fixes BUG-207)
+- [ ] Fix selector visual affordance (BUG-204)
+
+---
+
+## Week 2 (Mar 2-9): RAG System Integration
+
+### Primary Focus
+**FEAT-206: RAG System Integration**
+- [ ] Create RAG service
+- [ ] Integrate into 2-3 AI services (IFS, Polyvagal, Nervous System)
+- [ ] Test and optimize retrieval quality
+- [ ] Document RAG patterns
+
+### Secondary
+- [ ] Fix opening statement variability (BUG-208)
+- [ ] Fix VirtualizedList warning (BUG-206)
+
+---
+
+## Week 3 (Mar 9-16): Nervous System Check-in & UX Polish
+
+### Primary Focus
+**FEAT-103: Nervous System & Parts Check-In**
+- [ ] Polish NervousSystemCheckin component
+- [ ] Polish PartsCheckin component
+- [ ] Integrate with polyvagal AI services
+- [ ] Add visual state indicators
+
+### Secondary
+- [ ] Audit screens for Noesis aesthetic consistency (BUG-101)
+- [ ] Link "Learn More About Privacy" (BUG-205)
+
+---
+
+## Week 4 (Mar 16-21): Visual Design & Bug Sweep
+
+### Primary Focus
+**Visual Polish & Bug Fixes**
+- [ ] Complete Noesis aesthetic audit (BUG-101)
+- [ ] Address remaining P2 bugs
+- [ ] Android keyboard overlap testing (BUG-102)
+- [ ] Overall UX feedback pass
+
+### Stretch Goals
+- [ ] Start outcome measurement planning (FEAT-207)
+- [ ] Progress dashboard wireframes (FEAT-208)
 
 ---
 
 ## Success Criteria
 
 **This Phase is Complete When:**
-- [x] Context system fully operational
-- [ ] All P0 bugs resolved or have clear plan
-- [ ] Next phase roadmap defined
-- [ ] Repository cleaned up and organized
-- [ ] Team comfortable using new system
-
----
-
-## Progress Tracking
-
-### Completed ✅
-- Created context management structure
-- Built bug tracking system
-- Built feature tracking system
-- Started roadmap system
-
-### In Progress 🚧
-- Roadmap documentation
-- Security fixes
-- Repository cleanup
-
-### Blocked 🚫
-- None currently
+- [ ] RAG system retrieving relevant protocols from knowledge base
+- [ ] 2-3 AI services using RAG successfully
+- [ ] Nervous system check-in polished and working
+- [ ] All screens audited for Noesis aesthetic
+- [ ] P2 bug count reduced by 50%+
 
 ---
 
 ## Risks & Mitigations
 
-### Risk: VM Connectivity Can't Be Fixed
-**Impact:** Can't share app with testers
-**Mitigation:** Move to Expo EAS immediately if VM doesn't work
-**Backup:** Host on Windows machine temporarily
+### Risk: PDF Conversion Quality
+**Impact:** Poor RAG retrieval if content is garbled
+**Mitigation:** Quality check a sample before bulk conversion
+**Backup:** Manual curation of high-priority protocols
 
-### Risk: Context System Too Complex
-**Impact:** Team doesn't use it
-**Mitigation:** Keep it simple, gather feedback
-**Backup:** Simplify further if needed
+### Risk: pgvector Performance
+**Impact:** Slow RAG retrieval
+**Mitigation:** Start with small subset, benchmark, then scale
+**Backup:** Use simpler keyword-based retrieval initially
 
----
-
-## Daily Standups (Optional)
-
-### Friday, Feb 7
-**Yesterday:** Started context system
-**Today:** Complete roadmap, start security fixes
-**Blockers:** None
-
-### Monday, Feb 10
-**Weekend:** TBD
-**Today:** TBD
-**Blockers:** TBD
-
----
-
-## Notes & Learnings
-
-**What's Working:**
-- Context system structure is clear
-- 300-line limit keeping files manageable
-- Index files make navigation easy
-
-**What to Improve:**
-- Need to establish weekly review habit
-- Should set up git commit workflow
-
-**Key Decisions:**
-- Using modular files instead of large docs
-- Organizing by status (in-progress, planned, ideas)
-- Weekly updates to STATUS.md
+### Risk: Scope Creep on UX Polish
+**Impact:** Never-ending polish phase
+**Mitigation:** Define specific screens/bugs to fix, time-box to 1 week
+**Backup:** Defer remaining polish to next phase
 
 ---
 
 ## Links
 
 - [Project Status](../STATUS.md)
-- [Bugs: Critical](../bugs/critical.md)
-- [Features: In Progress](../features/in-progress.md)
+- [AI System Improvements](../features/ai-system-improvements.md)
+- [Bugs: High Priority](../bugs/high.md)
+- [Bugs: Medium/Low](../bugs/medium-low.md)
 - [Next Phase Preview](next-phase.md)
 
 ---
 
 **Phase Owner:** Project Lead
-**Last Review:** 2026-02-07
-**Next Review:** 2026-02-14
+**Last Review:** 2026-02-24
+**Next Review:** 2026-03-03
