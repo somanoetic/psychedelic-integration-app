@@ -14,6 +14,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AVATAR_OPTIONS } from './AvatarSelector';
 import { colors } from '../theme/colors';
+import { exerciseCategories as realCategories, getExercisesByCategory } from '../content/exercises';
 
 const ConversationalExerciseLibrary = ({ navigation, route }) => {
   const [selectedAvatar, setSelectedAvatar] = useState('brain');
@@ -59,53 +60,19 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
   const avatar = getAvatar();
 
   const exerciseCategories = [
-    {
-      id: 'grounding',
-      name: 'Grounding & Regulation',
-      icon: 'nature-people',
-      color: '#10b981',
-      description: 'Connect with your body and the present moment',
-      exercises: ['54321 Grounding', 'Body Scan', 'Breath Work', 'Progressive Muscle Relaxation']
-    },
-    {
-      id: 'ifs',
-      name: 'IFS Parts Work',
-      icon: 'psychology',
-      color: '#8b5cf6',
-      description: 'Connect with different parts of yourself',
-      exercises: ['Meet Your Parts', 'Parts Mapping', 'Self-Led Dialogue', 'Unburdening']
-    },
-    {
-      id: 'somatic',
-      name: 'Somatic Practices',
-      icon: 'self-improvement',
-      color: '#f59e0b',
-      description: 'Movement and body-based exercises',
-      exercises: ['Shaking Practice', 'Orienting', 'Body Awareness', 'Tension Release']
-    },
-    {
-      id: 'integration',
-      name: 'Integration',
-      icon: 'auto-awesome',
-      color: '#3b82f6',
-      description: 'Reflect and integrate your experiences',
-      exercises: ['Journaling Prompts', 'Meaning-Making', 'Action Planning', 'Gratitude Practice']
-    },
-    {
-      id: 'nervous_system',
-      name: 'Nervous System',
-      icon: 'favorite',
-      color: '#ec4899',
-      description: 'Understand and work with your nervous system',
-      exercises: ['Window of Tolerance', 'Polyvagal Education', 'Co-Regulation', 'Safe/Social Engagement']
-    },
+    ...realCategories
+      .filter(c => c.id !== 'all')
+      .map(c => ({
+        ...c,
+        exercises: getExercisesByCategory(c.id),
+      })),
     {
       id: 'games',
       name: 'Therapeutic Games',
       icon: 'sports-esports',
       color: '#06b6d4',
       description: 'Interactive games for integration and healing',
-      exercises: ['Glimmer Swiper'],
+      exercises: [{ title: 'Glimmer Swiper', isGame: true }],
       isInteractive: true
     }
   ];
@@ -188,15 +155,17 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
     const lowerInput = input.toLowerCase();
 
     if (lowerInput.includes('anxious') || lowerInput.includes('overwhelm') || lowerInput.includes('stressed')) {
-      return "It sounds like you might benefit from some grounding exercises. Try the 54321 technique or some breath work to help calm your nervous system.";
+      return "It sounds like you might benefit from some grounding exercises. Try '5-4-3-2-1 Integration Grounding' or 'Box Breathing' to help calm your nervous system.";
     } else if (lowerInput.includes('part') || lowerInput.includes('conflict') || lowerInput.includes('inner')) {
-      return "I sense you're working with different parts of yourself. Let's explore some IFS parts work exercises like 'Meet Your Parts' or 'Parts Mapping'.";
+      return "I sense you're working with different parts of yourself. Let's explore some IFS exercises like 'Parts Check-in for Integration' or 'Protector Appreciation'.";
     } else if (lowerInput.includes('body') || lowerInput.includes('tension') || lowerInput.includes('stuck')) {
-      return "Your body might be holding something. Somatic practices like shaking, orienting, or tension release could help you move through what's stored.";
+      return "Your body might be holding something. Somatic practices like 'Integration Body Scan' or 'Progressive Muscle Relaxation' could help you move through what's stored.";
     } else if (lowerInput.includes('integrate') || lowerInput.includes('reflect') || lowerInput.includes('understand')) {
-      return "Integration work sounds right for where you are. Try some journaling prompts or meaning-making exercises to process your experience.";
+      return "Self-compassion work sounds right for where you are. Try 'Self-Compassion for Integration' or 'Loving-Kindness for Difficult Parts' to process your experience.";
     } else if (lowerInput.includes('safe') || lowerInput.includes('nervous') || lowerInput.includes('regulate')) {
-      return "Let's work with your nervous system. Understanding your window of tolerance and polyvagal responses can help you feel safer.";
+      return "Let's work with your nervous system. Try 'Nervous System State Mapping' or 'Vagal Toning Exercise' to help you feel safer.";
+    } else if (lowerInput.includes('breath') || lowerInput.includes('calm') || lowerInput.includes('relax')) {
+      return "Breathing exercises can really help right now. Try 'Calming Breath for Integration' or 'Box Breathing' to settle your system.";
     }
 
     return "Based on what you've shared, I'd recommend starting with some grounding exercises. Would you like to explore the categories below to find what resonates?";
@@ -253,19 +222,32 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
               key={index}
               style={[styles.exerciseCard, { borderLeftColor: selectedCategory.color }]}
               onPress={() => {
-                // Navigate to Glimmer Swiper for interactive games
-                if (exercise === 'Glimmer Swiper') {
+                if (exercise.isGame) {
                   navigation.navigate('GlimmerSwiper');
                 } else {
-                  // TODO: Navigate to other exercises
-                  console.log('Navigate to exercise:', exercise);
+                  navigation.navigate('GuidedExercise', {
+                    exercise,
+                    categoryColor: selectedCategory.color,
+                  });
                 }
               }}
             >
               <View style={[styles.exerciseIcon, { backgroundColor: `${selectedCategory.color}20` }]}>
                 <MaterialIcons name="play-arrow" size={24} color={selectedCategory.color} />
               </View>
-              <Text style={styles.exerciseName}>{exercise}</Text>
+              <View style={styles.exerciseInfo}>
+                <Text style={styles.exerciseName}>{exercise.title}</Text>
+                {exercise.duration && (
+                  <Text style={styles.exerciseMeta}>
+                    {exercise.duration} min · {exercise.steps?.length || 0} steps
+                  </Text>
+                )}
+                {exercise.instructions && (
+                  <Text style={styles.exercisePreview} numberOfLines={2}>
+                    {exercise.instructions}
+                  </Text>
+                )}
+              </View>
               <MaterialIcons name="chevron-right" size={20} color="#9ca3af" />
             </TouchableOpacity>
           ))}
@@ -502,11 +484,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 12,
   },
-  exerciseName: {
+  exerciseInfo: {
     flex: 1,
+    marginRight: 8,
+  },
+  exerciseName: {
     fontSize: 15,
     fontWeight: '600',
     color: '#1f2937',
+  },
+  exerciseMeta: {
+    fontSize: 12,
+    color: '#9ca3af',
+    marginTop: 2,
+  },
+  exercisePreview: {
+    fontSize: 13,
+    color: '#6b7280',
+    marginTop: 4,
+    lineHeight: 18,
   },
 });
 

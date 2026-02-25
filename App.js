@@ -52,6 +52,7 @@ import InteractiveSessionMindMap from './screens/InteractiveSessionMindMap';
 import QuickNetworkTest from './screens/QuickNetworkTest';
 import NetworkTestScreen from './screens/NetworkTestScreen';
 import ExerciseLibraryScreen from './screens/ExerciseLibraryScreen';
+import GuidedExerciseScreen from './screens/GuidedExerciseScreen';
 import AdminMetricsDashboard from './screens/AdminMetricsDashboard';
 import SetIntentionScreen from './screens/SetIntentionScreen';
 import SessionChecklistScreen from './screens/SessionChecklistScreen';
@@ -379,6 +380,14 @@ export default function App() {
                 options={{
                   headerShown: false,
                   title: 'Exercise Library'
+                }}
+              />
+              <Stack.Screen
+                name="GuidedExercise"
+                component={GuidedExerciseScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Guided Exercise'
                 }}
               />
               <Stack.Screen
