@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AVATAR_OPTIONS } from './AvatarSelector';
+import { colors } from '../theme/colors';
 
 const ConversationalTriggeredSupport = ({ navigation }) => {
   const [selectedAvatar, setSelectedAvatar] = useState('brain');
@@ -108,7 +109,7 @@ const ConversationalTriggeredSupport = ({ navigation }) => {
     </View>
   );
 
-  const renderUserOption = (text, onPress, icon, color = '#8b5cf6') => (
+  const renderUserOption = (text, onPress, icon, color = colors.primary) => (
     <TouchableOpacity
       style={[styles.responseBubble, { backgroundColor: color }]}
       onPress={onPress}
@@ -213,7 +214,7 @@ const ConversationalTriggeredSupport = ({ navigation }) => {
         {renderUserOption('Talk to my parts', () => {
           // TODO: Navigate to IFS parts dialogue
           navigation.navigate('IFSChat');
-        }, 'psychology', '#8b5cf6')}
+        }, 'psychology', colors.primary)}
         {renderUserOption('Journal my feelings', () => {
           navigation.navigate('JournalEntry');
         }, 'edit-note', '#06b6d4')}

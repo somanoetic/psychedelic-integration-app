@@ -372,8 +372,8 @@ const DailyJournal = ({ onComplete }) => {
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={100}
+      behavior="padding"
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
     >
       {/* Header */}
       <View style={styles.header}>

@@ -15,6 +15,7 @@ import { supabase } from '../lib/supabase';
 import DualModeClaudeService from '../enhanced-components/dualModeClaudeService';
 import EmbeddedPracticeWidget from '../enhanced-components/EmbeddedPracticeWidget';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
@@ -629,6 +630,7 @@ What themes or insights from your experience would you like to explore in relati
   };
 
   return (
+    <LinearGradient colors={gradients.standard} start={{ x: 1.0, y: 0.0 }} end={{ x: 0.0, y: 1.0 }} style={{ flex: 1 }}>
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Header */}
       <View style={styles.header}>
@@ -677,13 +679,13 @@ What themes or insights from your experience would you like to explore in relati
         />
       )}
     </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   errorContainer: {
     flex: 1,

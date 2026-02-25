@@ -16,7 +16,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors } from '../theme/colors';
+import { colors, gradients } from '../theme/colors';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -167,9 +167,9 @@ const HuxleyWelcomeScreen = ({ onComplete }) => {
       style={styles.touchable}
     >
       <LinearGradient
-        colors={['#fbffdf', '#7794b6']}
-        start={{ x: 1.0, y: 0.0 }}
-        end={{ x: 0.0, y: 1.0 }}
+        colors={gradients.standard}
+        start={gradients.standardStart}
+        end={gradients.standardEnd}
         style={styles.container}
       >
         <View style={styles.content}>
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
   },
   tapPrompt: {
     fontSize: 16,
-    color: '#5d86d6',
+    color: colors.primary,
     fontWeight: '600',
     textAlign: 'center',
   },

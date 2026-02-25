@@ -10,6 +10,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../lib/supabase';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const SimpleEnhancedConversationScreen = ({ navigation, route }) => {
   console.log('SimpleEnhancedConversationScreen route params:', route.params);
@@ -93,6 +94,7 @@ const SimpleEnhancedConversationScreen = ({ navigation, route }) => {
   };
 
   return (
+    <LinearGradient colors={gradients.standard} start={{ x: 1.0, y: 0.0 }} end={{ x: 0.0, y: 1.0 }} style={{ flex: 1 }}>
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -138,13 +140,13 @@ const SimpleEnhancedConversationScreen = ({ navigation, route }) => {
         </TouchableOpacity>
       </View>
     </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   header: {
     flexDirection: 'row',

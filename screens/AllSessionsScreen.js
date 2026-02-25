@@ -11,7 +11,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ActivityIndicator, Appbar, Card, FAB } from 'react-native-paper';
 import { supabase } from '../lib/supabase';
-import { colors, spacing, borderRadius, shadows } from '../theme/colors';
+import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const AllSessionsScreen = ({ navigation }) => {
   const [sessions, setSessions] = useState([]);
@@ -288,6 +289,7 @@ const AllSessionsScreen = ({ navigation }) => {
   console.log('AllSessionsScreen: Rendering, loading:', loading, 'sessions:', filteredSessions.length);
 
   return (
+    <LinearGradient colors={gradients.standard} start={{ x: 1.0, y: 0.0 }} end={{ x: 0.0, y: 1.0 }} style={{ flex: 1 }}>
     <SafeAreaView style={styles.container} edges={['top']}>
       <Appbar.Header>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
@@ -335,13 +337,13 @@ const AllSessionsScreen = ({ navigation }) => {
         />
       </View>
     </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
   },
   filterContainer: {
     flexDirection: 'row',

@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
   fallbackText: {
     fontSize: 48,
     fontWeight: '700',
-    color: '#D4725C', // Terra cotta
+    color: '#5d86d6',
     letterSpacing: 2,
   },
 });

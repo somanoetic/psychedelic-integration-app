@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { PolyvagalAIService } from '../lib/polyvagalAIService';
+import { colors } from '../theme/colors';
 
 /**
  * AI-Enhanced Polyvagal Mapping Widget
@@ -372,7 +373,7 @@ Think of times when you felt:
 
           {/* Dorsal Summary */}
           {responses.dorsal.memory && (
-            <View style={[styles.stateSummary, { borderLeftColor: '#6366f1' }]}>
+            <View style={[styles.stateSummary, { borderLeftColor: colors.slate }]}>
               <Text style={styles.stateSummaryTitle}>🛡️ Shutdown State</Text>
               <Text style={styles.stateSummaryText}>
                 <Text style={styles.summaryLabel}>When: </Text>
@@ -430,9 +431,9 @@ Think of times when you felt:
   const getStateColor = (state) => {
     switch (state) {
       case 'sympathetic': return '#ef4444';
-      case 'dorsal': return '#6366f1';
+      case 'dorsal': return colors.slate;
       case 'ventral': return '#10b981';
-      default: return '#3b82f6';
+      default: return colors.primary;
     }
   };
 
@@ -513,16 +514,16 @@ Think of times when you felt:
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.surface,
   },
   header: {
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   skipButton: {
     fontSize: 16,
-    color: '#3b82f6',
+    color: colors.primary,
     fontWeight: '500',
     marginBottom: 8,
   },
@@ -532,7 +533,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
   },
   offlineIndicator: {
     fontSize: 11,
@@ -541,7 +542,7 @@ const styles = StyleSheet.create({
   },
   progressBarContainer: {
     height: 4,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: colors.lightGray,
     marginHorizontal: 16,
     marginTop: 16,
     borderRadius: 2,
@@ -549,11 +550,11 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: '100%',
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.primary,
   },
   progressText: {
     fontSize: 12,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     marginTop: 8,
     marginBottom: 16,
@@ -574,31 +575,31 @@ const styles = StyleSheet.create({
   stepTitle: {
     fontSize: 24,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 8,
   },
   infoMessage: {
     fontSize: 16,
-    color: '#374151',
+    color: colors.text,
     lineHeight: 26,
   },
   inputPrompt: {
     fontSize: 16,
-    color: '#374151',
+    color: colors.text,
     fontWeight: '500',
     marginBottom: 8,
   },
   aiMessageContainer: {
-    backgroundColor: '#f0f9ff',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     borderRadius: 12,
     padding: 12,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#bfdbfe',
+    borderColor: colors.lightGray,
   },
   aiMessageText: {
     fontSize: 15,
-    color: '#1e40af',
+    color: colors.text,
     lineHeight: 22,
   },
   aiMessageFooter: {
@@ -608,13 +609,13 @@ const styles = StyleSheet.create({
   },
   aiMessageTime: {
     fontSize: 11,
-    color: '#60a5fa',
+    color: colors.textLight,
   },
   aiIndicator: {
     fontSize: 10,
-    color: '#1e40af',
+    color: colors.primary,
     fontWeight: '600',
-    backgroundColor: '#dbeafe',
+    backgroundColor: `${colors.primary}1A`,
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
@@ -629,7 +630,7 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.primary,
   },
   typingDot2: {
     opacity: 0.7,
@@ -639,7 +640,7 @@ const styles = StyleSheet.create({
   },
   typingText: {
     fontSize: 13,
-    color: '#6b7280',
+    color: colors.textSecondary,
     fontStyle: 'italic',
   },
   textInput: {
@@ -647,17 +648,17 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     fontSize: 16,
-    color: '#1f2937',
+    color: colors.text,
     minHeight: 120,
-    backgroundColor: '#f9fafb',
+    backgroundColor: colors.background,
   },
   summaryMessage: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 24,
   },
   stateSummary: {
-    backgroundColor: '#f9fafb',
+    backgroundColor: colors.background,
     borderLeftWidth: 4,
     borderRadius: 8,
     padding: 16,
@@ -666,34 +667,36 @@ const styles = StyleSheet.create({
   stateSummaryTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 12,
   },
   stateSummaryText: {
     fontSize: 15,
-    color: '#374151',
+    color: colors.text,
     lineHeight: 22,
     marginBottom: 8,
   },
   summaryLabel: {
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
   },
   keyTakeaway: {
-    backgroundColor: '#dbeafe',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     borderRadius: 12,
     padding: 20,
     marginTop: 8,
+    borderWidth: 1,
+    borderColor: colors.primary,
   },
   keyTakeawayTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1e40af',
+    color: colors.primary,
     marginBottom: 12,
   },
   keyTakeawayText: {
     fontSize: 15,
-    color: '#1e40af',
+    color: colors.text,
     lineHeight: 22,
   },
   navigationContainer: {
@@ -701,8 +704,8 @@ const styles = StyleSheet.create({
     gap: 12,
     padding: 16,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
-    backgroundColor: '#ffffff',
+    borderTopColor: colors.lightGray,
+    backgroundColor: colors.surface,
   },
   navButton: {
     flex: 1,
@@ -711,26 +714,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   backButton: {
-    backgroundColor: '#f3f4f6',
+    backgroundColor: colors.offWhite,
   },
   nextButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.primary,
   },
   navButtonDisabled: {
-    backgroundColor: '#e5e7eb',
+    backgroundColor: colors.lightGray,
   },
   navButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.text,
   },
   navButtonTextDisabled: {
-    color: '#9ca3af',
+    color: colors.mediumGray,
   },
   nextButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#ffffff',
+    color: colors.textInverse,
   },
 });
 

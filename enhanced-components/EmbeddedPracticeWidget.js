@@ -11,6 +11,8 @@ import {
   ScrollView
 } from 'react-native';
 
+import { colors } from '../theme/colors';
+
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const EmbeddedPracticeWidget = ({ practice, nervousSystemState, onComplete, onSkip }) => {
@@ -171,7 +173,7 @@ const EmbeddedPracticeWidget = ({ practice, nervousSystemState, onComplete, onSk
         id: 'dorsal',
         name: 'Protected',
         description: 'Numb, withdrawn, or heavy',
-        color: '#6366f1',
+        color: colors.slate,
         emoji: '🛡️'
       },
       {
@@ -561,7 +563,7 @@ const styles = {
     justifyContent: 'flex-end',
   },
   container: {
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.surface,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     maxHeight: SCREEN_HEIGHT * 0.8,
@@ -574,7 +576,7 @@ const styles = {
     alignItems: 'center',
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   headerLeft: {
     flexDirection: 'row',
@@ -584,7 +586,7 @@ const styles = {
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
   },
   skipButton: {
     padding: 4,
@@ -601,25 +603,25 @@ const styles = {
   practiceTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     textAlign: 'center',
     marginBottom: 8,
   },
   practiceDescription: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: 16,
   },
   practiceDetails: {
-    backgroundColor: '#f3f4f6',
+    backgroundColor: colors.offWhite,
     padding: 16,
     borderRadius: 12,
     marginTop: 16,
   },
   practiceDetailText: {
     fontSize: 14,
-    color: '#4b5563',
+    color: colors.textSecondary,
     marginBottom: 4,
   },
   assessmentStep: {
@@ -629,13 +631,13 @@ const styles = {
   stepTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     textAlign: 'center',
     marginBottom: 8,
   },
   stepSubtitle: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: 24,
   },
@@ -646,7 +648,7 @@ const styles = {
     padding: 12,
     borderWidth: 2,
     borderRadius: 12,
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.surface,
     marginBottom: 4,
   },
   stateOptionHeader: {
@@ -661,7 +663,7 @@ const styles = {
   },
   stateOptionDescription: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   intensityContainer: {
     alignItems: 'center',
@@ -675,32 +677,32 @@ const styles = {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: colors.offWhite,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#d1d5db',
+    borderColor: colors.lightGray,
   },
   intensityButtonSelected: {
-    backgroundColor: '#3b82f6',
-    borderColor: '#3b82f6',
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   intensityButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   intensityButtonTextSelected: {
-    color: '#ffffff',
+    color: colors.textInverse,
   },
   intensityLabel: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#1f2937',
+    color: colors.text,
   },
   notesInput: {
     borderWidth: 1,
-    borderColor: '#d1d5db',
+    borderColor: colors.lightGray,
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
@@ -715,7 +717,7 @@ const styles = {
     width: 150,
     height: 150,
     borderRadius: 75,
-    backgroundColor: '#dbeafe',
+    backgroundColor: `${colors.primary}1A`,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 32,
@@ -723,14 +725,14 @@ const styles = {
   breathingPhase: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#3b82f6',
+    color: colors.primary,
   },
   stepContainer: {
     paddingHorizontal: 20,
   },
   currentStepText: {
     fontSize: 16,
-    color: '#1f2937',
+    color: colors.text,
     textAlign: 'center',
     lineHeight: 24,
   },
@@ -740,13 +742,13 @@ const styles = {
   partsPrompt: {
     fontSize: 18,
     fontWeight: '500',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 20,
     textAlign: 'center',
   },
   partsInput: {
     borderWidth: 1,
-    borderColor: '#d1d5db',
+    borderColor: colors.lightGray,
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
@@ -761,30 +763,30 @@ const styles = {
   },
   progressText: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: 8,
   },
   progressBar: {
     height: 4,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: colors.lightGray,
     borderRadius: 2,
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.primary,
     borderRadius: 2,
   },
   effectivenessContainer: {
     marginTop: 24,
     padding: 16,
-    backgroundColor: '#f9fafb',
+    backgroundColor: colors.offWhite,
     borderRadius: 12,
   },
   effectivenessTitle: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#1f2937',
+    color: colors.text,
     textAlign: 'center',
     marginBottom: 12,
   },
@@ -809,33 +811,33 @@ const styles = {
   },
   skipText: {
     fontSize: 20,
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   buttonEmoji: {
     fontSize: 16,
-    color: '#ffffff',
+    color: colors.textInverse,
   },
   identificationExercise: {
     marginTop: 16,
     marginBottom: 24,
   },
   identificationStep: {
-    backgroundColor: '#f8fafc',
+    backgroundColor: colors.offWhite,
     borderRadius: 8,
     padding: 12,
     marginBottom: 12,
     borderLeftWidth: 3,
-    borderLeftColor: '#3b82f6',
+    borderLeftColor: colors.primary,
   },
   identificationTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 4,
   },
   identificationPrompt: {
     fontSize: 14,
-    color: '#4b5563',
+    color: colors.textSecondary,
     lineHeight: 20,
   },
   identificationHint: {
@@ -852,38 +854,38 @@ const styles = {
   footer: {
     padding: 20,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: colors.lightGray,
   },
   startButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.primary,
     padding: 16,
     borderRadius: 12,
   },
   startButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#ffffff',
+    color: colors.textInverse,
   },
   nextButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.primary,
     padding: 16,
     borderRadius: 12,
   },
   nextButtonDisabled: {
-    backgroundColor: '#9ca3af',
+    backgroundColor: colors.mediumGray,
   },
   nextButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#ffffff',
+    color: colors.textInverse,
   },
 };
 

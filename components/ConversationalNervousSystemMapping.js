@@ -16,6 +16,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
 import nervousSystemMappingAIService from '../lib/nervousSystemMappingAIService';
+import { colors } from '../theme/colors';
 
 /**
  * Conversational Nervous System Mapping
@@ -354,7 +355,7 @@ Take your time with this. When you're done, the app will show you a digital vers
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerContent}>
-          <MaterialIcons name="psychology" size={24} color="#8b5cf6" />
+          <MaterialIcons name="psychology" size={24} color={colors.primary} />
           <Text style={styles.headerTitle}>Nervous System Mapping</Text>
         </View>
         <Text style={styles.headerSubtitle}>
@@ -383,7 +384,7 @@ Take your time with this. When you're done, the app will show you a digital vers
               resizeMode="contain"
             />
             <View style={[styles.messageBubble, styles.aiMessage]}>
-              <ActivityIndicator size="small" color="#8b5cf6" />
+              <ActivityIndicator size="small" color={colors.primary} />
               <Text style={styles.aiMessageText}>Huxley is typing...</Text>
             </View>
           </View>
@@ -421,7 +422,7 @@ Take your time with this. When you're done, the app will show you a digital vers
       {/* Saving Indicator */}
       {saving && (
         <View style={styles.savingOverlay}>
-          <ActivityIndicator size="large" color="#8b5cf6" />
+          <ActivityIndicator size="large" color={colors.primary} />
           <Text style={styles.savingText}>Saving your mapping...</Text>
         </View>
       )}
@@ -483,7 +484,7 @@ const styles = StyleSheet.create({
   },
   userMessage: {
     alignSelf: 'flex-end',
-    backgroundColor: '#8b5cf6',
+    backgroundColor: colors.primary,
     borderBottomRightRadius: 4
   },
   aiMessage: {
@@ -562,7 +563,7 @@ const styles = StyleSheet.create({
     gap: 8
   },
   primaryButton: {
-    backgroundColor: '#8b5cf6'
+    backgroundColor: colors.primary
   },
   successButton: {
     backgroundColor: '#10b981'
@@ -595,7 +596,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#8b5cf6',
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center'
   },

@@ -15,6 +15,7 @@ import { ActivityIndicator, Appbar, Chip, Menu } from 'react-native-paper';
 import { IntegrationGuide } from '../lib/claudeService';
 import { supabase } from '../lib/supabase';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const ConversationScreen = ({ navigation, route }) => {
   // DEBUG: Log the route params immediately
@@ -378,6 +379,7 @@ const ConversationScreen = ({ navigation, route }) => {
   }
 
   return (
+    <LinearGradient colors={gradients.standard} start={{ x: 1.0, y: 0.0 }} end={{ x: 0.0, y: 1.0 }} style={{ flex: 1 }}>
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
     <KeyboardAvoidingView
       style={styles.flex}
@@ -531,13 +533,13 @@ const ConversationScreen = ({ navigation, route }) => {
       </View>
     </KeyboardAvoidingView>
     </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   flex: {
     flex: 1,

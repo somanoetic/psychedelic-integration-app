@@ -16,6 +16,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AVATAR_OPTIONS } from './AvatarSelector';
 import { supabase } from '../lib/supabase';
+import { colors } from '../theme/colors';
 
 const ConversationalSessionTools = ({ navigation }) => {
   const [selectedAvatar, setSelectedAvatar] = useState('brain');
@@ -169,7 +170,7 @@ const ConversationalSessionTools = ({ navigation }) => {
     </View>
   );
 
-  const renderUserOption = (text, onPress, icon, color = '#8b5cf6') => (
+  const renderUserOption = (text, onPress, icon, color = colors.primary) => (
     <TouchableOpacity
       style={[styles.responseBubble, { backgroundColor: color }]}
       onPress={onPress}
@@ -248,7 +249,7 @@ const ConversationalSessionTools = ({ navigation }) => {
 
       {loading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#8b5cf6" />
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
       ) : (
         <View style={styles.sessionsListContainer}>

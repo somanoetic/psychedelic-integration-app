@@ -13,8 +13,9 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AVATAR_OPTIONS } from './AvatarSelector';
+import { colors } from '../theme/colors';
 
-const ConversationalExerciseLibrary = ({ navigation }) => {
+const ConversationalExerciseLibrary = ({ navigation, route }) => {
   const [selectedAvatar, setSelectedAvatar] = useState('brain');
   const [conversationStep, setConversationStep] = useState('initial'); // initial, search, browse, selected
   const [userInput, setUserInput] = useState('');
@@ -29,6 +30,18 @@ const ConversationalExerciseLibrary = ({ navigation }) => {
       useNativeDriver: true,
     }).start();
   }, []);
+
+  // If navigated with a category param, auto-select that category
+  useEffect(() => {
+    const categoryParam = route?.params?.category;
+    if (categoryParam) {
+      const found = exerciseCategories.find(c => c.id === categoryParam);
+      if (found) {
+        setSelectedCategory(found);
+        setConversationStep('selected');
+      }
+    }
+  }, [route?.params?.category]);
 
   const loadPreferences = async () => {
     try {
@@ -111,7 +124,7 @@ const ConversationalExerciseLibrary = ({ navigation }) => {
     </View>
   );
 
-  const renderUserOption = (text, onPress, icon, color = '#8b5cf6') => (
+  const renderUserOption = (text, onPress, icon, color = colors.primary) => (
     <TouchableOpacity
       style={[styles.responseBubble, { backgroundColor: color }]}
       onPress={onPress}

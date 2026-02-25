@@ -1,5 +1,6 @@
 import { StyleSheet, View } from 'react-native'
 import { Card, Text } from 'react-native-paper'
+import { colors } from '../theme/colors';
 
 export default function MessageBubble({ message, onEntityPress }) {
   return (
@@ -45,10 +46,10 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   userBubble: {
-    backgroundColor: '#667eea',
+    backgroundColor: colors.primary,
   },
   assistantBubble: {
-    backgroundColor: 'white',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
   },
   content: {
     paddingVertical: 8,
@@ -59,10 +60,10 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   userText: {
-    color: 'white',
+    color: colors.textInverse,
   },
   assistantText: {
-    color: '#333',
+    color: colors.text,
   },
   timestamp: {
     fontSize: 12,

@@ -21,6 +21,7 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -56,6 +57,15 @@ const GlimmerSwiper = ({ navigation }) => {
   const [showSubliminal, setShowSubliminal] = useState(false);
   const [currentAffirmation, setCurrentAffirmation] = useState('');
   const [totalAffirmations, setTotalAffirmations] = useState(0);
+
+  // Refs to avoid stale closures in PanResponder
+  const deckRef = useRef([]);
+  const currentIndexRef = useRef(0);
+  const handleSwipeRef = useRef(null);
+
+  // Keep refs in sync with state
+  useEffect(() => { deckRef.current = deck; }, [deck]);
+  useEffect(() => { currentIndexRef.current = currentIndex; }, [currentIndex]);
 
   // Animation refs
   const pan = useRef(new Animated.ValueXY()).current;
@@ -146,11 +156,16 @@ const GlimmerSwiper = ({ navigation }) => {
       },
       onPanResponderRelease: (_, gesture) => {
         const swipeDirection = gesture.dx > 0 ? 'right' : 'left';
-        const currentCard = deck[currentIndex];
+        const currentCard = deckRef.current[currentIndexRef.current];
+
+        if (!currentCard) {
+          resetCard();
+          return;
+        }
 
         if (Math.abs(gesture.dx) > SWIPE_THRESHOLD) {
-          // Completed swipe
-          handleSwipe(swipeDirection, currentCard);
+          // Completed swipe - call through ref to avoid stale closure
+          handleSwipeRef.current(swipeDirection, currentCard);
         } else {
           // Didn't swipe far enough - return to center
           resetCard();
@@ -159,7 +174,7 @@ const GlimmerSwiper = ({ navigation }) => {
     })
   ).current;
 
-  // Handle swipe
+  // Handle swipe - uses refs to avoid stale closures from PanResponder
   const handleSwipe = (direction, card) => {
     const isCorrect =
       (direction === 'left' && card.category === 'face') ||
@@ -187,15 +202,18 @@ const GlimmerSwiper = ({ navigation }) => {
         useNativeDriver: false,
       }),
     ]).start(() => {
-      // Move to next card
-      if (currentIndex + 1 < deck.length) {
-        setCurrentIndex(prev => prev + 1);
+      // Move to next card - use refs for current values
+      const idx = currentIndexRef.current;
+      const deckLen = deckRef.current.length;
+      if (idx + 1 < deckLen) {
+        setCurrentIndex(idx + 1);
         resetCard();
       } else {
         endGame();
       }
     });
   };
+  handleSwipeRef.current = handleSwipe;
 
   // Reset card position
   const resetCard = () => {
@@ -429,7 +447,7 @@ const GlimmerSwiper = ({ navigation }) => {
               },
             ]}
           >
-            <Image source={{ uri: currentCard.url }} style={styles.cardImage} />
+            <Image source={currentCard.source} style={styles.cardImage} />
 
             {/* Swipe indicators */}
             <Animated.View

@@ -1,0 +1,488 @@
+{
+  "feature_flags": {
+    "feat_101_session_checklist": {
+      "id": "feat-101-session-checklist",
+      "name": "FEAT-101: Session Day Checklist",
+      "description": "Session preparation checklist with database persistence, customization, and AI integration",
+      "enabled": false,
+      "created_at": "2026-02-10T00:00:00Z",
+      "updated_at": "2026-02-10T00:00:00Z",
+      "created_by": "deployment-pipeline",
+
+      "rollout": {
+        "strategy": "gradual",
+        "description": "Gradual rollout starting with internal testers, then beta, then full release",
+
+        "phases": [
+          {
+            "phase": 1,
+            "name": "Internal Testing",
+            "description": "Enable for development and QA teams",
+            "percentage": 0,
+            "user_groups": ["developers", "qa-team"],
+            "duration_days": 3,
+            "start_date": "2026-02-10",
+            "success_criteria": [
+              "Feature loads without errors",
+              "Database operations work correctly",
+              "RLS policies enforced",
+              "Edge function responds correctly"
+            ],
+            "rollback_trigger": "error_rate > 1%"
+          },
+          {
+            "phase": 2,
+            "name": "Beta Users",
+            "description": "Enable for opted-in beta users",
+            "percentage": 10,
+            "user_groups": ["beta-testers"],
+            "duration_days": 5,
+            "start_date": "2026-02-13",
+            "success_criteria": [
+              "Adoption rate > 50%",
+              "Completion rate > 70%",
+              "Error rate < 1%",
+              "API latency < 500ms"
+            ],
+            "rollback_trigger": "adoption_rate < 20% OR error_rate > 2%"
+          },
+          {
+            "phase": 3,
+            "name": "Staged Rollout",
+            "description": "Gradual rollout to all users",
+            "percentage": 25,
+            "user_groups": ["all"],
+            "duration_days": 7,
+            "start_date": "2026-02-18",
+            "success_criteria": [
+              "Completion rate > 80%",
+              "Custom items per session > 2",
+              "Error rate < 0.5%",
+              "No security violations"
+            ],
+            "rollback_trigger": "completion_rate < 50% OR error_rate > 1%"
+          },
+          {
+            "phase": 4,
+            "name": "Full Release",
+            "description": "Enable for 100% of users",
+            "percentage": 100,
+            "user_groups": ["all"],
+            "duration_days": null,
+            "start_date": "2026-02-25",
+            "success_criteria": [
+              "Sustained adoption > 70%",
+              "Error rate stable < 0.5%",
+              "Positive user feedback",
+              "No regressions"
+            ],
+            "rollback_trigger": null
+          }
+        ]
+      },
+
+      "targeting": {
+        "user_segments": [
+          {
+            "name": "Developers",
+            "criteria": {
+              "role": "developer",
+              "feature_access": "internal"
+            },
+            "enabled": true
+          },
+          {
+            "name": "QA Team",
+            "criteria": {
+              "role": "qa",
+              "feature_access": "internal"
+            },
+            "enabled": true
+          },
+          {
+            "name": "Beta Testers",
+            "criteria": {
+              "opted_into_beta": true
+            },
+            "enabled": true
+          },
+          {
+            "name": "iOS Users",
+            "criteria": {
+              "platform": "ios"
+            },
+            "enabled": true
+          },
+          {
+            "name": "Android Users",
+            "criteria": {
+              "platform": "android"
+            },
+            "enabled": true
+          }
+        ],
+
+        "geographic_targeting": {
+          "enabled": false,
+          "regions": ["us", "eu", "ca"]
+        },
+
+        "device_targeting": {
+          "enabled": true,
+          "minimum_app_version": "1.2.0",
+          "excluded_devices": []
+        }
+      },
+
+      "configuration": {
+        "checklist": {
+          "max_items": 50,
+          "max_custom_items": 20,
+          "max_item_title_length": 500,
+          "max_item_description_length": 2000,
+          "default_template_version": 1,
+          "enable_categories": true,
+          "enable_custom_items": true,
+          "enable_item_reordering": false,
+          "enable_reminders": false
+        },
+        "database": {
+          "migrate_on_enable": true,
+          "create_backup_before_migration": true,
+          "rollback_on_disable": true
+        },
+        "api": {
+          "enable_claude_proxy": true,
+          "rate_limit_per_day": 100,
+          "rate_limit_strategy": "sliding_window",
+          "timeout_seconds": 30,
+          "retry_attempts": 3,
+          "retry_backoff_ms": 1000
+        },
+        "logging": {
+          "log_level": "info",
+          "log_user_data": false,
+          "log_api_calls": true,
+          "enable_performance_monitoring": true
+        },
+        "ui": {
+          "show_progress_bar": true,
+          "show_completion_percentage": true,
+          "enable_animations": true,
+          "enable_haptic_feedback": true,
+          "use_noesis_colors": true
+        }
+      },
+
+      "dependencies": {
+        "features": [
+          {
+            "id": "session-management",
+            "required": true,
+            "version": ">=1.0.0"
+          },
+          {
+            "id": "user-authentication",
+            "required": true,
+            "version": ">=1.0.0"
+          }
+        ],
+        "services": [
+          {
+            "name": "supabase",
+            "required": true,
+            "version": ">=2.55.0"
+          },
+          {
+            "name": "anthropic-api",
+            "required": true,
+            "version": "via-edge-function",
+            "note": "API key served from Supabase Edge Function, not from client"
+          }
+        ],
+        "database_tables": [
+          "session_checklists",
+          "session_checklist_items",
+          "checklist_template_items",
+          "user_rate_limits",
+          "api_usage_logs"
+        ]
+      },
+
+      "monitoring": {
+        "metrics": [
+          "feature_adoption_rate",
+          "checklist_creation_rate",
+          "item_completion_rate",
+          "custom_items_added_rate",
+          "api_error_rate",
+          "api_latency_p50",
+          "api_latency_p95",
+          "api_latency_p99",
+          "database_query_latency",
+          "edge_function_errors",
+          "rate_limit_hits"
+        ],
+        "alerts": [
+          "error_rate_high",
+          "adoption_rate_low",
+          "api_latency_high",
+          "database_connection_failed",
+          "edge_function_down",
+          "rate_limit_abuse"
+        ],
+        "dashboards": [
+          "feat-101-operations",
+          "feat-101-business-metrics",
+          "feat-101-security"
+        ]
+      },
+
+      "health_checks": {
+        "enabled": true,
+        "interval_seconds": 60,
+        "checks": [
+          {
+            "name": "database_connectivity",
+            "description": "Verify database connection is healthy",
+            "critical": true
+          },
+          {
+            "name": "edge_function_availability",
+            "description": "Verify edge function is responding",
+            "critical": true
+          },
+          {
+            "name": "rls_policy_enforcement",
+            "description": "Verify RLS policies are enforced",
+            "critical": true
+          },
+          {
+            "name": "schema_integrity",
+            "description": "Verify all required tables and indexes exist",
+            "critical": true
+          },
+          {
+            "name": "seed_data_present",
+            "description": "Verify checklist template items are seeded",
+            "critical": false
+          }
+        ]
+      },
+
+      "rollback": {
+        "enabled": true,
+        "automatic_rollback": true,
+        "automatic_rollback_conditions": [
+          {
+            "metric": "error_rate",
+            "operator": ">",
+            "threshold": 5,
+            "duration_seconds": 300,
+            "action": "disable_feature"
+          },
+          {
+            "metric": "api_latency_p99",
+            "operator": ">",
+            "threshold": 5000,
+            "duration_seconds": 600,
+            "action": "disable_feature"
+          },
+          {
+            "metric": "database_connection_lost",
+            "operator": "==",
+            "threshold": true,
+            "duration_seconds": 120,
+            "action": "disable_feature"
+          }
+        ],
+        "manual_rollback": {
+          "enabled": true,
+          "requires_approval": true,
+          "approval_roles": ["engineer", "tech-lead", "oncall"]
+        },
+        "rollback_procedure": {
+          "steps": [
+            "Disable feature flag in production",
+            "Monitor error rates for 5 minutes",
+            "If stable, execute database rollback script",
+            "Verify all services healthy",
+            "Notify team of rollback"
+          ],
+          "estimated_duration_minutes": 15,
+          "runbook": "deployment/rollback.md"
+        }
+      },
+
+      "testing": {
+        "unit_tests": {
+          "enabled": true,
+          "coverage_threshold": 80,
+          "test_files": [
+            "__tests__/lib/sessionChecklistService.test.js",
+            "__tests__/database/checklistSchema.test.js",
+            "__tests__/integration/checklistAPI.test.js"
+          ]
+        },
+        "integration_tests": {
+          "enabled": true,
+          "test_environment": "staging",
+          "tests": [
+            "checklist_creation_flow",
+            "item_completion_flow",
+            "custom_item_management",
+            "offline_sync",
+            "rls_policy_enforcement",
+            "rate_limiting"
+          ]
+        },
+        "e2e_tests": {
+          "enabled": true,
+          "test_environment": "staging",
+          "platforms": ["ios", "android"],
+          "scenarios": [
+            "user_creates_session_with_checklist",
+            "user_completes_checklist_items",
+            "user_adds_custom_items",
+            "user_syncs_offline_changes",
+            "concurrent_user_access"
+          ]
+        },
+        "performance_tests": {
+          "enabled": true,
+          "thresholds": {
+            "checklist_load_time_ms": 500,
+            "item_toggle_time_ms": 100,
+            "custom_item_add_time_ms": 200,
+            "database_query_time_ms": 100
+          }
+        },
+        "security_tests": {
+          "enabled": true,
+          "tests": [
+            "rls_policy_bypass_attempts",
+            "unauthorized_access_attempts",
+            "sql_injection_attempts",
+            "rate_limit_enforcement",
+            "api_key_exposure_check"
+          ]
+        }
+      },
+
+      "notifications": {
+        "enabled": true,
+        "channels": ["slack", "email"],
+        "events": [
+          {
+            "event": "feature_enabled",
+            "channel": "slack",
+            "mention_roles": ["tech-lead", "oncall"]
+          },
+          {
+            "event": "feature_disabled",
+            "channel": ["slack", "email"],
+            "mention_roles": ["oncall", "engineering-manager"]
+          },
+          {
+            "event": "rollback_triggered",
+            "channel": ["slack", "email"],
+            "mention_roles": ["oncall", "engineering-manager", "tech-lead"]
+          },
+          {
+            "event": "error_rate_high",
+            "channel": "slack",
+            "mention_roles": ["oncall"]
+          }
+        ]
+      },
+
+      "documentation": {
+        "user_documentation": "docs/FEAT-101-user-guide.md",
+        "technical_documentation": "docs/FEAT-101-technical-guide.md",
+        "deployment_guide": ".full-stack-feature/SECURITY_FIX_DEPLOYMENT.md",
+        "runbook": "deployment/runbook-feat-101.md",
+        "rollback_guide": "deployment/rollback.md"
+      },
+
+      "version_history": [
+        {
+          "version": "1.0.0",
+          "date": "2026-02-10",
+          "changes": [
+            "Initial release",
+            "Session checklist creation and management",
+            "Claude API moved to server-side Edge Function proxy",
+            "Rate limiting and usage tracking",
+            "RLS policies for data security"
+          ]
+        }
+      ],
+
+      "approval": {
+        "requires_approval": true,
+        "approval_required_for": ["enabling", "disabling", "configuration_changes"],
+        "approval_roles": ["tech-lead", "engineering-manager"],
+        "sla_hours": 4
+      }
+    },
+
+    "feat_102_ai_guidance": {
+      "id": "feat-102-ai-guidance",
+      "name": "FEAT-102: AI Intention Guidance",
+      "description": "AI-powered guidance for session intentions",
+      "enabled": false,
+      "status": "planned",
+      "dependencies": ["feat-101-session-checklist"],
+      "target_release": "2026-03-01"
+    },
+
+    "feat_103_nervous_system": {
+      "id": "feat-103-nervous-system",
+      "name": "FEAT-103: Nervous System Check-In",
+      "description": "Polyvagal-based nervous system assessment",
+      "enabled": false,
+      "status": "planned",
+      "dependencies": ["feat-101-session-checklist"],
+      "target_release": "2026-03-08"
+    }
+  },
+
+  "environment_overrides": {
+    "development": {
+      "feat_101_session_checklist": {
+        "enabled": true,
+        "configuration": {
+          "logging": {
+            "log_level": "debug",
+            "log_user_data": true
+          }
+        }
+      }
+    },
+
+    "staging": {
+      "feat_101_session_checklist": {
+        "enabled": true,
+        "rollout": {
+          "percentage": 25
+        }
+      }
+    },
+
+    "production": {
+      "feat_101_session_checklist": {
+        "enabled": false,
+        "rollout": {
+          "percentage": 0
+        }
+      }
+    }
+  },
+
+  "deployment_info": {
+    "last_updated": "2026-02-10T00:00:00Z",
+    "updated_by": "deployment-pipeline",
+    "version": "1.0.0",
+    "schema_version": "1.0"
+  }
+}

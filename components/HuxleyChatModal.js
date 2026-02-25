@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: colors.sand,
+    borderBottomColor: colors.lightGray,
   },
   headerLeft: {
     flexDirection: 'row',
@@ -357,7 +357,7 @@ const styles = StyleSheet.create({
   },
   assistantBubble: {
     alignSelf: 'flex-start',
-    backgroundColor: '#F0F0F0',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
   },
   messageText: {
     fontSize: 16,
@@ -388,7 +388,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderTopWidth: 1,
-    borderTopColor: colors.sand,
+    borderTopColor: colors.lightGray,
   },
   quickActionButton: {
     alignItems: 'center',
@@ -407,7 +407,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     padding: 12,
     borderTopWidth: 1,
-    borderTopColor: colors.sand,
+    borderTopColor: colors.lightGray,
   },
   input: {
     flex: 1,

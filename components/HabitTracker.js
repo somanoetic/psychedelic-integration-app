@@ -357,6 +357,8 @@ const HabitTracker = ({ navigation }) => {
     <SafeAreaView style={styles.container} edges={['top']}>
       <LinearGradient
         colors={gradients.warm}
+        start={{ x: 1.0, y: 0.0 }}
+        end={{ x: 0.0, y: 1.0 }}
         style={styles.headerGradient}
       >
         <TouchableOpacity

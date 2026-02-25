@@ -13,10 +13,10 @@ Bugs are organized by priority across three files to keep each manageable.
 | File | Priority | Description | Count |
 |------|----------|-------------|-------|
 | [critical.md](critical.md) | P0 | Show-stoppers, crashes, security issues | 0 active (5 resolved) |
-| [high.md](high.md) | P1 | Major issues affecting key features | 3 active (7 resolved) |
-| [medium-low.md](medium-low.md) | P2-P3 | Minor issues, polish, edge cases | 10 active (2 resolved) |
+| [high.md](high.md) | P1 | Major issues affecting key features | 3 active (11 resolved) |
+| [medium-low.md](medium-low.md) | P2-P3 | Minor issues, polish, edge cases | 8 active (5 resolved) |
 
-**Total Active Bugs:** 13 (14 resolved)
+**Total Active Bugs:** 11 (21 resolved)
 
 ---
 
@@ -53,10 +53,10 @@ Bugs are organized by priority across three files to keep each manageable.
 ## Quick Stats
 
 **By Status:**
-- Open: 13
+- Open: 11
 - In Progress: 0
 - Blocked: 0
-- Resolved (last 30 days): 14
+- Resolved (last 30 days): 21
 
 **By Category:**
 - Infrastructure: 1 open (BUG-104)
@@ -78,6 +78,13 @@ Bugs are organized by priority across three files to keep each manageable.
 - Resolved: BUG-108 (auto-scroll on messages)
 - Resolved: BUG-109 (conversation draft persistence)
 - Resolved: BUG-203 (no automated testing — 477 tests now passing)
+- Resolved: BUG-110 (Learn/Sessions nav wrong routes)
+- Resolved: BUG-111 (GlimmerSwiper crash on first swipe)
+- Resolved: BUG-112 (ExperienceMapping no session data)
+- Resolved: BUG-113 (CoreBeliefs user.id crash)
+- Resolved: BUG-209 (Journal keyboard gap)
+- Resolved: BUG-210 (RegulatingResources cut off)
+- Resolved: BUG-211 (Quick Grounding nav to library)
 
 **Week of 2026-02-08:**
 - Resolved: BUG-001, BUG-002, BUG-003, BUG-004 (all P0 security/infra)

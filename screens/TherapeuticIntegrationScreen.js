@@ -12,6 +12,7 @@ import {
   KeyboardAvoidingView
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 import { supabase } from '../lib/supabase';
 import TherapeuticIntegrationService from '../lib/therapeuticIntegrationService';
@@ -25,18 +26,25 @@ const TherapeuticIntegrationScreen = ({ navigation, route }) => {
   
   if (!session || !session.id) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorTitle}>Session Error</Text>
-        <Text style={styles.errorText}>
-          No session data available. Please go back and start a new integration session.
-        </Text>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.backButtonText}>Go Back</Text>
-        </TouchableOpacity>
-      </View>
+      <LinearGradient
+        colors={gradients.standard}
+        start={{ x: 1.0, y: 0.0 }}
+        end={{ x: 0.0, y: 1.0 }}
+        style={{ flex: 1 }}
+      >
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorTitle}>Session Error</Text>
+          <Text style={styles.errorText}>
+            No session data available. Please go back and start a new integration session.
+          </Text>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={styles.backButtonText}>Go Back</Text>
+          </TouchableOpacity>
+        </View>
+      </LinearGradient>
     );
   }
   
@@ -631,6 +639,12 @@ Before we dive in, let's check in with your nervous system. How is your body fee
   };
 
   return (
+    <LinearGradient
+      colors={gradients.standard}
+      start={{ x: 1.0, y: 0.0 }}
+      end={{ x: 0.0, y: 1.0 }}
+      style={{ flex: 1 }}
+    >
     <SafeAreaView style={[styles.container, { paddingBottom: insets.bottom }]} edges={['top', 'bottom']}>
       {/* Header */}
       <View style={styles.header}>
@@ -685,13 +699,13 @@ Before we dive in, let's check in with your nervous system. How is your body fee
         />
       )}
     </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   errorContainer: {
     flex: 1,

@@ -9,6 +9,7 @@ import {
   ActivityIndicator
 } from 'react-native';
 import educationProgressService from '../lib/educationProgressService';
+import { colors } from '../theme/colors';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -221,7 +222,7 @@ const PolyvagalEducationWidget = ({ onComplete, onSkip }) => {
   if (loading) {
     return (
       <View style={[styles.container, styles.centerContent]}>
-        <ActivityIndicator size="large" color="#10b981" />
+        <ActivityIndicator size="large" color={colors.primary} />
         <Text style={styles.loadingText}>Loading your progress...</Text>
       </View>
     );
@@ -266,7 +267,7 @@ const PolyvagalEducationWidget = ({ onComplete, onSkip }) => {
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.surface,
     maxHeight: SCREEN_HEIGHT * 0.9,
   },
   centerContent: {
@@ -276,7 +277,7 @@ const styles = {
   loadingText: {
     marginTop: 16,
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   content: {
     flex: 1,
@@ -287,19 +288,19 @@ const styles = {
     alignItems: 'center',
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
   },
   skipButton: {
     padding: 8,
   },
   skipText: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   progressContainer: {
     paddingHorizontal: 20,
@@ -307,18 +308,18 @@ const styles = {
   },
   progressBar: {
     height: 4,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: colors.lightGray,
     borderRadius: 2,
     marginBottom: 8,
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.primary,
     borderRadius: 2,
   },
   progressText: {
     fontSize: 12,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
   },
   stepContainer: {
@@ -333,19 +334,19 @@ const styles = {
   stepTitle: {
     fontSize: 24,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     textAlign: 'center',
     marginBottom: 16,
   },
   stepContent: {
     fontSize: 16,
-    color: '#4b5563',
+    color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 24,
     marginBottom: 24,
   },
   examplesContainer: {
-    backgroundColor: '#f9fafb',
+    backgroundColor: colors.offWhite,
     borderRadius: 12,
     padding: 16,
     width: '100%',
@@ -354,7 +355,7 @@ const styles = {
   examplesTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.text,
     marginBottom: 12,
   },
   exampleItem: {
@@ -364,18 +365,18 @@ const styles = {
   },
   exampleBullet: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginRight: 8,
     marginTop: 2,
   },
   exampleText: {
     fontSize: 14,
-    color: '#4b5563',
+    color: colors.textSecondary,
     flex: 1,
     lineHeight: 20,
   },
   exerciseButton: {
-    backgroundColor: '#dbeafe',
+    backgroundColor: `${colors.primary}1A`,
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 8,
@@ -384,7 +385,7 @@ const styles = {
   exerciseButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#3b82f6',
+    color: colors.primary,
   },
   exerciseContainer: {
     paddingHorizontal: 20,
@@ -393,13 +394,13 @@ const styles = {
   exerciseTitle: {
     fontSize: 24,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     textAlign: 'center',
     marginBottom: 8,
   },
   exerciseSubtitle: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: 24,
   },
@@ -407,7 +408,7 @@ const styles = {
     marginBottom: 24,
   },
   exerciseStep: {
-    backgroundColor: '#f3f4f6',
+    backgroundColor: colors.offWhite,
     borderRadius: 8,
     padding: 16,
     marginBottom: 12,
@@ -415,22 +416,22 @@ const styles = {
   exerciseStepTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 4,
   },
   exerciseStepText: {
     fontSize: 14,
-    color: '#4b5563',
+    color: colors.textSecondary,
   },
   exerciseNote: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     fontStyle: 'italic',
     marginBottom: 24,
   },
   exerciseCompleteButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.primary,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
@@ -439,7 +440,7 @@ const styles = {
   exerciseCompleteText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#ffffff',
+    color: colors.textInverse,
   },
   footer: {
     flexDirection: 'row',
@@ -447,7 +448,7 @@ const styles = {
     alignItems: 'center',
     padding: 20,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: colors.lightGray,
   },
   previousButton: {
     paddingHorizontal: 16,
@@ -455,10 +456,10 @@ const styles = {
   },
   previousButtonText: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   nextButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.primary,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
@@ -466,7 +467,7 @@ const styles = {
   nextButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#ffffff',
+    color: colors.textInverse,
   },
 };
 

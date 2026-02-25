@@ -1,8 +1,10 @@
+import 'dotenv/config';
+
 export default {
   "expo": {
     "name": "Psycheteleos",
     "slug": "psychedelic-integration-app",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -15,7 +17,7 @@ export default {
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.psycheteleosapp",
-      "buildNumber": "4",
+      "buildNumber": "5",
       "runtimeVersion": {
         "policy": "appVersion"
       },
@@ -29,7 +31,7 @@ export default {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#F5F1E8"
       },
-      "runtimeVersion": "1.1.0",
+      "runtimeVersion": "1.2.0",
       "softwareKeyboardLayoutMode": "resize"
     },
     "web": {
@@ -40,9 +42,9 @@ export default {
       "eas": {
         "projectId": "51f2a410-267f-47c9-a2c8-f77b168d782c"
       },
-      "supabaseUrl": "https://hxpyeudklnqtwspmdsuz.supabase.co",
-      "supabaseAnonKey": "[SUPABASE_ANON_KEY_REDACTED]",
-      "anthropicApiKey": "[ANTHROPIC_API_KEY_REDACTED]"
+      "supabaseUrl": process.env.SUPABASE_URL || '',
+      "supabaseAnonKey": process.env.SUPABASE_ANON_KEY || ''
+      // NOTE: Anthropic API key removed - now handled server-side via Supabase Edge Function
     },
     "owner": "alleviationtherapeutics",
     "updates": {

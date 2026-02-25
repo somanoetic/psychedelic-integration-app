@@ -15,6 +15,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AVATAR_OPTIONS } from './AvatarSelector';
 import { supabase } from '../lib/supabase';
+import { colors } from '../theme/colors';
 
 const ConversationalAllSessions = ({ navigation }) => {
   const [selectedAvatar, setSelectedAvatar] = useState('brain');
@@ -386,8 +387,8 @@ const styles = StyleSheet.create({
     borderColor: '#e5e7eb',
   },
   filterBubbleActive: {
-    backgroundColor: '#8b5cf6',
-    borderColor: '#8b5cf6',
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   filterText: {
     fontSize: 14,
@@ -483,7 +484,7 @@ const styles = StyleSheet.create({
   },
   tapToOpen: {
     fontSize: 13,
-    color: '#8b5cf6',
+    color: colors.primary,
     fontWeight: '500',
   },
   optionsContainer: {

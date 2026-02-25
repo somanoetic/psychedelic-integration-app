@@ -17,6 +17,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AVATAR_OPTIONS } from './AvatarSelector';
 import conversationalRoutingService from '../lib/conversationalRoutingService';
+import { colors } from '../theme/colors';
 
 const ConversationalHomeScreen = ({ navigation, user }) => {
   const [selectedAvatar, setSelectedAvatar] = useState('brain');
@@ -72,7 +73,7 @@ const ConversationalHomeScreen = ({ navigation, user }) => {
   const quickActions = [
     { text: "I'm triggered", icon: 'sos', color: '#ef4444' },
     { text: "I want to journal", icon: 'edit-note', color: '#06b6d4' },
-    { text: "Process an experience", icon: 'auto-awesome', color: '#8b5cf6' },
+    { text: "Process an experience", icon: 'auto-awesome', color: colors.primary },
     { text: "Explore my parts", icon: 'psychology', color: '#3b82f6' },
     { text: "Learn something", icon: 'school', color: '#10b981' },
   ];
@@ -241,7 +242,7 @@ const ConversationalHomeScreen = ({ navigation, user }) => {
                   resizeMode="contain"
                 />
                 <View style={[styles.messageBubble, styles.aiMessage]}>
-                  <ActivityIndicator size="small" color="#8b5cf6" />
+                  <ActivityIndicator size="small" color={colors.primary} />
                   <Text style={styles.typingText}>Huxley is typing...</Text>
                 </View>
               </View>
@@ -381,7 +382,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 4,
   },
   userMessage: {
-    backgroundColor: '#8b5cf6',
+    backgroundColor: colors.primary,
     borderTopRightRadius: 4,
   },
   aiText: {
@@ -444,7 +445,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#8b5cf6',
+    backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
   },

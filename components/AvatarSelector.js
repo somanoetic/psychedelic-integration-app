@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { colors } from '../theme/colors';
 
 const AVATAR_OPTIONS = [
   {
     id: 'brain',
     icon: 'psychology',
     name: 'Wisdom',
-    color: '#8b5cf6',
+    color: colors.primary,
     description: 'Thoughtful guide focused on insight'
   },
   {

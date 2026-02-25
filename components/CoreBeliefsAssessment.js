@@ -12,24 +12,26 @@ import {
   TextInput,
   Image
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
 import { supabase } from '../lib/supabase';
 import coreBeliefsAIService from '../lib/coreBeliefsAIService';
 import { coreBeliefsDomains, coreBeliefQuestions } from '../data/coreBeliefQuestions';
+import { colors } from '../theme/colors';
 
 /**
  * Core Beliefs Assessment Component
  * Two-phase: 1) 100-question inventory, 2) AI discussion of results
  */
-const CoreBeliefsAssessment = ({ user, onComplete }) => {
+const CoreBeliefsAssessment = ({ user: userProp, onComplete, navigation }) => {
   const [phase, setPhase] = useState('intro'); // 'intro', 'questionnaire', 'results', 'discussion', 'complete'
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [responses, setResponses] = useState({});
   const [domainScores, setDomainScores] = useState({});
   const [saving, setSaving] = useState(false);
   const [assessmentId, setAssessmentId] = useState(null);
+  const [currentUser, setCurrentUser] = useState(userProp || null);
 
   // Discussion phase state
   const [messages, setMessages] = useState([]);
@@ -37,6 +39,15 @@ const CoreBeliefsAssessment = ({ user, onComplete }) => {
   const [loading, setLoading] = useState(false);
 
   const scrollViewRef = useRef(null);
+
+  // Fetch user from auth if not provided as prop
+  React.useEffect(() => {
+    if (!currentUser) {
+      supabase.auth.getUser().then(({ data }) => {
+        if (data?.user) setCurrentUser(data.user);
+      });
+    }
+  }, []);
 
   const startQuestionnaire = () => {
     setPhase('questionnaire');
@@ -72,6 +83,12 @@ const CoreBeliefsAssessment = ({ user, onComplete }) => {
   const calculateScoresAndSave = async (allResponses) => {
     setSaving(true);
 
+    if (!currentUser?.id) {
+      Alert.alert('Error', 'Not signed in. Please sign in and try again.');
+      setSaving(false);
+      return;
+    }
+
     try {
       // Calculate domain scores
       const scores = {};
@@ -97,7 +114,7 @@ const CoreBeliefsAssessment = ({ user, onComplete }) => {
       const { data, error } = await supabase
         .from('core_beliefs_assessments')
         .insert({
-          user_id: user.id,
+          user_id: currentUser?.id,
           assessment_type: 'periodic',
           value_worthiness: scores.value_worthiness,
           security_safety: scores.security_safety,
@@ -227,7 +244,7 @@ const CoreBeliefsAssessment = ({ user, onComplete }) => {
 
   const renderIntro = () => (
     <View style={styles.content}>
-      <MaterialIcons name="psychology" size={64} color="#8b5cf6" style={styles.introIcon} />
+      <MaterialIcons name="psychology" size={64} color={colors.primary} style={styles.introIcon} />
       <Text style={styles.title}>Core Beliefs Inventory</Text>
       <Text style={styles.description}>
         This assessment measures 10 core belief domains that shape how you see yourself, others, and the world.
@@ -285,9 +302,9 @@ const CoreBeliefsAssessment = ({ user, onComplete }) => {
               step={1}
               value={currentResponse}
               onValueChange={(value) => setResponses({ ...responses, [question.id]: value })}
-              minimumTrackTintColor="#8b5cf6"
+              minimumTrackTintColor={colors.primary}
               maximumTrackTintColor="#d1d5db"
-              thumbTintColor="#8b5cf6"
+              thumbTintColor={colors.primary}
             />
             <Text style={styles.sliderValue}>{currentResponse}/10</Text>
           </View>
@@ -299,7 +316,7 @@ const CoreBeliefsAssessment = ({ user, onComplete }) => {
               onPress={goToPrevious}
               disabled={currentQuestion === 0}
             >
-              <MaterialIcons name="arrow-back" size={24} color={currentQuestion === 0 ? '#9ca3af' : '#8b5cf6'} />
+              <MaterialIcons name="arrow-back" size={24} color={currentQuestion === 0 ? '#9ca3af' : colors.primary} />
               <Text style={[styles.navButtonText, currentQuestion === 0 && styles.navButtonTextDisabled]}>Previous</Text>
             </TouchableOpacity>
 
@@ -310,7 +327,7 @@ const CoreBeliefsAssessment = ({ user, onComplete }) => {
               <Text style={styles.navButtonText}>
                 {currentQuestion === coreBeliefQuestions.length - 1 ? 'Finish' : 'Next'}
               </Text>
-              <MaterialIcons name="arrow-forward" size={24} color="#8b5cf6" />
+              <MaterialIcons name="arrow-forward" size={24} color={colors.primary} />
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -330,7 +347,7 @@ const CoreBeliefsAssessment = ({ user, onComplete }) => {
       if (score <= 3) return '#ef4444'; // Red - severely limiting
       if (score <= 6) return '#f59e0b'; // Orange - moderately limiting
       if (score <= 8) return '#10b981'; // Green - healthy
-      return '#8b5cf6'; // Purple - very healthy
+      return colors.primary; // Blue - very healthy
     };
 
     const getScoreLabel = (score) => {
@@ -409,7 +426,7 @@ const CoreBeliefsAssessment = ({ user, onComplete }) => {
         keyboardVerticalOffset={100}
       >
         <View style={styles.discussionHeader}>
-          <MaterialIcons name="chat" size={24} color="#8b5cf6" />
+          <MaterialIcons name="chat" size={24} color={colors.primary} />
           <Text style={styles.discussionHeaderTitle}>Results Discussion</Text>
         </View>
 
@@ -427,7 +444,7 @@ const CoreBeliefsAssessment = ({ user, onComplete }) => {
                 resizeMode="contain"
               />
               <View style={styles.loadingBubble}>
-                <ActivityIndicator size="small" color="#8b5cf6" />
+                <ActivityIndicator size="small" color={colors.primary} />
                 <Text style={styles.loadingText}>Huxley is thinking...</Text>
               </View>
             </View>
@@ -483,20 +500,20 @@ const CoreBeliefsAssessment = ({ user, onComplete }) => {
   if (saving && phase === 'questionnaire') {
     return (
       <View style={styles.savingContainer}>
-        <ActivityIndicator size="large" color="#8b5cf6" />
+        <ActivityIndicator size="large" color={colors.primary} />
         <Text style={styles.savingText}>Calculating your results...</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {phase === 'intro' && renderIntro()}
       {phase === 'questionnaire' && renderQuestionnaire()}
       {phase === 'results' && renderResults()}
       {phase === 'discussion' && renderDiscussion()}
       {phase === 'complete' && renderComplete()}
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -543,7 +560,7 @@ const styles = StyleSheet.create({
     marginBottom: 32
   },
   primaryButton: {
-    backgroundColor: '#8b5cf6',
+    backgroundColor: colors.primary,
     paddingVertical: 16,
     paddingHorizontal: 32,
     borderRadius: 12,
@@ -558,7 +575,7 @@ const styles = StyleSheet.create({
   secondaryButton: {
     backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#8b5cf6',
+    borderColor: colors.primary,
     paddingVertical: 16,
     paddingHorizontal: 32,
     borderRadius: 12,
@@ -566,7 +583,7 @@ const styles = StyleSheet.create({
     marginTop: 12
   },
   secondaryButtonText: {
-    color: '#8b5cf6',
+    color: colors.primary,
     fontSize: 16,
     fontWeight: '600'
   },
@@ -577,7 +594,7 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: '100%',
-    backgroundColor: '#8b5cf6'
+    backgroundColor: colors.primary
   },
   progressText: {
     fontSize: 14,
@@ -596,7 +613,7 @@ const styles = StyleSheet.create({
   },
   domainBadge: {
     alignSelf: 'flex-start',
-    backgroundColor: '#ede9fe',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 16,
@@ -605,7 +622,7 @@ const styles = StyleSheet.create({
   domainBadgeText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#8b5cf6'
+    color: colors.primary
   },
   questionText: {
     fontSize: 20,
@@ -635,7 +652,7 @@ const styles = StyleSheet.create({
   sliderValue: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#8b5cf6',
+    color: colors.primary,
     textAlign: 'center',
     marginTop: 8
   },
@@ -652,7 +669,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#8b5cf6',
+    borderColor: colors.primary,
     gap: 8
   },
   navButtonDisabled: {
@@ -661,7 +678,7 @@ const styles = StyleSheet.create({
   navButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#8b5cf6'
+    color: colors.primary
   },
   navButtonTextDisabled: {
     color: '#9ca3af'
@@ -670,7 +687,8 @@ const styles = StyleSheet.create({
     flex: 1
   },
   resultsContent: {
-    padding: 24
+    padding: 24,
+    paddingBottom: 40
   },
   domainResult: {
     backgroundColor: '#fff',
@@ -786,7 +804,7 @@ const styles = StyleSheet.create({
     borderColor: '#e5e7eb'
   },
   userBubble: {
-    backgroundColor: '#8b5cf6'
+    backgroundColor: colors.primary
   },
   messageText: {
     fontSize: 15,
@@ -852,7 +870,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#8b5cf6',
+    backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center'
   },

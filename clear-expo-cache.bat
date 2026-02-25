@@ -1,0 +1,3 @@
+@echo off
+echo Clearing Expo cache...
+npx expo start -c --host lan

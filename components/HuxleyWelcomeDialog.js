@@ -11,6 +11,7 @@ import {
 import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AvatarSelector from './AvatarSelector';
+import { colors } from '../theme/colors';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -35,7 +36,7 @@ const HuxleyWelcomeDialog = ({ visible, onDismiss, onNavigate }) => {
       id: 'session_tools',
       title: 'Session Tools',
       icon: 'settings',
-      color: '#8b5cf6',
+      color: colors.primary,
       description: 'Create sessions, prepare, process experiences',
       route: 'SessionTools',
     },
@@ -96,7 +97,7 @@ const HuxleyWelcomeDialog = ({ visible, onDismiss, onNavigate }) => {
             <View style={styles.characterContainer}>
               {/* Using icon placeholder - works reliably in Expo Go */}
               <View style={styles.characterPlaceholder}>
-                <MaterialIcons name="psychology" size={64} color="#8b5cf6" />
+                <MaterialIcons name="psychology" size={64} color={colors.primary} />
               </View>
               <Text style={styles.characterName}>Huxley</Text>
             </View>
@@ -200,7 +201,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: '#f3e8ff',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 12,
@@ -213,7 +214,7 @@ const styles = StyleSheet.create({
   characterName: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#8b5cf6',
+    color: colors.primary,
   },
   messageContainer: {
     alignItems: 'center',
@@ -282,8 +283,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   checkboxChecked: {
-    backgroundColor: '#8b5cf6',
-    borderColor: '#8b5cf6',
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   dontShowText: {
     fontSize: 14,

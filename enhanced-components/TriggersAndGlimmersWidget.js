@@ -9,6 +9,7 @@ import {
   Alert
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { colors } from '../theme/colors';
 
 /**
  * Triggers & Glimmers Mapping Widget
@@ -268,7 +269,7 @@ They're small but powerful cues of safety. Let's find yours!`,
 
           {/* Dorsal Triggers */}
           {responses.dorsalTriggers.length > 0 && (
-            <View style={[styles.summaryCard, { borderLeftColor: '#6366f1' }]}>
+            <View style={[styles.summaryCard, { borderLeftColor: colors.slate }]}>
               <Text style={styles.summaryCardTitle}>🛡️ Shutdown Triggers</Text>
               {responses.dorsalTriggers.map((trigger, index) => (
                 <View key={index} style={styles.summaryItem}>
@@ -307,9 +308,9 @@ They're small but powerful cues of safety. Let's find yours!`,
   const getCategoryColor = (category) => {
     switch (category) {
       case 'sympatheticTriggers': return '#ef4444';
-      case 'dorsalTriggers': return '#6366f1';
+      case 'dorsalTriggers': return colors.slate;
       case 'glimmers': return '#10b981';
-      default: return '#3b82f6';
+      default: return colors.primary;
     }
   };
 
@@ -378,27 +379,27 @@ They're small but powerful cues of safety. Let's find yours!`,
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.surface,
   },
   header: {
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   skipButton: {
     fontSize: 16,
-    color: '#3b82f6',
+    color: colors.primary,
     fontWeight: '500',
     marginBottom: 8,
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
   },
   progressBarContainer: {
     height: 4,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: colors.lightGray,
     marginHorizontal: 16,
     marginTop: 16,
     borderRadius: 2,
@@ -406,11 +407,11 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: '100%',
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.primary,
   },
   progressText: {
     fontSize: 12,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     marginTop: 8,
     marginBottom: 16,
@@ -433,23 +434,23 @@ const styles = StyleSheet.create({
   stepTitle: {
     fontSize: 24,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 8,
   },
   optionalLabel: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     fontStyle: 'italic',
     marginBottom: 8,
   },
   infoMessage: {
     fontSize: 16,
-    color: '#374151',
+    color: colors.text,
     lineHeight: 26,
   },
   inputPrompt: {
     fontSize: 16,
-    color: '#374151',
+    color: colors.text,
     fontWeight: '500',
     marginBottom: 8,
   },
@@ -458,17 +459,17 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     fontSize: 16,
-    color: '#1f2937',
+    color: colors.text,
     minHeight: 100,
-    backgroundColor: '#f9fafb',
+    backgroundColor: colors.background,
   },
   summaryMessage: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 24,
   },
   summaryCard: {
-    backgroundColor: '#f9fafb',
+    backgroundColor: colors.background,
     borderLeftWidth: 4,
     borderRadius: 8,
     padding: 16,
@@ -477,7 +478,7 @@ const styles = StyleSheet.create({
   summaryCardTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 12,
   },
   summaryItem: {
@@ -486,31 +487,33 @@ const styles = StyleSheet.create({
   },
   summaryBullet: {
     fontSize: 16,
-    color: '#1f2937',
+    color: colors.text,
     marginRight: 8,
     marginTop: 2,
   },
   summaryText: {
     fontSize: 15,
-    color: '#374151',
+    color: colors.text,
     lineHeight: 22,
     flex: 1,
   },
   keyTakeaway: {
-    backgroundColor: '#eff6ff',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     borderRadius: 12,
     padding: 20,
     marginTop: 8,
+    borderWidth: 1,
+    borderColor: colors.primary,
   },
   keyTakeawayTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1e40af',
+    color: colors.primary,
     marginBottom: 12,
   },
   keyTakeawayText: {
     fontSize: 15,
-    color: '#1e40af',
+    color: colors.text,
     lineHeight: 22,
   },
   bold: {
@@ -521,8 +524,8 @@ const styles = StyleSheet.create({
     gap: 12,
     padding: 16,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
-    backgroundColor: '#ffffff',
+    borderTopColor: colors.lightGray,
+    backgroundColor: colors.surface,
   },
   navButton: {
     flex: 1,
@@ -531,26 +534,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   backButton: {
-    backgroundColor: '#f3f4f6',
+    backgroundColor: colors.offWhite,
   },
   nextButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.primary,
   },
   navButtonDisabled: {
-    backgroundColor: '#e5e7eb',
+    backgroundColor: colors.lightGray,
   },
   navButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.text,
   },
   navButtonTextDisabled: {
-    color: '#9ca3af',
+    color: colors.mediumGray,
   },
   nextButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#ffffff',
+    color: colors.textInverse,
   },
 });
 

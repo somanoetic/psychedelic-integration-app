@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
+import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../lib/supabase';
 import ExperienceMappingService from '../lib/experienceMappingService';
 
@@ -20,8 +21,72 @@ const ExperienceMappingScreen = ({ navigation, route }) => {
   console.log('ExperienceMappingScreen route params:', route.params);
 
   const insets = useSafeAreaInsets();
-  const session = route?.params?.session || null;
-  
+  const sessionParam = route?.params?.session || null;
+
+  // Core conversation state
+  const [session, setSession] = useState(sessionParam);
+  const [creatingSession, setCreatingSession] = useState(!sessionParam);
+  const [messages, setMessages] = useState([]);
+  const [userInput, setUserInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [entities, setEntities] = useState([]);
+
+  // Auto-create session if none provided
+  useEffect(() => {
+    if (!sessionParam) {
+      createNewSession();
+    }
+  }, []);
+
+  const createNewSession = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        Alert.alert('Error', 'Please sign in to start a session.');
+        navigation.goBack();
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('sessions')
+        .insert({
+          user_id: user.id,
+          title: `Experience Processing - ${new Date().toLocaleDateString()}`,
+          journey_date: new Date().toISOString().split('T')[0],
+          current_step: 1,
+          session_data: {
+            sessionType: 'experience_processing',
+            conversationMode: 'experienceProcessing',
+          },
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating session:', error);
+        Alert.alert('Error', 'Could not create session. Please try again.');
+        navigation.goBack();
+        return;
+      }
+
+      setSession(data);
+      setCreatingSession(false);
+    } catch (err) {
+      console.error('Error creating session:', err);
+      Alert.alert('Error', 'Could not create session. Please try again.');
+      navigation.goBack();
+    }
+  };
+
+  if (creatingSession) {
+    return (
+      <View style={styles.errorContainer}>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={[styles.errorText, { marginTop: 16 }]}>Setting up your session...</Text>
+      </View>
+    );
+  }
+
   if (!session || !session.id) {
     return (
       <View style={styles.errorContainer}>
@@ -29,7 +94,7 @@ const ExperienceMappingScreen = ({ navigation, route }) => {
         <Text style={styles.errorText}>
           No session data available. Please go back and start a new experience processing session.
         </Text>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
@@ -38,12 +103,6 @@ const ExperienceMappingScreen = ({ navigation, route }) => {
       </View>
     );
   }
-  
-  // Core conversation state
-  const [messages, setMessages] = useState([]);
-  const [userInput, setUserInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [entities, setEntities] = useState([]);
   
   // Experience processing state
   const [experienceData, setExperienceData] = useState({
@@ -570,6 +629,7 @@ You can continue documenting your experience, and I'll be back online soon.`;
   };
 
   return (
+    <LinearGradient colors={gradients.standard} start={{ x: 1.0, y: 0.0 }} end={{ x: 0.0, y: 1.0 }} style={{ flex: 1 }}>
     <SafeAreaView style={[styles.container, { paddingBottom: insets.bottom }]} edges={['top', 'bottom']}>
       {/* Header */}
       <View style={styles.header}>
@@ -611,13 +671,13 @@ You can continue documenting your experience, and I'll be back online soon.`;
         {renderInput()}
       </KeyboardAvoidingView>
     </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   errorContainer: {
     flex: 1,

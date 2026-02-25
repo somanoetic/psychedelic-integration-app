@@ -4,15 +4,34 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Platform, StatusBar, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import { Provider as PaperProvider } from 'react-native-paper';
+import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// Sentry disabled - version mismatch between @sentry/react-native 7.x and @sentry/core 10.x
+// To re-enable: npx expo install @sentry/react-native (will install compatible versions)
+
 import { supabase } from './lib/supabase';
+import metricsService from './lib/metricsService';
 import { colors } from './theme/colors';
+
+const paperTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: colors.primary,
+    accent: colors.primary,
+    background: colors.background,
+    surface: colors.surface,
+    text: colors.text,
+    error: colors.error,
+    placeholder: colors.textSecondary,
+  },
+};
+
 import AuthScreen from './screens/AuthScreen';
 import OnboardingCarousel from './screens/OnboardingCarousel';
-import AnimatedSplash from './components/AnimatedSplash';
+// AnimatedSplash removed - go straight to app
 import ConversationScreen from './screens/ConversationScreen';
 import SimpleEnhancedConversationScreen from './screens/SimpleEnhancedConversationScreen';
 import EnhancedConversationScreen from './screens/EnhancedConversationScreen';
@@ -33,6 +52,9 @@ import InteractiveSessionMindMap from './screens/InteractiveSessionMindMap';
 import QuickNetworkTest from './screens/QuickNetworkTest';
 import NetworkTestScreen from './screens/NetworkTestScreen';
 import ExerciseLibraryScreen from './screens/ExerciseLibraryScreen';
+import AdminMetricsDashboard from './screens/AdminMetricsDashboard';
+import SetIntentionScreen from './screens/SetIntentionScreen';
+import SessionChecklistScreen from './screens/SessionChecklistScreen';
 
 // Conversational Components
 import ConversationalSessionTools from './components/ConversationalSessionTools';
@@ -49,6 +71,8 @@ import IFSPartsWorkChatWithContext from './enhanced-components/IFSPartsWorkChatW
 import GlimmerSwiper from './components/GlimmerSwiper';
 import TriggerTracker from './components/TriggerTracker';
 import GlimmerTracker from './components/GlimmerTracker';
+import NervousSystemCheckin from './components/NervousSystemCheckin';
+import PartsCheckin from './components/PartsCheckin';
 import CurriculumTracker from './components/CurriculumTracker';
 import HabitTracker from './components/HabitTracker';
 
@@ -86,9 +110,10 @@ const MainTabs = () => {
           height: 60 + bottomInset,
           paddingBottom: bottomInset,
           paddingTop: 8,
-          backgroundColor: colors.surface,
-          borderTopColor: colors.sand,
+          backgroundColor: 'rgba(255, 255, 255, 0.6)',
+          borderTopColor: 'rgba(255, 255, 255, 0.3)',
           borderTopWidth: 1,
+          elevation: 0,
         },
         tabBarLabelStyle: {
           paddingBottom: 4,
@@ -129,7 +154,7 @@ export default function App() {
   const [bypassAuth, setBypassAuth] = useState(false); // Add bypass mode
   const [onboardingComplete, setOnboardingComplete] = useState(false);
   const [checkingOnboarding, setCheckingOnboarding] = useState(true);
-  const [showSplash, setShowSplash] = useState(true); // Show animated splash on startup
+  const [showSplash, setShowSplash] = useState(false); // Splash disabled
 
   useEffect(() => {
     checkOnboardingStatus();
@@ -178,6 +203,9 @@ export default function App() {
       setDebugInfo('Connecting to Supabase...');
       console.log('App: Starting initialization');
 
+      // Initialize metrics service
+      await metricsService.initialize();
+
       // Get initial session
       const { data: { session }, error } = await supabase.auth.getSession();
       
@@ -216,8 +244,8 @@ export default function App() {
 
   console.log('App: Rendering, loading:', loading, 'session:', !!session, 'onboarding:', onboardingComplete);
 
-  // Show onboarding for first-time users (after auth check)
-  if ((session?.user || bypassAuth) && !onboardingComplete && !checkingOnboarding) {
+  // Show onboarding for first-time users (after auth check) - skip in demo/bypass mode
+  if ((session?.user || bypassAuth) && !onboardingComplete && !checkingOnboarding && !bypassAuth) {
     return (
       <SafeAreaProvider>
         <OnboardingCarousel onComplete={handleOnboardingComplete} />
@@ -225,17 +253,7 @@ export default function App() {
     );
   }
 
-  // Show animated splash screen
-  if (showSplash) {
-    return (
-      <AnimatedSplash
-        onAnimationFinish={() => {
-          console.log('Splash animation finished');
-          setShowSplash(false);
-        }}
-      />
-    );
-  }
+  // Splash animation removed - skip straight to app
 
   if (loading || checkingOnboarding) {
     return (
@@ -247,26 +265,28 @@ export default function App() {
           If stuck here, check console logs or try restarting
         </Text>
 
-        {/* Emergency bypass button */}
-        <TouchableOpacity
-          style={styles.bypassButton}
-          onPress={() => {
-            console.log('Emergency bypass activated');
-            setBypassAuth(true);
-            setLoading(false);
-          }}
-        >
-          <Text style={styles.bypassButtonText}>🚨 Emergency Bypass (Test Mode)</Text>
-        </TouchableOpacity>
+        {/* Emergency bypass button - DEV ONLY, never rendered in production */}
+        {__DEV__ && (
+          <TouchableOpacity
+            style={styles.bypassButton}
+            onPress={() => {
+              console.log('Emergency bypass activated (DEV ONLY)');
+              setBypassAuth(true);
+              setLoading(false);
+            }}
+          >
+            <Text style={styles.bypassButtonText}>DEV: Emergency Bypass (Test Mode)</Text>
+          </TouchableOpacity>
+        )}
       </View>
     );
   }
 
   return (
     <SafeAreaProvider>
-      <PaperProvider>
+      <PaperProvider theme={paperTheme}>
         <NavigationContainer>
-          <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={(session && session.user) || bypassAuth ? (bypassAuth ? 'MainTabs' : 'HuxleyChat') : 'Auth'}>
             {(session && session.user) || bypassAuth ? (
             <>
               <Stack.Screen name="HuxleyChat" component={HuxleyChatScreen} />
@@ -450,6 +470,22 @@ export default function App() {
                 }}
               />
               <Stack.Screen
+                name="NervousSystemCheckin"
+                component={NervousSystemCheckin}
+                options={{
+                  headerShown: false,
+                  title: 'Nervous System Check-in'
+                }}
+              />
+              <Stack.Screen
+                name="PartsCheckin"
+                component={PartsCheckin}
+                options={{
+                  headerShown: false,
+                  title: 'Parts Check-in'
+                }}
+              />
+              <Stack.Screen
                 name="CurriculumTracker"
                 component={CurriculumTracker}
                 options={{
@@ -463,6 +499,30 @@ export default function App() {
                 options={{
                   headerShown: false,
                   title: 'Habit Tracker'
+                }}
+              />
+              <Stack.Screen
+                name="AdminMetricsDashboard"
+                component={AdminMetricsDashboard}
+                options={{
+                  headerShown: false,
+                  title: 'Metrics Dashboard'
+                }}
+              />
+              <Stack.Screen
+                name="SetIntention"
+                component={SetIntentionScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Set Your Intention'
+                }}
+              />
+              <Stack.Screen
+                name="SessionChecklist"
+                component={SessionChecklistScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Session Checklist'
                 }}
               />
             </>

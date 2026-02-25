@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { TriggersGlimmersAIService } from '../lib/triggersGlimmersAIService';
+import { colors } from '../theme/colors';
 
 /**
  * AI-Enhanced Triggers & Glimmers Mapping Widget
@@ -286,7 +287,7 @@ Even tiny glimmers matter. They build regulation capacity.`,
           {/* Typing Indicator */}
           {isTyping && (
             <View style={styles.typingContainer}>
-              <ActivityIndicator size="small" color="#8b5cf6" />
+              <ActivityIndicator size="small" color={colors.primary} />
               <Text style={styles.typingText}>Reflecting on your response...</Text>
             </View>
           )}
@@ -401,7 +402,7 @@ Even tiny glimmers matter. They build regulation capacity.`,
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb',
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: 'row',
@@ -409,30 +410,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 24,
     paddingVertical: 16,
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   backButton: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
   },
   skipText: {
     fontSize: 16,
-    color: '#8b5cf6',
+    color: colors.primary,
   },
   progressBarContainer: {
     height: 4,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: colors.lightGray,
   },
   progressBar: {
     height: '100%',
-    backgroundColor: '#8b5cf6',
+    backgroundColor: colors.primary,
   },
   content: {
     flex: 1,
@@ -450,33 +451,33 @@ const styles = StyleSheet.create({
   stepTitle: {
     fontSize: 24,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 16,
     textAlign: 'center',
   },
   stepMessage: {
     fontSize: 16,
-    color: '#4b5563',
+    color: colors.darkGray,
     lineHeight: 24,
     marginBottom: 24,
     textAlign: 'center',
   },
   stepPrompt: {
     fontSize: 16,
-    color: '#374151',
+    color: colors.text,
     fontWeight: '500',
     marginBottom: 16,
     textAlign: 'center',
   },
   continueButton: {
-    backgroundColor: '#8b5cf6',
+    backgroundColor: colors.primary,
     paddingVertical: 14,
     paddingHorizontal: 32,
     borderRadius: 12,
     minWidth: 200,
   },
   continueButtonText: {
-    color: '#ffffff',
+    color: colors.textInverse,
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
@@ -486,19 +487,19 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   aiMessageBubble: {
-    backgroundColor: '#f3e8ff',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     padding: 16,
     borderRadius: 12,
     marginBottom: 12,
   },
   aiMessageText: {
     fontSize: 15,
-    color: '#374151',
+    color: colors.text,
     lineHeight: 22,
   },
   aiMessageTimestamp: {
     fontSize: 12,
-    color: '#9ca3af',
+    color: colors.mediumGray,
     marginTop: 8,
   },
   offlineIndicator: {
@@ -514,18 +515,18 @@ const styles = StyleSheet.create({
   },
   typingText: {
     fontSize: 14,
-    color: '#8b5cf6',
+    color: colors.primary,
     marginLeft: 8,
     fontStyle: 'italic',
   },
   input: {
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: '#d1d5db',
+    borderColor: colors.sand,
     borderRadius: 12,
     padding: 16,
     fontSize: 16,
-    color: '#1f2937',
+    color: colors.text,
     minHeight: 100,
     width: '100%',
     marginBottom: 16,
@@ -541,31 +542,31 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#d1d5db',
+    borderColor: colors.sand,
     marginRight: 12,
   },
   skipButtonText: {
-    color: '#6b7280',
+    color: colors.textSecondary,
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
   },
   nextButton: {
     flex: 1,
-    backgroundColor: '#8b5cf6',
+    backgroundColor: colors.primary,
     paddingVertical: 14,
     paddingHorizontal: 24,
     borderRadius: 12,
   },
   nextButtonText: {
-    color: '#ffffff',
+    color: colors.textInverse,
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
   },
   summarySection: {
     width: '100%',
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.surface,
     borderRadius: 12,
     padding: 20,
     marginBottom: 16,
@@ -573,12 +574,12 @@ const styles = StyleSheet.create({
   summarySectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 12,
   },
   summaryItem: {
     fontSize: 15,
-    color: '#4b5563',
+    color: colors.darkGray,
     lineHeight: 24,
     marginBottom: 8,
   },
@@ -591,7 +592,7 @@ const styles = StyleSheet.create({
     minWidth: 200,
   },
   completeButtonText: {
-    color: '#ffffff',
+    color: colors.textInverse,
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',

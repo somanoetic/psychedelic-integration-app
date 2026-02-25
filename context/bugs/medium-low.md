@@ -317,6 +317,76 @@ Users cannot export their journal entries or app data.
 
 ---
 
+### BUG-209: Journal Text Box Gap Above Keyboard
+**Priority:** P2 - Medium (UX)
+**Status:** RESOLVED
+**Reported:** 2026-02-25
+**Resolved:** 2026-02-25
+
+**Description:** ConversationalJournalEntry had no KeyboardAvoidingView, causing empty space between text input and keyboard.
+**Fix:** Added KeyboardAvoidingView wrapper inside SafeAreaView.
+
+---
+
+### BUG-210: Regulating Resources Screen Cut Off by Nav/Status Bars
+**Priority:** P2 - Medium (UX)
+**Status:** RESOLVED
+**Reported:** 2026-02-25
+**Resolved:** 2026-02-25
+
+**Description:** ConversationalRegulatingResources used only KeyboardAvoidingView as root without SafeAreaView. Header hidden behind status bar, input hidden behind nav bar.
+**Fix:** Wrapped in SafeAreaView with edges=['top', 'bottom']. Also fixed user prop same as BUG-113.
+
+---
+
+### BUG-211: Quick Grounding Goes to Main Exercise Library
+**Priority:** P2 - Medium (Navigation)
+**Status:** RESOLVED
+**Reported:** 2026-02-25
+**Resolved:** 2026-02-25
+
+**Description:** "Quick Grounding" and "Exercise Library" both navigated to ExerciseLibrary with no filter.
+**Fix:** Quick Grounding now passes `{ category: 'grounding' }` params. ConversationalExerciseLibrary auto-selects category from route params.
+
+---
+
+### BUG-213: Glimmer Swiper Needs Curated Smiling Face Photos
+**Priority:** P2 - Medium (Content/UX)
+**Status:** Open
+**Reported:** 2026-02-25
+
+**Description:**
+The face photos in `data/glimmerSwiperImages.js` are Unsplash stock portraits. Some may not show clearly smiling/happy expressions. The game's therapeutic value depends on the faces being genuinely warm and smiling.
+
+**Proposed Fix:**
+1. Browse each face URL manually and verify expression
+2. Replace non-smiling photos with clearly happy/smiling ones
+3. Consider bundling images locally (in `assets/`) instead of loading from Unsplash to eliminate network dependency entirely
+4. Unsplash source: https://unsplash.com — grab photo ID from URL
+
+**Notes:**
+- File: `data/glimmerSwiperImages.js`
+- Currently uses `&crop=face` Unsplash param for better face framing
+- Images are 400x400 with prefetching for performance
+- Long-term: local images would be faster and work offline
+
+**Estimated Effort:** 1-2 hours (manual curation) or 3-4 hours (bundle locally)
+
+---
+
+### BUG-212: Exercise Library Has No Actual Instructions
+**Priority:** P2 - Medium (Content)
+**Status:** Open
+**Reported:** 2026-02-25
+
+**Description:** ConversationalExerciseLibrary lists exercise names (e.g., "54321 Grounding", "Body Scan") but has no actual instruction content. Users can browse categories but can't actually do any exercises.
+
+**Proposed Fix:** Add structured exercise data with step-by-step instructions, duration, and difficulty to each exercise entry.
+
+**Estimated Effort:** 3-4 hours (content creation + UI)
+
+---
+
 ## Archived/Resolved
 
 ### BUG-200: Old Color Scheme on Multiple Screens

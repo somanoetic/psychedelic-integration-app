@@ -12,6 +12,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AVATAR_OPTIONS } from './AvatarSelector';
+import { colors } from '../theme/colors';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -142,7 +143,7 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
     );
   };
 
-  const renderUserOption = (text, onPress, icon, color = '#8b5cf6') => (
+  const renderUserOption = (text, onPress, icon, color = colors.primary) => (
     <TouchableOpacity
       style={[styles.userOption, { borderColor: color }]}
       onPress={onPress}
@@ -549,11 +550,11 @@ const styles = StyleSheet.create({
   allTopicsButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#faf5ff',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     padding: 20,
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: '#8b5cf6',
+    borderColor: colors.primary,
   },
   allTopicsContent: {
     flex: 1,
@@ -562,12 +563,12 @@ const styles = StyleSheet.create({
   allTopicsTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#6b21a8',
+    color: colors.primaryDark,
     marginBottom: 4,
   },
   allTopicsDescription: {
     fontSize: 13,
-    color: '#7c3aed',
+    color: colors.primary,
     lineHeight: 18,
   },
   popularLabel: {

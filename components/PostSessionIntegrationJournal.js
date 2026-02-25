@@ -12,6 +12,7 @@ import {
 import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
 import masterContextService from '../lib/masterContextService';
+import { colors } from '../theme/colors';
 
 /**
  * Post-Session Integration Journal
@@ -558,7 +559,7 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: '100%',
-    backgroundColor: '#a855f7',
+    backgroundColor: colors.primaryLight,
     transition: 'width 0.3s ease',
   },
   content: {
@@ -590,7 +591,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     borderLeftWidth: 4,
-    borderLeftColor: '#a855f7',
+    borderLeftColor: colors.primaryLight,
   },
   promptsTitle: {
     fontSize: 14,
@@ -662,7 +663,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f3f4f6',
   },
   nextButton: {
-    backgroundColor: '#a855f7',
+    backgroundColor: colors.primaryLight,
   },
   navButtonDisabled: {
     backgroundColor: '#e5e7eb',

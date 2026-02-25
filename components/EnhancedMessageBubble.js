@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
-import { 
-  Heart, 
-  Zap, 
-  Shield, 
+import {
+  Heart,
+  Zap,
+  Shield,
   Brain,
   Eye,
   Sparkles,
@@ -12,19 +12,20 @@ import {
   Clock,
   Info
 } from 'react-native-vector-icons/Feather';
+import { colors } from '../theme/colors';
 
-const EnhancedMessageBubble = ({ 
-  message, 
-  entities = [], 
-  nervousSystemState, 
-  onEntityPress 
+const EnhancedMessageBubble = ({
+  message,
+  entities = [],
+  nervousSystemState,
+  onEntityPress
 }) => {
   const [showEntityDetails, setShowEntityDetails] = useState(false);
-  
+
   const isUser = message.role === 'user';
-  const timestamp = new Date(message.timestamp).toLocaleTimeString([], { 
-    hour: '2-digit', 
-    minute: '2-digit' 
+  const timestamp = new Date(message.timestamp).toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit'
   });
 
   const getNervousSystemIcon = () => {
@@ -34,24 +35,24 @@ const EnhancedMessageBubble = ({
       case 'sympathetic':
         return <Zap size={12} color="#ef4444" />;
       case 'dorsal':
-        return <Shield size={12} color="#6366f1" />;
+        return <Shield size={12} color={colors.primary} />;
       default:
-        return <Brain size={12} color="#6b7280" />;
+        return <Brain size={12} color={colors.textSecondary} />;
     }
   };
 
   const getEntityIcon = (category) => {
-    const iconProps = { size: 14, color: '#6b7280' };
-    
+    const iconProps = { size: 14, color: colors.textSecondary };
+
     switch (category) {
       case 'archetypal':
-        return <Sparkles {...iconProps} color="#8b5cf6" />;
+        return <Sparkles {...iconProps} color={colors.primary} />;
       case 'emotional':
         return <Heart {...iconProps} color="#ef4444" />;
       case 'somatic':
         return <Activity {...iconProps} color="#f59e0b" />;
       case 'spiritual':
-        return <Eye {...iconProps} color="#3b82f6" />;
+        return <Eye {...iconProps} color={colors.primary} />;
       case 'parts':
         return <Users {...iconProps} color="#10b981" />;
       default:
@@ -61,12 +62,12 @@ const EnhancedMessageBubble = ({
 
   const getEntityColor = (category) => {
     switch (category) {
-      case 'archetypal': return '#8b5cf6';
+      case 'archetypal': return colors.primary;
       case 'emotional': return '#ef4444';
       case 'somatic': return '#f59e0b';
-      case 'spiritual': return '#3b82f6';
+      case 'spiritual': return colors.primary;
       case 'parts': return '#10b981';
-      default: return '#6b7280';
+      default: return colors.textSecondary;
     }
   };
 
@@ -96,12 +97,12 @@ const EnhancedMessageBubble = ({
                 {entity.confidence && (
                   <View style={[
                     styles.confidenceDot,
-                    { 
-                      backgroundColor: entity.confidence > 0.7 
-                        ? '#10b981' 
-                        : entity.confidence > 0.4 
-                        ? '#f59e0b' 
-                        : '#ef4444' 
+                    {
+                      backgroundColor: entity.confidence > 0.7
+                        ? '#10b981'
+                        : entity.confidence > 0.4
+                        ? '#f59e0b'
+                        : '#ef4444'
                     }
                   ]} />
                 )}
@@ -109,13 +110,13 @@ const EnhancedMessageBubble = ({
             ))}
           </View>
         </ScrollView>
-        
+
         {entities.length > 3 && (
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.viewAllButton}
             onPress={() => setShowEntityDetails(!showEntityDetails)}
           >
-            <Info size={12} color="#6b7280" />
+            <Info size={12} color={colors.textSecondary} />
             <Text style={styles.viewAllText}>
               {showEntityDetails ? 'Hide' : 'View all'}
             </Text>
@@ -154,7 +155,7 @@ const EnhancedMessageBubble = ({
       high: '#ef4444',
       medium: '#f59e0b',
       low: '#10b981'
-    }[message.requiresPractice.urgency] || '#6b7280';
+    }[message.requiresPractice.urgency] || colors.textSecondary;
 
     return (
       <View style={[styles.practiceIndicator, { borderColor: urgencyColor }]}>
@@ -170,7 +171,7 @@ const EnhancedMessageBubble = ({
     if (!message.nervousSystemContext && !message.nervousSystemUpdate) return null;
 
     const context = message.nervousSystemContext || message.nervousSystemUpdate;
-    
+
     return (
       <View style={styles.nervousSystemContext}>
         {getNervousSystemIcon()}
@@ -218,7 +219,7 @@ const EnhancedMessageBubble = ({
           ]}>
             {timestamp}
           </Text>
-          
+
           {message.practiceFollowUp && (
             <View style={styles.followUpIndicator}>
               <Activity size={10} color="#10b981" />
@@ -251,13 +252,13 @@ const styles = {
     borderRadius: 16,
   },
   userBubble: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.primary,
     borderBottomRightRadius: 4,
   },
   assistantBubble: {
-    backgroundColor: '#ffffff',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
     borderBottomLeftRadius: 4,
   },
   messageText: {
@@ -265,10 +266,10 @@ const styles = {
     lineHeight: 22,
   },
   userText: {
-    color: '#ffffff',
+    color: colors.textInverse,
   },
   assistantText: {
-    color: '#1f2937',
+    color: colors.text,
   },
   entitiesContainer: {
     marginTop: 12,
@@ -285,7 +286,7 @@ const styles = {
     paddingVertical: 4,
     borderWidth: 1,
     borderRadius: 12,
-    backgroundColor: '#f9fafb',
+    backgroundColor: colors.offWhite,
   },
   entityChipText: {
     fontSize: 12,
@@ -305,19 +306,19 @@ const styles = {
   },
   viewAllText: {
     fontSize: 11,
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   entityDetails: {
     marginTop: 8,
     padding: 12,
-    backgroundColor: '#f9fafb',
+    backgroundColor: colors.offWhite,
     borderRadius: 8,
     maxWidth: '85%',
   },
   entityDetailsTitle: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 8,
   },
   entityDetailItem: {
@@ -332,15 +333,15 @@ const styles = {
   entityDetailName: {
     fontSize: 13,
     fontWeight: '500',
-    color: '#1f2937',
+    color: colors.text,
   },
   entityDetailCategory: {
     fontSize: 11,
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   entityDetailContext: {
     fontSize: 12,
-    color: '#4b5563',
+    color: colors.darkGray,
     fontStyle: 'italic',
     marginLeft: 20,
   },
@@ -365,13 +366,13 @@ const styles = {
     marginTop: 6,
     paddingHorizontal: 6,
     paddingVertical: 2,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: colors.offWhite,
     borderRadius: 6,
     alignSelf: 'flex-start',
   },
   nervousSystemContextText: {
     fontSize: 11,
-    color: '#6b7280',
+    color: colors.textSecondary,
     fontWeight: '500',
   },
   footer: {
@@ -388,7 +389,7 @@ const styles = {
     color: 'rgba(255, 255, 255, 0.7)',
   },
   assistantTimestamp: {
-    color: '#9ca3af',
+    color: colors.mediumGray,
   },
   followUpIndicator: {
     flexDirection: 'row',

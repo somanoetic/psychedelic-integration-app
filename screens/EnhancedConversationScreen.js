@@ -15,6 +15,7 @@ import { supabase } from '../lib/supabase';
 import IntegrationGuideService from '../lib/enhancedClaudeService';
 import EmbeddedPracticeWidget from '../enhanced-components/EmbeddedPracticeWidget';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
@@ -536,6 +537,7 @@ How is your body feeling in this moment?`,
   };
 
   return (
+    <LinearGradient colors={gradients.standard} start={{ x: 1.0, y: 0.0 }} end={{ x: 0.0, y: 1.0 }} style={{ flex: 1 }}>
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Header */}
       <View style={styles.header}>
@@ -577,13 +579,13 @@ How is your body feeling in this moment?`,
         />
       )}
     </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   errorContainer: {
     flex: 1,

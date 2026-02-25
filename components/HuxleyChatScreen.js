@@ -18,10 +18,11 @@ import {
   Image,
   Dimensions,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
-import { colors } from '../theme/colors';
+import { colors, gradients } from '../theme/colors';
 import conversationalRoutingService from '../lib/conversationalRoutingService';
 import HuxleyWelcomeScreen from './HuxleyWelcomeScreen';
 
@@ -146,6 +147,12 @@ let hasShownWelcome = false;
 let persistedMessages = [];
 let hasInitializedChat = false;
 
+// Strip markdown formatting from AI messages (safety net)
+const cleanMarkdown = (text) => {
+  if (!text) return '';
+  return text.replace(/\*\*/g, '').replace(/\*/g, '').replace(/^#+\s/gm, '');
+};
+
 const HuxleyChatScreen = ({ navigation }) => {
   const [messages, setMessages] = useState(persistedMessages);
   const [inputText, setInputText] = useState('');
@@ -158,6 +165,21 @@ const HuxleyChatScreen = ({ navigation }) => {
   const messageQueue = useRef([]);
   const isProcessingQueue = useRef(false);
   const insets = useSafeAreaInsets();
+
+  // Load welcome screen state from AsyncStorage on mount
+  useEffect(() => {
+    AsyncStorage.getItem('huxley_welcome_shown').then(value => {
+      if (value === 'true') {
+        hasShownWelcome = true;
+        setShowWelcome(false);
+        // If welcome was already shown, start chat if needed
+        if (!hasInitializedChat && persistedMessages.length === 0) {
+          hasInitializedChat = true;
+          startGreetingSequence();
+        }
+      }
+    });
+  }, []);
 
   // Persist messages to module-level variable when they change
   useEffect(() => {
@@ -211,6 +233,7 @@ const HuxleyChatScreen = ({ navigation }) => {
   const handleWelcomeComplete = useCallback(() => {
     hasShownWelcome = true;
     setShowWelcome(false);
+    AsyncStorage.setItem('huxley_welcome_shown', 'true');
 
     // Start the greeting messages after welcome is dismissed
     if (!hasInitializedChat) {
@@ -235,17 +258,12 @@ const HuxleyChatScreen = ({ navigation }) => {
       {
         id: 'welcome-3',
         role: 'assistant',
-        content: "Whether you're preparing for an experience, processing what came up, or just need someone to talk to...",
-      },
-      {
-        id: 'welcome-4',
-        role: 'assistant',
-        content: "How are you feeling right now?",
+        content: "What would you like to focus on today?",
         quickReplies: [
-          { label: "I'm doing okay", value: "doing_well" },
-          { label: "Feeling anxious", value: "anxious" },
-          { label: "Need support", value: "need_support" },
-          { label: "Just exploring", value: "exploring" },
+          { label: "Prepare for a session", value: "navigate_SessionPreparation" },
+          { label: "Process an experience", value: "navigate_ExperienceMapping" },
+          { label: "Learn something new", value: "navigate_Learn" },
+          { label: "Just talk", value: "I just want to talk and check in" },
         ],
       },
     ];
@@ -343,7 +361,11 @@ const HuxleyChatScreen = ({ navigation }) => {
 
     if (reply.value.startsWith('navigate_')) {
       const route = reply.value.replace('navigate_', '');
-      navigation.navigate(route);
+      if (route === 'Learn') {
+        navigation.navigate('MainTabs', { screen: 'Learn' });
+      } else {
+        navigation.navigate(route);
+      }
       return;
     }
 
@@ -371,13 +393,13 @@ const HuxleyChatScreen = ({ navigation }) => {
             <View style={styles.messageBubble}>
               {message.isTyping ? (
                 <TypewriterText
-                  text={message.content}
+                  text={cleanMarkdown(message.content)}
                   speed={25}
                   style={styles.messageText}
                   onComplete={() => handleMessageComplete(index)}
                 />
               ) : (
-                <Text style={styles.messageText}>{message.content}</Text>
+                <Text style={styles.messageText}>{cleanMarkdown(message.content)}</Text>
               )}
             </View>
           </View>
@@ -443,9 +465,9 @@ const HuxleyChatScreen = ({ navigation }) => {
 
   return (
     <LinearGradient
-      colors={['#fbffdf', '#7794b6']}
-      start={{ x: 1.0, y: 0.0 }}
-      end={{ x: 0.0, y: 1.0 }}
+      colors={gradients.standard}
+      start={gradients.standardStart}
+      end={gradients.standardEnd}
       style={styles.container}
     >
       <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
@@ -535,7 +557,6 @@ const styles = StyleSheet.create({
   },
   menuButton: {
     padding: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     borderRadius: 12,
   },
   debugScreenName: {
@@ -580,7 +601,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   userBubble: {
-    backgroundColor: '#5d86d6',
+    backgroundColor: colors.primary,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 4,
   },
@@ -617,7 +638,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 24,
     borderWidth: 2,
-    borderColor: '#5d86d6',
+    borderColor: colors.primary,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
@@ -625,7 +646,7 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   quickReplyText: {
-    color: '#5d86d6',
+    color: colors.primary,
     fontSize: 15,
     fontWeight: '600',
   },
@@ -635,9 +656,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     paddingBottom: Platform.OS === 'ios' ? 16 : 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(0, 0, 0, 0.08)',
   },
   input: {
     flex: 1,
@@ -653,13 +671,13 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#5d86d6',
+    backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 10,
   },
   sendButtonDisabled: {
-    backgroundColor: '#e0e0e0',
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
   },
   bottomPadding: {
     height: 20,

@@ -248,5 +248,49 @@ Review these during next bug triage session.
 
 ---
 
-**Current Count:** 3 active (BUG-101, BUG-102, BUG-104), 7 resolved
+### BUG-110: Learn/Sessions Buttons Navigate to Wrong Route
+**Priority:** P1 - High (Navigation)
+**Status:** RESOLVED
+**Reported:** 2026-02-25
+**Resolved:** 2026-02-25
+
+**Description:** "Learn" tile used route 'Education' (screen named 'Learn' in Tab). "Sessions" tile used route 'AllSessions' (screen named 'History' in Tab).
+**Fix:** Updated routes to 'Learn' and 'History'. Removed dead `Education` special-casing.
+
+---
+
+### BUG-111: Glimmer Swiper Crash on First Swipe
+**Priority:** P1 - High (Crash)
+**Status:** RESOLVED
+**Reported:** 2026-02-25
+**Resolved:** 2026-02-25
+
+**Description:** PanResponder used stale closure capturing initial empty `deck` and `currentIndex`. `card.category` crash because card was undefined.
+**Fix:** Added `deckRef`/`currentIndexRef` to keep PanResponder in sync with state. Added null guard.
+
+---
+
+### BUG-112: ExperienceMapping Shows "No Session Data" Error
+**Priority:** P1 - High (UX)
+**Status:** RESOLVED
+**Reported:** 2026-02-25
+**Resolved:** 2026-02-25
+
+**Description:** "Process and Integrate" navigated to ExperienceMappingScreen without session params. Screen requires `route.params.session`.
+**Fix:** Screen now auto-creates a new session via Supabase if none provided.
+
+---
+
+### BUG-113: Core Beliefs Assessment Crash on Completion
+**Priority:** P1 - High (Crash)
+**Status:** RESOLVED
+**Reported:** 2026-02-25
+**Resolved:** 2026-02-25
+
+**Description:** `user` prop never passed when used as Stack.Screen. `user.id` → TypeError.
+**Fix:** Component now fetches user from `supabase.auth.getUser()` if prop not provided.
+
+---
+
+**Current Count:** 3 active (BUG-101, BUG-102, BUG-104), 11 resolved
 **File Status:** Under limit (300 max)

@@ -1,0 +1,710 @@
+# Monitoring & Alerting Configuration for FEAT-101
+# This file defines health checks, metrics, and alerts for the Session Checklist feature
+
+---
+version: '1.0'
+feature: FEAT-101
+component: Session Checklist
+date_created: 2026-02-10
+
+# ============================================================================
+# HEALTH CHECKS & READINESS PROBES
+# ============================================================================
+
+health_checks:
+  # Application Health Checks
+  app:
+    name: React Native App
+    checks:
+      - id: app-startup
+        type: startup_time
+        description: App starts within acceptable time
+        threshold: 3000ms
+        critical_after: 5000ms
+
+      - id: app-navigation
+        type: navigation_latency
+        description: Screen transitions are responsive
+        threshold: 500ms
+        critical_after: 1000ms
+
+  # Backend Service Health Checks
+  supabase:
+    name: Supabase Backend
+    checks:
+      - id: db-connection
+        type: connectivity
+        description: Database connection pool healthy
+        endpoint: "https://${SUPABASE_URL}/rest/v1/health"
+        timeout: 5000ms
+        interval: 30s
+        expected_status: 200
+
+      - id: db-query-latency
+        type: latency
+        description: Database queries respond quickly
+        query: "SELECT 1"
+        threshold: 100ms
+        critical_after: 500ms
+
+      - id: rls-policies
+        type: security
+        description: RLS policies are enforced
+        query: |
+          SELECT count(*) FROM pg_policies
+          WHERE schemaname = 'public'
+          AND tablename IN ('session_checklists', 'session_checklist_items')
+        expected_count: 12
+
+  # Edge Function Health Checks
+  edge_function:
+    name: Claude Proxy Edge Function
+    checks:
+      - id: function-availability
+        type: connectivity
+        description: Edge function is responding
+        endpoint: "https://${SUPABASE_URL}/functions/v1/claude-proxy"
+        timeout: 10000ms
+        interval: 60s
+        expected_status: [200, 401]  # 401 expected without auth
+
+      - id: function-latency
+        type: latency
+        description: Edge function responds quickly
+        threshold: 2000ms
+        critical_after: 5000ms
+
+      - id: rate-limit-enforcement
+        type: functionality
+        description: Rate limiting is working
+        test_method: "make_101_requests"
+        expected: "101st_request_returns_429"
+
+  # Database Schema Health Checks
+  schema:
+    name: Database Schema
+    checks:
+      - id: tables-exist
+        type: schema
+        description: All required tables exist
+        tables:
+          - session_checklists
+          - session_checklist_items
+          - checklist_template_items
+          - user_rate_limits
+          - api_usage_logs
+
+      - id: indexes-exist
+        type: schema
+        description: Performance indexes are in place
+        indexes:
+          - idx_session_checklists_user_time
+          - idx_session_checklists_incomplete
+          - idx_session_checklist_items_session
+          - idx_session_checklist_items_is_custom
+          - idx_template_items_active_version
+
+      - id: constraints-valid
+        type: schema
+        description: Data integrity constraints are enabled
+        constraints:
+          - session_checklists.completed_items_le_total
+          - session_checklists.non_negative_counts
+          - session_checklists.unique_session
+
+# ============================================================================
+# APPLICATION METRICS & INSTRUMENTATION
+# ============================================================================
+
+metrics:
+  # Feature Usage Metrics
+  usage:
+    - name: session_checklists_created
+      type: counter
+      description: Number of checklists created
+      interval: 1m
+      dimensions:
+        - session_id
+        - user_id
+        - template_version
+
+    - name: checklist_items_toggled
+      type: counter
+      description: Checklist items marked complete/incomplete
+      interval: 1m
+      dimensions:
+        - session_id
+        - user_id
+        - item_category
+
+    - name: custom_items_added
+      type: counter
+      description: Custom items added to checklists
+      interval: 1m
+      dimensions:
+        - session_id
+        - user_id
+
+    - name: checklist_completion_rate
+      type: gauge
+      description: Percentage of items completed per checklist
+      interval: 5m
+      query: |
+        SELECT
+          AVG(CAST(completed_items AS FLOAT) / NULLIF(total_items, 0)) * 100
+        FROM session_checklists
+        WHERE completed_at IS NULL
+
+  # Performance Metrics
+  performance:
+    - name: api_response_time_p50
+      type: histogram
+      description: API response time (50th percentile)
+      unit: ms
+      thresholds:
+        warning: 200ms
+        critical: 500ms
+
+    - name: api_response_time_p95
+      type: histogram
+      description: API response time (95th percentile)
+      unit: ms
+      thresholds:
+        warning: 500ms
+        critical: 1000ms
+
+    - name: api_response_time_p99
+      type: histogram
+      description: API response time (99th percentile)
+      unit: ms
+      thresholds:
+        warning: 1000ms
+        critical: 2000ms
+
+    - name: database_query_time
+      type: histogram
+      description: Database query execution time
+      unit: ms
+      operations:
+        - select_checklist
+        - update_item_completion
+        - add_custom_item
+
+    - name: edge_function_duration
+      type: histogram
+      description: Claude proxy edge function execution time
+      unit: ms
+      thresholds:
+        warning: 1000ms
+        critical: 3000ms
+
+  # Reliability Metrics
+  reliability:
+    - name: api_error_rate
+      type: gauge
+      description: Percentage of failed API requests
+      unit: percent
+      thresholds:
+        warning: 1%
+        critical: 5%
+
+    - name: rls_policy_violations
+      type: counter
+      description: Attempts to access unauthorized data
+      alert_threshold: 10
+
+    - name: database_lock_duration
+      type: histogram
+      description: Time queries spend waiting for locks
+      unit: ms
+      thresholds:
+        warning: 100ms
+        critical: 500ms
+
+    - name: rate_limit_hits
+      type: counter
+      description: Users hitting API rate limits
+      interval: 1h
+
+    - name: edge_function_errors
+      type: counter
+      description: Edge function error occurrences
+      dimensions:
+        - error_type
+        - status_code
+
+  # Business Metrics
+  business:
+    - name: feature_adoption_rate
+      type: gauge
+      description: Percentage of sessions using checklist
+      unit: percent
+      interval: 1d
+      target: 70
+
+    - name: average_items_per_checklist
+      type: gauge
+      description: Average number of items per checklist
+      interval: 1d
+      target: 18
+
+    - name: custom_items_per_session
+      type: gauge
+      description: Average custom items added per session
+      interval: 1d
+
+    - name: incomplete_checklist_after_48h
+      type: gauge
+      description: Checklists incomplete after 48 hours
+      unit: percent
+      interval: 1d
+
+# ============================================================================
+# ALERTING RULES
+# ============================================================================
+
+alerts:
+  # Critical Alerts - Immediate Action Required
+  critical:
+    - name: database_unavailable
+      description: Supabase database is unreachable
+      condition: db_connection_failed
+      duration: 2m
+      severity: critical
+      actions:
+        - notify_oncall
+        - create_incident
+        - disable_feature_flag
+      runbook: "docs/runbooks/database-outage.md"
+
+    - name: edge_function_down
+      description: Claude proxy edge function is not responding
+      condition: function_availability_failed
+      duration: 3m
+      severity: critical
+      actions:
+        - notify_oncall
+        - create_incident
+        - rollback_update
+      runbook: "docs/runbooks/edge-function-failure.md"
+
+    - name: data_corruption_detected
+      description: Data integrity violations detected
+      condition: "constraint_violations > 10"
+      duration: 1m
+      severity: critical
+      actions:
+        - notify_database_team
+        - create_incident
+        - stop_writes
+      runbook: "docs/runbooks/data-corruption.md"
+
+    - name: unauthorized_data_access
+      description: RLS policy violations or unauthorized access
+      condition: "rls_violations > 5"
+      duration: 1m
+      severity: critical
+      actions:
+        - notify_security
+        - create_incident
+        - revoke_sessions
+      runbook: "docs/runbooks/security-violation.md"
+
+  # High Priority Alerts - Escalate Within 30 Minutes
+  high:
+    - name: api_error_rate_high
+      description: API error rate exceeds 5%
+      condition: "api_error_rate > 5"
+      duration: 5m
+      severity: high
+      actions:
+        - notify_team
+        - create_incident
+      runbook: "docs/runbooks/high-error-rate.md"
+
+    - name: response_time_degradation
+      description: API response time exceeds 1s (p99)
+      condition: "api_response_time_p99 > 1000"
+      duration: 10m
+      severity: high
+      actions:
+        - notify_team
+        - scale_resources
+      runbook: "docs/runbooks/performance-degradation.md"
+
+    - name: database_query_slow
+      description: Database query latency exceeds 500ms
+      condition: "db_query_latency > 500"
+      duration: 5m
+      severity: high
+      actions:
+        - notify_database_team
+        - analyze_slow_queries
+      runbook: "docs/runbooks/slow-queries.md"
+
+    - name: rate_limit_abuse
+      description: Multiple users hitting rate limits
+      condition: "rate_limit_hits > 100"
+      interval: 1h
+      severity: high
+      actions:
+        - notify_team
+        - investigate_abuse
+      runbook: "docs/runbooks/rate-limit-abuse.md"
+
+    - name: edge_function_latency_high
+      description: Edge function takes too long (>3s)
+      condition: "edge_function_duration > 3000"
+      duration: 5m
+      severity: high
+      actions:
+        - notify_team
+        - profile_function
+      runbook: "docs/runbooks/edge-function-slow.md"
+
+  # Medium Priority Alerts - Escalate Within 2 Hours
+  medium:
+    - name: feature_adoption_low
+      description: Feature adoption below 50%
+      condition: "feature_adoption_rate < 50"
+      interval: 1d
+      severity: medium
+      actions:
+        - notify_product_team
+        - create_task
+
+    - name: custom_items_low
+      description: Users adding few custom items (<2)
+      condition: "custom_items_per_session < 2"
+      interval: 1d
+      severity: medium
+      actions:
+        - notify_product_team
+
+    - name: completion_rate_low
+      description: Checklist completion rate low
+      condition: "checklist_completion_rate < 50"
+      interval: 1d
+      severity: medium
+      actions:
+        - notify_product_team
+        - create_analysis_task
+
+    - name: incomplete_high_after_48h
+      description: Too many incomplete checklists after 48h
+      condition: "incomplete_checklist_after_48h > 30"
+      interval: 1d
+      severity: medium
+      actions:
+        - notify_product_team
+
+  # Low Priority Alerts - Monitoring Only
+  low:
+    - name: api_latency_increased
+      description: API latency trending upward
+      condition: "api_response_time_p50 > 150"
+      duration: 15m
+      severity: low
+      actions:
+        - log_event
+
+    - name: database_lock_wait_time
+      description: Elevated database lock waits
+      condition: "db_lock_duration > 100"
+      severity: low
+      actions:
+        - log_event
+
+# ============================================================================
+# DASHBOARDS & VISUALIZATION
+# ============================================================================
+
+dashboards:
+  # Operations Dashboard
+  operations:
+    title: FEAT-101 Operations Dashboard
+    refresh_interval: 30s
+    tiles:
+      - name: Availability
+        type: gauge
+        metric: feature_availability
+        thresholds: [90, 95, 99.9]
+
+      - name: API Error Rate
+        type: timeseries
+        metric: api_error_rate
+        threshold_line: 1
+
+      - name: Response Time (P50/P95/P99)
+        type: multi_line
+        metrics:
+          - api_response_time_p50
+          - api_response_time_p95
+          - api_response_time_p99
+
+      - name: Edge Function Status
+        type: status
+        checks:
+          - function_availability
+          - function_latency
+          - rate_limit_enforcement
+
+      - name: Active Users
+        type: gauge
+        metric: concurrent_users
+
+      - name: Database Connections
+        type: gauge
+        metric: db_connection_count
+
+  # Business Dashboard
+  business:
+    title: FEAT-101 Business Metrics
+    refresh_interval: 5m
+    tiles:
+      - name: Feature Adoption Rate
+        type: gauge
+        metric: feature_adoption_rate
+        target: 70
+
+      - name: Checklist Completion Rate
+        type: gauge
+        metric: checklist_completion_rate
+        target: 80
+
+      - name: Custom Items Added
+        type: bar_chart
+        metric: custom_items_per_session
+
+      - name: Checklists Created (Daily)
+        type: timeseries
+        metric: session_checklists_created
+
+      - name: Usage by Category
+        type: pie_chart
+        query: |
+          SELECT category, COUNT(*) as count
+          FROM session_checklist_items
+          GROUP BY category
+
+  # Security Dashboard
+  security:
+    title: FEAT-101 Security Dashboard
+    refresh_interval: 1m
+    tiles:
+      - name: RLS Policy Violations
+        type: counter
+        metric: rls_policy_violations
+        threshold: 5
+
+      - name: Rate Limit Hits (Hourly)
+        type: timeseries
+        metric: rate_limit_hits
+
+      - name: Unauthorized Access Attempts
+        type: counter
+        metric: unauthorized_access_attempts
+        threshold: 10
+
+      - name: API Usage Top Users
+        type: table
+        query: |
+          SELECT user_id, COUNT(*) as requests
+          FROM api_usage_logs
+          WHERE created_at > NOW() - INTERVAL '24 hours'
+          GROUP BY user_id
+          ORDER BY requests DESC
+          LIMIT 10
+
+# ============================================================================
+# LOGGING & OBSERVABILITY
+# ============================================================================
+
+logging:
+  # Application Logs
+  application:
+    level: info
+    format: json
+    destinations:
+      - stdout
+      - cloudwatch
+    retention: 30d
+
+  # Edge Function Logs
+  edge_function:
+    level: info
+    format: structured
+    destinations:
+      - supabase_dashboard
+      - cloudwatch
+    retention: 30d
+
+  # Database Logs
+  database:
+    level: info
+    format: json
+    destinations:
+      - supabase_logs
+    retention: 7d
+    queries:
+      log_min_duration_statement: 500ms  # Log queries > 500ms
+
+  # Security Logs
+  security:
+    level: info
+    format: json
+    destinations:
+      - cloudwatch
+      - splunk
+    retention: 90d
+    events:
+      - authentication_failure
+      - authorization_failure
+      - rls_policy_violation
+      - rate_limit_hit
+
+tracing:
+  enabled: true
+  sample_rate: 10%  # Sample 10% of requests
+  attributes:
+    - user_id
+    - session_id
+    - operation
+    - duration
+  destinations:
+    - jaeger
+    - datadog
+
+# ============================================================================
+# RUNBOOKS & INCIDENT RESPONSE
+# ============================================================================
+
+runbooks:
+  - name: "Database Connection Lost"
+    document: "docs/runbooks/database-outage.md"
+    severity: critical
+    time_to_resolution: 15m
+
+  - name: "Edge Function Failure"
+    document: "docs/runbooks/edge-function-failure.md"
+    severity: critical
+    time_to_resolution: 15m
+
+  - name: "High API Error Rate"
+    document: "docs/runbooks/high-error-rate.md"
+    severity: high
+    time_to_resolution: 30m
+
+  - name: "Performance Degradation"
+    document: "docs/runbooks/performance-degradation.md"
+    severity: high
+    time_to_resolution: 30m
+
+  - name: "Security Violation"
+    document: "docs/runbooks/security-violation.md"
+    severity: critical
+    time_to_resolution: 10m
+
+# ============================================================================
+# SLO/SLI DEFINITIONS
+# ============================================================================
+
+slos:
+  # Service Level Objectives for FEAT-101
+
+  - name: Availability
+    description: Feature is available and responding to requests
+    objective: 99.9%
+    window: 30d
+    indicator:
+      name: successful_requests
+      query: "success_count / total_count"
+
+  - name: Latency
+    description: API requests complete within acceptable time
+    objective: 95% < 500ms
+    window: 30d
+    indicator:
+      name: request_latency_p95
+      query: "percentile(request_duration, 95)"
+
+  - name: Error Rate
+    description: Requests complete without error
+    objective: 99%
+    window: 30d
+    indicator:
+      name: success_rate
+      query: "(total_requests - failed_requests) / total_requests"
+
+  - name: Data Consistency
+    description: No data corruption or integrity violations
+    objective: 100%
+    window: 30d
+    indicator:
+      name: constraint_violations
+      query: "COUNT(violations)"
+
+# ============================================================================
+# MAINTENANCE WINDOWS
+# ============================================================================
+
+maintenance:
+  - name: "Weekly Database Optimization"
+    schedule: "0 2 * * 0"  # Every Sunday at 2 AM UTC
+    duration: 30m
+    affected_components:
+      - database
+    notification_lead_time: 24h
+
+  - name: "Monthly Database Backup Verification"
+    schedule: "0 3 1 * *"  # First day of month at 3 AM UTC
+    duration: 60m
+    affected_components:
+      - database
+    notification_lead_time: 48h
+
+  - name: "Quarterly Security Audit"
+    schedule: "0 0 1 */3 *"  # First day of every 3 months
+    duration: 120m
+    affected_components:
+      - all
+    notification_lead_time: 1 week
+
+# ============================================================================
+# CONFIGURATION
+# ============================================================================
+
+notification_channels:
+  slack:
+    webhook: "${SLACK_WEBHOOK_URL}"
+    channels:
+      critical: "#incidents"
+      high: "#alerts"
+      medium: "#monitoring"
+
+  email:
+    enabled: true
+    recipients:
+      critical: "oncall@company.com"
+      high: "team@company.com"
+
+  pagerduty:
+    enabled: true
+    key: "${PAGERDUTY_INTEGRATION_KEY}"
+
+integrations:
+  supabase:
+    enabled: true
+    project_id: "${SUPABASE_PROJECT_ID}"
+
+  cloudwatch:
+    enabled: true
+    region: "us-east-1"
+
+  datadog:
+    enabled: false
+    api_key: "${DATADOG_API_KEY}"
+
+# ============================================================================
+# END OF MONITORING CONFIGURATION
+# ============================================================================

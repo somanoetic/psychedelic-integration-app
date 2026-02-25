@@ -8,6 +8,7 @@ import {
   Alert
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import ScenarioTrainingSystem from '../lib/scenarioTrainingSystem';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 
@@ -93,6 +94,12 @@ NOTES: Mystical experiences need validation and somatic integration`;
   };
 
   return (
+    <LinearGradient
+      colors={gradients.standard}
+      start={{ x: 1.0, y: 0.0 }}
+      end={{ x: 0.0, y: 1.0 }}
+      style={{ flex: 1 }}
+    >
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
     <ScrollView style={styles.scroll}>
       {/* Header */}
@@ -196,13 +203,13 @@ NOTES: Mystical experiences need validation and somatic integration`;
       <View style={styles.bottomPadding} />
     </ScrollView>
     </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   scroll: {
     flex: 1,

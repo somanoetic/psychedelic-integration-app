@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../lib/supabase';
 import config from '../lib/config';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
@@ -182,6 +183,12 @@ const NetworkTestScreen = ({ navigation }) => {
   const diagnosis = results.length > 0 ? generateDiagnosis() : null;
 
   return (
+    <LinearGradient
+      colors={gradients.standard}
+      start={{ x: 1.0, y: 0.0 }}
+      end={{ x: 0.0, y: 1.0 }}
+      style={{ flex: 1 }}
+    >
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -250,13 +257,13 @@ const NetworkTestScreen = ({ navigation }) => {
         </View>
       </ScrollView>
     </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   header: {
     flexDirection: 'row',

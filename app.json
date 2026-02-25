@@ -40,9 +40,9 @@
       "eas": {
         "projectId": "51f2a410-267f-47c9-a2c8-f77b168d782c"
       },
-      "supabaseUrl": "https://hxpyeudklnqtwspmdsuz.supabase.co",
-      "supabaseAnonKey": "[SUPABASE_ANON_KEY_REDACTED]",
-      "anthropicApiKey": "[ANTHROPIC_API_KEY_REDACTED]"
+      "supabaseUrl": "",
+      "supabaseAnonKey": "",
+      "anthropicApiKey": ""
     },
     "owner": "alleviationtherapeutics",
     "updates": {

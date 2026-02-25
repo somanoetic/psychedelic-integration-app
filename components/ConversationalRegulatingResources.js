@@ -12,25 +12,32 @@ import {
   Alert,
   Image
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
 import regulatingResourcesAIService from '../lib/regulatingResourcesAIService';
+import { colors } from '../theme/colors';
 
 /**
  * Conversational Regulating Resources Discovery
  * Guides user through identifying their personal regulation toolkit
  */
-const ConversationalRegulatingResources = ({ user, onComplete }) => {
+const ConversationalRegulatingResources = ({ user: userProp, onComplete, navigation }) => {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
   const [phase, setPhase] = useState('intro'); // 'intro', 'individual', 'interactive', 'complete'
   const [saving, setSaving] = useState(false);
+  const [currentUser, setCurrentUser] = useState(userProp || null);
   const scrollViewRef = useRef(null);
 
   useEffect(() => {
     initializeConversation();
+    if (!currentUser) {
+      supabase.auth.getUser().then(({ data }) => {
+        if (data?.user) setCurrentUser(data.user);
+      });
+    }
   }, []);
 
   const initializeConversation = async () => {
@@ -98,7 +105,7 @@ const ConversationalRegulatingResources = ({ user, onComplete }) => {
       const { data, error } = await supabase
         .from('regulating_resources')
         .insert({
-          user_id: user.id,
+          user_id: currentUser?.id,
           conversation: conversationHistory,
           sensory_resources: extractedData.sensory || [],
           movement_resources: extractedData.movement || [],
@@ -167,13 +174,14 @@ const ConversationalRegulatingResources = ({ user, onComplete }) => {
   };
 
   return (
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
     <KeyboardAvoidingView
-      style={styles.container}
+      style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={100}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
     >
       <View style={styles.header}>
-        <MaterialIcons name="self-improvement" size={24} color="#8b5cf6" />
+        <MaterialIcons name="self-improvement" size={24} color={colors.primary} />
         <Text style={styles.headerTitle}>Regulating Resources</Text>
       </View>
 
@@ -204,7 +212,7 @@ const ConversationalRegulatingResources = ({ user, onComplete }) => {
               resizeMode="contain"
             />
             <View style={styles.loadingBubble}>
-              <ActivityIndicator size="small" color="#8b5cf6" />
+              <ActivityIndicator size="small" color={colors.primary} />
               <Text style={styles.loadingText}>Huxley is thinking...</Text>
             </View>
           </View>
@@ -278,6 +286,7 @@ const ConversationalRegulatingResources = ({ user, onComplete }) => {
         </View>
       )}
     </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
@@ -317,7 +326,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   phaseActive: {
-    backgroundColor: '#ede9fe'
+    backgroundColor: 'rgba(255, 255, 255, 0.9)'
   },
   phaseText: {
     fontSize: 12,
@@ -370,7 +379,7 @@ const styles = StyleSheet.create({
     borderColor: '#e5e7eb'
   },
   userBubble: {
-    backgroundColor: '#8b5cf6'
+    backgroundColor: colors.primary
   },
   messageText: {
     fontSize: 15,
@@ -401,7 +410,7 @@ const styles = StyleSheet.create({
     gap: 8
   },
   actionButton: {
-    backgroundColor: '#8b5cf6',
+    backgroundColor: colors.primary,
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 8,
@@ -410,7 +419,7 @@ const styles = StyleSheet.create({
   secondaryButton: {
     backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#8b5cf6'
+    borderColor: colors.primary
   },
   actionButtonText: {
     color: '#fff',
@@ -418,7 +427,7 @@ const styles = StyleSheet.create({
     fontWeight: '600'
   },
   secondaryButtonText: {
-    color: '#8b5cf6'
+    color: colors.primary
   },
   inputContainer: {
     flexDirection: 'row',
@@ -445,7 +454,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#8b5cf6',
+    backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center'
   },

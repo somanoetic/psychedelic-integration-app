@@ -123,6 +123,12 @@ const OnboardingCarousel = ({ onComplete }) => {
   );
 
   return (
+    <LinearGradient
+      colors={gradients.standard}
+      start={{ x: 1.0, y: 0.0 }}
+      end={{ x: 0.0, y: 1.0 }}
+      style={{ flex: 1 }}
+    >
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <StatusBar barStyle="dark-content" />
 
@@ -164,13 +170,13 @@ const OnboardingCarousel = ({ onComplete }) => {
         </TouchableOpacity>
       </View>
     </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.cream,
   },
   skipButton: {
     position: 'absolute',

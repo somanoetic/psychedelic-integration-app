@@ -17,7 +17,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
-import { colors } from '../theme/colors';
+import { colors, gradients } from '../theme/colors';
 import FloatingHuxleyButton from './FloatingHuxleyButton';
 import HuxleyChatModal from './HuxleyChatModal';
 import SubMenuModal from './SubMenuModal';
@@ -25,7 +25,7 @@ import SubMenuModal from './SubMenuModal';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const TILE_GAP = 16;
 const TILE_WIDTH = (SCREEN_WIDTH - 48 - TILE_GAP) / 2; // 48 = 24px padding on each side
-const BUTTON_COLOR = '#5d86d6';
+const BUTTON_COLOR = colors.primary;
 
 const GridHomeScreen = ({ navigation }) => {
   const [huxleyModalVisible, setHuxleyModalVisible] = useState(false);
@@ -35,10 +35,10 @@ const GridHomeScreen = ({ navigation }) => {
 
   // Track Hub options
   const trackOptions = [
-    { id: 'nervous', title: 'Nervous System Check-in', description: 'How is your nervous system right now?', emoji: '💚', route: 'NervousSystemMapping' },
+    { id: 'nervous', title: 'Nervous System Check-in', description: 'How is your nervous system right now?', emoji: '💚', route: 'NervousSystemCheckin' },
     { id: 'glimmer', title: 'Glimmer Tracker', description: 'Log a positive moment', emoji: '✨', route: 'GlimmerTracker' },
     { id: 'trigger', title: 'Trigger Tracker', description: 'Log when you were triggered', emoji: '⚡', route: 'TriggerTracker' },
-    { id: 'parts', title: 'Parts Check-in', description: 'Check in with your inner parts', emoji: '🎭', route: 'IFSChat' },
+    { id: 'parts', title: 'Parts Check-in', description: 'Check in with your inner parts', emoji: '🎭', route: 'PartsCheckin' },
     { id: 'habits', title: 'Habit Tracker', description: 'Track your daily practices', emoji: '📊', route: 'HabitTracker' },
   ];
 
@@ -56,7 +56,7 @@ const GridHomeScreen = ({ navigation }) => {
     { id: 'progress', title: 'Your Progress', description: 'Track your exercise curriculum', emoji: '📈', route: 'CurriculumTracker' },
     { id: 'swiper', title: 'Glimmer Swiper', description: 'Therapeutic swipe game', emoji: '🎮', route: 'GlimmerSwiper' },
     { id: 'exercises', title: 'Exercise Library', description: 'Breathing, grounding, somatic', emoji: '🏃', route: 'ExerciseLibrary' },
-    { id: 'grounding', title: 'Quick Grounding', description: '5-4-3-2-1 and more', emoji: '🌍', route: 'ExerciseLibrary' },
+    { id: 'grounding', title: 'Quick Grounding', description: '5-4-3-2-1 and more', emoji: '🌍', route: 'ExerciseLibrary', params: { category: 'grounding' } },
   ];
 
   const smallTiles = [
@@ -80,14 +80,14 @@ const GridHomeScreen = ({ navigation }) => {
       title: 'Learn',
       emoji: '📚',
       color: BUTTON_COLOR,
-      route: 'Education',
+      route: 'Learn',
     },
     {
       id: 'sessions',
       title: 'Sessions',
       emoji: '📋',
       color: BUTTON_COLOR,
-      route: 'AllSessions',
+      route: 'History',
     },
   ];
 
@@ -97,7 +97,7 @@ const GridHomeScreen = ({ navigation }) => {
       title: 'Prepare for a Journey',
       emoji: '🧭',
       color: BUTTON_COLOR,
-      route: 'Preparation',
+      route: 'SessionPreparation',
     },
     {
       id: 'process',
@@ -127,8 +127,6 @@ const GridHomeScreen = ({ navigation }) => {
   const handleTilePress = (tile) => {
     if (tile.isSubmenu && tile.onPress) {
       tile.onPress();
-    } else if (tile.route === 'Education') {
-      navigation.navigate('Education');
     } else if (tile.route) {
       navigation.navigate(tile.route);
     }
@@ -138,19 +136,15 @@ const GridHomeScreen = ({ navigation }) => {
     setHuxleyModalVisible(true);
   };
 
-  const handleSubMenuSelect = (route) => {
-    if (route === 'Education') {
-      navigation.navigate('Education');
-    } else {
-      navigation.navigate(route);
-    }
+  const handleSubMenuSelect = (route, params) => {
+    navigation.navigate(route, params);
   };
 
   return (
     <LinearGradient
-      colors={['#fbffdf', '#7794b6']}
-      start={{ x: 1.0, y: 0.0 }}
-      end={{ x: 0.0, y: 1.0 }}
+      colors={gradients.standard}
+      start={gradients.standardStart}
+      end={gradients.standardEnd}
       style={styles.container}
     >
       <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -282,7 +276,6 @@ const styles = StyleSheet.create({
   },
   headerButton: {
     padding: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     borderRadius: 12,
     minWidth: 44,
     minHeight: 44,

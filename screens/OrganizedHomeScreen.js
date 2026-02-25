@@ -242,7 +242,7 @@ const OrganizedHomeScreen = ({ navigation }) => {
         title: 'Exercise Library',
         description: 'Browse therapeutic practices: breathing, grounding, IFS parts work, and more',
         badge: 'New',
-        badgeColor: '#8b5cf6',
+        badgeColor: colors.primary,
         onPress: () => navigation.navigate('ExerciseLibrary')
       },
       {
@@ -350,6 +350,12 @@ const OrganizedHomeScreen = ({ navigation }) => {
 
   if (loading) {
     return (
+      <LinearGradient
+        colors={gradients.standard}
+        start={{ x: 1.0, y: 0.0 }}
+        end={{ x: 0.0, y: 1.0 }}
+        style={{ flex: 1 }}
+      >
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
         <Appbar.Header style={styles.appbar}>
           <Appbar.Content title="Psycheteleos" titleStyle={styles.appbarTitle} />
@@ -359,10 +365,17 @@ const OrganizedHomeScreen = ({ navigation }) => {
           <Text style={styles.loadingText}>Loading your dashboard...</Text>
         </View>
       </SafeAreaView>
+      </LinearGradient>
     );
   }
 
   return (
+    <LinearGradient
+      colors={gradients.standard}
+      start={{ x: 1.0, y: 0.0 }}
+      end={{ x: 0.0, y: 1.0 }}
+      style={{ flex: 1 }}
+    >
     <SafeAreaView style={styles.container} edges={['top']}>
       <Appbar.Header style={styles.appbar}>
         <Appbar.Content title="Psycheteleos" titleStyle={styles.appbarTitle} />
@@ -413,13 +426,13 @@ const OrganizedHomeScreen = ({ navigation }) => {
         }}
       />
     </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   appbar: {
     backgroundColor: colors.surface,

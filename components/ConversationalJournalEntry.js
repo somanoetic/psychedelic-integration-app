@@ -9,12 +9,14 @@ import {
   Animated,
   Platform,
   Alert,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AVATAR_OPTIONS } from './AvatarSelector';
 import { supabase } from '../lib/supabase';
+import { colors } from '../theme/colors';
 
 const ConversationalJournalEntry = ({ navigation }) => {
   const [selectedAvatar, setSelectedAvatar] = useState('brain');
@@ -153,7 +155,7 @@ const ConversationalJournalEntry = ({ navigation }) => {
     </View>
   );
 
-  const renderUserOption = (text, onPress, icon, color = '#8b5cf6') => (
+  const renderUserOption = (text, onPress, icon, color = colors.primary) => (
     <TouchableOpacity
       style={[styles.responseBubble, { backgroundColor: color }]}
       onPress={onPress}
@@ -337,20 +339,26 @@ const ConversationalJournalEntry = ({ navigation }) => {
         <MaterialIcons name="edit-note" size={24} color="#1f2937" />
       </View>
 
-      <ScrollView
-        style={styles.content}
-        contentContainerStyle={styles.contentContainer}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       >
-        <Animated.View style={{ opacity: fadeAnim }}>
-          {conversationStep === 'initial' && renderInitialStep()}
-          {conversationStep === 'prompt_choice' && renderPromptChoice()}
-          {conversationStep === 'free_write' && renderFreeWrite()}
-          {conversationStep === 'prompted_write' && renderPromptedWrite()}
-          {conversationStep === 'save_confirm' && renderSaveConfirm()}
-        </Animated.View>
-      </ScrollView>
+        <ScrollView
+          style={styles.content}
+          contentContainerStyle={styles.contentContainer}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Animated.View style={{ opacity: fadeAnim }}>
+            {conversationStep === 'initial' && renderInitialStep()}
+            {conversationStep === 'prompt_choice' && renderPromptChoice()}
+            {conversationStep === 'free_write' && renderFreeWrite()}
+            {conversationStep === 'prompted_write' && renderPromptedWrite()}
+            {conversationStep === 'save_confirm' && renderSaveConfirm()}
+          </Animated.View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

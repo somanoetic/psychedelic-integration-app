@@ -37,7 +37,7 @@ const SessionDetailScreen = ({ navigation, route }) => {
         'Nervous system & parts check-ins'
       ],
       estimatedTime: '20-30 min',
-      color: '#8b5cf6',
+      color: colors.primary,
       status: currentSession?.session_data?.preparation?.completedSections?.length > 0 ? 'In Progress' : 'Not Started',
       onPress: () => navigation.navigate('SessionPreparation', { sessionId: currentSession.id, sessionData: currentSession })
     },
@@ -93,6 +93,8 @@ const SessionDetailScreen = ({ navigation, route }) => {
     <SafeAreaView style={[styles.container, { paddingBottom: insets.bottom }]} edges={['top']}>
       <LinearGradient
         colors={gradients.warm}
+        start={{ x: 1.0, y: 0.0 }}
+        end={{ x: 0.0, y: 1.0 }}
         style={styles.headerGradient}
       >
         <TouchableOpacity

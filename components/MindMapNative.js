@@ -18,6 +18,7 @@ import Svg, {
   Stop,
   Text as SvgText
 } from 'react-native-svg';
+import { colors } from '../theme/colors';
 
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
 
@@ -490,7 +491,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#e2e8f0',
   },
   controlButton: {
-    backgroundColor: '#667eea',
+    backgroundColor: colors.primary,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,

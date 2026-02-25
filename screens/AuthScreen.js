@@ -101,6 +101,8 @@ export default function AuthScreen({ navigation }) {
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <LinearGradient
         colors={gradients.warm}
+        start={{ x: 1.0, y: 0.0 }}
+        end={{ x: 0.0, y: 1.0 }}
         style={styles.container}
       >
         <View style={styles.content}>
@@ -203,7 +205,7 @@ export default function AuthScreen({ navigation }) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: colors.golden,
+    backgroundColor: '#7794b6',
   },
   container: {
     flex: 1,
@@ -222,7 +224,7 @@ const styles = StyleSheet.create({
     fontSize: 64,
     color: colors.white,
     marginBottom: spacing.sm,
-    textShadowColor: 'rgba(122, 92, 77, 0.3)',
+    textShadowColor: 'rgba(0, 0, 0, 0.15)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 8,
   },
@@ -232,7 +234,7 @@ const styles = StyleSheet.create({
     color: colors.white,
     letterSpacing: -1,
     marginBottom: spacing.xs,
-    textShadowColor: 'rgba(122, 92, 77, 0.3)',
+    textShadowColor: 'rgba(0, 0, 0, 0.15)',
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 8,
   },
@@ -251,7 +253,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 26,
     fontWeight: '700',
-    color: colors.deepEarth,
+    color: colors.text,
     textAlign: 'center',
     marginBottom: spacing.lg,
     letterSpacing: -0.5,
@@ -311,7 +313,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   secondaryButtonText: {
-    color: colors.deepEarth,
+    color: colors.text,
     fontSize: 15,
     fontWeight: '600',
   },

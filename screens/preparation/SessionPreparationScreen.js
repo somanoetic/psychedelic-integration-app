@@ -5,10 +5,8 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  Platform,
   Alert,
   TextInput,
-  Modal
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -17,10 +15,12 @@ import { supabase } from '../../lib/supabase';
 import { colors, gradients, spacing, borderRadius, shadows } from '../../theme/colors';
 
 const SessionPreparationScreen = ({ navigation, route }) => {
-  const { sessionId, sessionData } = route.params || {};
+  const { sessionId: passedSessionId, sessionData } = route.params || {};
+  const [sessionId, setSessionId] = useState(passedSessionId || null);
   const [currentSection, setCurrentSection] = useState('overview');
   const [completedSections, setCompletedSections] = useState([]);
-  
+  const [creatingSession, setCreatingSession] = useState(false);
+
   // Session Info
   const [medicine, setMedicine] = useState('');
   const [dosage, setDosage] = useState('');
@@ -40,8 +40,43 @@ const SessionPreparationScreen = ({ navigation, route }) => {
   const [activeParts, setActiveParts] = useState([]);
   const [partsNotes, setPartsNotes] = useState('');
 
-  // Session day items checklist
-  const [checkedItems, setCheckedItems] = useState({});
+  // Auto-create session if none provided
+  useEffect(() => {
+    if (!sessionId && !creatingSession) {
+      createNewSession();
+    }
+  }, []);
+
+  const createNewSession = async () => {
+    try {
+      setCreatingSession(true);
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        console.warn('No authenticated user - working offline');
+        setCreatingSession(false);
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('sessions')
+        .insert({
+          user_id: user.id,
+          title: 'New Session',
+          journey_date: new Date().toISOString().split('T')[0],
+          session_data: { preparation: {} },
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      setSessionId(data.id);
+      console.log('Auto-created session:', data.id);
+    } catch (err) {
+      console.error('Error creating session:', err);
+    } finally {
+      setCreatingSession(false);
+    }
+  };
 
   // Load existing session data if available
   useEffect(() => {
@@ -62,7 +97,6 @@ const SessionPreparationScreen = ({ navigation, route }) => {
       setNervousSystemNotes(prep.nervousSystemNotes || '');
       setActiveParts(prep.activeParts || []);
       setPartsNotes(prep.partsNotes || '');
-      setCheckedItems(prep.checkedItems || {});
       setCompletedSections(prep.completedSections || []);
     }
   }, [sessionData]);
@@ -88,7 +122,6 @@ const SessionPreparationScreen = ({ navigation, route }) => {
         nervousSystemNotes,
         activeParts,
         partsNotes,
-        checkedItems,
         completedSections,
         completedAt: new Date().toISOString()
       };
@@ -251,58 +284,6 @@ const SessionPreparationScreen = ({ navigation, route }) => {
     }
   ];
 
-  // Session day items
-  const sessionItems = [
-    {
-      id: 'eye_mask',
-      title: 'Eye Mask',
-      description: 'Provider may have one, but bring your own for comfort',
-      essential: false
-    },
-    {
-      id: 'music_device',
-      title: 'Phone/Music Device',
-      description: 'For your preselected music playlist',
-      essential: true
-    },
-    {
-      id: 'headphones',
-      title: 'Noise-cancelling Headphones',
-      description: 'Best listening experience and noise elimination',
-      essential: true
-    },
-    {
-      id: 'journal',
-      title: 'Journal & Pen',
-      description: 'Write or draw to reflect on your experience',
-      essential: true
-    },
-    {
-      id: 'grounding_object',
-      title: 'Grounding Object',
-      description: 'Fidget item, stuffed animal, crystal for comfort',
-      essential: false
-    },
-    {
-      id: 'sentimental_object',
-      title: 'Sentimental Object',
-      description: 'Photo, jewelry, or memento for meaningful connection',
-      essential: false
-    },
-    {
-      id: 'weighted_blanket',
-      title: 'Weighted Blanket',
-      description: 'Provider may have one, but bring your preferred one',
-      essential: false
-    },
-    {
-      id: 'essential_oil',
-      title: 'Essential Oil',
-      description: 'Soothing scent for emotional support',
-      essential: false
-    }
-  ];
-
   const markSectionComplete = (sectionId) => {
     if (!completedSections.includes(sectionId)) {
       const updated = [...completedSections, sectionId];
@@ -311,19 +292,12 @@ const SessionPreparationScreen = ({ navigation, route }) => {
     }
   };
 
-  const toggleItemCheck = (itemId) => {
-    const updated = {
-      ...checkedItems,
-      [itemId]: !checkedItems[itemId]
-    };
-    setCheckedItems(updated);
-    savePreparationData();
-  };
-
   const renderOverview = () => (
     <ScrollView style={styles.sectionContainer}>
       <LinearGradient
         colors={gradients.warm}
+        start={{ x: 1.0, y: 0.0 }}
+        end={{ x: 0.0, y: 1.0 }}
         style={styles.headerGradient}
       >
         <TouchableOpacity
@@ -361,7 +335,17 @@ const SessionPreparationScreen = ({ navigation, route }) => {
                 styles.flowItem,
                 completedSections.includes(section.id) && styles.completedFlowItem
               ]}
-              onPress={() => setCurrentSection(section.id)}
+              onPress={() => {
+                if (section.id === 'session_day_prep') {
+                  navigation.navigate('SessionChecklist', {
+                    sessionId,
+                    sessionData,
+                    context: { medicine, setting, facilitator }
+                  });
+                } else {
+                  setCurrentSection(section.id);
+                }
+              }}
             >
               <View style={styles.flowItemLeft}>
                 <Text style={styles.flowEmoji}>{section.emoji}</Text>
@@ -433,7 +417,7 @@ const SessionPreparationScreen = ({ navigation, route }) => {
 
   const renderLearningModules = () => (
     <ScrollView style={styles.sectionContainer}>
-      <LinearGradient colors={gradients.warm} style={styles.headerGradient}>
+      <LinearGradient colors={gradients.warm} start={{ x: 1.0, y: 0.0 }} end={{ x: 0.0, y: 1.0 }} style={styles.headerGradient}>
         <Text style={styles.heroTitle}>📚 Quick Learning Refresher</Text>
         <Text style={styles.heroSubtitle}>
           Review foundational concepts before your session
@@ -529,7 +513,7 @@ const SessionPreparationScreen = ({ navigation, route }) => {
 
   const renderBeliefAssessments = () => (
     <ScrollView style={styles.sectionContainer}>
-      <LinearGradient colors={['#6366f1', '#8b5cf6']} style={styles.headerGradient}>
+      <LinearGradient colors={[colors.primary, colors.primaryLight]} style={styles.headerGradient}>
         <Text style={styles.heroTitle}>🔍 Belief Assessments</Text>
         <Text style={styles.heroSubtitle}>
           Understand your beliefs before your journey
@@ -745,7 +729,7 @@ const SessionPreparationScreen = ({ navigation, route }) => {
   // Render based on current section
   const renderIntentionSetting = () => (
     <ScrollView style={styles.sectionContainer}>
-      <LinearGradient colors={gradients.warm} style={styles.headerGradient}>
+      <LinearGradient colors={gradients.warm} start={{ x: 1.0, y: 0.0 }} end={{ x: 0.0, y: 1.0 }} style={styles.headerGradient}>
         <TouchableOpacity style={styles.backButton} onPress={() => setCurrentSection('overview')}>
           <MaterialIcons name="arrow-back" size={24} color={colors.white} />
         </TouchableOpacity>
@@ -756,6 +740,19 @@ const SessionPreparationScreen = ({ navigation, route }) => {
       <View style={styles.contentPadding}>
         <Text style={styles.bodyText}>
           Your intention guides your journey. It doesn't need to be perfect - just honest and from your heart.
+        </Text>
+
+        {/* AI-guided intention setting */}
+        <TouchableOpacity
+          style={[styles.primaryButton, { marginBottom: spacing.sm, flexDirection: 'row', alignItems: 'center', gap: 8 }]}
+          onPress={() => navigation.navigate('SetIntention', { sessionId, sessionData })}
+        >
+          <MaterialIcons name="auto-awesome" size={20} color={colors.white} />
+          <Text style={styles.primaryButtonText}>AI-Guided Intention ✨</Text>
+        </TouchableOpacity>
+
+        <Text style={[styles.bodyText, { textAlign: 'center', marginBottom: spacing.sm, fontSize: 13, opacity: 0.7 }]}>
+          or write it yourself:
         </Text>
 
         <TextInput
@@ -863,335 +860,6 @@ const SessionPreparationScreen = ({ navigation, route }) => {
     </ScrollView>
   );
 
-  // Generate dynamic checklist based on session context
-  const getChecklistItems = () => {
-    const items = [];
-
-    // Physical Preparation (always included)
-    const physicalPrep = {
-      category: 'Physical Preparation',
-      items: [
-        { id: 'hydrated', title: 'Well hydrated', description: 'Drink water throughout the day', essential: true },
-        { id: 'rested', title: 'Well rested', description: 'Good sleep the night before', essential: true },
-        { id: 'comfortable_clothing', title: 'Comfortable clothing', description: 'Loose, cozy clothes you can relax in', essential: true },
-      ]
-    };
-
-    // Food preparation - depends on medicine type
-    const medicineLower = medicine ? medicine.toLowerCase() : '';
-
-    if (medicineLower.includes('ayahuasca') || medicineLower.includes('aya')) {
-      physicalPrep.items.unshift(
-        { id: 'diet_followed', title: 'Dieta followed (if required)', description: 'Follow any dietary restrictions from your guide', essential: true }
-      );
-    } else {
-      physicalPrep.items.unshift(
-        { id: 'light_meal', title: 'Light meal planned', description: 'Eat a light meal 2-3 hours before, or as your guide recommends', essential: true }
-      );
-    }
-
-    items.push(physicalPrep);
-
-    // Items to bring (context-dependent)
-    const itemsCategory = { category: 'Items to Bring', items: [] };
-
-    // If at a clinic/retreat center
-    if (setting && (setting.toLowerCase().includes('clinic') || setting.toLowerCase().includes('center') || setting.toLowerCase().includes('retreat'))) {
-      itemsCategory.items.push(
-        { id: 'eye_mask', title: 'Eye mask (optional)', description: 'Provider may have one, but bring your own for comfort', essential: false },
-        { id: 'blanket', title: 'Personal blanket or shawl', description: 'Something comforting from home', essential: false },
-        { id: 'socks', title: 'Warm socks', description: 'Feet can get cold during sessions', essential: true },
-      );
-    }
-
-    // Music setup (if not provided by facilitator)
-    if (!facilitator || facilitator.toLowerCase().includes('solo') || facilitator.toLowerCase().includes('self')) {
-      itemsCategory.items.push(
-        { id: 'music_device', title: 'Phone/Music device', description: 'For your preselected playlist', essential: true },
-        { id: 'headphones', title: 'Headphones', description: 'Noise-cancelling preferred', essential: true },
-        { id: 'charger', title: 'Charger', description: 'Keep devices powered', essential: true },
-      );
-    }
-
-    // Always bring these
-    itemsCategory.items.push(
-      { id: 'journal', title: 'Journal & pen', description: 'For integration notes afterward', essential: true },
-      { id: 'water', title: 'Water bottle', description: 'Stay hydrated', essential: true },
-      { id: 'grounding_object', title: 'Grounding object (optional)', description: 'Crystal, stone, or fidget item', essential: false },
-      { id: 'sentimental_item', title: 'Sentimental item (optional)', description: 'Photo, jewelry, or memento', essential: false },
-    );
-
-    if (itemsCategory.items.length > 0) {
-      items.push(itemsCategory);
-    }
-
-    // Safety & Support
-    const safetyCategory = { category: 'Safety & Support', items: [] };
-
-    if (facilitator && !facilitator.toLowerCase().includes('solo')) {
-      safetyCategory.items.push(
-        { id: 'sitter_confirmed', title: 'Sitter/facilitator confirmed', description: 'Verified attendance and timing', essential: true },
-        { id: 'sitter_briefed', title: 'Sitter briefed on intention', description: 'They know what you\'re working on', essential: false },
-      );
-    } else {
-      safetyCategory.items.push(
-        { id: 'emergency_contact', title: 'Emergency contact on standby', description: 'Someone who knows you\'re journeying', essential: true },
-        { id: 'phone_accessible', title: 'Phone accessible but silenced', description: 'For emergencies only', essential: true },
-      );
-    }
-
-    safetyCategory.items.push(
-      { id: 'schedule_clear', title: 'Schedule completely clear', description: 'No obligations for 24 hours', essential: true },
-      { id: 'safe_space', title: 'Safe space prepared', description: 'Comfortable, private, temperature-controlled', essential: true },
-    );
-
-    if (safetyCategory.items.length > 0) {
-      items.push(safetyCategory);
-    }
-
-    // Mental/Emotional Preparation
-    items.push({
-      category: 'Mental/Emotional Preparation',
-      items: [
-        { id: 'intention_reviewed', title: 'Intention reviewed', description: 'Clear on what you\'re exploring', essential: true },
-        { id: 'parts_acknowledged', title: 'Parts acknowledged', description: 'Checked in with any nervous parts', essential: true },
-        { id: 'surrender_mindset', title: 'Surrender mindset', description: 'Ready to let go and trust', essential: false },
-        { id: 'integration_plan', title: 'Integration plan', description: 'Know how you\'ll process afterward', essential: false },
-      ]
-    });
-
-    // Environmental setup (location-dependent)
-    const environmentCategory = { category: 'Environment Setup', items: [] };
-
-    if (setting && (setting.toLowerCase().includes('home') || setting.toLowerCase().includes('personal'))) {
-      environmentCategory.items.push(
-        { id: 'space_cleaned', title: 'Space cleaned and organized', description: 'Clutter-free, peaceful environment', essential: true },
-        { id: 'lighting_prepared', title: 'Lighting prepared', description: 'Dimmer, candles, or soft lamps ready', essential: false },
-        { id: 'temperature', title: 'Temperature comfortable', description: 'Not too hot or cold', essential: true },
-        { id: 'privacy_ensured', title: 'Privacy ensured', description: 'No interruptions, door locked if needed', essential: true },
-        { id: 'bathroom_accessible', title: 'Bathroom easily accessible', description: 'Clear path, night light if needed', essential: true },
-      );
-    }
-
-    if (environmentCategory.items.length > 0) {
-      items.push(environmentCategory);
-    }
-
-    // Medicine-specific items
-    if (medicine) {
-      const medicineCategory = { category: 'Medicine Preparation', items: [] };
-
-      if (medicineLower.includes('ayahuasca') || medicineLower.includes('aya')) {
-        medicineCategory.items.push(
-          { id: 'bucket', title: 'Purge bucket nearby', description: 'With liner, tissues, water for rinsing', essential: true },
-          { id: 'change_clothes', title: 'Change of clothes', description: 'In case of accidents', essential: true },
-        );
-      }
-
-      if (medicineLower.includes('mushroom') || medicineLower.includes('psilocybin') || medicineLower.includes('lsd') || medicineLower.includes('acid')) {
-        medicineCategory.items.push(
-          { id: 'trip_killers', title: 'Trip reducers available (optional)', description: 'Benzos if prescribed, for emergencies only', essential: false },
-        );
-      }
-
-      if (medicineLower.includes('mdma') || medicineLower.includes('molly')) {
-        medicineCategory.items.push(
-          { id: 'electrolytes', title: 'Electrolytes', description: 'Sports drink or electrolyte water', essential: false },
-          { id: 'supplements', title: 'Supplements ready', description: 'Any recommended pre/post-roll supplements', essential: false },
-        );
-      }
-
-      medicineCategory.items.push(
-        { id: 'dosage_confirmed', title: 'Dosage confirmed', description: 'Know exact amount and timing', essential: true },
-        { id: 'medicine_prepared', title: 'Medicine properly prepared', description: 'Measured, ready to consume', essential: true },
-      );
-
-      if (medicineCategory.items.length > 0) {
-        items.push(medicineCategory);
-      }
-    }
-
-    return items;
-  };
-
-  const renderSessionDayPrep = () => {
-    const checklistCategories = getChecklistItems();
-
-    return (
-      <ScrollView style={styles.sectionContainer}>
-        <LinearGradient colors={gradients.warm} style={styles.headerGradient}>
-          <TouchableOpacity style={styles.backButton} onPress={() => setCurrentSection('overview')}>
-            <MaterialIcons name="arrow-back" size={24} color={colors.white} />
-          </TouchableOpacity>
-          <Text style={styles.heroTitle}>✅ Session Day Checklist</Text>
-          <Text style={styles.heroSubtitle}>Practical preparations for your session</Text>
-        </LinearGradient>
-
-        <View style={styles.contentPadding}>
-          {/* Session Context Questions */}
-          {(!medicine || !setting || !facilitator) && (
-            <View style={styles.contextBox}>
-              <Text style={styles.contextTitle}>📝 Session Details</Text>
-              <Text style={styles.contextSubtitle}>
-                Answer these questions to get a personalized checklist
-              </Text>
-
-              <Text style={styles.inputLabel}>What medicine/substance?</Text>
-              <TextInput
-                style={styles.textInput}
-                value={medicine}
-                onChangeText={setMedicine}
-                placeholder="e.g., Psilocybin, Ayahuasca, MDMA, LSD..."
-                placeholderTextColor={colors.textLight}
-              />
-
-              <Text style={styles.inputLabel}>Where will the session be?</Text>
-              <TextInput
-                style={styles.textInput}
-                value={setting}
-                onChangeText={setSetting}
-                placeholder="e.g., Home, Clinic, Retreat center..."
-                placeholderTextColor={colors.textLight}
-              />
-
-              <Text style={styles.inputLabel}>Who will be facilitating/sitting?</Text>
-              <TextInput
-                style={styles.textInput}
-                value={facilitator}
-                onChangeText={setFacilitator}
-                placeholder="e.g., Professional guide, Friend, Solo..."
-                placeholderTextColor={colors.textLight}
-              />
-
-              <TouchableOpacity
-                style={styles.generateButton}
-                onPress={() => {
-                  if (medicine && setting && facilitator) {
-                    savePreparationData();
-                    Alert.alert(
-                      'Checklist Generated!',
-                      'Your personalized checklist has been created based on your session details.'
-                    );
-                  } else {
-                    Alert.alert(
-                      'Missing Information',
-                      'Please fill in all three fields to generate your personalized checklist.'
-                    );
-                  }
-                }}
-              >
-                <Text style={styles.generateButtonText}>
-                  {medicine && setting && facilitator ? 'Update Checklist' : 'Generate Checklist'}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          )}
-
-          {medicine && setting && facilitator && (
-            <View style={styles.sessionSummary}>
-              <Text style={styles.sessionSummaryTitle}>Your Session:</Text>
-              <Text style={styles.sessionSummaryText}>🔬 Medicine: {medicine}</Text>
-              <Text style={styles.sessionSummaryText}>📍 Location: {setting}</Text>
-              <Text style={styles.sessionSummaryText}>👤 Facilitator: {facilitator}</Text>
-              <TouchableOpacity
-                onPress={() => {
-                  Alert.alert(
-                    'Edit Session Details',
-                    'Would you like to change your session information? This will regenerate your checklist.',
-                    [
-                      { text: 'Cancel', style: 'cancel' },
-                      {
-                        text: 'Edit',
-                        onPress: () => {
-                          setMedicine('');
-                          setSetting('');
-                          setFacilitator('');
-                        }
-                      }
-                    ]
-                  );
-                }}
-              >
-                <Text style={styles.editLink}>Edit Details</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-
-          {medicine && setting && facilitator && (
-            <>
-              <Text style={styles.bodyText}>
-                Based on your session details, here's your personalized checklist. Check off items as you complete them.
-              </Text>
-
-              {checklistCategories.map((category, categoryIndex) => (
-                <View key={categoryIndex} style={styles.checklistCategory}>
-                  <Text style={styles.categoryTitle}>{category.category}</Text>
-
-                  {category.items.map((item) => (
-                    <TouchableOpacity
-                      key={item.id}
-                      style={styles.checklistItem}
-                      onPress={() => toggleItemCheck(item.id)}
-                    >
-                      <View style={styles.checkboxContainer}>
-                        <View style={[
-                          styles.checkbox,
-                          checkedItems[item.id] && styles.checkboxChecked
-                        ]}>
-                          {checkedItems[item.id] && (
-                            <MaterialIcons name="check" size={18} color="#ffffff" />
-                          )}
-                        </View>
-                      </View>
-
-                      <View style={styles.checklistItemContent}>
-                        <View style={styles.checklistItemHeader}>
-                          <Text style={[
-                            styles.checklistItemTitle,
-                            checkedItems[item.id] && styles.checklistItemTitleChecked
-                          ]}>
-                            {item.title}
-                          </Text>
-                          {item.essential && (
-                            <View style={styles.essentialBadge}>
-                              <Text style={styles.essentialBadgeText}>Essential</Text>
-                            </View>
-                          )}
-                        </View>
-                        <Text style={styles.checklistItemDescription}>{item.description}</Text>
-                      </View>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              ))}
-
-              <View style={styles.completionBox}>
-                <Text style={styles.completionText}>
-                  {Object.values(checkedItems).filter(Boolean).length} / {
-                    checklistCategories.reduce((sum, cat) => sum + cat.items.length, 0)
-                  } items completed
-                </Text>
-              </View>
-            </>
-          )}
-
-          <TouchableOpacity
-            style={styles.primaryButton}
-            onPress={() => {
-              if (!completedSections.includes('session_day_prep')) {
-                setCompletedSections([...completedSections, 'session_day_prep']);
-              }
-              savePreparationData();
-              setCurrentSection('overview');
-            }}
-          >
-            <Text style={styles.primaryButtonText}>Save & Continue</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    );
-  };
-
   const renderCurrentSection = () => {
     switch (currentSection) {
       case 'overview':
@@ -1203,7 +871,8 @@ const SessionPreparationScreen = ({ navigation, route }) => {
       case 'parts_checkin':
         return renderPartsCheckin();
       case 'session_day_prep':
-        return renderSessionDayPrep();
+        // Handled by SessionChecklistScreen navigation; fall through to overview
+        return renderOverview();
       default:
         return renderOverview();
     }
@@ -1375,7 +1044,7 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
   completeButton: {
-    backgroundColor: '#a855f7',
+    backgroundColor: colors.primary,
     paddingVertical: 16,
     paddingHorizontal: 24,
     borderRadius: 12,
@@ -1407,7 +1076,7 @@ const styles = StyleSheet.create({
   },
   assessmentDomains: {
     fontSize: 13,
-    color: '#8b5cf6',
+    color: colors.primary,
     marginBottom: 12,
     fontStyle: 'italic',
   },
@@ -1421,7 +1090,7 @@ const styles = StyleSheet.create({
     color: '#9ca3af',
   },
   assessmentButton: {
-    backgroundColor: '#6366f1',
+    backgroundColor: colors.primary,
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
@@ -1588,7 +1257,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   topicTag: {
-    backgroundColor: '#f3e8ff',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
@@ -1667,155 +1336,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.white,
     letterSpacing: 0.3,
-  },
-  checklistNote: {
-    fontSize: 15,
-    color: colors.textSecondary,
-    marginBottom: spacing.md,
-    marginTop: spacing.sm,
-  },
-  contextBox: {
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.lg,
-    padding: spacing.lg,
-    marginBottom: spacing.lg,
-    borderWidth: 1,
-    borderColor: colors.sand,
-  },
-  contextTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.xs,
-  },
-  contextSubtitle: {
-    fontSize: 15,
-    color: colors.textSecondary,
-    marginBottom: spacing.lg,
-  },
-  generateButton: {
-    backgroundColor: colors.primary,
-    paddingVertical: spacing.md,
-    paddingHorizontal: spacing.lg,
-    borderRadius: borderRadius.md,
-    alignItems: 'center',
-    marginTop: spacing.md,
-    ...shadows.soft,
-  },
-  generateButtonText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: colors.white,
-  },
-  sessionSummary: {
-    backgroundColor: '#f0fdf4',
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
-    marginBottom: spacing.lg,
-    borderLeftWidth: 4,
-    borderLeftColor: '#10b981',
-  },
-  sessionSummaryTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#065f46',
-    marginBottom: spacing.sm,
-  },
-  sessionSummaryText: {
-    fontSize: 15,
-    color: '#065f46',
-    marginBottom: spacing.xs,
-  },
-  editLink: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.primary,
-    marginTop: spacing.sm,
-  },
-  checklistCategory: {
-    marginBottom: spacing.lg,
-  },
-  categoryTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: spacing.md,
-  },
-  checklistItem: {
-    flexDirection: 'row',
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
-    marginBottom: spacing.sm,
-    borderWidth: 1,
-    borderColor: colors.sand,
-  },
-  checkboxContainer: {
-    marginRight: spacing.md,
-    paddingTop: 2,
-  },
-  checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: 6,
-    borderWidth: 2,
-    borderColor: colors.sand,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  checkboxChecked: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
-  },
-  checklistItemContent: {
-    flex: 1,
-  },
-  checklistItemHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.xs,
-  },
-  checklistItemTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-    flex: 1,
-  },
-  checklistItemTitleChecked: {
-    color: colors.textSecondary,
-    textDecorationLine: 'line-through',
-  },
-  checklistItemDescription: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    lineHeight: 20,
-  },
-  essentialBadge: {
-    backgroundColor: '#fef3c7',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: 4,
-    marginLeft: spacing.sm,
-  },
-  essentialBadgeText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: '#92400e',
-  },
-  completionBox: {
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.md,
-    padding: spacing.md,
-    marginTop: spacing.md,
-    marginBottom: spacing.lg,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: colors.sand,
-  },
-  completionText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.primary,
   },
 });
 

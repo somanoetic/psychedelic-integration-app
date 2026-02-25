@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { Heart, Zap, Shield, Brain } from 'lucide-react-native';
+import { colors } from '../theme/colors';
 
 const NervousSystemIndicator = ({ state, confidence = 1, size = 'medium' }) => {
   const getStateConfig = () => {
@@ -25,17 +26,17 @@ const NervousSystemIndicator = ({ state, confidence = 1, size = 'medium' }) => {
         return {
           name: 'Protected',
           description: 'Withdrawn, conserving energy',
-          color: '#6366f1',
+          color: colors.slate,
           icon: Shield,
-          backgroundColor: '#e0e7ff'
+          backgroundColor: `${colors.slate}1A`
         };
       default:
         return {
           name: 'Checking in...',
           description: 'Assessing nervous system state',
-          color: '#6b7280',
+          color: colors.textSecondary,
           icon: Brain,
-          backgroundColor: '#f3f4f6'
+          backgroundColor: colors.offWhite
         };
     }
   };
@@ -115,11 +116,11 @@ const styles = {
     marginBottom: 2,
   },
   stateDescription: {
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 2,
   },
   confidence: {
-    color: '#9ca3af',
+    color: colors.mediumGray,
     fontStyle: 'italic',
   },
 };

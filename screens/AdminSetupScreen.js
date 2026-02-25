@@ -8,6 +8,7 @@ import {
   ScrollView
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../lib/supabase';
 import userRoleService from '../lib/userRoleService';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
@@ -188,6 +189,12 @@ const AdminSetupScreen = ({ navigation }) => {
   }, []);
 
   return (
+    <LinearGradient
+      colors={gradients.standard}
+      start={{ x: 1.0, y: 0.0 }}
+      end={{ x: 0.0, y: 1.0 }}
+      style={{ flex: 1 }}
+    >
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
     <ScrollView style={styles.scroll}>
       <View style={styles.header}>
@@ -292,13 +299,13 @@ const AdminSetupScreen = ({ navigation }) => {
       </View>
     </ScrollView>
     </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   scroll: {
     flex: 1,

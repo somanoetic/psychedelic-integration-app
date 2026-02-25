@@ -1,22 +1,22 @@
 /**
  * Psycheteleos Design System - Color Palette
- * Blending warm/earthy with modern wellness aesthetics
+ * Calm blue accent with soft gradient aesthetic
  */
 
 export const colors = {
-  // Primary Colors (Warm & Earthy)
-  primary: '#D4725C',        // Terra Cotta - Primary accent, warm grounding
-  primaryDark: '#C76B5C',    // Deeper terra cotta
-  primaryLight: '#E09580',   // Lighter terra cotta
+  // Primary Colors (Calm Blue)
+  primary: '#5d86d6',        // Calm blue - Primary accent
+  primaryDark: '#4a6fb8',    // Deeper blue
+  primaryLight: '#7a9ee0',   // Lighter blue
 
-  clay: '#C97B63',           // Secondary warm accent
+  clay: '#C97B63',           // Secondary warm accent (legacy)
   sage: '#8B9D83',           // Calming sage green
-  sand: '#E8DCC4',           // Warm sand backgrounds
+  sand: '#E0E0E0',           // Light neutral borders
 
   // Secondary Colors (Modern Wellness)
   dustyRose: '#D4A5A5',      // Gentle, nurturing
   slate: '#6B7D8F',          // Professional depth
-  cream: '#F5F1E8',          // Soft cream backgrounds
+  cream: '#F5F5F5',          // Soft light backgrounds
   charcoal: '#3A3A3A',       // Text, grounding
 
   // Accent Colors
@@ -26,23 +26,24 @@ export const colors = {
   // Functional Colors
   success: '#7B9D6F',        // Success green
   warning: '#D4945C',        // Warning amber
-  error: '#C76B5C',          // Error terra
-  info: '#8B9D83',           // Info sage
+  error: '#E57373',          // Error red (matches SOS button)
+  info: '#5d86d6',           // Info blue
 
   // Neutrals
   white: '#FFFFFF',
-  offWhite: '#F5F1E8',
+  offWhite: '#F5F5F5',
   lightGray: '#E5E5E5',
   mediumGray: '#9CA3AF',
   darkGray: '#6B7280',
   almostBlack: '#3A3A3A',
   black: '#1F1F1F',
+  disabled: '#E0E0E0',
 
   // Background Variations
-  background: '#F5F1E8',     // Soft cream
-  backgroundAlt: '#E8DCC4',  // Warm sand
+  background: '#F5F5F5',     // Soft light
+  backgroundAlt: '#EEEEEE',  // Slightly darker light
   surface: '#FFFFFF',
-  surfaceAlt: '#F9F6F1',
+  surfaceAlt: 'rgba(255, 255, 255, 0.9)',
 
   // Text Colors
   text: '#3A3A3A',           // Charcoal
@@ -52,46 +53,52 @@ export const colors = {
 
   // Legacy mapping (for gradual migration)
   purple: {
-    primary: '#D4725C',      // Maps old purple to terra cotta
-    light: '#E09580',
-    dark: '#C76B5C',
+    primary: '#5d86d6',      // Maps old purple to calm blue
+    light: '#7a9ee0',
+    dark: '#4a6fb8',
   },
   blue: {
-    primary: '#6B7D8F',      // Maps old blue to slate
-    light: '#8B9DAF',
-    dark: '#5B6D7F',
+    primary: '#5d86d6',      // Calm blue
+    light: '#7a9ee0',
+    dark: '#4a6fb8',
   }
 };
 
 export const gradients = {
-  primary: ['#D4725C', '#C97B63'],           // Terra cotta to clay
-  warm: ['#E6B17E', '#D4725C'],              // Golden to terra cotta
-  earth: ['#8B9D83', '#7A5C4D'],             // Sage to deep earth
-  sunset: ['#D4725C', '#D4945C', '#E6B17E'], // Sunset gradient
-  calm: ['#8B9D83', '#D4A5A5'],              // Sage to dusty rose
-  wellness: ['#6B7D8F', '#8B9D83'],          // Slate to sage
+  // Standard app gradient (top-right to bottom-left)
+  standard: ['#fbffdf', '#7794b6'],
+  // Direction props: start={{ x: 1.0, y: 0.0 }} end={{ x: 0.0, y: 1.0 }}
+  standardStart: { x: 1.0, y: 0.0 },
+  standardEnd: { x: 0.0, y: 1.0 },
+
+  primary: ['#5d86d6', '#4a6fb8'],           // Blue gradient
+  warm: ['#fbffdf', '#7794b6'],              // Same as standard (19 usages auto-fix)
+  earth: ['#8B9D83', '#7A5C4D'],             // Sage to deep earth (legacy)
+  sunset: ['#5d86d6', '#7794b6', '#fbffdf'], // Blue gradient variation
+  calm: ['#fbffdf', '#7794b6'],              // Same as standard
+  wellness: ['#7794b6', '#5d86d6'],          // Blue tones
 };
 
 export const shadows = {
   soft: {
-    shadowColor: '#7A5C4D',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   medium: {
-    shadowColor: '#7A5C4D',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
     elevation: 4,
   },
   strong: {
-    shadowColor: '#7A5C4D',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.2,
-    shadowRadius: 16,
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
     elevation: 8,
   }
 };
@@ -108,7 +115,7 @@ export const spacing = {
 export const borderRadius = {
   sm: 8,
   md: 12,
-  lg: 16,
+  lg: 20,
   xl: 24,
   full: 9999,
 };

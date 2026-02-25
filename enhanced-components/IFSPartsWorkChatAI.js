@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { IFSAIService } from '../lib/ifsAIService';
+import { colors } from '../theme/colors';
 
 /**
  * AI-Powered IFS Parts Work Chat
@@ -412,24 +413,24 @@ This is a beginning. Parts work is about ongoing relationship. You can return to
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.surface,
   },
   keyboardAvoid: {
     flex: 1,
-    backgroundColor: '#f9fafb',
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   backButton: {
     fontSize: 16,
-    color: '#3b82f6',
+    color: colors.primary,
     fontWeight: '500',
   },
   headerCenter: {
@@ -438,7 +439,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
   },
   offlineIndicator: {
     fontSize: 11,
@@ -470,24 +471,24 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   userBubble: {
-    backgroundColor: '#7c3aed',
+    backgroundColor: colors.primary,
     borderBottomRightRadius: 4,
   },
   assistantBubble: {
-    backgroundColor: '#ffffff',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     borderBottomLeftRadius: 4,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
   },
   messageText: {
     fontSize: 15,
     lineHeight: 22,
   },
   userText: {
-    color: '#ffffff',
+    color: colors.textInverse,
   },
   assistantText: {
-    color: '#1f2937',
+    color: colors.text,
   },
   messageFooter: {
     flexDirection: 'row',
@@ -499,16 +500,16 @@ const styles = StyleSheet.create({
     fontSize: 11,
   },
   userTimestamp: {
-    color: '#e9d5ff',
+    color: 'rgba(255, 255, 255, 0.7)',
   },
   assistantTimestamp: {
-    color: '#9ca3af',
+    color: colors.mediumGray,
   },
   aiIndicator: {
     fontSize: 10,
-    color: '#7c3aed',
+    color: colors.primary,
     fontWeight: '600',
-    backgroundColor: '#f3e8ff',
+    backgroundColor: `${colors.primary}1A`,
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
@@ -519,15 +520,15 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   optionButton: {
-    backgroundColor: '#faf5ff',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     borderWidth: 1,
-    borderColor: '#a855f7',
+    borderColor: colors.primary,
     borderRadius: 8,
     padding: 10,
   },
   optionText: {
     fontSize: 14,
-    color: '#7c3aed',
+    color: colors.primary,
     fontWeight: '500',
     textAlign: 'center',
   },
@@ -540,7 +541,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: '#9ca3af',
+    backgroundColor: colors.mediumGray,
   },
   typingDot2: {
     opacity: 0.7,
@@ -551,23 +552,23 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     padding: 16,
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.surface,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: colors.lightGray,
     gap: 12,
   },
   input: {
     flex: 1,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: colors.offWhite,
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 10,
     fontSize: 15,
-    color: '#1f2937',
+    color: colors.text,
     maxHeight: 100,
   },
   sendButton: {
-    backgroundColor: '#7c3aed',
+    backgroundColor: colors.primary,
     borderRadius: 20,
     paddingHorizontal: 20,
     paddingVertical: 10,
@@ -575,10 +576,10 @@ const styles = StyleSheet.create({
     minWidth: 70,
   },
   sendButtonDisabled: {
-    backgroundColor: '#9ca3af',
+    backgroundColor: colors.mediumGray,
   },
   sendButtonText: {
-    color: '#ffffff',
+    color: colors.textInverse,
     fontSize: 15,
     fontWeight: '600',
     textAlign: 'center',

@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
+import { LinearGradient } from 'expo-linear-gradient';
 import ConversationalEducation from '../components/ConversationalEducation';
 import PolyvagalEducationWidget from '../enhanced-components/PolyvagalEducationWidget';
 import PolyvagalMappingWidgetAI from '../enhanced-components/PolyvagalMappingWidgetAI';
@@ -53,6 +54,7 @@ const EducationScreen = ({ navigation }) => {
 
   const renderEducationHub = () => {
     return (
+      <LinearGradient colors={gradients.standard} start={{ x: 1.0, y: 0.0 }} end={{ x: 0.0, y: 1.0 }} style={{ flex: 1 }}>
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
         <ScrollView contentContainerStyle={styles.content}>
         {/* Header */}
@@ -68,7 +70,7 @@ const EducationScreen = ({ navigation }) => {
               style={styles.conversationalToggle}
               onPress={() => setShowConversational(true)}
             >
-              <MaterialIcons name="chat" size={24} color="#8b5cf6" />
+              <MaterialIcons name="chat" size={24} color={colors.primary} />
               <Text style={styles.conversationalToggleText}>Guided</Text>
             </TouchableOpacity>
           </View>
@@ -252,6 +254,7 @@ const EducationScreen = ({ navigation }) => {
         </View>
       </ScrollView>
       </SafeAreaView>
+      </LinearGradient>
     );
   };
 
@@ -403,7 +406,6 @@ const EducationScreen = ({ navigation }) => {
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   content: {
     paddingBottom: 32,
@@ -439,15 +441,15 @@ const styles = {
     justifyContent: 'center',
     padding: 8,
     borderRadius: 12,
-    backgroundColor: '#faf5ff',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     borderWidth: 2,
-    borderColor: '#8b5cf6',
+    borderColor: colors.primary,
     minWidth: 60,
   },
   conversationalToggleText: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#8b5cf6',
+    color: colors.primary,
     marginTop: 2,
   },
   section: {
@@ -474,7 +476,7 @@ const styles = {
     marginTop: -8,
   },
   ifsCard: {
-    backgroundColor: '#faf5ff',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     borderRadius: 16,
     padding: 20,
     borderWidth: 2,
@@ -505,7 +507,7 @@ const styles = {
   },
   ifsTime: {
     fontSize: 12,
-    color: '#a855f7',
+    color: colors.primary,
     fontWeight: '500',
   },
   mappingCard: {
@@ -525,11 +527,11 @@ const styles = {
     marginBottom: 12,
   },
   resourcesCard: {
-    backgroundColor: '#f3e8ff',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     borderRadius: 12,
     padding: 16,
     borderWidth: 1.5,
-    borderColor: '#8b5cf6',
+    borderColor: colors.primary,
   },
   mappingContent: {
     flexDirection: 'row',

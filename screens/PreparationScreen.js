@@ -31,7 +31,7 @@ const PreparationScreen = ({ navigation, route }) => {
       emoji: '🧠',
       description: 'Learn the core concepts for all your sessions',
       subtitle: 'Nervous System • Parts Work • Grounding Techniques',
-      color: '#667eea',
+      color: colors.primary,
       estimatedTime: '20-30 minutes (one-time setup)',
       buttonText: 'Start Foundation Learning'
     },
@@ -52,7 +52,7 @@ const PreparationScreen = ({ navigation, route }) => {
       emoji: '✨',
       description: 'Start planning your upcoming journey',
       subtitle: 'Schedule • Set Context • Begin Preparation',
-      color: '#8b5cf6',
+      color: colors.primary,
       estimatedTime: '5 minutes',
       buttonText: 'Create Session'
     }
@@ -63,6 +63,8 @@ const PreparationScreen = ({ navigation, route }) => {
       <ScrollView style={styles.scrollContainer}>
         <LinearGradient
           colors={gradients.warm}
+          start={{ x: 1.0, y: 0.0 }}
+          end={{ x: 0.0, y: 1.0 }}
           style={styles.headerGradient}
         >
           <Text style={styles.heroTitle}>🆕 NEW Preparation Hub</Text>
@@ -448,7 +450,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   modalCreateButton: {
-    backgroundColor: '#8b5cf6',
+    backgroundColor: colors.primary,
     paddingVertical: 14,
     borderRadius: 8,
     alignItems: 'center',

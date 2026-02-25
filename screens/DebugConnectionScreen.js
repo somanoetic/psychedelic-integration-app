@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../lib/supabase';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 
@@ -75,7 +76,13 @@ const DebugConnectionScreen = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }} edges={['top', 'bottom']}>
+    <LinearGradient
+      colors={gradients.standard}
+      start={{ x: 1.0, y: 0.0 }}
+      end={{ x: 0.0, y: 1.0 }}
+      style={{ flex: 1 }}
+    >
+    <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom']}>
     <View style={{ flex: 1, padding: 20 }}>
       <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 20 }}>
         Connection Debug
@@ -134,6 +141,7 @@ const DebugConnectionScreen = ({ navigation }) => {
       </TouchableOpacity>
     </View>
     </SafeAreaView>
+    </LinearGradient>
   );
 };
 

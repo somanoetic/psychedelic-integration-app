@@ -38,7 +38,7 @@ const SubMenuModal = ({ visible, onClose, title, options, onSelect }) => {
   const handleOptionPress = (option) => {
     onClose();
     setTimeout(() => {
-      onSelect(option.route);
+      onSelect(option.route, option.params);
     }, 200);
   };
 
@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: colors.sand,
+    borderBottomColor: colors.lightGray,
   },
   title: {
     fontSize: 22,

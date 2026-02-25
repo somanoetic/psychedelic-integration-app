@@ -159,6 +159,8 @@ const SessionToolsScreen = ({ navigation }) => {
     <SafeAreaView style={[styles.container, { paddingBottom: insets.bottom }]} edges={['top', 'bottom']}>
       <LinearGradient
         colors={gradients.warm}
+        start={{ x: 1.0, y: 0.0 }}
+        end={{ x: 0.0, y: 1.0 }}
         style={styles.headerGradient}
       >
         <TouchableOpacity

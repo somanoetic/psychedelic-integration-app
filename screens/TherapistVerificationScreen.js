@@ -9,6 +9,7 @@ import {
   ActivityIndicator
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import userRoleService from '../lib/userRoleService';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 
@@ -94,16 +95,29 @@ const TherapistVerificationScreen = ({ navigation }) => {
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#3b82f6" />
-        <Text style={styles.loadingText}>Checking verification status...</Text>
-      </View>
+      <LinearGradient
+        colors={gradients.standard}
+        start={{ x: 1.0, y: 0.0 }}
+        end={{ x: 0.0, y: 1.0 }}
+        style={{ flex: 1 }}
+      >
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#3b82f6" />
+          <Text style={styles.loadingText}>Checking verification status...</Text>
+        </View>
+      </LinearGradient>
     );
   }
 
   // Show status if already submitted
   if (verificationStatus?.status && verificationStatus.status !== 'none') {
     return (
+      <LinearGradient
+        colors={gradients.standard}
+        start={{ x: 1.0, y: 0.0 }}
+        end={{ x: 0.0, y: 1.0 }}
+        style={{ flex: 1 }}
+      >
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <ScrollView style={styles.scroll}>
         <View style={styles.header}>
@@ -123,7 +137,7 @@ const TherapistVerificationScreen = ({ navigation }) => {
               </Text>
             </>
           )}
-          
+
           {verificationStatus.status === 'approved' && (
             <>
               <Text style={styles.statusEmoji}>✅</Text>
@@ -133,7 +147,7 @@ const TherapistVerificationScreen = ({ navigation }) => {
               </Text>
             </>
           )}
-          
+
           {verificationStatus.status === 'rejected' && (
             <>
               <Text style={styles.statusEmoji}>❌</Text>
@@ -148,7 +162,7 @@ const TherapistVerificationScreen = ({ navigation }) => {
               )}
             </>
           )}
-          
+
           {verificationStatus.status === 'needs_more_info' && (
             <>
               <Text style={styles.statusEmoji}>📋</Text>
@@ -166,10 +180,17 @@ const TherapistVerificationScreen = ({ navigation }) => {
         </View>
       </ScrollView>
       </SafeAreaView>
+      </LinearGradient>
     );
   }
 
   return (
+    <LinearGradient
+      colors={gradients.standard}
+      start={{ x: 1.0, y: 0.0 }}
+      end={{ x: 0.0, y: 1.0 }}
+      style={{ flex: 1 }}
+    >
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
     <ScrollView style={styles.scroll}>
       <View style={styles.header}>
@@ -297,13 +318,13 @@ const TherapistVerificationScreen = ({ navigation }) => {
       <View style={styles.bottomPadding} />
     </ScrollView>
     </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = {
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   scroll: {
     flex: 1,
@@ -312,7 +333,6 @@ const styles = {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.background,
   },
   loadingText: {
     marginTop: 16,

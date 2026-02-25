@@ -1,9 +1,10 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
+import { colors } from '../theme/colors';
 
 const MessageBubble = ({ message, entities = [], nervousSystemState, onEntityPress }) => {
   const isUser = message.role === 'user';
-  
+
   const getBubbleStyle = () => {
     const baseStyle = {
       marginVertical: 4,
@@ -12,20 +13,20 @@ const MessageBubble = ({ message, entities = [], nervousSystemState, onEntityPre
       borderRadius: 16,
       maxWidth: '85%',
     };
-    
+
     if (isUser) {
       return {
         ...baseStyle,
-        backgroundColor: '#3b82f6',
+        backgroundColor: colors.primary,
         alignSelf: 'flex-end',
       };
     } else {
       return {
         ...baseStyle,
-        backgroundColor: '#ffffff',
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
         alignSelf: 'flex-start',
         borderWidth: 1,
-        borderColor: '#e5e7eb',
+        borderColor: colors.lightGray,
       };
     }
   };
@@ -34,13 +35,13 @@ const MessageBubble = ({ message, entities = [], nervousSystemState, onEntityPre
     return {
       fontSize: 16,
       lineHeight: 22,
-      color: isUser ? '#ffffff' : '#1f2937',
+      color: isUser ? colors.textInverse : colors.text,
     };
   };
 
   const renderEntities = () => {
     if (!entities || entities.length === 0) return null;
-    
+
     return (
       <View style={styles.entitiesContainer}>
         {entities.map((entity, index) => (
@@ -64,9 +65,9 @@ const MessageBubble = ({ message, entities = [], nervousSystemState, onEntityPre
       case 'archetypal': return '#fef3c7';
       case 'emotional': return '#fce7f3';
       case 'somatic': return '#dcfce7';
-      case 'spiritual': return '#e0e7ff';
+      case 'spiritual': return `${colors.primary}1A`;
       case 'parts': return '#fed7d7';
-      default: return '#f3f4f6';
+      default: return colors.offWhite;
     }
   };
 
@@ -74,7 +75,7 @@ const MessageBubble = ({ message, entities = [], nervousSystemState, onEntityPre
     <View style={getBubbleStyle()}>
       <Text style={getTextStyle()}>{message.content}</Text>
       {renderEntities()}
-      
+
       {/* Show nervous system context if available */}
       {message.nervousSystemContext && (
         <View style={styles.contextIndicator}>
@@ -83,12 +84,12 @@ const MessageBubble = ({ message, entities = [], nervousSystemState, onEntityPre
           </Text>
         </View>
       )}
-      
+
       {/* Show if practice is suggested */}
       {message.requiresPractice && (
         <View style={styles.practiceIndicator}>
           <Text style={styles.practiceText}>
-            💫 {message.requiresPractice.title || 'Practice available'}
+            {message.requiresPractice.title || 'Practice available'}
           </Text>
         </View>
       )}
@@ -110,7 +111,7 @@ const styles = {
   },
   entityText: {
     fontSize: 12,
-    color: '#374151',
+    color: colors.text,
     fontWeight: '500',
   },
   contextIndicator: {
@@ -121,19 +122,19 @@ const styles = {
   },
   contextText: {
     fontSize: 11,
-    color: '#6b7280',
+    color: colors.textSecondary,
     fontStyle: 'italic',
   },
   practiceIndicator: {
     marginTop: 6,
     paddingHorizontal: 8,
     paddingVertical: 4,
-    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    backgroundColor: `${colors.primary}1A`,
     borderRadius: 8,
   },
   practiceText: {
     fontSize: 12,
-    color: '#3b82f6',
+    color: colors.primary,
     fontWeight: '500',
   },
 };

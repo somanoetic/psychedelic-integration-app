@@ -1,0 +1,713 @@
+# Infrastructure as Code Configuration for FEAT-101
+# Defines all infrastructure components, environments, and deployment targets
+
+---
+version: '1.0'
+feature: FEAT-101
+component: Session Checklist
+infrastructure_owner: deployment-team
+created_date: 2026-02-10
+last_updated: 2026-02-10
+
+# ============================================================================
+# INFRASTRUCTURE OVERVIEW
+# ============================================================================
+
+overview:
+  architecture: |
+    React Native App
+         ↓ (JWT Token)
+    Supabase Auth
+         ↓
+    Supabase REST API
+    ├─ Session Checklists (PostgreSQL)
+    ├─ Edge Function (Claude Proxy)
+    └─ RLS Policies (Row-Level Security)
+
+  components:
+    - React Native Application (Expo)
+    - Supabase Backend (PostgreSQL + Edge Functions)
+    - Authentication (Supabase Auth)
+    - Rate Limiting & Usage Tracking
+    - Monitoring & Observability
+
+# ============================================================================
+# ENVIRONMENTS
+# ============================================================================
+
+environments:
+  development:
+    name: Development
+    description: Local development and testing
+    tier: development
+    replicas: 1
+    scaling_enabled: false
+    backup_enabled: false
+
+    supabase:
+      project: psychedelic-dev
+      region: us-east-1
+      database_size: small
+      connection_limit: 10
+      max_connections: 20
+
+    edge_functions:
+      region: us-east-1
+      memory: 512MB
+      timeout: 30s
+      concurrency: 10
+
+    app_config:
+      api_url: https://dev-api.example.com
+      feature_flag_policy: all_features_enabled
+      debug_mode: true
+      log_level: debug
+
+  staging:
+    name: Staging
+    description: Pre-production testing and validation
+    tier: staging
+    replicas: 2
+    scaling_enabled: true
+    backup_enabled: true
+    backup_frequency: daily
+
+    supabase:
+      project: psychedelic-staging
+      region: us-east-1
+      database_size: medium
+      connection_limit: 50
+      max_connections: 100
+
+    edge_functions:
+      region: us-east-1
+      memory: 1GB
+      timeout: 60s
+      concurrency: 50
+
+    app_config:
+      api_url: https://staging-api.example.com
+      feature_flag_policy: controlled_rollout
+      debug_mode: false
+      log_level: info
+
+    monitoring:
+      retention_days: 14
+      alert_level: high
+
+  production:
+    name: Production
+    description: Live user-facing application
+    tier: production
+    replicas: 3
+    scaling_enabled: true
+    auto_scaling: true
+    backup_enabled: true
+    backup_frequency: hourly
+    failover_enabled: true
+
+    supabase:
+      project: psychedelic-production
+      region: us-east-1
+      secondary_region: us-west-2
+      database_size: large
+      connection_limit: 500
+      max_connections: 1000
+      wal_replication: enabled
+
+    edge_functions:
+      region: us-east-1
+      secondary_region: us-west-2
+      memory: 2GB
+      timeout: 60s
+      concurrency: 500
+      auto_scaling_min: 2
+      auto_scaling_max: 20
+
+    app_config:
+      api_url: https://api.example.com
+      feature_flag_policy: gradual_rollout
+      debug_mode: false
+      log_level: warn
+
+    cdn:
+      enabled: true
+      provider: cloudflare
+      caching_enabled: true
+      ttl_seconds: 3600
+
+    monitoring:
+      retention_days: 90
+      alert_level: critical
+      slo_tracking: enabled
+
+    disaster_recovery:
+      rto_minutes: 15  # Recovery Time Objective
+      rpo_minutes: 1   # Recovery Point Objective
+      backup_retention_days: 30
+      test_frequency: monthly
+
+# ============================================================================
+# DATABASE INFRASTRUCTURE
+# ============================================================================
+
+database:
+  postgresql:
+    version: '15.2'
+    encoding: UTF8
+    locale: en_US.utf8
+
+  tables:
+    - name: session_checklists
+      description: Checklist instance header (one per session)
+      schema_file: supabase/migrations/20260210000000_session_checklist_schema.sql
+      size_estimate_mb: 10
+      row_count_estimate: 50000
+
+      columns:
+        - id: UUID (PK)
+        - session_id: UUID (FK, UNIQUE)
+        - user_id: UUID (FK)
+        - template_version: INTEGER
+        - total_items: INTEGER
+        - completed_items: INTEGER
+        - created_at: TIMESTAMPTZ
+        - updated_at: TIMESTAMPTZ
+        - completed_at: TIMESTAMPTZ
+
+      indexes:
+        - idx_session_checklists_user_time: (user_id, created_at DESC)
+        - idx_session_checklists_incomplete: PARTIAL (WHERE completed_at IS NULL)
+
+      constraints:
+        - UNIQUE (session_id)
+        - CHECK (completed_items <= total_items)
+        - CHECK (completed_items >= 0)
+        - FK (session_id) → sessions(id) ON DELETE CASCADE
+        - FK (user_id) → auth.users(id) ON DELETE CASCADE
+
+    - name: session_checklist_items
+      description: Individual checklist items with completion status
+      schema_file: supabase/migrations/20260210000000_session_checklist_schema.sql
+      size_estimate_mb: 50
+      row_count_estimate: 900000  # ~18 items per checklist × 50k checklists
+
+      columns:
+        - id: UUID (PK)
+        - checklist_id: UUID (FK)
+        - template_item_id: UUID (FK, nullable)
+        - title: TEXT (max 500 chars)
+        - description: TEXT (max 2000 chars)
+        - category: ENUM (physical/safety/mental/practical)
+        - is_completed: BOOLEAN (default false)
+        - is_custom: BOOLEAN (default false)
+        - sort_order: INTEGER
+        - created_at: TIMESTAMPTZ
+
+      indexes:
+        - idx_session_checklist_items_session: (checklist_id)
+        - idx_session_checklist_items_is_custom: (is_custom)
+
+      constraints:
+        - FK (checklist_id) → session_checklists(id) ON DELETE CASCADE
+        - FK (template_item_id) → checklist_template_items(id) ON DELETE SET NULL
+        - CHECK (title length >= 1 AND <= 500)
+        - CHECK (category IN ('physical', 'safety', 'mental', 'practical'))
+
+    - name: checklist_template_items
+      description: Default checklist template items (read-only for users)
+      schema_file: supabase/migrations/20260210000000_session_checklist_schema.sql
+      size_estimate_mb: 1
+      row_count_estimate: 18
+
+      columns:
+        - id: UUID (PK)
+        - title: TEXT
+        - description: TEXT
+        - category: ENUM
+        - sort_order: INTEGER
+        - is_essential: BOOLEAN
+        - template_version: INTEGER
+        - is_active: BOOLEAN
+        - created_at: TIMESTAMPTZ
+
+      indexes:
+        - idx_template_items_active_version: PARTIAL (WHERE is_active = true)
+
+      constraints:
+        - UNIQUE (title, template_version)
+
+    - name: user_rate_limits
+      description: Rate limiting tracking for API calls
+      schema_file: supabase/migrations/20260210_claude_proxy_infrastructure.sql
+      size_estimate_mb: 5
+      row_count_estimate: 100000  # One per active user per day
+
+      columns:
+        - id: UUID (PK)
+        - user_id: UUID (FK)
+        - request_count: INTEGER
+        - window_start: TIMESTAMPTZ
+        - window_end: TIMESTAMPTZ
+        - created_at: TIMESTAMPTZ
+        - updated_at: TIMESTAMPTZ
+
+      constraints:
+        - FK (user_id) → auth.users(id) ON DELETE CASCADE
+        - UNIQUE (user_id, window_start)
+
+    - name: api_usage_logs
+      description: Complete audit trail of API usage
+      schema_file: supabase/migrations/20260210_claude_proxy_infrastructure.sql
+      size_estimate_mb: 100
+      row_count_estimate: 5000000  # ~100 requests/day × 365 days × users
+
+      columns:
+        - id: UUID (PK)
+        - user_id: UUID (FK)
+        - function_name: TEXT
+        - model: TEXT
+        - input_tokens: INTEGER
+        - output_tokens: INTEGER
+        - duration_ms: INTEGER
+        - cost_estimate: NUMERIC
+        - status_code: INTEGER
+        - error_message: TEXT (nullable)
+        - request_id: UUID
+        - created_at: TIMESTAMPTZ
+
+      indexes:
+        - idx_api_usage_logs_user_date: (user_id, created_at)
+        - idx_api_usage_logs_created: (created_at DESC)
+
+      constraints:
+        - FK (user_id) → auth.users(id) ON DELETE CASCADE
+        - CHECK (input_tokens >= 0)
+        - CHECK (output_tokens >= 0)
+
+  triggers:
+    - name: update_session_checklist_counts
+      description: Auto-update total and completed item counts
+      table: session_checklist_items
+      on_event: INSERT, UPDATE, DELETE
+      function: update_checklist_aggregates()
+      performance_impact: low
+
+  performance:
+    connection_pooling: true
+    pool_size: 10
+    idle_timeout: 300
+    max_lifetime: 1800
+
+    query_optimization:
+      enable_jit: true
+      work_mem: 4MB
+      shared_buffers: 256MB
+
+    replication:
+      enabled: true
+      mode: streaming
+      slots: 1
+
+# ============================================================================
+# EDGE FUNCTIONS INFRASTRUCTURE
+# ============================================================================
+
+edge_functions:
+  - name: claude-proxy
+    runtime: deno
+    memory: 512MB
+    timeout_seconds: 30
+    max_concurrency: 50
+
+    environment_variables:
+      ANTHROPIC_API_KEY: "${ANTHROPIC_API_KEY}"  # Set via secrets
+      LOG_LEVEL: "info"
+      RATE_LIMIT_PER_DAY: "100"
+      MAX_TOKENS_PER_REQUEST: "2000"
+
+    secrets:
+      - ANTHROPIC_API_KEY
+      - JWT_SECRET
+
+    healthcheck:
+      path: /health
+      interval: 30s
+      timeout: 5s
+      expected_status: 200
+
+    autoscaling:
+      enabled: true
+      min_instances: 1
+      max_instances: 20
+      target_cpu: 70
+      target_memory: 80
+
+    monitoring:
+      metrics:
+        - execution_time
+        - error_rate
+        - request_count
+        - memory_usage
+      logs:
+        retention_days: 30
+        level: info
+
+    deployment:
+      deployment_method: push
+      automatic_scaling: true
+      zero_downtime: true
+
+# ============================================================================
+# AUTHENTICATION & SECURITY INFRASTRUCTURE
+# ============================================================================
+
+authentication:
+  supabase_auth:
+    provider: supabase
+    mfa_enabled: false  # Can enable for production
+    session_duration: 3600  # 1 hour
+    refresh_token_lifetime: 604800  # 7 days
+
+  row_level_security:
+    enabled: true
+    default_policy: DENY
+
+    policies:
+      session_checklists:
+        - name: Users can view own checklists
+          effect: ALLOW
+          operation: SELECT
+          using: "auth.uid() = user_id"
+
+        - name: Users can create own checklists
+          effect: ALLOW
+          operation: INSERT
+          with_check: "auth.uid() = user_id"
+
+        - name: Users can update own checklists
+          effect: ALLOW
+          operation: UPDATE
+          using: "auth.uid() = user_id"
+          with_check: "auth.uid() = user_id"
+
+        - name: Users can delete own checklists
+          effect: ALLOW
+          operation: DELETE
+          using: "auth.uid() = user_id"
+
+      session_checklist_items:
+        - name: Users can view items in own checklists
+          effect: ALLOW
+          operation: SELECT
+          using: "EXISTS (SELECT 1 FROM session_checklists WHERE id = checklist_id AND user_id = auth.uid())"
+
+        - name: Users can create items in own checklists
+          effect: ALLOW
+          operation: INSERT
+          with_check: "EXISTS (SELECT 1 FROM session_checklists WHERE id = checklist_id AND user_id = auth.uid())"
+
+        - name: Users can update items in own checklists
+          effect: ALLOW
+          operation: UPDATE
+          using: "EXISTS (SELECT 1 FROM session_checklists WHERE id = checklist_id AND user_id = auth.uid())"
+          with_check: "EXISTS (SELECT 1 FROM session_checklists WHERE id = checklist_id AND user_id = auth.uid())"
+
+        - name: Users can delete items in own checklists
+          effect: ALLOW
+          operation: DELETE
+          using: "EXISTS (SELECT 1 FROM session_checklists WHERE id = checklist_id AND user_id = auth.uid())"
+
+      checklist_template_items:
+        - name: All authenticated users can read template
+          effect: ALLOW
+          operation: SELECT
+          using: "auth.role() = 'authenticated'"
+
+      user_rate_limits:
+        - name: Users can view own rate limits
+          effect: ALLOW
+          operation: SELECT
+          using: "auth.uid() = user_id"
+
+      api_usage_logs:
+        - name: Users can view own usage logs
+          effect: ALLOW
+          operation: SELECT
+          using: "auth.uid() = user_id"
+
+  api_keys:
+    anthropic:
+      scope: edge_function_only
+      rotation_policy: quarterly
+      storage: supabase_secrets
+
+    supabase:
+      anon_key_scope: public_read_insert_update_delete
+      service_role_key_scope: unrestricted
+      rotation_policy: annual
+
+# ============================================================================
+# NETWORKING & CONNECTIVITY
+# ============================================================================
+
+networking:
+  api_endpoints:
+    - name: REST API
+      url: "https://${SUPABASE_URL}/rest/v1/"
+      timeout_seconds: 30
+      retry_attempts: 3
+      rate_limit: 1000/minute
+
+    - name: Edge Function
+      url: "https://${SUPABASE_URL}/functions/v1/claude-proxy"
+      timeout_seconds: 60
+      retry_attempts: 2
+      rate_limit: 100/day per user
+
+  dns:
+    provider: cloudflare
+    ttl_seconds: 300
+    health_checks: enabled
+
+  cdn:
+    provider: cloudflare
+    enabled_for: static_content
+    cache_rules:
+      - path: "/api/*"
+        cache: false
+      - path: "/assets/*"
+        cache: true
+        ttl: 86400
+
+  cors:
+    enabled: true
+    allowed_origins:
+      - "exp://*"  # Expo apps
+      - "https://*.supabase.co"
+    allowed_methods: ["GET", "POST", "PUT", "DELETE", "PATCH"]
+    allowed_headers: ["Content-Type", "Authorization"]
+
+  rate_limiting:
+    global: 10000/minute
+    per_user: 100/day (Claude API)
+    per_ip: 1000/minute
+
+# ============================================================================
+# BACKUP & DISASTER RECOVERY
+# ============================================================================
+
+backup_recovery:
+  database_backups:
+    enabled: true
+    retention_days: 30
+    frequency: hourly  # Production
+    backup_type: full_and_incremental
+    storage_location: us-east-1
+    cross_region_backup: true
+    backup_location: us-west-2
+
+    restore_testing:
+      frequency: weekly
+      test_environment: staging
+      notify_on_failure: true
+
+  transaction_logs:
+    enabled: true
+    retention_days: 14
+    replication_lag_threshold: 10s
+
+  point_in_time_recovery:
+    enabled: true
+    retention_days: 7
+    granularity: 1_minute
+
+  disaster_recovery_plan:
+    rto_minutes: 15  # Recovery Time Objective
+    rpo_minutes: 1   # Recovery Point Objective
+
+    failover_procedure:
+      step1: Detect primary region failure
+      step2: Activate secondary region database
+      step3: Failover edge functions to secondary region
+      step4: Update DNS to secondary region
+      step5: Notify users of degraded service
+      step6: Restore full functionality
+
+    testing_schedule: monthly
+
+# ============================================================================
+# MONITORING & OBSERVABILITY INFRASTRUCTURE
+# ============================================================================
+
+observability:
+  logging:
+    provider: cloudwatch
+    log_retention_days: 30
+    log_format: json
+
+    log_groups:
+      - /aws/lambda/claude-proxy
+      - /supabase/database
+      - /supabase/auth
+      - /application/api
+
+  metrics:
+    provider: cloudwatch
+    resolution: 1minute
+    retention_days: 30
+
+    custom_metrics:
+      - feature_adoption_rate
+      - checklist_creation_rate
+      - api_latency
+      - error_rate
+
+  tracing:
+    enabled: true
+    sample_rate: 10%  # Sample 10% of requests in production
+    provider: xray
+
+  dashboards:
+    - name: Operations Dashboard
+      refresh_rate: 30s
+      provider: cloudwatch
+
+    - name: Business Metrics Dashboard
+      refresh_rate: 5m
+      provider: cloudwatch
+
+    - name: Security Dashboard
+      refresh_rate: 1m
+      provider: cloudwatch
+
+  alerts:
+    provider: cloudwatch
+    notification_channels:
+      - slack
+      - email
+      - pagerduty
+    sla_tracking: enabled
+
+# ============================================================================
+# COST OPTIMIZATION
+# ============================================================================
+
+cost_optimization:
+  reserved_capacity:
+    database:
+      environment: production
+      commitment: annual
+      discount: 35%
+
+    edge_functions:
+      environment: production
+      commitment: annual
+      discount: 20%
+
+  spot_instances:
+    enabled: false  # Not applicable for serverless
+
+  auto_scaling:
+    enabled: true
+    scale_down_delay: 300  # 5 minutes
+    cost_optimization: true
+
+  estimated_monthly_costs:
+    development: $50
+    staging: $200
+    production: $2000
+    total: $2250
+
+  cost_alerts:
+    enabled: true
+    threshold_percentage: 110  # Alert if 10% over budget
+    budget_amount: 2500
+
+# ============================================================================
+# DEPLOYMENT CONFIGURATION
+# ============================================================================
+
+deployment:
+  deployment_method: infrastructure_as_code
+  version_control: git
+  environments:
+    - development
+    - staging
+    - production
+
+  cicd_pipeline:
+    provider: github_actions
+    configuration_file: .github/workflows/feat-101-deployment.yml
+
+  approval_process:
+    development: automatic
+    staging: automatic
+    production: manual (tech-lead)
+
+  rollback:
+    automatic: enabled
+    rollback_on_errors: true
+    error_threshold: 5% error rate
+
+# ============================================================================
+# COMPLIANCE & AUDIT
+# ============================================================================
+
+compliance:
+  data_privacy:
+    gdpr_compliant: true
+    ccpa_compliant: true
+    hipaa_compliant: false  # Not required, but structure supports it
+
+  audit_logging:
+    enabled: true
+    retention_days: 90
+
+  security_scanning:
+    vulnerability_scanning: enabled
+    frequency: continuous
+    sast_enabled: true
+    dast_enabled: true
+
+  compliance_standards:
+    - SOC2
+    - ISO27001  # Planned
+
+# ============================================================================
+# MAINTENANCE & SUPPORT
+# ============================================================================
+
+maintenance:
+  windows:
+    - day: Sunday
+      start_time: "02:00 UTC"
+      duration_minutes: 30
+      frequency: weekly
+      type: database_optimization
+
+    - day: 1st of month
+      start_time: "03:00 UTC"
+      duration_minutes: 60
+      frequency: monthly
+      type: backup_verification
+
+  support:
+    primary: deployment-team
+    backup: platform-team
+    escalation: engineering-manager
+    sla_hours: 4
+
+# ============================================================================
+# END OF INFRASTRUCTURE CONFIGURATION
+# ============================================================================
+
+metadata:
+  version: 1.0
+  created_date: 2026-02-10
+  last_modified: 2026-02-10
+  owner: deployment-team
+  reviewers:
+    - tech-lead
+    - security-team
+  next_review_date: 2026-03-10
