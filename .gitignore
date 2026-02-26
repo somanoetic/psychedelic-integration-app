@@ -57,3 +57,6 @@ tmp/
 scripts/chunked_documents.jsonl
 coverage/
 supabase/.temp/
+
+# Local dev utilities
+test-api-keys.js
