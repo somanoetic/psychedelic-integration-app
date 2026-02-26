@@ -376,14 +376,15 @@ The face photos in `data/glimmerSwiperImages.js` are Unsplash stock portraits. S
 
 ### BUG-212: Exercise Library Has No Actual Instructions
 **Priority:** P2 - Medium (Content)
-**Status:** Open
+**Status:** RESOLVED
 **Reported:** 2026-02-25
+**Resolved:** 2026-02-25
 
 **Description:** ConversationalExerciseLibrary lists exercise names (e.g., "54321 Grounding", "Body Scan") but has no actual instruction content. Users can browse categories but can't actually do any exercises.
 
-**Proposed Fix:** Add structured exercise data with step-by-step instructions, duration, and difficulty to each exercise entry.
+**Fix:** Added structured exercise data with step-by-step instructions, guided exercise screen, and wired exercise library to real data.
 
-**Estimated Effort:** 3-4 hours (content creation + UI)
+**Commit:** d3bba84
 
 ---
 

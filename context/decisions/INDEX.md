@@ -1,6 +1,6 @@
 # Architecture Decision Records (ADRs)
 
-**Last Updated:** 2026-02-24
+**Last Updated:** 2026-02-25
 
 ---
 
@@ -126,6 +126,11 @@ Key points about implementing this decision.
 - Decision: Intention-setting should be 3 exchanges max, directional not prescriptive
 - [View ADR →](2026-02-17-intention-as-goalpost.md)
 
+**ADR-008: RAG Knowledge Base with pgvector + OpenAI Embeddings** (2026-02-25)
+- Status: Accepted
+- Decision: Semantic vector search over 276 PDFs + 27 protocols via Supabase pgvector
+- [View ADR →](2026-02-25-rag-knowledge-base.md)
+
 ### Planned ADRs
 
 **ADR-005: Distribution Strategy (VM vs EAS)**
@@ -208,6 +213,7 @@ Key points about implementing this decision.
 **AI/ML:**
 - ADR-004: Claude API Integration (Accepted)
 - ADR-007: Intention as Goalpost (Accepted)
+- ADR-008: RAG Knowledge Base (Accepted)
 
 **Testing:**
 - ADR-006: Testing Strategy (Informally resolved)

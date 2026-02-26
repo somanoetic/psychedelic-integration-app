@@ -1,56 +1,37 @@
 # Features In Progress
 
 **File Size Limit:** 300 lines
-**Last Updated:** 2026-02-24
+**Last Updated:** 2026-02-25
 
 ---
 
 ## Active Development
 
-### FEAT-205: Knowledge Base Processing
+### FEAT-205 + FEAT-206: RAG Knowledge Base (Combined)
 **Priority:** High
-**Status:** Planned (starting this week)
-**Target:** Week of 2026-02-24
-**Assigned:** Unassigned
+**Status:** Code complete, pending deployment
+**Target:** Completed 2026-02-25
+**Assigned:** Claude AI
 
-**User Story:**
-As a developer, I want to convert the 1.5GB knowledge base (276 PDFs) into searchable embeddings so that AI services can reference real therapeutic protocols.
+**Deliverables:**
+- [x] PDF extraction script (auto-discovers all 276 PDFs)
+- [x] Semantic chunking script (tiktoken, section-aware)
+- [x] Supabase pgvector migration (IVFFlat index)
+- [x] Embeddings edge function (search/embed/ingest)
+- [x] Bulk ingestion pipeline script
+- [x] Client-side RAG service (5-min cache, graceful degradation)
+- [x] Integrated into all 9 AI services with category-scoped search
+- [x] 19 unit tests (all passing)
+- [x] ADR-008 documented
 
-**Requirements:**
-- [ ] Convert PDFs to markdown with YAML frontmatter
-- [ ] Create protocol schema
-- [ ] Set up Supabase pgvector extension
-- [ ] Generate and store embeddings
-- [ ] Create similarity search functions
-
-**Dependencies:**
-- Supabase pgvector extension must be enabled
-
-**Estimated Effort:** 5 days
-
-See `context/features/ai-system-improvements.md` for full spec.
-
----
-
-### FEAT-206: RAG System Integration
-**Priority:** High
-**Status:** Planned (following FEAT-205)
-**Target:** Week of 2026-03-02
-**Assigned:** Unassigned
-
-**User Story:**
-As a user, I want AI responses grounded in real therapeutic research so that guidance is evidence-based.
-
-**Requirements:**
-- [ ] Create RAG service class
-- [ ] Integrate into 2-3 AI services (IFS, Polyvagal, Nervous System)
-- [ ] Test and optimize retrieval quality
-- [ ] Document RAG patterns and rollout plan
-
-**Dependencies:**
-- FEAT-205 (knowledge base processing)
-
-**Estimated Effort:** 5 days
+**Remaining to deploy:**
+- [ ] Run `python scripts/extract_all_pdfs.py` to extract remaining ~85 PDFs
+- [ ] Run `python scripts/chunk_documents.py` to generate chunks
+- [ ] Run `supabase db push` to apply migration
+- [ ] Set `OPENAI_API_KEY` secret: `supabase secrets set OPENAI_API_KEY=sk-...`
+- [ ] Deploy edge function: `supabase functions deploy embeddings`
+- [ ] Run `python scripts/ingest_to_supabase.py` to embed + store (~$0.20, ~30-60 min)
+- [ ] REINDEX the IVFFlat index after ingestion
 
 ---
 
@@ -113,5 +94,5 @@ As a user, I want AI responses grounded in real therapeutic research so that gui
 
 ---
 
-**Current Count:** 2 planned to start, 7 completed this month
+**Current Count:** 1 pending deployment, 7 completed this month
 **File Status:** Under limit (300 max)

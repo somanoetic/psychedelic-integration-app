@@ -66,7 +66,7 @@ jobs:
       - name: Detect code changes
         id: detect-code
         run: |
-          if git diff origin/main...HEAD --quiet -- lib/sessionChecklistService.js hooks/useSessionChecklist.js components/checklist/ screens/SessionChecklistScreen.js; then
+          if git diff origin/master...HEAD --quiet -- lib/sessionChecklistService.js hooks/useSessionChecklist.js components/checklist/ screens/SessionChecklistScreen.js; then
             echo "has_changes=false" >> $GITHUB_OUTPUT
           else
             echo "has_changes=true" >> $GITHUB_OUTPUT
@@ -133,7 +133,6 @@ jobs:
 
       - name: Run ${{ matrix.test-suite }} tests
         run: npm run test:${{ matrix.test-suite }}
-        continue-on-error: true  # Allow failures, but log them
 
       - name: Upload test results
         if: always()
@@ -487,40 +486,65 @@ jobs:
 
       - name: Generate deployment report
         run: |
-          cat > DEPLOYMENT_REPORT.md << 'EOF'
+          VALIDATE="${{ needs.validate.result }}"
+          TEST="${{ needs.test.result }}"
+          SECURITY="${{ needs.security-scan.result }}"
+          DB_MIGRATION="${{ needs.database-migration.result }}"
+          EDGE_FUNC="${{ needs.deploy-edge-function.result }}"
+          EAS_BUILD="${{ needs.build-eas.result }}"
+          HEALTH="${{ needs.health-check.result }}"
+
+          # Determine overall status
+          if [ "$VALIDATE" = "success" ] && \
+             [ "$TEST" = "success" ] && \
+             [ "$SECURITY" = "success" ] && \
+             [ "$DB_MIGRATION" = "success" ] && \
+             [ "$EDGE_FUNC" = "success" ] && \
+             [ "$EAS_BUILD" = "success" ] && \
+             [ "$HEALTH" = "success" ]; then
+            OVERALL="SUCCESS"
+          else
+            OVERALL="FAILED"
+          fi
+
+          cat > DEPLOYMENT_REPORT.md << EOF
           # FEAT-101 Deployment Report
 
           **Build:** ${{ github.run_id }}
           **Commit:** ${{ github.sha }}
           **Branch:** ${{ github.ref }}
           **Date:** $(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          **Overall:** ${OVERALL}
 
           ## Deployment Status
 
-          - Validation: ${{ needs.validate.result }}
-          - Tests: ${{ needs.test.result }}
-          - Security Scan: ${{ needs.security-scan.result }}
-          - Database Migration: ${{ needs.database-migration.result }}
-          - Edge Function: ${{ needs.deploy-edge-function.result }}
-          - EAS Build: ${{ needs.build-eas.result }}
-          - Health Check: ${{ needs.health-check.result }}
+          - Validation: ${VALIDATE}
+          - Tests: ${TEST}
+          - Security Scan: ${SECURITY}
+          - Database Migration: ${DB_MIGRATION}
+          - Edge Function: ${EDGE_FUNC}
+          - EAS Build: ${EAS_BUILD}
+          - Health Check: ${HEALTH}
 
           ## Summary
 
-          The FEAT-101 Session Checklist feature deployment has completed with the following status:
-
-          - Database migrations applied
-          - Anthropic API moved to server-side Edge Function
-          - Rate limiting and usage tracking enabled
-          - OTA updates prepared
-          - Health checks passed
+          $(if [ "$DB_MIGRATION" = "success" ]; then echo "- ✅ Database migrations applied"; elif [ "$DB_MIGRATION" = "skipped" ]; then echo "- ⏭️ Database migrations skipped"; else echo "- ❌ Database migrations failed"; fi)
+          $(if [ "$EDGE_FUNC" = "success" ]; then echo "- ✅ Anthropic API Edge Function deployed"; elif [ "$EDGE_FUNC" = "skipped" ]; then echo "- ⏭️ Edge Function deployment skipped"; else echo "- ❌ Edge Function deployment failed"; fi)
+          $(if [ "$EAS_BUILD" = "success" ]; then echo "- ✅ EAS builds completed"; elif [ "$EAS_BUILD" = "skipped" ]; then echo "- ⏭️ EAS builds skipped"; else echo "- ❌ EAS builds failed"; fi)
+          $(if [ "$HEALTH" = "success" ]; then echo "- ✅ Health checks passed"; elif [ "$HEALTH" = "skipped" ]; then echo "- ⏭️ Health checks skipped"; else echo "- ❌ Health checks failed"; fi)
 
           ## Next Steps
 
-          1. Verify in staging environment
-          2. Test user flows end-to-end
-          3. Monitor API usage and error rates
-          4. Proceed with production deployment if staging passes
+          $(if [ "$OVERALL" = "SUCCESS" ]; then
+            echo "1. Verify in staging environment"
+            echo "2. Test user flows end-to-end"
+            echo "3. Monitor API usage and error rates"
+            echo "4. Proceed with production deployment if staging passes"
+          else
+            echo "1. Review failed steps in the workflow logs"
+            echo "2. Fix issues and re-run the pipeline"
+            echo "3. Do not proceed to production until all checks pass"
+          fi)
 
           EOF
           cat DEPLOYMENT_REPORT.md
@@ -554,10 +578,28 @@ jobs:
 
       - name: Check deployment status
         run: |
-          if [ "${{ needs.validate.result }}" != "success" ] || \
-             [ "${{ needs.database-migration.result }}" != "success" ] || \
-             [ "${{ needs.deploy-edge-function.result }}" != "success" ]; then
-            echo "❌ Deployment failed - review logs above"
+          FAILED=""
+          for JOB in \
+            "validate:${{ needs.validate.result }}" \
+            "test:${{ needs.test.result }}" \
+            "security-scan:${{ needs.security-scan.result }}" \
+            "database-migration:${{ needs.database-migration.result }}" \
+            "deploy-edge-function:${{ needs.deploy-edge-function.result }}" \
+            "build-eas:${{ needs.build-eas.result }}" \
+            "health-check:${{ needs.health-check.result }}"; do
+            NAME="${JOB%%:*}"
+            RESULT="${JOB##*:}"
+            if [ "$RESULT" != "success" ] && [ "$RESULT" != "skipped" ]; then
+              echo "❌ $NAME: $RESULT"
+              FAILED="$FAILED $NAME"
+            else
+              echo "✅ $NAME: $RESULT"
+            fi
+          done
+          if [ -n "$FAILED" ]; then
+            echo ""
+            echo "❌ Deployment failed. Failed jobs:$FAILED"
             exit 1
           fi
-          echo "✅ Deployment successful"
+          echo ""
+          echo "✅ Deployment successful - all jobs passed"

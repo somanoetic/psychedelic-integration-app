@@ -18,6 +18,15 @@ jest.mock('../../lib/huxleyKnowledgeBase', () => {
   return { __esModule: true, ...actual };
 });
 
+jest.mock('../../lib/ragService', () => ({
+  __esModule: true,
+  default: {
+    getContextForPrompt: jest.fn().mockResolvedValue(''),
+    search: jest.fn().mockResolvedValue([]),
+    clearCache: jest.fn()
+  }
+}));
+
 jest.mock('../../lib/metricsService', () => ({
   __esModule: true,
   default: {
@@ -162,29 +171,29 @@ describe('IntegrationGuideService (Huxley)', () => {
   // =========================================================================
 
   describe('buildEnhancedPrompt', () => {
-    it('should include Huxley identity', () => {
-      const prompt = service.buildEnhancedPrompt("Hello", defaultContext);
+    it('should include Huxley identity', async () => {
+      const prompt = await service.buildEnhancedPrompt("Hello", defaultContext);
       expect(prompt).toContain('Huxley');
     });
 
-    it('should include Johnson framework', () => {
-      const prompt = service.buildEnhancedPrompt("Hello", defaultContext);
+    it('should include Johnson framework', async () => {
+      const prompt = await service.buildEnhancedPrompt("Hello", defaultContext);
       expect(prompt).toContain('Johnson');
       expect(prompt).toContain('Associations');
     });
 
-    it('should include IFS framework', () => {
-      const prompt = service.buildEnhancedPrompt("Hello", defaultContext);
+    it('should include IFS framework', async () => {
+      const prompt = await service.buildEnhancedPrompt("Hello", defaultContext);
       expect(prompt).toContain('Internal Family Systems');
     });
 
-    it('should include polyvagal framework', () => {
-      const prompt = service.buildEnhancedPrompt("Hello", defaultContext);
+    it('should include polyvagal framework', async () => {
+      const prompt = await service.buildEnhancedPrompt("Hello", defaultContext);
       expect(prompt).toContain('Polyvagal');
     });
 
-    it('should inject nervous system state into prompt', () => {
-      const prompt = service.buildEnhancedPrompt("Hello", {
+    it('should inject nervous system state into prompt', async () => {
+      const prompt = await service.buildEnhancedPrompt("Hello", {
         ...defaultContext,
         nervousSystemState: 'sympathetic',
         stateConfidence: 0.9
@@ -194,8 +203,8 @@ describe('IntegrationGuideService (Huxley)', () => {
       expect(prompt).toContain('90%');
     });
 
-    it('should inject dorsal-specific instructions', () => {
-      const prompt = service.buildEnhancedPrompt("Hello", {
+    it('should inject dorsal-specific instructions', async () => {
+      const prompt = await service.buildEnhancedPrompt("Hello", {
         ...defaultContext,
         nervousSystemState: 'dorsal',
         stateConfidence: 0.7
@@ -205,8 +214,8 @@ describe('IntegrationGuideService (Huxley)', () => {
       expect(prompt).toContain('gentle');
     });
 
-    it('should inject ventral-specific instructions', () => {
-      const prompt = service.buildEnhancedPrompt("Hello", {
+    it('should inject ventral-specific instructions', async () => {
+      const prompt = await service.buildEnhancedPrompt("Hello", {
         ...defaultContext,
         nervousSystemState: 'ventral',
         stateConfidence: 0.85
@@ -216,8 +225,8 @@ describe('IntegrationGuideService (Huxley)', () => {
       expect(prompt).toContain('deeper exploration');
     });
 
-    it('should include session phase', () => {
-      const prompt = service.buildEnhancedPrompt("Hello", {
+    it('should include session phase', async () => {
+      const prompt = await service.buildEnhancedPrompt("Hello", {
         ...defaultContext,
         sessionPhase: 'integration'
       });
@@ -225,8 +234,8 @@ describe('IntegrationGuideService (Huxley)', () => {
       expect(prompt).toContain('integration');
     });
 
-    it('should inject scenario protocols when detected', () => {
-      const prompt = service.buildEnhancedPrompt(
+    it('should inject scenario protocols when detected', async () => {
+      const prompt = await service.buildEnhancedPrompt(
         "My inner critic is so loud, I hate myself",
         defaultContext
       );
@@ -235,8 +244,8 @@ describe('IntegrationGuideService (Huxley)', () => {
       expect(prompt).toContain('INNER CRITIC');
     });
 
-    it('should not inject protocols for non-triggering messages', () => {
-      const prompt = service.buildEnhancedPrompt(
+    it('should not inject protocols for non-triggering messages', async () => {
+      const prompt = await service.buildEnhancedPrompt(
         "I had a lovely day today",
         defaultContext
       );
@@ -244,14 +253,14 @@ describe('IntegrationGuideService (Huxley)', () => {
       expect(prompt).not.toContain('DETECTED CONTEXT');
     });
 
-    it('should include clinical voice principles', () => {
-      const prompt = service.buildEnhancedPrompt("Hello", defaultContext);
+    it('should include clinical voice principles', async () => {
+      const prompt = await service.buildEnhancedPrompt("Hello", defaultContext);
       expect(prompt).toContain('Warm but not saccharine');
       expect(prompt).toContain('Curious, not knowing');
     });
 
-    it('should include user message in prompt', () => {
-      const prompt = service.buildEnhancedPrompt("I saw a great owl in my vision", defaultContext);
+    it('should include user message in prompt', async () => {
+      const prompt = await service.buildEnhancedPrompt("I saw a great owl in my vision", defaultContext);
       expect(prompt).toContain("I saw a great owl in my vision");
     });
   });

@@ -31,12 +31,34 @@ const ExperienceMappingScreen = ({ navigation, route }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [entities, setEntities] = useState([]);
 
+  // Experience processing state (must be before early returns)
+  const [experienceData, setExperienceData] = useState({
+    associations: [],
+    dynamics: [],
+    integrations: [],
+    rituals: [],
+    currentPhase: 1
+  });
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
+  const [isReturningUser, setIsReturningUser] = useState(false);
+
+  // Refs (must be before early returns)
+  const scrollViewRef = useRef(null);
+  const experienceMapper = useRef(new ExperienceMappingService()).current;
+
   // Auto-create session if none provided
   useEffect(() => {
     if (!sessionParam) {
       createNewSession();
     }
   }, []);
+
+  // Initialize conversation (must be before early returns)
+  useEffect(() => {
+    if (session && session.id && !creatingSession) {
+      initializeConversation();
+    }
+  }, [session, creatingSession]);
 
   const createNewSession = async () => {
     try {
@@ -103,30 +125,6 @@ const ExperienceMappingScreen = ({ navigation, route }) => {
       </View>
     );
   }
-  
-  // Experience processing state
-  const [experienceData, setExperienceData] = useState({
-    associations: [],
-    dynamics: [],
-    integrations: [],
-    rituals: [],
-    currentPhase: 1
-  });
-
-  // Onboarding state - removed, now using AI for everything
-  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
-  const [isReturningUser, setIsReturningUser] = useState(false);
-  
-  // Refs
-  const scrollViewRef = useRef(null);
-  
-  // Experience Mapping Service
-  const experienceMapper = useRef(new ExperienceMappingService()).current;
-
-  // Initialize conversation
-  useEffect(() => {
-    initializeConversation();
-  }, []);
 
   const initializeConversation = async () => {
     try {
