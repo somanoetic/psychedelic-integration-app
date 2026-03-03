@@ -36,6 +36,48 @@ import SessionTypeSelector from '../components/intention/SessionTypeSelector';
  * - Privacy-first storage (opt-in)
  * - Offline capability with AsyncStorage
  */
+/**
+ * Extract core intention from AI's confirm-stage message.
+ * Strips framing ("Your intention is...") and closing advice
+ * ("Hold it lightly...", "Let the medicine...").
+ */
+const extractCoreIntention = (aiMessage) => {
+  if (!aiMessage) return '';
+
+  // Split into sentences
+  const sentences = aiMessage
+    .replace(/\n/g, ' ')
+    .split(/(?<=[.!?])\s+/)
+    .map(s => s.trim())
+    .filter(Boolean);
+
+  if (sentences.length === 0) return aiMessage;
+
+  // Take the first sentence (the named intention) and clean it
+  let intention = sentences[0];
+
+  // Strip common AI framing prefixes
+  const prefixes = [
+    /^your\s+(intention|direction)\s+(is|seems?\s+to\s+be)[:\s]*/i,
+    /^it\s+sounds?\s+like\s+(your\s+)?(intention|direction)\s+(is|would\s+be)[:\s]*/i,
+    /^so\s+(your\s+)?(intention|direction)\s+(is|seems?)[:\s]*/i,
+    /^what\s+i('m|\s+am)\s+hearing\s+is[:\s]*/i,
+  ];
+  for (const prefix of prefixes) {
+    intention = intention.replace(prefix, '');
+  }
+
+  // Clean up: remove trailing period, trim
+  intention = intention.replace(/\.$/, '').trim();
+
+  // Capitalize first letter
+  if (intention.length > 0) {
+    intention = intention.charAt(0).toUpperCase() + intention.slice(1);
+  }
+
+  return intention;
+};
+
 // Module-level state persistence (survives navigation)
 let persistedState = {
   mode: null,
@@ -85,6 +127,7 @@ const SetIntentionScreen = ({ navigation, route }) => {
 
   // Draft intention
   const [draftIntention, setDraftIntention] = useState(persistedState.draftIntention);
+  const [extractedIntention, setExtractedIntention] = useState(null);
   const [draftFeedback, setDraftFeedback] = useState(null);
   const [analyzingDraft, setAnalyzingDraft] = useState(false);
 
@@ -559,6 +602,27 @@ const SetIntentionScreen = ({ navigation, route }) => {
           nervousSystemState={nervousSystemState}
           onViewTemplates={() => setMode('templates')}
           onEditDraft={() => setMode('draft')}
+          onActionPress={(action) => {
+            if (action.type === 'save_intention' || action.type === 'review_intention' || action.type === 'edit_draft') {
+              // Extract core intention from the AI's confirm-stage message
+              const aiMessages = conversationHistory
+                .filter(m => m.role === 'assistant' && !m.isError);
+              if (aiMessages.length > 0) {
+                const raw = aiMessages[aiMessages.length - 1].content;
+                const extracted = extractCoreIntention(raw);
+                setExtractedIntention(extracted);
+              }
+              // Clear draft so user writes in their own words
+              if (!draftIntention || draftIntention.trim().length === 0) {
+                setDraftIntention('');
+              }
+              setMode('draft');
+            } else if (action.type === 'explore_template' || action.type === 'browse_templates') {
+              setMode('templates');
+            } else if (action.message) {
+              handleSendMessage(action.message);
+            }
+          }}
           disabled={loading}
         />
       );
@@ -588,6 +652,12 @@ const SetIntentionScreen = ({ navigation, route }) => {
           onAnalyze={handleAnalyzeDraft}
           analyzingDraft={analyzingDraft}
           onSave={handleSaveIntention}
+          onExploreDeeper={(intentionText) => {
+            setMode('conversation');
+            handleSendMessage(`I'd like to explore this intention more deeply: "${intentionText}"`);
+          }}
+          fromConversation={conversationHistory.length > 1}
+          extractedIntention={extractedIntention}
           saveToDatabase={saveToDatabase}
           loading={loading}
         />
@@ -764,13 +834,14 @@ const styles = StyleSheet.create({
   conversationContainer: {
     flex: 1,
     padding: spacing.lg,
-    paddingBottom: 0,
+    paddingBottom: spacing.sm,
   },
   scrollContainer: {
     flex: 1,
   },
   scrollContent: {
     padding: spacing.lg,
+    paddingBottom: 80,
   },
   loadingContainer: {
     flex: 1,

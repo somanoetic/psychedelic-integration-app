@@ -292,5 +292,28 @@ Review these during next bug triage session.
 
 ---
 
-**Current Count:** 3 active (BUG-101, BUG-102, BUG-104), 11 resolved
+### BUG-114: "Save Intention" Button Does Nothing
+**Priority:** P1 - High (Core Feature)
+**Status:** Open
+**Reported:** 2026-03-03
+**Assigned:** Unassigned
+
+**Description:**
+Tapping the "Save Intention" button on the Set Intention screen produces no visible response — no save, no navigation, no feedback.
+
+**Impact:**
+- Users cannot save their intentions
+- Blocks a core session preparation flow (FEAT-102)
+- No error in UI — appears broken/unresponsive
+
+**Proposed Investigation:**
+1. Check button's `onPress` handler in SetIntentionScreen
+2. Verify Supabase insert/update call is wired up
+3. Check for silent errors (missing params, RLS, etc.)
+
+**Estimated Effort:** 1-2 hours
+
+---
+
+**Current Count:** 4 active (BUG-101, BUG-102, BUG-104, BUG-114), 11 resolved
 **File Status:** Under limit (300 max)

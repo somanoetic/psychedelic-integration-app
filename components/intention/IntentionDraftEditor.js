@@ -7,6 +7,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   ScrollView,
+  Image,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { colors, spacing, borderRadius, shadows } from '../../theme/colors';
@@ -29,6 +30,9 @@ const IntentionDraftEditor = ({
   onAnalyze,
   analyzingDraft,
   onSave,
+  onExploreDeeper,
+  fromConversation,
+  extractedIntention,
   saveToDatabase,
   loading,
 }) => {
@@ -85,8 +89,49 @@ const IntentionDraftEditor = ({
     );
   };
 
+  const starterPhrases = [
+    'I intend to...',
+    'I am opening to...',
+    'In my life I want...',
+    'I am ready to...',
+    'I am moving toward...',
+  ];
+
   /**
-   * Render tips
+   * Render rephrasing guidance (shown when intention came from conversation)
+   */
+  const renderRephrasingGuide = () => (
+    <View style={styles.guideContainer}>
+      <View style={styles.guideSection}>
+        <View style={styles.guideHeader}>
+          <MaterialIcons name="lightbulb" size={18} color={colors.golden} />
+          <Text style={styles.guideTitle}>Make it yours</Text>
+        </View>
+        <Text style={styles.guideText}>
+          Rewrite this in your own words. An intention is a direction, not a plan — hold it lightly and let the experience take you from there.
+        </Text>
+      </View>
+
+      <View style={styles.guideSection}>
+        <Text style={styles.guideSubtitle}>Try starting with:</Text>
+        <View style={styles.starterPhrases}>
+          {starterPhrases.map((phrase, index) => (
+            <TouchableOpacity
+              key={index}
+              style={styles.starterChip}
+              onPress={() => onChangeDraft(phrase)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.starterChipText}>{phrase}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+    </View>
+  );
+
+  /**
+   * Render tips (shown when writing from scratch)
    */
   const renderTips = () => (
     <View style={styles.tipsContainer}>
@@ -134,6 +179,26 @@ const IntentionDraftEditor = ({
           </Text>
         </View>
 
+        {/* Extracted intention callout */}
+        {fromConversation && extractedIntention ? (
+          <View style={styles.extractedCallout}>
+            <View style={styles.extractedHeader}>
+              <Image
+                source={require('../../assets/images/huxley therapist.png')}
+                style={styles.extractedAvatar}
+                resizeMode="contain"
+              />
+              <Text style={styles.extractedLabel}>What you found with Huxley</Text>
+            </View>
+            <Text style={styles.extractedIntention}>
+              "{extractedIntention}"
+            </Text>
+          </View>
+        ) : null}
+
+        {/* Guidance */}
+        {!feedback && (fromConversation ? renderRephrasingGuide() : renderTips())}
+
         {/* Text Input */}
         <View style={styles.inputContainer}>
           <TextInput
@@ -150,26 +215,22 @@ const IntentionDraftEditor = ({
           {renderCharCounter()}
         </View>
 
+        {/* Feedback */}
+        {renderFeedback()}
+
         {/* Action Buttons */}
         <View style={styles.actions}>
-          <TouchableOpacity
-            style={[
-              styles.analyzeButton,
-              (!draftIntention || analyzingDraft || loading) && styles.buttonDisabled
-            ]}
-            onPress={onAnalyze}
-            disabled={!draftIntention || analyzingDraft || loading}
-            activeOpacity={0.7}
-          >
-            {analyzingDraft ? (
-              <ActivityIndicator size="small" color={colors.textInverse} />
-            ) : (
-              <>
-                <MaterialIcons name="psychology" size={20} color={colors.textInverse} />
-                <Text style={styles.analyzeButtonText}>Get AI Feedback</Text>
-              </>
-            )}
-          </TouchableOpacity>
+          {onExploreDeeper && (
+            <TouchableOpacity
+              style={styles.exploreButton}
+              onPress={() => onExploreDeeper(draftIntention || extractedIntention || '')}
+              disabled={loading}
+              activeOpacity={0.7}
+            >
+              <MaterialIcons name="chat" size={20} color={colors.sage} />
+              <Text style={styles.exploreButtonText}>Explore deeper with Huxley</Text>
+            </TouchableOpacity>
+          )}
 
           <TouchableOpacity
             style={[
@@ -196,12 +257,6 @@ const IntentionDraftEditor = ({
             )}
           </TouchableOpacity>
         </View>
-
-        {/* Feedback */}
-        {renderFeedback()}
-
-        {/* Tips */}
-        {!feedback && renderTips()}
 
         {/* Privacy Notice */}
         <View style={styles.privacyNotice}>
@@ -238,6 +293,39 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.textSecondary,
     lineHeight: 20,
+  },
+  extractedCallout: {
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.md,
+    borderLeftWidth: 4,
+    borderLeftColor: colors.primary,
+    padding: spacing.md,
+    marginBottom: spacing.lg,
+    ...shadows.soft,
+  },
+  extractedHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+    gap: spacing.sm,
+  },
+  extractedAvatar: {
+    width: 28,
+    height: 28,
+  },
+  extractedLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.primary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  extractedIntention: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.text,
+    lineHeight: 24,
+    fontStyle: 'italic',
   },
   inputContainer: {
     backgroundColor: colors.surface,
@@ -288,6 +376,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: colors.textInverse,
+  },
+  exploreButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.sage,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    borderRadius: borderRadius.md,
+    gap: spacing.sm,
+  },
+  exploreButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.sage,
   },
   saveButton: {
     flexDirection: 'row',
@@ -348,6 +453,55 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.textSecondary,
     lineHeight: 18,
+  },
+  guideContainer: {
+    gap: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  guideSection: {
+    backgroundColor: colors.surfaceAlt,
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
+  },
+  guideHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+    gap: spacing.xs,
+  },
+  guideTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  guideSubtitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.textSecondary,
+    marginBottom: spacing.sm,
+  },
+  guideText: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    lineHeight: 20,
+  },
+  starterPhrases: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  starterChip: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.primary,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.md,
+  },
+  starterChipText: {
+    fontSize: 14,
+    color: colors.primary,
+    fontWeight: '500',
   },
   tipsContainer: {
     backgroundColor: colors.surfaceAlt,

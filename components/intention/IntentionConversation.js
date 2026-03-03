@@ -33,6 +33,7 @@ const IntentionConversation = ({
   nervousSystemState,
   onViewTemplates,
   onEditDraft,
+  onActionPress,
   disabled,
 }) => {
   const [messageText, setMessageText] = useState('');
@@ -153,6 +154,7 @@ const IntentionConversation = ({
       message={item}
       nervousSystemState={nervousSystemState}
       isLatest={index === conversationHistory.length - 1}
+      onActionPress={onActionPress}
     />
   );
 
@@ -274,7 +276,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   messageList: {
-    paddingBottom: spacing.md,
+    paddingBottom: 60,
     flexGrow: 1,
   },
   emptyContainer: {

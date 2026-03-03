@@ -137,40 +137,24 @@ Replace the outer `ScrollView` with `FlatList` (using `ListHeaderComponent` / `L
 
 ### BUG-208: Opening Statement Has No Variability
 **Priority:** P2 - Medium (Experience Quality)
-**Status:** Open
+**Status:** Resolved
 **Reported:** 2026-02-17
+**Resolved:** 2026-03-03
 **Screen:** SetIntentionScreen
 
 **Description:**
 Huxley's opening welcome message is always the same. Users who open the screen multiple times will see identical first messages, making Huxley feel scripted and robotic.
 
-**Impact:**
-- Repeated use feels stale
-- Undermines the "warm, attuned guide" persona
-- The prompt already supports variability — the AI just needs different seed prompts
-
-**Proposed Fix:**
-In `buildIntentionPrompt()` (`lib/intentionGuidanceAIService.js`), when `stage === 'welcome'`, add a randomly selected variation hint to the prompt, e.g.:
-
-```js
-const welcomeVariants = [
-  "Start with a warm, grounding check-in.",
-  "Open by acknowledging the courage it takes to do this work.",
-  "Begin with a brief body-awareness invitation before asking about their session.",
-  "Start with genuine curiosity about what brought them here today.",
-];
-const variant = welcomeVariants[Math.floor(Math.random() * welcomeVariants.length)];
-// append variant to prompt
-```
-
-**Estimated Effort:** 1-2 hours
+**Resolution:**
+Fixed in `buildIntentionPrompt()` (`lib/intentionGuidanceAIService.js`, lines 554-562) as part of ADR-007 (Intention as Goalpost). Five distinct welcome approaches are randomly selected each session, adapted by framework and nervous system state.
 
 ---
 
 ### BUG-207: Missing ai_metrics Table (PGRST205 Error)
 **Priority:** P2 - Medium (Observability)
-**Status:** Open
+**Status:** Resolved
 **Reported:** 2026-02-17
+**Resolved:** 2026-03-03 — Migration `20260303000001_ai_metrics_schema.sql`
 
 **Description:**
 Every AI call logs this error:
@@ -188,6 +172,26 @@ The `metricsService.logAIMetric()` call in `intentionGuidanceAIService.js` is tr
 Create the `ai_metrics` table via migration. Check `lib/metricsService.js` for the expected schema and create a matching Supabase migration.
 
 **Estimated Effort:** 2-3 hours (schema + migration + RLS)
+
+---
+
+### BUG-214: Set Intention Chat Content Cut Off by Navigation Bar
+**Priority:** P2 - Medium (UI/UX)
+**Status:** Open
+**Reported:** 2026-03-03
+
+**Description:**
+On the Set Intention screen, the bottom portion of the chat interface is hidden behind the bottom navigation bar. Users cannot see or interact with the lower part of the conversation.
+
+**Impact:**
+- Chat messages and input area partially obscured
+- Reduces usable screen area
+- Similar to resolved BUG-210 (RegulatingResources cut off)
+
+**Proposed Fix:**
+Add proper bottom padding or SafeAreaView inset to account for the tab bar height on the SetIntentionScreen chat area.
+
+**Estimated Effort:** 1-2 hours
 
 ---
 

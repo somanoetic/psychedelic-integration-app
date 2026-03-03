@@ -13,7 +13,7 @@ import { colors, spacing, borderRadius, shadows } from '../../theme/colors';
  * - Suggested actions display
  * - Error state
  */
-const IntentionMessageBubble = ({ message, nervousSystemState, isLatest }) => {
+const IntentionMessageBubble = ({ message, nervousSystemState, isLatest, onActionPress }) => {
   const isUser = message.role === 'user';
   const isError = message.isError;
 
@@ -61,6 +61,7 @@ const IntentionMessageBubble = ({ message, nervousSystemState, isLatest }) => {
           <TouchableOpacity
             key={index}
             style={styles.actionChip}
+            onPress={() => onActionPress?.(action)}
             activeOpacity={0.7}
           >
             <MaterialIcons
