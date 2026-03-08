@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -14,12 +14,13 @@ import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AVATAR_OPTIONS } from './AvatarSelector';
 import { colors } from '../theme/colors';
-import { exerciseCategories as realCategories, getExercisesByCategory } from '../content/exercises';
+import { exerciseCategories as realCategories, getExercisesByCategory, getAllExercises } from '../content/exercises-comprehensive';
 
 const ConversationalExerciseLibrary = ({ navigation, route }) => {
   const [selectedAvatar, setSelectedAvatar] = useState('brain');
-  const [conversationStep, setConversationStep] = useState('initial'); // initial, search, browse, selected
+  const [conversationStep, setConversationStep] = useState('initial'); // initial, search, browse, selected, searchResults
   const [userInput, setUserInput] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [fadeAnim] = useState(new Animated.Value(0));
 
@@ -262,6 +263,71 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
     );
   };
 
+  const allExercises = useMemo(() => getAllExercises(), []);
+
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    const query = searchQuery.toLowerCase().trim();
+    return allExercises.filter(ex =>
+      ex.title.toLowerCase().includes(query) ||
+      ex.instructions.toLowerCase().includes(query) ||
+      (ex.source && ex.source.toLowerCase().includes(query))
+    );
+  }, [searchQuery, allExercises]);
+
+  const renderSearchResultsStep = () => (
+    <>
+      {renderHuxleyMessage(
+        searchResults.length > 0
+          ? `I found ${searchResults.length} exercise${searchResults.length === 1 ? '' : 's'} matching "${searchQuery}". Take a look:`
+          : `I couldn't find any exercises matching "${searchQuery}". Try different words, or browse by category.`
+      )}
+
+      {searchResults.length > 0 && (
+        <View style={styles.exercisesListContainer}>
+          {searchResults.map((exercise, index) => {
+            const catInfo = exerciseCategories.find(c => c.id === exercise.category);
+            const catColor = catInfo?.color || '#6b7280';
+            return (
+              <TouchableOpacity
+                key={exercise.id || index}
+                style={[styles.exerciseCard, { borderLeftColor: catColor }]}
+                onPress={() => {
+                  navigation.navigate('GuidedExercise', {
+                    exercise,
+                    categoryColor: catColor,
+                  });
+                }}
+              >
+                <View style={[styles.exerciseIcon, { backgroundColor: `${catColor}20` }]}>
+                  <MaterialIcons name="play-arrow" size={24} color={catColor} />
+                </View>
+                <View style={styles.exerciseInfo}>
+                  <Text style={styles.exerciseName}>{exercise.title}</Text>
+                  <Text style={styles.exerciseMeta}>
+                    {exercise.duration} min · {exercise.steps?.length || 0} steps · {catInfo?.name || exercise.category}
+                  </Text>
+                  {exercise.instructions && (
+                    <Text style={styles.exercisePreview} numberOfLines={2}>
+                      {exercise.instructions}
+                    </Text>
+                  )}
+                </View>
+                <MaterialIcons name="chevron-right" size={20} color="#9ca3af" />
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      )}
+
+      <View style={styles.optionsContainer}>
+        <Text style={styles.optionsLabel}>You:</Text>
+        {renderUserOption('Browse categories', () => setConversationStep('browse'), 'view-list', '#3b82f6')}
+        {renderUserOption('Go back to start', () => { setSearchQuery(''); setConversationStep('initial'); }, 'home', '#6b7280')}
+      </View>
+    </>
+  );
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
@@ -270,8 +336,33 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
           <MaterialIcons name="arrow-back" size={24} color="#1f2937" />
         </TouchableOpacity>
         <Text style={styles.appName}>Exercise Library</Text>
-        <View style={{ width: 24 }} />
+        <TouchableOpacity onPress={() => {
+          setSearchQuery('');
+          setConversationStep(conversationStep === 'searchResults' ? 'initial' : 'searchResults');
+        }}>
+          <MaterialIcons name="search" size={24} color="#1f2937" />
+        </TouchableOpacity>
       </View>
+
+      {conversationStep === 'searchResults' && (
+        <View style={styles.searchBarContainer}>
+          <MaterialIcons name="search" size={20} color={colors.textSecondary} />
+          <TextInput
+            style={styles.searchBarInput}
+            placeholder="Search exercises..."
+            placeholderTextColor="#9ca3af"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            returnKeyType="search"
+            autoFocus
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity onPress={() => setSearchQuery('')}>
+              <MaterialIcons name="close" size={20} color={colors.textSecondary} />
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
 
       <ScrollView
         style={styles.content}
@@ -283,6 +374,7 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
           {conversationStep === 'search' && renderSearchStep()}
           {conversationStep === 'browse' && renderBrowseStep()}
           {conversationStep === 'selected' && renderSelectedStep()}
+          {conversationStep === 'searchResults' && renderSearchResultsStep()}
         </Animated.View>
       </ScrollView>
     </SafeAreaView>
@@ -308,6 +400,22 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '700',
     color: '#1f2937',
+  },
+  searchBarContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    gap: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+  },
+  searchBarInput: {
+    flex: 1,
+    fontSize: 16,
+    color: '#1f2937',
+    paddingVertical: 4,
   },
   content: {
     flex: 1,

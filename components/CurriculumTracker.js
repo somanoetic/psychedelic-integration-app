@@ -13,7 +13,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { exercises, exerciseCategories, getAllExercises } from '../content/exercises';
+import { exercises, exerciseCategories, getAllExercises } from '../content/exercises-comprehensive';
 import { colors, gradients } from '../theme/colors';
 
 const PROGRESS_STORAGE_KEY = 'exercise_progress_data';

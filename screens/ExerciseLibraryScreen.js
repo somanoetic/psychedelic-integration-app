@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -6,16 +6,18 @@ import {
   TouchableOpacity,
   StyleSheet,
   Modal,
+  TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
-import { getAllExercises, exerciseCategories } from '../content/exercises';
+import { getAllExercises, exerciseCategories } from '../content/exercises-comprehensive';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 
 const ExerciseLibraryScreen = ({ navigation }) => {
   const [selectedExercise, setSelectedExercise] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Get all exercises from the content file
   const allPractices = getAllExercises();
@@ -24,9 +26,22 @@ const ExerciseLibraryScreen = ({ navigation }) => {
     return exerciseCategories.find(c => c.id === categoryId) || exerciseCategories[0];
   };
 
-  const filteredPractices = selectedCategory === 'all'
-    ? allPractices
-    : allPractices.filter(p => p.category === selectedCategory);
+  const filteredPractices = useMemo(() => {
+    let results = selectedCategory === 'all'
+      ? allPractices
+      : allPractices.filter(p => p.category === selectedCategory);
+
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      results = results.filter(p =>
+        p.title.toLowerCase().includes(query) ||
+        p.instructions.toLowerCase().includes(query) ||
+        (p.source && p.source.toLowerCase().includes(query))
+      );
+    }
+
+    return results;
+  }, [selectedCategory, searchQuery, allPractices]);
 
   const renderExerciseModal = () => {
     if (!selectedExercise) return null;
@@ -85,6 +100,13 @@ const ExerciseLibraryScreen = ({ navigation }) => {
                   Take your time with each step. There's no rush. This is your practice.
                 </Text>
               </View>
+
+              {selectedExercise.source && (
+                <View style={styles.sourceBox}>
+                  <MaterialIcons name="menu-book" size={16} color={colors.textSecondary} />
+                  <Text style={styles.sourceText}>Source: {selectedExercise.source}</Text>
+                </View>
+              )}
             </ScrollView>
 
             <View style={styles.modalFooter}>
@@ -123,6 +145,23 @@ const ExerciseLibraryScreen = ({ navigation }) => {
         </Text>
       </LinearGradient>
 
+      <View style={styles.searchContainer}>
+        <MaterialIcons name="search" size={20} color={colors.textSecondary} />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search exercises..."
+          placeholderTextColor={colors.textSecondary}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          returnKeyType="search"
+        />
+        {searchQuery.length > 0 && (
+          <TouchableOpacity onPress={() => setSearchQuery('')}>
+            <MaterialIcons name="close" size={20} color={colors.textSecondary} />
+          </TouchableOpacity>
+        )}
+      </View>
+
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -158,6 +197,14 @@ const ExerciseLibraryScreen = ({ navigation }) => {
           <Text style={styles.resultsText}>
             {filteredPractices.length} {filteredPractices.length === 1 ? 'exercise' : 'exercises'}
           </Text>
+
+          {filteredPractices.length === 0 && (
+            <View style={styles.emptyState}>
+              <MaterialIcons name="search-off" size={48} color={colors.textSecondary} />
+              <Text style={styles.emptyStateText}>No exercises found</Text>
+              <Text style={styles.emptyStateSubtext}>Try a different search or category</Text>
+            </View>
+          )}
 
           {filteredPractices.map((exercise, index) => {
             const categoryInfo = getCategoryInfo(exercise.category);
@@ -226,6 +273,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'rgba(255, 255, 255, 0.9)',
     marginTop: 8,
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    gap: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    color: colors.text,
+    paddingVertical: 4,
   },
   categoryScroll: {
     backgroundColor: colors.surface,
@@ -424,6 +487,35 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#92400e',
     lineHeight: 20,
+  },
+  sourceBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 16,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#e5e7eb',
+  },
+  sourceText: {
+    flex: 1,
+    fontSize: 13,
+    color: colors.textSecondary,
+    fontStyle: 'italic',
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: 48,
+    gap: 8,
+  },
+  emptyStateText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  emptyStateSubtext: {
+    fontSize: 14,
+    color: colors.textSecondary,
   },
   modalFooter: {
     padding: 24,
