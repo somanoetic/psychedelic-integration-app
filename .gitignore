@@ -35,6 +35,10 @@ yarn-error.*
 .env
 .env*.local
 
+# Sentry auth tokens
+android/sentry.properties
+ios/sentry.properties
+
 # typescript
 *.tsbuildinfo
 
