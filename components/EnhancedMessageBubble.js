@@ -13,6 +13,7 @@ import {
   Info
 } from 'react-native-vector-icons/Feather';
 import { colors } from '../theme/colors';
+import FormattedText from './FormattedText';
 
 const EnhancedMessageBubble = ({
   message,
@@ -195,12 +196,12 @@ const EnhancedMessageBubble = ({
         isUser ? styles.userBubble : styles.assistantBubble
       ]}>
         {/* Message Content */}
-        <Text style={[
+        <FormattedText style={[
           styles.messageText,
           isUser ? styles.userText : styles.assistantText
         ]}>
           {message.content}
-        </Text>
+        </FormattedText>
 
         {/* Entity Chips (for assistant messages) */}
         {!isUser && renderEntityChips()}

@@ -8,14 +8,18 @@ import {
   Alert,
   Animated,
   Dimensions,
-  ActivityIndicator
+  ActivityIndicator,
+  Platform,
+  Keyboard,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../lib/supabase';
-import IntegrationGuideService from '../lib/enhancedClaudeService';
+import huxleyService from '../lib/huxleyService';
 import EmbeddedPracticeWidget from '../enhanced-components/EmbeddedPracticeWidget';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 import { LinearGradient } from 'expo-linear-gradient';
+import FormattedText from '../components/FormattedText';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
@@ -62,8 +66,19 @@ const EnhancedConversationScreen = ({ navigation, route }) => {
   const scrollViewRef = useRef(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
   
-  // Enhanced Claude service with practice integration
-  const integrationGuide = useRef(new IntegrationGuideService()).current;
+  // Unified AI service
+  // huxleyService is a singleton, no need for useRef
+
+  // Scroll to bottom when keyboard opens
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const sub = Keyboard.addListener(showEvent, () => {
+      setTimeout(() => {
+        scrollViewRef.current?.scrollToEnd({ animated: true });
+      }, 150);
+    });
+    return () => sub.remove();
+  }, []);
 
   // Initialize conversation
   useEffect(() => {
@@ -130,14 +145,8 @@ const EnhancedConversationScreen = ({ navigation, route }) => {
       setEntities(loadedEntities);
       setNervousSystemState(loadedState);
       
-      // Initialize Claude with context
-      integrationGuide.initializeSession({
-        sessionId: session.id,
-        messages: loadedMessages,
-        entities: loadedEntities,
-        nervousSystemState: loadedState,
-        sessionPhase: sessionData.sessionPhase || 'check_in'
-      });
+      // Initialize huxleyService mode
+      huxleyService.setMode('general', { clearHistory: true });
       
       // Return whether there are existing messages
       return loadedMessages.length > 0;
@@ -212,29 +221,29 @@ How is your body feeling in this moment?`,
       setRegulationInterventions(prev => prev + 1);
     }
     
-    // Generate Claude response based on assessment
-    const contextualResponse = await integrationGuide.respondToNervousSystemCheck({
-      state,
-      intensity,
-      notes,
-      sessionPhase: 'check_in'
-    });
+    // Generate response based on assessment via huxleyService
+    const contextualResponse = await huxleyService.chat(
+      `Nervous system check-in: state=${state}, intensity=${intensity}${notes ? ', notes: ' + notes : ''}`,
+      { phase: 'check_in' }
+    );
     
+    const suggestedPractice = contextualResponse.exerciseRecommendation || contextualResponse.therapeuticData?.suggestedPractice || null;
+
     const responseMessage = {
       role: 'assistant',
       content: contextualResponse.message,
       timestamp: new Date(),
       nervousSystemContext: { state, intensity, notes },
-      requiresPractice: contextualResponse.suggestedPractice
+      requiresPractice: suggestedPractice
     };
-    
+
     const updatedMessages = [...messages, responseMessage];
     setMessages(updatedMessages);
-    
+
     // Auto-suggest regulation if needed
-    if (contextualResponse.suggestedPractice) {
+    if (suggestedPractice) {
       setTimeout(() => {
-        setCurrentPractice(contextualResponse.suggestedPractice);
+        setCurrentPractice(suggestedPractice);
       }, 2000);
     }
     
@@ -260,54 +269,47 @@ How is your body feeling in this moment?`,
     setIsLoading(true);
 
     try {
-      // Get enhanced Claude response with practice recommendations
-      const response = await integrationGuide.continueConversation(
-        userInput.trim(),
-        {
-          messages: newMessages,
-          entities: entities,
-          nervousSystemState: nervousSystemState,
-          stateConfidence: stateConfidence,
-          sessionPhase: sessionPhase,
-          practicesCompleted: practicesCompleted
-        }
-      );
+      // Get AI response via huxleyService
+      const response = await huxleyService.chat(userInput.trim());
+
+      const suggestedPractice = response.exerciseRecommendation || response.therapeuticData?.suggestedPractice || null;
+      const extractedEntities = response.therapeuticData?.extractedEntities || [];
+      const nervousSystemUpdate = response.therapeuticData?.nervousSystemUpdate || null;
 
       const assistantMessage = {
         role: 'assistant',
         content: response.message,
         timestamp: new Date(),
-        entities: response.extractedEntities || [],
-        requiresPractice: response.suggestedPractice,
-        nervousSystemUpdate: response.nervousSystemUpdate
+        entities: extractedEntities,
+        requiresPractice: suggestedPractice,
+        nervousSystemUpdate: nervousSystemUpdate
       };
 
       const updatedMessages = [...newMessages, assistantMessage];
       setMessages(updatedMessages);
 
       // Update entities if new ones were extracted
-      if (response.extractedEntities && response.extractedEntities.length > 0) {
-        const updatedEntities = [...entities, ...response.extractedEntities];
+      if (extractedEntities.length > 0) {
+        const updatedEntities = [...entities, ...extractedEntities];
         setEntities(updatedEntities);
       }
 
       // Update nervous system state if changed
-      if (response.nervousSystemUpdate) {
-        setNervousSystemState(response.nervousSystemUpdate.state);
-        setStateConfidence(response.nervousSystemUpdate.confidence);
+      if (nervousSystemUpdate) {
+        setNervousSystemState(nervousSystemUpdate.state);
+        setStateConfidence(nervousSystemUpdate.confidence);
       }
 
       // Show practice if recommended (delayed and only if urgency is high)
-      if (response.suggestedPractice && response.suggestedPractice.urgency === 'high') {
+      if (suggestedPractice && suggestedPractice.urgency === 'high') {
         setTimeout(() => {
           setCurrentPractice({
-            ...response.suggestedPractice,
+            ...suggestedPractice,
             onComplete: handlePracticeComplete
           });
-        }, 3000); // Wait 3 seconds instead of 1.5
-      } else if (response.suggestedPractice) {
-        // For lower urgency, just mention it in the message without auto-showing
-        console.log('Practice available but not auto-showing:', response.suggestedPractice.title);
+        }, 3000);
+      } else if (suggestedPractice) {
+        console.log('Practice available but not auto-showing:', suggestedPractice.title);
       }
 
       await saveMessages(updatedMessages);
@@ -344,19 +346,17 @@ How is your body feeling in this moment?`,
     setPracticesCompleted(prev => [...prev, completedPractice]);
     setCurrentPractice(null);
 
-    // Generate follow-up response from Claude
-    const followUpResponse = await integrationGuide.respondToPracticeCompletion({
-      practice: completedPractice,
-      currentState: nervousSystemState,
-      sessionContext: { messages, entities, sessionPhase }
-    });
+    // Generate follow-up response via huxleyService
+    const followUpResponse = await huxleyService.chat(
+      `I just completed a ${completedPractice.type} practice. Duration: ${completedPractice.duration}s. Effectiveness: ${completedPractice.effectiveness}/10. Outcome: ${completedPractice.outcome}`
+    );
 
     const followUpMessage = {
       role: 'assistant',
       content: followUpResponse.message,
       timestamp: new Date(),
       practiceFollowUp: true,
-      requiresPractice: followUpResponse.suggestedPractice
+      requiresPractice: followUpResponse.exerciseRecommendation || followUpResponse.therapeuticData?.suggestedPractice || null
     };
 
     const updatedMessages = [...messages, followUpMessage];
@@ -438,13 +438,13 @@ How is your body feeling in this moment?`,
           message.role === 'user' ? styles.userBubble : styles.assistantBubble
         ]}
       >
-        <Text style={[
+        <FormattedText style={[
           styles.messageText,
           message.role === 'user' ? styles.userText : styles.assistantText
         ]}>
           {message.content}
-        </Text>
-        
+        </FormattedText>
+
         {/* Show entities if available */}
         {message.entities && message.entities.length > 0 && (
           <View style={styles.entitiesContainer}>
@@ -539,6 +539,11 @@ How is your body feeling in this moment?`,
   return (
     <LinearGradient colors={gradients.standard} start={{ x: 1.0, y: 0.0 }} end={{ x: 0.0, y: 1.0 }} style={{ flex: 1 }}>
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+    >
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -546,19 +551,19 @@ How is your body feeling in this moment?`,
         </TouchableOpacity>
         <Text style={styles.title}>Enhanced Integration Session</Text>
       </View>
-      
+
       {renderNervousSystemHeader()}
-      
+
       <ScrollView
         ref={scrollViewRef}
         style={styles.messagesContainer}
         contentContainerStyle={styles.messagesContent}
-        onContentSizeChange={() => 
+        onContentSizeChange={() =>
           scrollViewRef.current?.scrollToEnd({ animated: true })
         }
       >
         {renderMessages()}
-        
+
         {isLoading && (
           <View style={styles.typingIndicator}>
             <Text style={styles.typingText}>Claude is thinking...</Text>
@@ -578,6 +583,7 @@ How is your body feeling in this moment?`,
           onSkip={handlePracticeSkip}
         />
       )}
+    </KeyboardAvoidingView>
     </SafeAreaView>
     </LinearGradient>
   );

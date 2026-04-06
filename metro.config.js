@@ -1,7 +1,9 @@
-const { getDefaultConfig } = require('expo/metro-config');
 const os = require('os');
+const {
+  getSentryExpoConfig
+} = require("@sentry/react-native/metro");
 
-const config = getDefaultConfig(__dirname);
+const config = getSentryExpoConfig(__dirname);
 
 // Force Metro to use LAN IP instead of localhost
 function getLocalIPAddress() {

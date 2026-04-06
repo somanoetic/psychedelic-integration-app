@@ -30,8 +30,6 @@ const BUTTON_COLOR = colors.primary;
 const GridHomeScreen = ({ navigation }) => {
   const [huxleyModalVisible, setHuxleyModalVisible] = useState(false);
   const [trackMenuVisible, setTrackMenuVisible] = useState(false);
-  const [innerWorkMenuVisible, setInnerWorkMenuVisible] = useState(false);
-  const [practiceMenuVisible, setPracticeMenuVisible] = useState(false);
 
   // Track Hub options
   const trackOptions = [
@@ -40,23 +38,6 @@ const GridHomeScreen = ({ navigation }) => {
     { id: 'trigger', title: 'Trigger Tracker', description: 'Log when you were triggered', emoji: '⚡', route: 'TriggerTracker' },
     { id: 'parts', title: 'Parts Check-in', description: 'Check in with your inner parts', emoji: '🎭', route: 'PartsCheckin' },
     { id: 'habits', title: 'Habit Tracker', description: 'Track your daily practices', emoji: '📊', route: 'HabitTracker' },
-  ];
-
-  // Inner Work options
-  const innerWorkOptions = [
-    { id: 'ifs', title: 'IFS Parts Work', description: 'Explore and heal your inner parts', emoji: '🎭', route: 'IFSChat' },
-    { id: 'triggers', title: 'Triggers & Glimmers', description: 'Map your patterns', emoji: '⚡', route: 'TriggersGlimmers' },
-    { id: 'beliefs', title: 'Core Beliefs', description: 'Explore limiting beliefs', emoji: '💭', route: 'CoreBeliefs' },
-    { id: 'resources', title: 'Regulating Resources', description: 'Build your coping toolkit', emoji: '🧘', route: 'RegulatingResources' },
-    { id: 'nervous', title: 'Nervous System Map', description: 'Deep dive into your states', emoji: '💚', route: 'NervousSystemMapping' },
-  ];
-
-  // Practice options
-  const practiceOptions = [
-    { id: 'progress', title: 'Your Progress', description: 'Track your exercise curriculum', emoji: '📈', route: 'CurriculumTracker' },
-    { id: 'swiper', title: 'Glimmer Swiper', description: 'Therapeutic swipe game', emoji: '🎮', route: 'GlimmerSwiper' },
-    { id: 'exercises', title: 'Exercise Library', description: 'Breathing, grounding, somatic', emoji: '🏃', route: 'ExerciseLibrary' },
-    { id: 'grounding', title: 'Quick Grounding', description: '5-4-3-2-1 and more', emoji: '🌍', route: 'ExerciseLibrary', params: { category: 'grounding' } },
   ];
 
   const smallTiles = [
@@ -104,23 +85,21 @@ const GridHomeScreen = ({ navigation }) => {
       title: 'Process and Integrate',
       emoji: '🧩',
       color: BUTTON_COLOR,
-      route: 'ExperienceMapping',
+      route: 'ProcessIntegrate',
     },
     {
       id: 'innerwork',
       title: 'Inner Work',
       emoji: '🔍',
       color: BUTTON_COLOR,
-      isSubmenu: true,
-      onPress: () => setInnerWorkMenuVisible(true),
+      route: 'InnerWork',
     },
     {
       id: 'practice',
       title: 'Practice',
       emoji: '🎮',
       color: BUTTON_COLOR,
-      isSubmenu: true,
-      onPress: () => setPracticeMenuVisible(true),
+      route: 'Practice',
     },
   ];
 
@@ -157,10 +136,12 @@ const GridHomeScreen = ({ navigation }) => {
             <MaterialIcons name="chat-bubble" size={28} color={colors.text} />
           </TouchableOpacity>
 
-          {/* Debug: Screen name */}
-          {__DEV__ && (
-            <Text style={styles.debugScreenName}>GridHomeScreen</Text>
-          )}
+          <TouchableOpacity
+            style={styles.headerButton}
+            onPress={() => navigation.navigate('Settings')}
+          >
+            <MaterialIcons name="settings" size={26} color={colors.text} />
+          </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.headerButton, styles.sosButton]}
@@ -238,23 +219,6 @@ const GridHomeScreen = ({ navigation }) => {
         onSelect={handleSubMenuSelect}
       />
 
-      {/* Inner Work SubMenu */}
-      <SubMenuModal
-        visible={innerWorkMenuVisible}
-        onClose={() => setInnerWorkMenuVisible(false)}
-        title="Inner Work"
-        options={innerWorkOptions}
-        onSelect={handleSubMenuSelect}
-      />
-
-      {/* Practice SubMenu */}
-      <SubMenuModal
-        visible={practiceMenuVisible}
-        onClose={() => setPracticeMenuVisible(false)}
-        title="Practice"
-        options={practiceOptions}
-        onSelect={handleSubMenuSelect}
-      />
       </SafeAreaView>
     </LinearGradient>
   );

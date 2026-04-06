@@ -12,14 +12,15 @@ import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colo
 import { LinearGradient } from 'expo-linear-gradient';
 import ConversationalEducation from '../components/ConversationalEducation';
 import PolyvagalEducationWidget from '../enhanced-components/PolyvagalEducationWidget';
-import PolyvagalMappingWidgetAI from '../enhanced-components/PolyvagalMappingWidgetAI';
-import TriggersAndGlimmersWidgetAI from '../enhanced-components/TriggersAndGlimmersWidgetAI';
-import RegulatingResourcesWidgetAI from '../enhanced-components/RegulatingResourcesWidgetAI';
+import ConversationalNervousSystemMapping from '../components/ConversationalNervousSystemMapping';
+import ConversationalTriggersGlimmers from '../components/ConversationalTriggersGlimmers';
+import ConversationalRegulatingResources from '../components/ConversationalRegulatingResources';
 import IFSPartsWorkChatWithContext from '../enhanced-components/IFSPartsWorkChatWithContext';
 import IFSPartsEducationWidget from '../components/IFSPartsEducationWidget';
 import GroundingExercisesWidget from '../components/GroundingExercisesWidget';
 import userRoleService from '../lib/userRoleService';
 import { educationTopics, getTopicById } from '../content/education';
+import FormattedText from '../components/FormattedText';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -289,32 +290,32 @@ const EducationScreen = ({ navigation }) => {
       );
     }
 
-    // Special case: Use AI-powered interactive widget for polyvagal mapping
+    // Special case: Use conversational nervous system mapping (via huxleyService mode handler)
     if (selectedTopic === 'polyvagal_mapping') {
       return (
-        <PolyvagalMappingWidgetAI
+        <ConversationalNervousSystemMapping
           onComplete={handleEducationComplete}
-          onSkip={handleEducationComplete}
+          navigation={navigation}
         />
       );
     }
 
-    // Special case: Use AI-enhanced interactive widget for triggers & glimmers
+    // Special case: Use conversational triggers & glimmers (via huxleyService mode handler)
     if (selectedTopic === 'triggers_glimmers') {
       return (
-        <TriggersAndGlimmersWidgetAI
+        <ConversationalTriggersGlimmers
           onComplete={handleEducationComplete}
-          onSkip={handleEducationComplete}
+          navigation={navigation}
         />
       );
     }
 
-    // Special case: Use AI-enhanced interactive widget for regulating resources
+    // Special case: Use conversational regulating resources (via huxleyService mode handler)
     if (selectedTopic === 'regulating_resources') {
       return (
-        <RegulatingResourcesWidgetAI
+        <ConversationalRegulatingResources
           onComplete={handleEducationComplete}
-          onSkip={handleEducationComplete}
+          navigation={navigation}
         />
       );
     }
@@ -353,7 +354,7 @@ const EducationScreen = ({ navigation }) => {
           {topic.content && topic.content.map((section, index) => (
             <View key={index} style={styles.contentSection}>
               <Text style={styles.contentSectionTitle}>{section.title}</Text>
-              <Text style={styles.contentSectionText}>{section.text}</Text>
+              <FormattedText style={styles.contentSectionText}>{section.text}</FormattedText>
             </View>
           ))}
 

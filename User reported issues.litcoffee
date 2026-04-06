@@ -1,0 +1,6 @@
+- learning hub needs huxley avatar not head with gear
+- the intention seems to close the conversation too soon.  It has opening prompt, first feedback, and on the next one is like 'That's you intention'.  I don't want it too be too long but needs more than that
+- set your intention -> write your intention screen is cut off at the bottom by the navigation bar
+- no intention templates available
+- when in conversation and I answer - Huxley starts thinking but I started typing a little more follow up to my initial response - can Huxley detect that and wait for me to finish typing?
+- 

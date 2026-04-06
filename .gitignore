@@ -60,3 +60,5 @@ supabase/.temp/
 
 # Local dev utilities
 test-api-keys.js
+
+.env.local

@@ -8,11 +8,12 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  Keyboard,
   ActivityIndicator,
   Image
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { IFSAIService } from '../lib/ifsAIService';
+import huxleyService from '../lib/huxleyService';
 import ifsContextService from '../lib/ifsContextService';
 import masterContextService from '../lib/masterContextService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -42,8 +43,21 @@ const IFSPartsWorkChatWithContext = ({ navigation, onComplete, onSkip }) => {
   const [sessionType, setSessionType] = useState(null); // 'discovery' or 'check_in'
   const [sessionStartTime] = useState(new Date());
 
+  // Session progress from mode handler (replaces manual sessionData + phase tracking)
+  const [sessionProgress, setSessionProgress] = useState(null);
+
   const scrollViewRef = useRef(null);
-  const ifsService = useRef(new IFSAIService()).current;
+
+  // Scroll to bottom when keyboard opens
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const sub = Keyboard.addListener(showEvent, () => {
+      setTimeout(() => {
+        scrollViewRef.current?.scrollToEnd({ animated: true });
+      }, 150);
+    });
+    return () => sub.remove();
+  }, []);
 
   useEffect(() => {
     initializeSession();
@@ -66,9 +80,10 @@ const IFSPartsWorkChatWithContext = ({ navigation, onComplete, onSkip }) => {
         const userData = JSON.parse(user);
         setUserId(userData.id);
 
-        // Initialize AI service with master context (CROSS-DOMAIN INTEGRATION)
-        await ifsService.initialize(userData.id);
-        console.log('[IFS Chat] Master context loaded - AI can now reference psychedelic journeys, NS patterns, etc.');
+        // Initialize Huxley with user context and set IFS mode
+        await huxleyService.initialize(userData.id);
+        huxleyService.setMode('ifs', { clearHistory: true });
+        console.log('[IFS Chat] Huxley initialized in IFS mode - AI can now reference psychedelic journeys, NS patterns, etc.');
 
         // Load known parts from database
         const partsData = await ifsContextService.loadUserParts(userData.id);
@@ -247,14 +262,14 @@ How is this part showing up for you right now? What does it want you to know?`;
       setSessionType('discovery');
       setCurrentPhase('find');
 
-      const aiResponse = await ifsService.sendMessage(
-        `The user is noticing: "${userMessage}". Help them begin discovering this part.`,
-        'find'
+      // Handler controls the phase — just send the message
+      const aiResponse = await huxleyService.chat(
+        `The user is noticing: "${userMessage}". Help them begin discovering this part.`
       );
 
       setIsTyping(false);
       setIsAIMode(aiResponse.isAI);
-      addMessage('assistant', aiResponse.response);
+      addMessage('assistant', aiResponse.message);
     }
   };
 
@@ -280,7 +295,6 @@ How is this part showing up for you right now? What does it want you to know?`;
     // Save current progress
     if (currentPart) {
       await ifsContextService.updatePart(currentPart.id, {
-        session_notes: ifsService.getSessionData(),
         last_worked_with: new Date().toISOString()
       });
     }
@@ -324,7 +338,7 @@ Would you like to continue working with ${currentPart.part_name}, or do you feel
 
     if (existingPart) {
       // Merge session data into existing part
-      const currentSessionData = ifsService.getSessionData();
+      const currentSessionData = sessionData;
       await ifsContextService.updatePart(existingPart.id, {
         session_notes: [
           ...(existingPart.session_notes || []),
@@ -420,22 +434,33 @@ Would you like to continue working with ${currentPart.part_name}, or do you feel
     setIsTyping(true);
 
     try {
-      // Get AI response based on current phase
-      const aiResponse = await ifsService.sendMessage(message, currentPhase);
+      // Mode handler controls phase and context automatically
+      const aiResponse = await huxleyService.chat(message);
 
       setIsTyping(false);
       setIsAIMode(aiResponse.isAI);
 
+      // Update session progress from mode handler
+      if (aiResponse.sessionProgress) {
+        setSessionProgress(aiResponse.sessionProgress);
+        setCurrentPhase(aiResponse.sessionProgress.phase);
+
+        // Auto-show summary when handler signals completion
+        if (aiResponse.sessionProgress.isComplete && currentPhase !== 'summary') {
+          addMessage('assistant', aiResponse.message);
+          showSummary();
+          return;
+        }
+      }
+
       // Check for exile emergence during protector work
-      const detectedExile = detectExileEmergence(message, aiResponse.response);
+      const detectedExile = detectExileEmergence(message, aiResponse.message);
       if (detectedExile) {
-        // IMPORTANT: Record the relationship IMMEDIATELY, regardless of user's choice
-        // The fact that the exile emerged during protector work IS the connection
         if (currentPart && !currentPart.is_exile) {
           await recordProtectorExileConnection(currentPart.id, detectedExile.id);
         }
 
-        addMessage('assistant', aiResponse.response);
+        addMessage('assistant', aiResponse.message);
         addMessage('assistant', `I'm noticing something... You mentioned feelings and language that remind me of **${detectedExile.part_name}**, an exile you've worked with before.
 
 Is that part showing up right now? Sometimes protectors reveal the exiles they protect.
@@ -448,29 +473,24 @@ Is that part showing up right now? Sometimes protectors reveal the exiles they p
       }
 
       // Check for potential duplicate if in early discovery
-      if (sessionType === 'discovery' && (currentPhase === 'find' || currentPhase === 'focus')) {
-        const sessionData = ifsService.getSessionData();
-        const description = sessionData.targetPart + ' ' + sessionData.description;
-        const duplicate = detectDuplicatePart(description);
-
-        if (duplicate) {
-          addMessage('assistant', aiResponse.response);
-          addMessage('assistant', `This sounds similar to **${duplicate.part_name}**, a ${duplicate.part_role} you've worked with before.
+      if (sessionType === 'discovery' && aiResponse.sessionProgress &&
+          (aiResponse.sessionProgress.phase === 'find' || aiResponse.sessionProgress.phase === 'focus')) {
+        const activePart = aiResponse.sessionProgress.activePart;
+        if (activePart?.name) {
+          const duplicate = detectDuplicatePart(activePart.name);
+          if (duplicate) {
+            addMessage('assistant', aiResponse.message);
+            addMessage('assistant', `This sounds similar to **${duplicate.part_name}**, a ${duplicate.part_role} you've worked with before.
 
 Is this the same part showing up in a new way, or is this definitely a new part?`,
-            [`Merge with: ${duplicate.part_name}`, 'This is a new part', 'Not sure yet']
-          );
-          return;
+              [`Merge with: ${duplicate.part_name}`, 'This is a new part', 'Not sure yet']
+            );
+            return;
+          }
         }
       }
 
-      addMessage('assistant', aiResponse.response);
-
-      // Update session data based on phase
-      updateSessionDataFromPhase(message);
-
-      // Advance phase after certain steps
-      advancePhaseIfNeeded(message, aiResponse.response);
+      addMessage('assistant', aiResponse.message);
 
     } catch (error) {
       setIsTyping(false);
@@ -479,87 +499,27 @@ Is this the same part showing up in a new way, or is this definitely a new part?
     }
   };
 
-  const updateSessionDataFromPhase = (message) => {
-    switch (currentPhase) {
-      case 'find':
-        ifsService.updateSessionData('targetPart', message);
-        break;
-      case 'findLocation':
-        ifsService.updateSessionData('location', message);
-        break;
-      case 'focus':
-        ifsService.updateSessionData('description', message);
-        break;
-      case 'fleshOut':
-        ifsService.updateSessionData('partRole', message);
-        break;
-      case 'feelToward':
-        ifsService.updateSessionData('selfEnergy', message);
-        break;
-      case 'befriend':
-        ifsService.updateSessionData('partResponse', message);
-        break;
-      case 'fears':
-        ifsService.updateSessionData('partFears', message);
-        break;
-    }
-  };
-
-  const advancePhaseIfNeeded = (userMessage, aiResponse) => {
-    const lowerAI = aiResponse.toLowerCase();
-
-    // Phase progression logic
-    if (currentPhase === 'find' && (lowerAI.includes('where do you') || lowerAI.includes('body'))) {
-      setCurrentPhase('findLocation');
-    } else if (currentPhase === 'findLocation' && (lowerAI.includes('what do you notice') || lowerAI.includes('images') || lowerAI.includes('sensations'))) {
-      setCurrentPhase('focus');
-    } else if (currentPhase === 'focus' && (lowerAI.includes('job') || lowerAI.includes('role') || lowerAI.includes('trying to do'))) {
-      setCurrentPhase('fleshOut');
-    } else if (currentPhase === 'fleshOut' && lowerAI.includes('how do you feel toward')) {
-      setCurrentPhase('feelToward');
-    } else if (currentPhase === 'feelToward') {
-      // Check for Self energy or blending
-      const lowerUser = userMessage.toLowerCase();
-      const selfQualities = ['curious', 'compassion', 'calm', 'open', 'interested'];
-      const blendedQualities = ['annoyed', 'frustrated', 'critical', 'angry', 'scared'];
-
-      const hasSelfEnergy = selfQualities.some(q => lowerUser.includes(q));
-      const isBlended = blendedQualities.some(q => lowerUser.includes(q));
-
-      if (isBlended && (lowerAI.includes('step back') || lowerAI.includes('protective'))) {
-        setCurrentPhase('unblend');
-      } else if (hasSelfEnergy || lowerAI.includes('appreciate') || lowerAI.includes('extend')) {
-        setCurrentPhase('befriend');
-      }
-    } else if (currentPhase === 'unblend' && lowerAI.includes('respond')) {
-      setCurrentPhase('befriend');
-    } else if (currentPhase === 'befriend' && (lowerAI.includes('afraid') || lowerAI.includes('fear') || lowerAI.includes('worry'))) {
-      setCurrentPhase('fears');
-    } else if (currentPhase === 'fears' && (lowerAI.includes('understand') || lowerAI.includes('valid') || lowerAI.includes('appreciate'))) {
-      // Session nearing completion
-      setTimeout(() => {
-        showSummary();
-      }, 2000);
-    }
-  };
+  // Phase tracking and session data are now managed by the IFS mode handler
+  // inside HuxleyService. The handler returns sessionProgress with each chat() call.
 
   const showSummary = async () => {
-    const sessionData = ifsService.getSessionData();
+    // Get structured session data from the mode handler
+    const handlerSummary = huxleyService.getSessionSummary();
+    const activePart = handlerSummary?.partsDiscovered?.[0] || {};
+
     const summary = `You've done beautiful work getting to know this part.
 
-**Part You Worked With:** ${sessionData.targetPart || 'A part of you'}
+**Part You Worked With:** ${activePart.name || 'A part of you'}
 
-**Location:** ${sessionData.location || 'Noticed in your system'}
+**Location:** ${activePart.location || 'Noticed in your system'}
 
-**What You Noticed:** ${sessionData.description || 'Various sensations and experiences'}
+**What You Noticed:** ${activePart.appearance || 'Various sensations and experiences'}
 
-**Part's Role:** ${sessionData.partRole || 'Protecting you in its own way'}
+**Part's Role:** ${activePart.role || activePart.strategy || 'Protecting you in its own way'}
 
-**Your Self Energy:** ${sessionData.selfEnergy || 'Present with curiosity'}
+**Self Energy:** ${handlerSummary?.selfEnergyAchieved ? 'Present with curiosity and compassion' : 'Developing'}
 
-**Part's Fears:** ${sessionData.partFears || 'Concerns about safety'}
-
-**Part's Response:** ${sessionData.partResponse || 'Beginning to trust'}
+**Part's Fears:** ${activePart.fears || 'Concerns about safety'}
 
 This is a beginning. Parts work is about ongoing relationship. You can return to this part anytime with curiosity and compassion.`;
 
@@ -567,53 +527,47 @@ This is a beginning. Parts work is about ongoing relationship. You can return to
     addMessage('assistant', summary, ['Save This Session', 'Work With Another Part', 'Finish']);
 
     // Auto-save to database if user is logged in
-    if (userId && sessionType === 'discovery') {
+    if (userId && sessionType === 'discovery' && activePart.name) {
       try {
-        // Save new part
         const newPart = await ifsContextService.savePart(userId, {
-          part_name: sessionData.targetPart,
-          part_role: inferPartRole(sessionData.partRole),
-          location_in_body: sessionData.location,
-          appearance_description: sessionData.description,
-          part_feelings: sessionData.partResponse,
-          part_fears: sessionData.partFears,
-          protective_strategy: sessionData.partRole,
-          feelings_toward_part: sessionData.selfEnergy,
-          work_phase: 'discovery'
+          name: activePart.name,
+          role: activePart.role || inferPartRole(activePart.strategy || ''),
+          location: activePart.location,
+          appearance: activePart.appearance,
+          feelings: activePart.feelings,
+          fears: activePart.fears,
+          strategy: activePart.strategy,
+          feelingsToward: handlerSummary?.selfEnergyAchieved ? 'curious, compassionate' : '',
+          isExile: activePart.isExile || false,
         });
 
-        // Save session history
         await ifsContextService.saveSession(userId, {
-          part_id: newPart.id,
-          session_type: 'discovery',
-          part_was_known: false,
-          conversation_summary: summary,
-          completed: true
+          partId: newPart?.id,
+          type: 'discovery',
+          wasKnown: false,
+          summary: summary,
+          completed: true,
+          insights: `Discovered part "${activePart.name}". Self energy: ${handlerSummary?.selfEnergyAchieved ? 'achieved' : 'developing'}. Blending occurred: ${handlerSummary?.blendingOccurred ? 'yes' : 'no'}.`,
         });
       } catch (error) {
         console.error('Error saving part to database:', error);
       }
     } else if (userId && sessionType === 'check_in' && currentPart) {
       try {
-        // Update existing part
         await ifsContextService.updatePart(currentPart.id, {
           last_worked_with: new Date().toISOString(),
           session_notes: [
             ...(currentPart.session_notes || []),
-            {
-              date: new Date().toISOString(),
-              notes: summary
-            }
+            { date: new Date().toISOString(), notes: summary }
           ]
         });
 
-        // Save session history
         await ifsContextService.saveSession(userId, {
-          part_id: currentPart.id,
-          session_type: 'check_in',
-          part_was_known: true,
-          conversation_summary: summary,
-          completed: true
+          partId: currentPart.id,
+          type: 'check_in',
+          wasKnown: true,
+          summary: summary,
+          completed: true,
         });
       } catch (error) {
         console.error('Error saving session to database:', error);
@@ -647,17 +601,12 @@ This is a beginning. Parts work is about ongoing relationship. You can return to
   };
 
   const handleComplete = async () => {
-    const sessionDuration = Math.round((new Date() - sessionStartTime) / 1000 / 60); // minutes
+    const sessionDuration = Math.round((new Date() - sessionStartTime) / 1000 / 60);
+    const handlerSummary = huxleyService.getSessionSummary();
 
     // Save session to database if we have a current part
     if (userId && currentPart) {
       try {
-        const summary = messages
-          .filter(m => m.sender === 'assistant' || m.sender === 'user')
-          .map(m => `${m.sender}: ${m.text}`)
-          .join('\n');
-
-        // Save session history to database
         await ifsContextService.saveSession(userId, {
           partId: currentPart.id,
           type: sessionType || 'check_in',
@@ -665,35 +614,32 @@ This is a beginning. Parts work is about ongoing relationship. You can return to
           duration: sessionDuration,
           startingQuestion: messages.length > 0 ? messages[0].text : '',
           wasKnown: sessionType === 'check_in',
-          summary: summary.substring(0, 1000), // Truncate if too long
-          insights: `Worked with ${currentPart.part_name} for ${sessionDuration} minutes`,
+          summary: JSON.stringify(handlerSummary || {}).substring(0, 1000),
+          insights: handlerSummary
+            ? `Self energy: ${handlerSummary.selfEnergyAchieved ? 'yes' : 'no'}, Phases: ${handlerSummary.completedPhases?.join(' → ')}`
+            : `Worked with ${currentPart.part_name}`,
           completed: true,
           outcome: `Session with ${currentPart.part_name} completed`,
           nextSteps: 'Continue building relationship with this part'
         });
 
-        // Update part's last worked with timestamp
         await ifsContextService.updatePart(currentPart.id, {
           last_worked_with: new Date().toISOString()
         });
 
-        // Clear master context cache so next session sees this work
         masterContextService.clearCache(userId);
-
-        console.log(`[IFS Chat] Session saved to database for part: ${currentPart.part_name}`);
+        console.log(`[IFS Chat] Session saved for part: ${currentPart.part_name}`);
       } catch (error) {
         console.error('[IFS Chat] Error saving session:', error);
-        // Don't block completion if save fails
       }
     }
 
-    // Call parent callback
     if (onComplete) {
       onComplete({
         timestamp: new Date().toISOString(),
-        sessionData: ifsService.getSessionData(),
+        sessionProgress: handlerSummary,
         messages,
-        wasAIPowered: ifsService.isUsingAI(),
+        wasAIPowered: huxleyService.isUsingAI(),
         sessionType,
         currentPart,
         duration: sessionDuration
@@ -702,10 +648,11 @@ This is a beginning. Parts work is about ongoing relationship. You can return to
   };
 
   const resetSession = async () => {
-    ifsService.reset();
+    huxleyService.setMode('ifs', { clearHistory: true });
     setMessages([]);
     setCurrentPart(null);
     setSessionType(null);
+    setSessionProgress(null);
     await initializeSession();
   };
 
@@ -803,10 +750,15 @@ This is a beginning. Parts work is about ongoing relationship. You can return to
           </TouchableOpacity>
           <View style={styles.headerCenter}>
             <Text style={styles.headerTitle}>IFS Parts Work</Text>
-            {!ifsService.isUsingAI() && (
+            {!huxleyService.isUsingAI() && (
               <Text style={styles.offlineIndicator}>Offline Mode</Text>
             )}
-            {currentPart && (
+            {sessionProgress?.activePart && (
+              <Text style={styles.currentPartIndicator}>
+                {sessionProgress.phaseLabel}: {sessionProgress.activePart.name}
+              </Text>
+            )}
+            {!sessionProgress?.activePart && currentPart && (
               <Text style={styles.currentPartIndicator}>Working with: {currentPart.part_name}</Text>
             )}
           </View>

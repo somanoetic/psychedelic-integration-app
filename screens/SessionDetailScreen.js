@@ -12,6 +12,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import SessionInfoHeader from '../components/SessionInfoHeader';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
+import ShareWithTherapistButton from '../components/ShareWithTherapistButton';
+import { shareExperienceMapping } from '../lib/therapistShareService';
 
 const SessionDetailScreen = ({ navigation, route }) => {
   const insets = useSafeAreaInsets();
@@ -174,6 +176,11 @@ const SessionDetailScreen = ({ navigation, route }) => {
               )}
             </View>
           ))}
+
+          <ShareWithTherapistButton
+            label="Share This Session"
+            onShare={() => shareExperienceMapping(currentSession)}
+          />
 
           <View style={styles.tipBox}>
             <Text style={styles.tipTitle}>💡 Flexible Workflow</Text>

@@ -13,10 +13,10 @@ import {
   Image,
   Keyboard
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
-import dailyJournalAIService from '../lib/dailyJournalAIService';
+import huxleyService from '../lib/huxleyService';
+import { shareJournal } from '../lib/therapistShareService';
 
 /**
  * Daily Journal - Conversational AI-Guided Journaling
@@ -26,16 +26,10 @@ const DailyJournal = ({ onComplete }) => {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
-  const [phase, setPhase] = useState('journaling'); // 'journaling', 'discussion', 'suggestions', 'complete'
+  const [phase, setPhase] = useState('choosing'); // 'choosing', 'journaling', 'discussion', 'suggestions', 'complete'
   const [saving, setSaving] = useState(false);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const scrollViewRef = useRef(null);
-  const insets = useSafeAreaInsets();
-
-  useEffect(() => {
-    // Start the conversation
-    initializeJournal();
-  }, []);
 
   // Track keyboard visibility to adjust bottom padding
   useEffect(() => {
@@ -54,19 +48,32 @@ const DailyJournal = ({ onComplete }) => {
     };
   }, []);
 
-  const initializeJournal = async () => {
+  const initializeJournal = async (mode) => {
     // Reset service
-    dailyJournalAIService.reset();
+    huxleyService.setMode('journal', { clearHistory: true });
 
-    // Add Huxley's opening message
+    let openingText;
+    if (mode === 'prompt') {
+      openingText = "Let me give you something to reflect on...\n\nWhat's one thing you noticed about yourself today — a thought, feeling, or reaction — that surprised you?";
+    } else if (mode === 'feedback') {
+      openingText = "I'd love to hear what's been on your mind. Share whatever feels right, and I'll offer some reflections when you're ready.";
+    } else {
+      openingText = "This space is yours. Write freely — I'm here if you need me.";
+    }
+
     const openingMessage = {
       id: Date.now(),
-      text: "Hi there! I'm here to listen. What's on your mind today?",
+      text: openingText,
       isAI: true,
       timestamp: new Date()
     };
 
     setMessages([openingMessage]);
+    setPhase('journaling');
+  };
+
+  const handleModeChoice = (mode) => {
+    initializeJournal(mode);
   };
 
   const sendMessage = async () => {
@@ -84,7 +91,7 @@ const DailyJournal = ({ onComplete }) => {
     setLoading(true);
 
     try {
-      const response = await dailyJournalAIService.sendMessage(inputText.trim(), phase);
+      const response = await huxleyService.chat(inputText.trim(), { phase });
 
       const aiMessage = {
         id: Date.now() + 1,
@@ -174,9 +181,9 @@ const DailyJournal = ({ onComplete }) => {
       setLoading(true);
 
       try {
-        const response = await dailyJournalAIService.sendMessage(
+        const response = await huxleyService.chat(
           "Yes, I'd like some suggestions.",
-          'suggestions'
+          { phase: 'suggestions' }
         );
 
         const aiMessage = {
@@ -211,13 +218,26 @@ const DailyJournal = ({ onComplete }) => {
       if (!user) throw new Error('No user');
 
       // Extract structured data
-      const structuredData = await dailyJournalAIService.extractStructuredData();
+      const structuredData = await huxleyService.extractData(`Extract journal data in JSON format:
+{
+  "mood": "overall mood (1-2 words)",
+  "emotions": ["array of emotions"],
+  "themes": ["key themes"],
+  "people_mentioned": ["names"],
+  "activities": ["activities"],
+  "insights": "key insight",
+  "gratitude": ["grateful for"],
+  "challenges": ["challenges"],
+  "goals": ["intentions or goals"],
+  "sentiment_score": 0.5
+}
+Only include fields with clear evidence.`);
 
       // Generate title
-      const title = await dailyJournalAIService.generateTitle();
+      const title = await huxleyService.generateTitle();
 
       // Get conversation history
-      const conversation = dailyJournalAIService.getConversationHistory();
+      const conversation = huxleyService.getConversationHistory();
 
       // Count words
       const rawText = messages
@@ -250,15 +270,34 @@ const DailyJournal = ({ onComplete }) => {
 
       if (error) throw error;
 
-      // Show completion message
+      // Show completion message with share option
+      const savedEntry = {
+        title,
+        raw_text: rawText,
+        mood: structuredData.mood || '',
+        emotions: structuredData.emotions || [],
+        themes: structuredData.themes || [],
+        insights: structuredData.insights || '',
+        gratitude: structuredData.gratitude || [],
+        challenges: structuredData.challenges || [],
+        goals: structuredData.goals || [],
+        created_at: new Date().toISOString(),
+      };
+
       Alert.alert(
         'Journal Saved',
         'Your journal entry has been saved. Take care of yourself!',
-        [{ text: 'OK', onPress: () => onComplete?.() }]
+        [
+          {
+            text: 'Share with Therapist',
+            onPress: () => shareJournal(savedEntry).catch(() => {}).finally(() => onComplete?.()),
+          },
+          { text: 'Done', onPress: () => onComplete?.() },
+        ]
       );
 
       // Reset for next time
-      dailyJournalAIService.reset();
+      huxleyService.setMode('journal', { clearHistory: true });
     } catch (error) {
       console.error('Error saving journal:', error);
       Alert.alert('Error', 'Failed to save journal. Please try again.');
@@ -382,6 +421,7 @@ const DailyJournal = ({ onComplete }) => {
           <Text style={styles.headerTitle}>Daily Journal</Text>
         </View>
         <Text style={styles.headerSubtitle}>
+          {phase === 'choosing' && 'How would you like to journal today?'}
           {phase === 'journaling' && "Share what's on your mind..."}
           {phase === 'discussion' && 'Exploring together...'}
           {phase === 'suggestions' && 'Finding helpful practices...'}
@@ -389,57 +429,104 @@ const DailyJournal = ({ onComplete }) => {
         </Text>
       </View>
 
-      {/* Messages */}
-      <ScrollView
-        ref={scrollViewRef}
-        style={styles.messagesContainer}
-        contentContainerStyle={styles.messagesContent}
-        onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
-      >
-        {messages.map(renderMessage)}
-
-        {loading && (
-          <View style={styles.aiMessageRow}>
-            <Image
-              source={require('../assets/images/huxley therapist.png')}
-              style={styles.huxleyAvatar}
-              resizeMode="contain"
-            />
-            <View style={[styles.messageBubble, styles.aiMessage]}>
-              <ActivityIndicator size="small" color="#6366f1" />
-              <Text style={styles.aiMessageText}>Huxley is typing...</Text>
-            </View>
-          </View>
-        )}
-      </ScrollView>
-
-      {/* Action Buttons */}
-      {renderActionButtons()}
-
-      {/* Input Area */}
-      <View style={[styles.inputContainer, { paddingBottom: keyboardVisible ? 12 : Math.max(insets.bottom, 12) + 12 }]}>
-        <TextInput
-          style={styles.input}
-          value={inputText}
-          onChangeText={setInputText}
-          placeholder="Type your thoughts..."
-          placeholderTextColor="#9ca3af"
-          multiline
-          maxLength={2000}
-          editable={!loading && !saving && phase !== 'discussion_prompt' && phase !== 'suggestions_prompt'}
-        />
-        <TouchableOpacity
-          style={[styles.sendButton, (!inputText.trim() || loading || saving) && styles.sendButtonDisabled]}
-          onPress={sendMessage}
-          disabled={!inputText.trim() || loading || saving}
-        >
-          <MaterialIcons
-            name="send"
-            size={24}
-            color={inputText.trim() && !loading && !saving ? '#fff' : '#d1d5db'}
+      {phase === 'choosing' ? (
+        /* Mode Selection */
+        <View style={styles.choosingContainer}>
+          <Image
+            source={require('../assets/images/huxley therapist.png')}
+            style={styles.choosingAvatar}
+            resizeMode="contain"
           />
-        </TouchableOpacity>
-      </View>
+          <Text style={styles.choosingGreeting}>Hi! How would you like to journal today?</Text>
+
+          <TouchableOpacity
+            style={styles.modeCard}
+            onPress={() => handleModeChoice('prompt')}
+          >
+            <MaterialIcons name="lightbulb-outline" size={28} color="#6366f1" />
+            <View style={styles.modeCardContent}>
+              <Text style={styles.modeCardTitle}>Give me a prompt</Text>
+              <Text style={styles.modeCardDescription}>Get a reflection question to write about</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.modeCard}
+            onPress={() => handleModeChoice('feedback')}
+          >
+            <MaterialIcons name="forum" size={28} color="#6366f1" />
+            <View style={styles.modeCardContent}>
+              <Text style={styles.modeCardTitle}>I'd like feedback</Text>
+              <Text style={styles.modeCardDescription}>Write freely and get reflections from Huxley</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.modeCard}
+            onPress={() => handleModeChoice('freewrite')}
+          >
+            <MaterialIcons name="edit" size={28} color="#6366f1" />
+            <View style={styles.modeCardContent}>
+              <Text style={styles.modeCardTitle}>Just write</Text>
+              <Text style={styles.modeCardDescription}>Open space to journal on your own</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <>
+          {/* Messages */}
+          <ScrollView
+            ref={scrollViewRef}
+            style={styles.messagesContainer}
+            contentContainerStyle={styles.messagesContent}
+            onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
+          >
+            {messages.map(renderMessage)}
+
+            {loading && (
+              <View style={styles.aiMessageRow}>
+                <Image
+                  source={require('../assets/images/huxley therapist.png')}
+                  style={styles.huxleyAvatar}
+                  resizeMode="contain"
+                />
+                <View style={[styles.messageBubble, styles.aiMessage]}>
+                  <ActivityIndicator size="small" color="#6366f1" />
+                  <Text style={styles.aiMessageText}>Huxley is typing...</Text>
+                </View>
+              </View>
+            )}
+          </ScrollView>
+
+          {/* Action Buttons */}
+          {renderActionButtons()}
+
+          {/* Input Area */}
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              value={inputText}
+              onChangeText={setInputText}
+              placeholder="Type your thoughts..."
+              placeholderTextColor="#9ca3af"
+              multiline
+              maxLength={2000}
+              editable={!loading && !saving && phase !== 'discussion_prompt' && phase !== 'suggestions_prompt'}
+            />
+            <TouchableOpacity
+              style={[styles.sendButton, (!inputText.trim() || loading || saving) && styles.sendButtonDisabled]}
+              onPress={sendMessage}
+              disabled={!inputText.trim() || loading || saving}
+            >
+              <MaterialIcons
+                name="send"
+                size={24}
+                color={inputText.trim() && !loading && !saving ? '#fff' : '#d1d5db'}
+              />
+            </TouchableOpacity>
+          </View>
+        </>
+      )}
 
       {/* Saving Indicator */}
       {saving && (
@@ -485,7 +572,7 @@ const styles = StyleSheet.create({
   },
   messagesContent: {
     padding: 16,
-    paddingBottom: 80
+    paddingBottom: 8
   },
   aiMessageRow: {
     flexDirection: 'row',
@@ -586,7 +673,9 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     flexDirection: 'row',
-    padding: 16,
+    paddingHorizontal: 12,
+    paddingTop: 8,
+    paddingBottom: 4,
     backgroundColor: '#fff',
     borderTopWidth: 1,
     borderTopColor: '#e5e7eb',
@@ -613,6 +702,49 @@ const styles = StyleSheet.create({
   },
   sendButtonDisabled: {
     backgroundColor: '#f3f4f6'
+  },
+  choosingContainer: {
+    flex: 1,
+    padding: 24,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  choosingAvatar: {
+    width: 80,
+    height: 80,
+    marginBottom: 16
+  },
+  choosingGreeting: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1f2937',
+    textAlign: 'center',
+    marginBottom: 24
+  },
+  modeCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    backgroundColor: '#fff',
+    borderRadius: 14,
+    padding: 18,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#e5e7eb'
+  },
+  modeCardContent: {
+    marginLeft: 14,
+    flex: 1
+  },
+  modeCardTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1f2937',
+    marginBottom: 2
+  },
+  modeCardDescription: {
+    fontSize: 13,
+    color: '#6b7280'
   },
   savingOverlay: {
     position: 'absolute',

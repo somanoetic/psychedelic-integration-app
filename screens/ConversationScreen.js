@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import {
   Alert,
   FlatList,
+  Keyboard,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -12,7 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ActivityIndicator, Appbar, Chip, Menu } from 'react-native-paper';
-import { IntegrationGuide } from '../lib/claudeService';
+import huxleyService from '../lib/huxleyService';
 import { supabase } from '../lib/supabase';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -62,18 +63,28 @@ const ConversationScreen = ({ navigation, route }) => {
   const [showMindMap, setShowMindMap] = useState(false);
   
   const flatListRef = useRef(null);
-  const integrationGuideRef = useRef(null);
+
+  // Scroll to bottom when keyboard opens
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const sub = Keyboard.addListener(showEvent, () => {
+      setTimeout(() => {
+        flatListRef.current?.scrollToEnd({ animated: true });
+      }, 150);
+    });
+    return () => sub.remove();
+  }, []);
 
   // Initialize integration guide
   useEffect(() => {
     const initializeGuide = async () => {
       try {
         setIsInitializing(true);
-        integrationGuideRef.current = new IntegrationGuide(personalityMode);
-        
+        huxleyService.setMode('general', { clearHistory: true });
+
         // Load existing session data
         await loadSessionData();
-        
+
         setIsInitializing(false);
       } catch (error) {
         console.error('Error initializing guide:', error);
@@ -112,10 +123,8 @@ const ConversationScreen = ({ navigation, route }) => {
             }));
             setMessages(formattedMessages);
             
-            // Initialize Claude with conversation history
-            if (integrationGuideRef.current) {
-              integrationGuideRef.current.initializeWithHistory(formattedMessages);
-            }
+            // Set mode for conversation (history is managed by huxleyService)
+            huxleyService.setMode('general', { clearHistory: true });
           } else {
             setMessages([]);
           }
@@ -242,7 +251,7 @@ const ConversationScreen = ({ navigation, route }) => {
 
   // Handle sending message
   const sendMessage = async () => {
-    if (!inputText.trim() || loading || !integrationGuideRef.current) {
+    if (!inputText.trim() || loading) {
       return;
     }
 
@@ -265,14 +274,14 @@ const ConversationScreen = ({ navigation, route }) => {
       await saveMessageToDatabase(userMessage);
 
       // Get AI response
-      const response = await integrationGuideRef.current.continueConversation(userMessage.content);
-      
+      const response = await huxleyService.chat(userMessage.content);
+
       const assistantMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: response,
+        content: response.message,
         timestamp: new Date(),
-        entities: integrationGuideRef.current.entities || []
+        entities: response.therapeuticData?.extractedEntities || []
       };
 
       // Add assistant message to UI
@@ -282,10 +291,11 @@ const ConversationScreen = ({ navigation, route }) => {
       await saveMessageToDatabase(assistantMessage);
 
       // Save extracted entities
-      if (integrationGuideRef.current.entities && integrationGuideRef.current.entities.length > 0) {
+      const extractedEntities = response.therapeuticData?.extractedEntities || [];
+      if (extractedEntities.length > 0) {
         const savedEntities = await saveEntitiesToDatabase(
-          session.id, 
-          integrationGuideRef.current.entities
+          session.id,
+          extractedEntities
         );
         setEntities(prev => {
           const existingNames = prev.map(e => e.name);
@@ -321,12 +331,9 @@ const ConversationScreen = ({ navigation, route }) => {
     try {
       setPersonalityMode(newMode);
       setMenuVisible(false);
-      
-      // Reinitialize guide with new personality
-      integrationGuideRef.current = new IntegrationGuide(newMode);
-      if (messages.length > 0) {
-        integrationGuideRef.current.initializeWithHistory(messages);
-      }
+
+      // Reinitialize guide with new mode
+      huxleyService.setMode('general', { clearHistory: true });
     } catch (error) {
       console.error('Error changing personality mode:', error);
       showAlert('Error', 'Failed to change guide personality');
@@ -384,6 +391,7 @@ const ConversationScreen = ({ navigation, route }) => {
     <KeyboardAvoidingView
       style={styles.flex}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
     >
       <Appbar.Header>
         <Appbar.BackAction onPress={() => navigation.goBack()} />

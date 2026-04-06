@@ -221,6 +221,9 @@ const ConversationalTriggeredSupport = ({ navigation }) => {
         {renderUserOption('Browse exercises', () => {
           navigation.navigate('ExerciseLibrary');
         }, 'fitness-center', '#f59e0b')}
+        {renderUserOption('Find a therapist', () => {
+          navigation.navigate('FindSupport');
+        }, 'support-agent', '#8b5cf6')}
         {renderUserOption('Go back home', () => navigation.goBack(), 'home', '#6b7280')}
       </View>
     </>

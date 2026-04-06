@@ -10,16 +10,15 @@ import {
   ActivityIndicator,
   Platform,
   Alert,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AVATAR_OPTIONS } from './AvatarSelector';
 import { supabase } from '../lib/supabase';
 import { colors } from '../theme/colors';
 
 const ConversationalSessionTools = ({ navigation }) => {
-  const [selectedAvatar, setSelectedAvatar] = useState('brain');
+  // Avatar state removed - using Huxley image directly
   const [conversationStep, setConversationStep] = useState('initial'); // initial, ask_type, create_new, view_existing
   const [sessionTitle, setSessionTitle] = useState('');
   const [sessionDate, setSessionDate] = useState(new Date().toISOString().split('T')[0]);
@@ -29,7 +28,6 @@ const ConversationalSessionTools = ({ navigation }) => {
   const [fadeAnim] = useState(new Animated.Value(0));
 
   useEffect(() => {
-    loadPreferences();
     loadSessions();
     Animated.timing(fadeAnim, {
       toValue: 1,
@@ -38,14 +36,6 @@ const ConversationalSessionTools = ({ navigation }) => {
     }).start();
   }, []);
 
-  const loadPreferences = async () => {
-    try {
-      const avatar = await AsyncStorage.getItem('huxley_avatar');
-      if (avatar) setSelectedAvatar(avatar);
-    } catch (error) {
-      console.error('Error loading preferences:', error);
-    }
-  };
 
   const loadSessions = async () => {
     try {
@@ -130,11 +120,6 @@ const ConversationalSessionTools = ({ navigation }) => {
     }
   };
 
-  const getAvatar = () => {
-    return AVATAR_OPTIONS.find(a => a.id === selectedAvatar) || AVATAR_OPTIONS[0];
-  };
-
-  const avatar = getAvatar();
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -161,10 +146,12 @@ const ConversationalSessionTools = ({ navigation }) => {
   const renderHuxleyMessage = (message) => (
     <View style={styles.huxleyBubble}>
       <View style={styles.huxleyHeader}>
-        <View style={[styles.huxleyAvatarSmall, { backgroundColor: `${avatar.color}20` }]}>
-          <MaterialIcons name={avatar.icon} size={24} color={avatar.color} />
-        </View>
-        <Text style={styles.huxleyName}>{avatar.name}</Text>
+        <Image
+          source={require('../assets/images/huxley therapist.png')}
+          style={styles.huxleyAvatarSmall}
+          resizeMode="contain"
+        />
+        <Text style={styles.huxleyName}>Huxley</Text>
       </View>
       <Text style={styles.huxleyText}>{message}</Text>
     </View>

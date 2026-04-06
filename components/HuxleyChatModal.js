@@ -15,6 +15,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Keyboard,
   Animated,
   Image,
   ActivityIndicator,
@@ -23,6 +24,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { MaterialIcons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 import conversationalRoutingService from '../lib/conversationalRoutingService';
+import FormattedText from './FormattedText';
 
 const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
   const [messages, setMessages] = useState([]);
@@ -31,6 +33,17 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
   const scrollViewRef = useRef(null);
   const slideAnim = useRef(new Animated.Value(0)).current;
   const insets = useSafeAreaInsets();
+
+  // Scroll to bottom when keyboard opens
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const sub = Keyboard.addListener(showEvent, () => {
+      setTimeout(() => {
+        scrollViewRef.current?.scrollToEnd({ animated: true });
+      }, 150);
+    });
+    return () => sub.remove();
+  }, []);
 
   useEffect(() => {
     if (visible) {
@@ -188,14 +201,14 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
                     message.role === 'user' ? styles.userBubble : styles.assistantBubble,
                   ]}
                 >
-                  <Text
+                  <FormattedText
                     style={[
                       styles.messageText,
                       message.role === 'user' ? styles.userText : styles.assistantText,
                     ]}
                   >
                     {message.content}
-                  </Text>
+                  </FormattedText>
                   {message.suggestedRoute && (
                     <TouchableOpacity
                       style={styles.routeButton}

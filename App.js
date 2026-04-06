@@ -8,11 +8,9 @@ import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Sentry disabled - version mismatch between @sentry/react-native 7.x and @sentry/core 10.x
-// To re-enable: npx expo install @sentry/react-native (will install compatible versions)
-
 import { supabase } from './lib/supabase';
 import metricsService from './lib/metricsService';
+import huxleyService from './lib/huxleyService';
 import { colors } from './theme/colors';
 
 const paperTheme = {
@@ -56,6 +54,25 @@ import GuidedExerciseScreen from './screens/GuidedExerciseScreen';
 import AdminMetricsDashboard from './screens/AdminMetricsDashboard';
 import SetIntentionScreen from './screens/SetIntentionScreen';
 import SessionChecklistScreen from './screens/SessionChecklistScreen';
+import InsightsScreen from './screens/InsightsScreen';
+import ProcessIntegrateScreen from './screens/ProcessIntegrateScreen';
+import InnerWorkScreen from './screens/InnerWorkScreen';
+import PracticeScreen from './screens/PracticeScreen';
+import ActiveImaginationScreen from './screens/ActiveImaginationScreen';
+import PrivacyPolicyScreen from './screens/PrivacyPolicyScreen';
+import TermsOfServiceScreen from './screens/TermsOfServiceScreen';
+import SettingsScreen from './screens/SettingsScreen';
+import TherapistToolsScreen from './screens/TherapistToolsScreen';
+import FindSupportScreen from './screens/FindSupportScreen';
+import TherapistVerificationScreen from './screens/TherapistVerificationScreen';
+import ScenarioUploadScreen from './screens/ScenarioUploadScreen';
+import RegulationToolkitScreen from './screens/RegulationToolkitScreen';
+import InnerAtlasScreen from './screens/InnerAtlasScreen';
+import NervousSystemSummaryScreen from './screens/NervousSystemSummaryScreen';
+import TriggersGlimmersSummaryScreen from './screens/TriggersGlimmersSummaryScreen';
+import CoreBeliefsSummaryScreen from './screens/CoreBeliefsSummaryScreen';
+import PartsSummaryScreen from './screens/PartsSummaryScreen';
+import TherapistReportScreen from './screens/TherapistReportScreen';
 
 // Conversational Components
 import ConversationalSessionTools from './components/ConversationalSessionTools';
@@ -76,6 +93,26 @@ import NervousSystemCheckin from './components/NervousSystemCheckin';
 import PartsCheckin from './components/PartsCheckin';
 import CurriculumTracker from './components/CurriculumTracker';
 import HabitTracker from './components/HabitTracker';
+import * as Sentry from '@sentry/react-native';
+
+Sentry.init({
+  dsn: 'https://e4b5a82b7cb64a9f6cf264dae95ac4d3@o4511152769138688.ingest.us.sentry.io/4511152824713216',
+
+  // Adds more context data to events (IP address, cookies, user, etc.)
+  // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
+  sendDefaultPii: true,
+
+  // Enable Logs
+  enableLogs: true,
+
+  // Configure Session Replay
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1,
+  integrations: [Sentry.mobileReplayIntegration()],
+
+  // uncomment the line below to enable Spotlight (https://spotlightjs.com)
+  // spotlight: __DEV__,
+});
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -98,6 +135,8 @@ const MainTabs = () => {
             iconName = 'edit';
           } else if (route.name === 'Learn') {
             iconName = 'school';
+          } else if (route.name === 'Atlas') {
+            iconName = 'explore';
           } else if (route.name === 'History') {
             iconName = 'history';
           }
@@ -139,6 +178,11 @@ const MainTabs = () => {
         options={{ title: 'Learn' }}
       />
       <Tab.Screen
+        name="Atlas"
+        component={InnerAtlasScreen}
+        options={{ title: 'Inner Atlas' }}
+      />
+      <Tab.Screen
         name="History"
         component={ConversationalAllSessions}
         options={{ title: 'History' }}
@@ -148,7 +192,7 @@ const MainTabs = () => {
 };
 
 // Main App Component with debug logging
-export default function App() {
+function App() {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const [debugInfo, setDebugInfo] = useState('Starting app...');
@@ -221,6 +265,12 @@ export default function App() {
       setDebugInfo(session ? 'User logged in' : 'No user session');
       
       setSession(session);
+      if (session?.user?.id) {
+        Sentry.setUser({ id: session.user.id });
+        huxleyService.initialize(session.user.id).catch(err =>
+          console.warn('HuxleyService init error:', err.message)
+        );
+      }
       setLoading(false);
 
       // Listen for auth changes
@@ -229,6 +279,12 @@ export default function App() {
       } = supabase.auth.onAuthStateChange((_event, session) => {
         console.log('App: Auth state changed:', _event, session ? 'Logged in' : 'Logged out');
         setSession(session);
+        Sentry.setUser(session?.user?.id ? { id: session.user.id } : null);
+        if (session?.user?.id) {
+          huxleyService.initialize(session.user.id).catch(err =>
+            console.warn('HuxleyService init error:', err.message)
+          );
+        }
       });
 
       return () => {
@@ -293,10 +349,34 @@ export default function App() {
               <Stack.Screen name="HuxleyChat" component={HuxleyChatScreen} />
               <Stack.Screen name="MainTabs" component={MainTabs} />
               {/* Dual Mode Conversation Screens */}
-              <Stack.Screen 
-                name="ExperienceMapping" 
+              <Stack.Screen
+                name="ProcessIntegrate"
+                component={ProcessIntegrateScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Process & Integrate'
+                }}
+              />
+              <Stack.Screen
+                name="InnerWork"
+                component={InnerWorkScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Inner Work'
+                }}
+              />
+              <Stack.Screen
+                name="Practice"
+                component={PracticeScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Practice'
+                }}
+              />
+              <Stack.Screen
+                name="ExperienceMapping"
                 component={ExperienceMappingScreen}
-                options={{ 
+                options={{
                   headerShown: false,
                   title: 'Experience Processing'
                 }}
@@ -447,6 +527,62 @@ export default function App() {
                 }}
               />
               <Stack.Screen
+                name="RegulationToolkit"
+                component={RegulationToolkitScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Regulation Toolkit'
+                }}
+              />
+              <Stack.Screen
+                name="Insights"
+                component={InsightsScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Insights'
+                }}
+              />
+              <Stack.Screen
+                name="NervousSystemSummary"
+                component={NervousSystemSummaryScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Nervous System'
+                }}
+              />
+              <Stack.Screen
+                name="TriggersGlimmersSummary"
+                component={TriggersGlimmersSummaryScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Triggers & Glimmers'
+                }}
+              />
+              <Stack.Screen
+                name="CoreBeliefsSummary"
+                component={CoreBeliefsSummaryScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Core Beliefs'
+                }}
+              />
+              <Stack.Screen
+                name="PartsSummary"
+                component={PartsSummaryScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Parts'
+                }}
+              />
+              <Stack.Screen
+                name="TherapistReport"
+                component={TherapistReportScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Therapist Report'
+                }}
+              />
+              <Stack.Screen
                 name="CoreBeliefs"
                 component={CoreBeliefsAssessment}
                 options={{
@@ -534,6 +670,70 @@ export default function App() {
                   title: 'Session Checklist'
                 }}
               />
+              <Stack.Screen
+                name="ActiveImagination"
+                component={ActiveImaginationScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Active Imagination'
+                }}
+              />
+              <Stack.Screen
+                name="Settings"
+                component={SettingsScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Settings'
+                }}
+              />
+              <Stack.Screen
+                name="PrivacyPolicy"
+                component={PrivacyPolicyScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Privacy Policy'
+                }}
+              />
+              <Stack.Screen
+                name="TermsOfService"
+                component={TermsOfServiceScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Terms of Service'
+                }}
+              />
+              <Stack.Screen
+                name="TherapistTools"
+                component={TherapistToolsScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Professional Tools'
+                }}
+              />
+              <Stack.Screen
+                name="TherapistVerification"
+                component={TherapistVerificationScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Therapist Verification'
+                }}
+              />
+              <Stack.Screen
+                name="ScenarioUpload"
+                component={ScenarioUploadScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Upload Training Scenarios'
+                }}
+              />
+              <Stack.Screen
+                name="FindSupport"
+                component={FindSupportScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Find Support'
+                }}
+              />
             </>
           ) : (
             <>
@@ -547,6 +747,8 @@ export default function App() {
     </SafeAreaProvider>
   );
 }
+
+export default Sentry.wrap(App);
 
 const styles = StyleSheet.create({
   loadingContainer: {

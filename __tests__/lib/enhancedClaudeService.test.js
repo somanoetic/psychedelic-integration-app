@@ -5,12 +5,13 @@
  * prompt building, safety responses, and practice recommendations.
  */
 
-const { mockClaudeResponse, MOCK_USER_ID } = require('../helpers/aiTestFixtures');
+const { MOCK_USER_ID } = require('../helpers/aiTestFixtures');
 
 // Mock dependencies
-jest.mock('../../lib/config', () => ({
+jest.mock('../../lib/claudeAPI', () => ({
   __esModule: true,
-  default: { anthropicApiKey: 'test-api-key' }
+  callClaude: jest.fn(),
+  default: jest.fn(),
 }));
 
 jest.mock('../../lib/huxleyKnowledgeBase', () => {
@@ -40,18 +41,17 @@ jest.mock('../../lib/metricsService', () => ({
   }
 }));
 
-// Mock fetch
-global.fetch = jest.fn();
-
 describe('IntegrationGuideService (Huxley)', () => {
   let IntegrationGuideServiceClass;
   let service;
   let metricsService;
+  let callClaude;
 
   beforeAll(() => {
     // The module exports the CLASS itself (not an instance)
     IntegrationGuideServiceClass = require('../../lib/enhancedClaudeService').default;
     metricsService = require('../../lib/metricsService').default;
+    callClaude = require('../../lib/claudeAPI').callClaude;
   });
 
   beforeEach(() => {
@@ -74,9 +74,10 @@ describe('IntegrationGuideService (Huxley)', () => {
 
   describe('continueConversation', () => {
     it('should call Claude API and return response', async () => {
-      global.fetch.mockResolvedValue(mockClaudeResponse(
-        "I hear you. What part of you is feeling that right now?"
-      ));
+      callClaude.mockResolvedValue({
+        content: [{ text: "I hear you. What part of you is feeling that right now?" }],
+        usage: { input_tokens: 500, output_tokens: 100 }
+      });
 
       const result = await service.continueConversation(
         "I feel conflicted about my experience",
@@ -88,9 +89,10 @@ describe('IntegrationGuideService (Huxley)', () => {
     });
 
     it('should extract entities from response', async () => {
-      global.fetch.mockResolvedValue(mockClaudeResponse(
-        "The child part carries a deep sadness in your chest. What does this fear want you to know?"
-      ));
+      callClaude.mockResolvedValue({
+        content: [{ text: "The child part carries a deep sadness in your chest. What does this fear want you to know?" }],
+        usage: { input_tokens: 500, output_tokens: 100 }
+      });
 
       const result = await service.continueConversation(
         "There's something heavy in my chest",
@@ -102,7 +104,7 @@ describe('IntegrationGuideService (Huxley)', () => {
     });
 
     it('should return safety response on API error', async () => {
-      global.fetch.mockRejectedValue(new Error('API down'));
+      callClaude.mockRejectedValue(new Error('API down'));
 
       const result = await service.continueConversation(
         "Hello",
@@ -115,7 +117,7 @@ describe('IntegrationGuideService (Huxley)', () => {
     });
 
     it('should log error when API fails', async () => {
-      global.fetch.mockRejectedValue(new Error('Network error'));
+      callClaude.mockRejectedValue(new Error('Network error'));
 
       await service.continueConversation("Hello", defaultContext);
 
@@ -139,9 +141,10 @@ describe('IntegrationGuideService (Huxley)', () => {
     });
 
     it('should detect session phase from response', async () => {
-      global.fetch.mockResolvedValue(mockClaudeResponse(
-        "Let's explore what meaning this has for your integration going forward"
-      ));
+      callClaude.mockResolvedValue({
+        content: [{ text: "Let's explore what meaning this has for your integration going forward" }],
+        usage: { input_tokens: 500, output_tokens: 100 }
+      });
 
       const result = await service.continueConversation(
         "What does this all mean?",
@@ -152,9 +155,10 @@ describe('IntegrationGuideService (Huxley)', () => {
     });
 
     it('should analyze practice needs from response', async () => {
-      global.fetch.mockResolvedValue(mockClaudeResponse(
-        "Let's try some breathing together. Take a slow breath in..."
-      ));
+      callClaude.mockResolvedValue({
+        content: [{ text: "Let's try some breathing together. Take a slow breath in..." }],
+        usage: { input_tokens: 500, output_tokens: 100 }
+      });
 
       const result = await service.continueConversation(
         "I feel tense",

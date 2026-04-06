@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { colors, spacing, borderRadius, shadows } from '../../theme/colors';
+import FormattedText from '../FormattedText';
 
 /**
  * IntentionMessageBubble - Individual message bubble in conversation
@@ -128,7 +129,7 @@ const IntentionMessageBubble = ({ message, nervousSystemState, isLatest, onActio
             </View>
           )}
 
-          <Text style={styles.aiText}>{cleanText(message.content)}</Text>
+          <FormattedText style={styles.aiText}>{message.content}</FormattedText>
 
           {isError && (
             <View style={styles.errorBadge}>

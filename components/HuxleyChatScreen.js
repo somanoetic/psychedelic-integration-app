@@ -15,6 +15,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Keyboard,
   Image,
   Dimensions,
 } from 'react-native';
@@ -25,6 +26,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { colors, gradients } from '../theme/colors';
 import conversationalRoutingService from '../lib/conversationalRoutingService';
 import HuxleyWelcomeScreen from './HuxleyWelcomeScreen';
+import FormattedText from './FormattedText';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -166,6 +168,17 @@ const HuxleyChatScreen = ({ navigation }) => {
   const isProcessingQueue = useRef(false);
   const insets = useSafeAreaInsets();
 
+  // Scroll to bottom when keyboard opens
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const sub = Keyboard.addListener(showEvent, () => {
+      setTimeout(() => {
+        scrollViewRef.current?.scrollToEnd({ animated: true });
+      }, 150);
+    });
+    return () => sub.remove();
+  }, []);
+
   // Load welcome screen state from AsyncStorage on mount
   useEffect(() => {
     AsyncStorage.getItem('huxley_welcome_shown').then(value => {
@@ -203,7 +216,7 @@ const HuxleyChatScreen = ({ navigation }) => {
       setCurrentTypingIndex(prev => prev + 1);
 
       // Wait for typewriter to complete (estimate based on text length)
-      const typingDuration = message.content.length * 30 + 500;
+      const typingDuration = message.content.length * 15 + 500;
       await new Promise(resolve => setTimeout(resolve, typingDuration));
 
       // Mark message as complete
@@ -260,6 +273,7 @@ const HuxleyChatScreen = ({ navigation }) => {
         role: 'assistant',
         content: "What would you like to focus on today?",
         quickReplies: [
+          { label: "Explore the app", value: "navigate_MainTabs" },
           { label: "Prepare for a session", value: "navigate_SessionPreparation" },
           { label: "Process an experience", value: "navigate_ExperienceMapping" },
           { label: "Learn something new", value: "navigate_Learn" },
@@ -394,12 +408,12 @@ const HuxleyChatScreen = ({ navigation }) => {
               {message.isTyping ? (
                 <TypewriterText
                   text={cleanMarkdown(message.content)}
-                  speed={25}
+                  speed={15}
                   style={styles.messageText}
                   onComplete={() => handleMessageComplete(index)}
                 />
               ) : (
-                <Text style={styles.messageText}>{cleanMarkdown(message.content)}</Text>
+                <FormattedText style={styles.messageText}>{message.content}</FormattedText>
               )}
             </View>
           </View>

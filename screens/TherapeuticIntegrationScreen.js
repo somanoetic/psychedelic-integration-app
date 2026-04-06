@@ -15,15 +15,111 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 import { supabase } from '../lib/supabase';
-import TherapeuticIntegrationService from '../lib/therapeuticIntegrationService';
+import huxleyService from '../lib/huxleyService';
 import EmbeddedPracticeWidget from '../enhanced-components/EmbeddedPracticeWidget';
+import FormattedText from '../components/FormattedText';
 
 const TherapeuticIntegrationScreen = ({ navigation, route }) => {
   console.log('TherapeuticIntegrationScreen route params:', route.params);
 
   const insets = useSafeAreaInsets();
-  const session = route?.params?.session || null;
-  
+  const sessionParam = route?.params?.session || null;
+
+  // Core conversation state
+  const [session, setSession] = useState(sessionParam);
+  const [creatingSession, setCreatingSession] = useState(!sessionParam);
+  const [messages, setMessages] = useState([]);
+  const [userInput, setUserInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [entities, setEntities] = useState([]);
+
+  // Therapeutic features state
+  const [currentPractice, setCurrentPractice] = useState(null);
+  const [nervousSystemState, setNervousSystemState] = useState('unknown');
+  const [stateConfidence, setStateConfidence] = useState(0);
+  const [interventionsFocused, setInterventionsFocused] = useState([]);
+
+  // Session tracking
+  const [practicesCompleted, setPracticesCompleted] = useState([]);
+  const [regulationInterventions, setRegulationInterventions] = useState(0);
+
+  // Refs and animations
+  const scrollViewRef = useRef(null);
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  // Unified AI service (singleton, no need for useRef)
+
+  // Auto-create session if none provided
+  useEffect(() => {
+    if (!sessionParam) {
+      createNewSession();
+    }
+  }, []);
+
+  // Initialize conversation once session is ready
+  useEffect(() => {
+    if (session && session.id && !creatingSession) {
+      initializeConversation();
+      startHeartbeatAnimation();
+    }
+  }, [session, creatingSession]);
+
+  const createNewSession = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        Alert.alert('Error', 'Please sign in to start a session.');
+        navigation.goBack();
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('sessions')
+        .insert({
+          user_id: user.id,
+          title: `Therapeutic Integration - ${new Date().toLocaleDateString()}`,
+          journey_date: new Date().toISOString().split('T')[0],
+          current_step: 1,
+          session_data: {
+            sessionType: 'therapeutic_integration',
+            conversationMode: 'therapeuticIntegration',
+          },
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating session:', error);
+        Alert.alert('Error', 'Could not create session. Please try again.');
+        navigation.goBack();
+        return;
+      }
+
+      setSession(data);
+      setCreatingSession(false);
+    } catch (err) {
+      console.error('Error creating session:', err);
+      Alert.alert('Error', 'Could not create session. Please try again.');
+      navigation.goBack();
+    }
+  };
+
+  if (creatingSession) {
+    return (
+      <LinearGradient
+        colors={gradients.standard}
+        start={{ x: 1.0, y: 0.0 }}
+        end={{ x: 0.0, y: 1.0 }}
+        style={{ flex: 1 }}
+      >
+        <View style={styles.errorContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={[styles.errorText, { marginTop: 16 }]}>Setting up your session...</Text>
+        </View>
+      </LinearGradient>
+    );
+  }
+
   if (!session || !session.id) {
     return (
       <LinearGradient
@@ -47,35 +143,6 @@ const TherapeuticIntegrationScreen = ({ navigation, route }) => {
       </LinearGradient>
     );
   }
-  
-  // Core conversation state
-  const [messages, setMessages] = useState([]);
-  const [userInput, setUserInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [entities, setEntities] = useState([]);
-  
-  // Therapeutic features state
-  const [currentPractice, setCurrentPractice] = useState(null);
-  const [nervousSystemState, setNervousSystemState] = useState('unknown');
-  const [stateConfidence, setStateConfidence] = useState(0);
-  const [interventionsFocused, setInterventionsFocused] = useState([]);
-  
-  // Session tracking
-  const [practicesCompleted, setPracticesCompleted] = useState([]);
-  const [regulationInterventions, setRegulationInterventions] = useState(0);
-  
-  // Refs and animations
-  const scrollViewRef = useRef(null);
-  const pulseAnim = useRef(new Animated.Value(1)).current;
-  
-  // Therapeutic Integration Service
-  const therapeuticGuide = useRef(new TherapeuticIntegrationService()).current;
-
-  // Initialize conversation
-  useEffect(() => {
-    initializeConversation();
-    startHeartbeatAnimation();
-  }, []);
 
   const startHeartbeatAnimation = () => {
     Animated.loop(
@@ -127,19 +194,12 @@ const TherapeuticIntegrationScreen = ({ navigation, route }) => {
         setPracticesCompleted(loadedPractices);
         setInterventionsFocused(loadedInterventions);
         
-        // Initialize service with context
-        therapeuticGuide.initializeSession({
-          sessionId: session.id,
-          messages: loadedMessages,
-          entities: loadedEntities,
-          nervousSystemState: loadedState,
-          practicesCompleted: loadedPractices,
-          interventionsFocused: loadedInterventions
-        });
-        
+        // Initialize huxleyService mode
+        huxleyService.setMode('therapeutic_integration', { clearHistory: true });
+
         return loadedMessages.length > 0;
       }
-      
+
       // Regular database session
       const { data, error } = await supabase
         .from('sessions')
@@ -170,16 +230,9 @@ const TherapeuticIntegrationScreen = ({ navigation, route }) => {
       setPracticesCompleted(loadedPractices);
       setInterventionsFocused(loadedInterventions);
       
-      // Initialize service with context
-      therapeuticGuide.initializeSession({
-        sessionId: session.id,
-        messages: loadedMessages,
-        entities: loadedEntities,
-        nervousSystemState: loadedState,
-        practicesCompleted: loadedPractices,
-        interventionsFocused: loadedInterventions
-      });
-      
+      // Initialize huxleyService mode
+      huxleyService.setMode('therapeutic_integration', { clearHistory: true });
+
       return loadedMessages.length > 0;
       
     } catch (error) {
@@ -298,30 +351,29 @@ Before we dive in, let's check in with your nervous system. How is your body fee
       setRegulationInterventions(prev => prev + 1);
     }
     
-    // Generate therapeutic response based on assessment
-    const contextualResponse = await therapeuticGuide.respondToNervousSystemCheck({
-      state,
-      intensity,
-      notes,
-      sessionContext: { messages, entities, practicesCompleted }
-    });
-    
+    // Generate therapeutic response based on assessment via huxleyService
+    const contextualResponse = await huxleyService.chat(
+      `Nervous system check-in: state=${state}, intensity=${intensity}${notes ? ', notes: ' + notes : ''}`,
+    );
+
+    const suggestedPractice = contextualResponse.exerciseRecommendation || contextualResponse.therapeuticData?.suggestedPractice || null;
+
     const responseMessage = {
       role: 'assistant',
       content: contextualResponse.message,
       timestamp: new Date(),
       nervousSystemContext: { state, intensity, notes },
-      requiresPractice: contextualResponse.suggestedPractice
+      requiresPractice: suggestedPractice
     };
     
     const updatedMessages = [...messages, responseMessage];
     setMessages(updatedMessages);
     
     // Auto-suggest regulation if needed
-    if (contextualResponse.suggestedPractice && contextualResponse.suggestedPractice.urgency === 'high') {
+    if (suggestedPractice && suggestedPractice.urgency === 'high') {
       setTimeout(() => {
         setCurrentPractice({
-          ...contextualResponse.suggestedPractice,
+          ...suggestedPractice,
           onComplete: handlePracticeComplete
         });
       }, 3000);
@@ -349,54 +401,49 @@ Before we dive in, let's check in with your nervous system. How is your body fee
     setIsLoading(true);
 
     try {
-      // Get therapeutic integration response
-      const response = await therapeuticGuide.continueTherapeuticIntegration(
-        userInput.trim(),
-        {
-          messages: newMessages,
-          entities: entities,
-          nervousSystemState: nervousSystemState,
-          stateConfidence: stateConfidence,
-          practicesCompleted: practicesCompleted,
-          interventionsFocused: interventionsFocused
-        }
-      );
+      // Get therapeutic integration response via huxleyService
+      const response = await huxleyService.chat(userInput.trim());
+
+      const extractedEntities = response.therapeuticData?.extractedEntities || [];
+      const suggestedPractice = response.exerciseRecommendation || response.therapeuticData?.suggestedPractice || null;
+      const nervousSystemUpdate = response.therapeuticData?.nervousSystemUpdate || null;
+      const therapeuticThemes = response.therapeuticData?.therapeuticThemes || [];
 
       const assistantMessage = {
         role: 'assistant',
         content: response.message,
         timestamp: new Date(),
-        entities: response.extractedEntities || [],
-        requiresPractice: response.suggestedPractice,
-        nervousSystemUpdate: response.nervousSystemUpdate,
-        therapeuticThemes: response.therapeuticThemes
+        entities: extractedEntities,
+        requiresPractice: suggestedPractice,
+        nervousSystemUpdate: nervousSystemUpdate,
+        therapeuticThemes: therapeuticThemes
       };
 
       const updatedMessages = [...newMessages, assistantMessage];
       setMessages(updatedMessages);
 
       // Update entities if new ones were extracted
-      if (response.extractedEntities && response.extractedEntities.length > 0) {
-        const updatedEntities = [...entities, ...response.extractedEntities];
+      if (extractedEntities.length > 0) {
+        const updatedEntities = [...entities, ...extractedEntities];
         setEntities(updatedEntities);
       }
 
       // Update nervous system state if changed
-      if (response.nervousSystemUpdate) {
-        setNervousSystemState(response.nervousSystemUpdate.state);
-        setStateConfidence(response.nervousSystemUpdate.confidence);
+      if (nervousSystemUpdate) {
+        setNervousSystemState(nervousSystemUpdate.state);
+        setStateConfidence(nervousSystemUpdate.confidence);
       }
 
       // Track therapeutic interventions focused on
-      if (response.therapeuticThemes && response.therapeuticThemes.length > 0) {
-        setInterventionsFocused(prev => [...prev, ...response.therapeuticThemes]);
+      if (therapeuticThemes.length > 0) {
+        setInterventionsFocused(prev => [...prev, ...therapeuticThemes]);
       }
 
       // Show practice if recommended
-      if (response.suggestedPractice && response.suggestedPractice.urgency !== 'low') {
+      if (suggestedPractice && suggestedPractice.urgency !== 'low') {
         setTimeout(() => {
           setCurrentPractice({
-            ...response.suggestedPractice,
+            ...suggestedPractice,
             onComplete: handlePracticeComplete
           });
         }, 2000);
@@ -434,19 +481,17 @@ Before we dive in, let's check in with your nervous system. How is your body fee
     setPracticesCompleted(prev => [...prev, completedPractice]);
     setCurrentPractice(null);
 
-    // Generate follow-up response from therapeutic guide
-    const followUpResponse = await therapeuticGuide.respondToPracticeCompletion({
-      practice: completedPractice,
-      currentState: nervousSystemState,
-      sessionContext: { messages, entities, practicesCompleted, interventionsFocused }
-    });
+    // Generate follow-up response via huxleyService
+    const followUpResponse = await huxleyService.chat(
+      `I just completed a ${completedPractice.type} practice. Duration: ${completedPractice.duration}s. Effectiveness: ${completedPractice.effectiveness}/10. Outcome: ${completedPractice.outcome}`
+    );
 
     const followUpMessage = {
       role: 'assistant',
       content: followUpResponse.message,
       timestamp: new Date(),
       practiceFollowUp: true,
-      requiresPractice: followUpResponse.suggestedPractice
+      requiresPractice: followUpResponse.exerciseRecommendation || followUpResponse.therapeuticData?.suggestedPractice || null
     };
 
     const updatedMessages = [...messages, followUpMessage];
@@ -530,13 +575,13 @@ Before we dive in, let's check in with your nervous system. How is your body fee
           message.role === 'user' ? styles.userBubble : styles.assistantBubble
         ]}
       >
-        <Text style={[
+        <FormattedText style={[
           styles.messageText,
           message.role === 'user' ? styles.userText : styles.assistantText
         ]}>
           {message.content}
-        </Text>
-        
+        </FormattedText>
+
         {/* Show therapeutic themes */}
         {message.therapeuticThemes && message.therapeuticThemes.length > 0 && (
           <View style={styles.therapeuticThemesContainer}>
@@ -682,8 +727,8 @@ Before we dive in, let's check in with your nervous system. How is your body fee
       </ScrollView>
 
       <KeyboardAvoidingView
-        behavior="padding"
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 20}
         style={{ flexShrink: 0 }}
       >
         {renderInput()}

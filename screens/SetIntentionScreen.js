@@ -17,7 +17,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 import { supabase } from '../lib/supabase';
-import intentionGuidanceAIService from '../lib/intentionGuidanceAIService';
+import huxleyService from '../lib/huxleyService';
+import intentionGuidanceService from '../lib/intentionGuidanceService';
 import IntentionConversation from '../components/intention/IntentionConversation';
 import IntentionTemplates from '../components/intention/IntentionTemplates';
 import IntentionDraftEditor from '../components/intention/IntentionDraftEditor';
@@ -138,6 +139,9 @@ const SetIntentionScreen = ({ navigation, route }) => {
   // Offline support
   const [offline, setOffline] = useState(false);
 
+  // Track pending AI request so follow-up messages can cancel + re-request
+  const pendingRequestRef = useRef(null);
+
   // Persist state to module-level variable on changes
   useEffect(() => {
     persistedState = {
@@ -185,7 +189,7 @@ const SetIntentionScreen = ({ navigation, route }) => {
       setUserId(authenticatedUserId);
 
       // Load user preferences
-      const prefs = await intentionGuidanceAIService.getUserPreferences(authenticatedUserId);
+      const prefs = await intentionGuidanceService.getUserPreferences(authenticatedUserId);
       setUserPreferences(prefs);
       setSaveToDatabase(prefs?.save_by_default || false);
 
@@ -274,25 +278,29 @@ const SetIntentionScreen = ({ navigation, route }) => {
       setLoading(true);
       setError(null);
 
-      const response = await intentionGuidanceAIService.startIntentionConversation({
-        userId,
-        sessionId,
-        sessionType,
-        framework,
-        nervousSystemState,
-        stateConfidence: 0.7,
+      huxleyService.setMode('intention', { clearHistory: true });
+      const response = await huxleyService.chat('', {
+        phase: 'welcome',
+        modeContext: {
+          userId,
+          sessionId,
+          sessionType,
+          framework,
+          nervousSystemState,
+          stateConfidence: 0.7,
+        },
       });
 
-      setConversationId(response.conversationId);
+      setConversationId(Date.now().toString());
       setConversationHistory([
         {
           role: 'assistant',
-          content: response.initialMessage,
+          content: response.message,
           timestamp: Date.now(),
         }
       ]);
-      setConversationStage(response.conversationStage || 'welcome');
-      setTemplates(response.suggestedTemplates || []);
+      setConversationStage(response.phase || 'welcome');
+      setTemplates([]);
       setMode('conversation');
       setLoading(false);
     } catch (err) {
@@ -325,43 +333,53 @@ const SetIntentionScreen = ({ navigation, route }) => {
         content: message,
         timestamp: Date.now(),
       };
-      setConversationHistory(prev => [...prev, userMessage]);
 
+      // If there's already a pending request, cancel it — user is adding a follow-up
+      if (pendingRequestRef.current) {
+        pendingRequestRef.current.cancelled = true;
+      }
+
+      setConversationHistory(prev => [...prev, userMessage]);
       setLoading(true);
 
-      const response = await intentionGuidanceAIService.continueIntentionConversation(
-        message,
-        {
-          conversationId,
-          userId,
-          sessionType,
-          framework,
-          nervousSystemState,
-          conversationHistory: [...conversationHistory, userMessage],
-          currentDraft: draftIntention,
-        }
-      );
+      // Create a request token so we can detect if this request was superseded
+      const requestToken = { cancelled: false };
+      pendingRequestRef.current = requestToken;
+
+      // Brief delay — if user is typing quickly, give them a moment to send more
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      // If user sent another message while we waited, abandon this request
+      if (requestToken.cancelled) return;
+
+      const response = await huxleyService.chat(message, {
+        phase: conversationStage,
+      });
+
+      // If this request was superseded by a newer one, don't add the response
+      if (requestToken.cancelled) return;
+
+      pendingRequestRef.current = null;
 
       // Add AI response to history
       const aiMessage = {
         role: 'assistant',
         content: response.message,
         timestamp: Date.now(),
-        suggestedActions: response.suggestedActions,
+        suggestedActions: response.therapeuticData?.suggestedActions || [],
       };
       setConversationHistory(prev => [...prev, aiMessage]);
-      setConversationStage(response.conversationStage || conversationStage);
+      setConversationStage(response.phase || conversationStage);
 
       setLoading(false);
-
-      // Handle suggested actions
-      if (response.suggestedActions && response.suggestedActions.length > 0) {
-        // Could trigger UI changes based on actions
-      }
     } catch (err) {
+      // If cancelled, don't show error
+      if (pendingRequestRef.current?.cancelled) return;
+
       console.error('Error sending message:', err);
       setError(err.message || 'Failed to send message');
       setLoading(false);
+      pendingRequestRef.current = null;
 
       // Add error message
       const errorMessage = {
@@ -380,10 +398,10 @@ const SetIntentionScreen = ({ navigation, route }) => {
   const handleLoadTemplates = async (filterFramework, filterSessionType) => {
     try {
       setLoading(true);
-      const loadedTemplates = await intentionGuidanceAIService.getTemplates(
+      const loadedTemplates = await intentionGuidanceService.getTemplates(
         filterFramework || framework,
         filterSessionType || sessionType,
-        { limit: 20 }
+        20
       );
       setTemplates(loadedTemplates);
       setLoading(false);
@@ -414,16 +432,11 @@ const SetIntentionScreen = ({ navigation, route }) => {
 
     try {
       setAnalyzingDraft(true);
-      const feedback = await intentionGuidanceAIService.analyzeDraftIntention(
-        draftIntention,
-        {
-          userId,
-          sessionType,
-          framework,
-          conversationHistory,
-        }
+      const response = await huxleyService.chat(
+        `Please analyze this draft intention and provide feedback: "${draftIntention}"`,
+        { phase: 'refinement' }
       );
-      setDraftFeedback(feedback);
+      setDraftFeedback({ message: response.message, ...response.therapeuticData });
       setAnalyzingDraft(false);
     } catch (err) {
       console.error('Error analyzing draft:', err);
@@ -462,22 +475,19 @@ const SetIntentionScreen = ({ navigation, route }) => {
     try {
       setLoading(true);
 
-      await intentionGuidanceAIService.saveIntention(
-        {
-          intentionText: draftIntention,
-          framework,
-          sessionType,
-          aiConversationContext: {
-            prompt_count: conversationHistory.filter(m => m.role === 'user').length,
-            frameworks_explored: [framework],
-            session_duration_seconds: Math.floor((Date.now() - conversationHistory[0]?.timestamp) / 1000),
-          },
-          inspiredByTemplateId: selectedTemplate?.id || null,
-          userWantsToSave: true,
+      await intentionGuidanceService.saveIntention({
+        user_id: userId,
+        session_id: sessionId,
+        intention_text: draftIntention,
+        framework,
+        session_type: sessionType,
+        ai_conversation_context: {
+          prompt_count: conversationHistory.filter(m => m.role === 'user').length,
+          frameworks_explored: [framework],
+          session_duration_seconds: Math.floor((Date.now() - conversationHistory[0]?.timestamp) / 1000),
         },
-        userId,
-        sessionId
-      );
+        inspired_by_template_id: selectedTemplate?.id || null,
+      });
 
       setLoading(false);
 
@@ -710,13 +720,15 @@ const SetIntentionScreen = ({ navigation, route }) => {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
         <LinearGradient colors={gradients.warm} start={{ x: 1.0, y: 0.0 }} end={{ x: 0.0, y: 1.0 }} style={styles.headerGradient}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
-            <MaterialIcons name="arrow-back" size={24} color={colors.textInverse} />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Set Your Intention</Text>
+          <View style={styles.headerRow}>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => navigation.goBack()}
+            >
+              <MaterialIcons name="arrow-back" size={24} color={colors.textInverse} />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>Set Your Intention</Text>
+          </View>
         </LinearGradient>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
@@ -733,27 +745,29 @@ const SetIntentionScreen = ({ navigation, route }) => {
     >
       {/* Header */}
       <LinearGradient colors={gradients.warm} start={{ x: 1.0, y: 0.0 }} end={{ x: 0.0, y: 1.0 }} style={styles.headerGradient}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => {
-            if (draftIntention && draftIntention.trim().length > 0) {
-              Alert.alert(
-                'Save Draft?',
-                'You have an unsaved intention. Do you want to save it?',
-                [
-                  { text: 'Discard', style: 'destructive', onPress: () => navigation.goBack() },
-                  { text: 'Save', onPress: handleSaveIntention },
-                  { text: 'Cancel', style: 'cancel' }
-                ]
-              );
-            } else {
-              navigation.goBack();
-            }
-          }}
-        >
-          <MaterialIcons name="arrow-back" size={24} color={colors.textInverse} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Set Your Intention</Text>
+        <View style={styles.headerRow}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => {
+              if (draftIntention && draftIntention.trim().length > 0) {
+                Alert.alert(
+                  'Save Draft?',
+                  'You have an unsaved intention. Do you want to save it?',
+                  [
+                    { text: 'Discard', style: 'destructive', onPress: () => navigation.goBack() },
+                    { text: 'Save', onPress: handleSaveIntention },
+                    { text: 'Cancel', style: 'cancel' }
+                  ]
+                );
+              } else {
+                navigation.goBack();
+              }
+            }}
+          >
+            <MaterialIcons name="arrow-back" size={24} color={colors.textInverse} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Set Your Intention</Text>
+        </View>
         {sessionData?.title && (
           <Text style={styles.headerSubtitle}>{sessionData.title}</Text>
         )}
@@ -804,11 +818,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   headerGradient: {
-    flexDirection: 'row',
-    alignItems: 'center',
     paddingTop: spacing.sm,
     paddingBottom: spacing.sm,
     paddingHorizontal: spacing.md,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   backButton: {
     width: 36,
@@ -824,9 +840,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerSubtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: colors.textInverse,
     opacity: 0.9,
+    marginLeft: 44,
+    marginTop: 2,
   },
   keyboardAvoid: {
     flex: 1,
@@ -841,7 +859,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: spacing.lg,
-    paddingBottom: 80,
+    paddingBottom: 120,
   },
   loadingContainer: {
     flex: 1,

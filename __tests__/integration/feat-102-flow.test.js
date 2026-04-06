@@ -237,8 +237,8 @@ describe('FEAT-102 Integration Tests - Complete User Flows', () => {
       );
 
       expect(response2.message).toBeDefined();
-      // After 2+ user messages the stage is 'confirm'
-      expect(response2.conversationStage).toBe('confirm');
+      // After exactly 2 user messages the stage is 'deepen'
+      expect(response2.conversationStage).toBe('deepen');
       conversationHistory.push({ role: 'assistant', content: response2.message });
 
       // 4. Draft intention

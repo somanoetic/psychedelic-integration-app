@@ -33,6 +33,15 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
   },
 }));
 
+// Mock Sentry
+jest.mock('@sentry/react-native', () => ({
+  init: jest.fn(),
+  wrap: jest.fn((component) => component),
+  captureException: jest.fn(() => 'mock-sentry-event-id'),
+  setUser: jest.fn(),
+  withScope: jest.fn((cb) => cb({ setTag: jest.fn(), setExtra: jest.fn() })),
+}));
+
 // Mock Expo modules
 jest.mock('expo-secure-store', () => ({
   getItemAsync: jest.fn(),

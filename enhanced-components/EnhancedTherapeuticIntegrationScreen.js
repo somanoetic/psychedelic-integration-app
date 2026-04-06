@@ -10,10 +10,40 @@ import {
   ActivityIndicator
 } from 'react-native';
 import { supabase } from '../lib/supabase';
-import TherapeuticIntegrationService from '../lib/therapeuticIntegrationService';
+import huxleyService from '../lib/huxleyService';
+import { getExerciseById, getExercisesByCategory } from '../content/exercises-comprehensive';
 import EmbeddedPracticeWidget from '../enhanced-components/EmbeddedPracticeWidget';
 import CrossSessionDataManager from '../enhanced-components/CrossSessionDataManager';
 import { colors } from '../theme/colors';
+import FormattedText from '../components/FormattedText';
+
+// Helper: suggest a practice based on nervous system state
+const getSuggestedPracticeForState = (state, intensity) => {
+  const selectFromCategories = (categories, urgency) => {
+    for (const category of categories) {
+      const exercises = getExercisesByCategory(category);
+      if (exercises && exercises.length > 0) {
+        const exercise = exercises[0];
+        return {
+          type: category,
+          title: exercise.title,
+          description: exercise.instructions,
+          urgency,
+          practice: exercise
+        };
+      }
+    }
+    return null;
+  };
+
+  if (state === 'sympathetic' && intensity > 6) {
+    return selectFromCategories(['breathing', 'grounding', 'polyvagal'], 'high');
+  }
+  if (state === 'dorsal' && intensity > 5) {
+    return selectFromCategories(['somatic', 'grounding', 'yoga'], 'medium');
+  }
+  return null;
+};
 
 const EnhancedTherapeuticIntegrationScreen = ({ navigation, route }) => {
   console.log('EnhancedTherapeuticIntegrationScreen route params:', route.params);
@@ -63,7 +93,7 @@ const EnhancedTherapeuticIntegrationScreen = ({ navigation, route }) => {
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
   // Services
-  const therapeuticGuide = useRef(new TherapeuticIntegrationService()).current;
+  const recommendedExercisesRef = useRef([]);
   const dataManager = useRef(new CrossSessionDataManager()).current;
 
   // Initialize conversation
@@ -138,21 +168,8 @@ const EnhancedTherapeuticIntegrationScreen = ({ navigation, route }) => {
         });
       }
 
-      // Initialize therapeutic guide with FULL cross-session context
-      const fullContext = {
-        sessionId: session.id,
-        messages: therapeuticContextData.messages,
-        entities: therapeuticContextData.entities,
-        nervousSystemState: therapeuticContextData.nervousSystemState,
-        practicesCompleted: therapeuticContextData.practicesCompleted,
-        interventionsFocused: therapeuticContextData.interventionsFocused,
-        // Cross-session experience context
-        experienceMessages: therapeuticContextData.experienceInsights?.messages || [],
-        experienceEntities: therapeuticContextData.experienceInsights?.experienceEntities || [],
-        experienceData: therapeuticContextData.experienceInsights || {}
-      };
-
-      therapeuticGuide.initializeSession(fullContext);
+      // Initialize unified huxley service in therapeutic_integration mode
+      huxleyService.setMode('therapeutic_integration', { clearHistory: true });
 
       console.log('Enhanced Therapeutic Integration initialized with cross-session data:', {
         therapeuticMessages: therapeuticContextData.messages.length,
@@ -265,13 +282,27 @@ Before we dive in, let's check in with your nervous system. How is your body fee
       setRegulationInterventions(prev => prev + 1);
     }
 
-    // Generate therapeutic response based on assessment
-    const contextualResponse = await therapeuticGuide.respondToNervousSystemCheck({
-      state,
-      intensity,
-      notes,
-      sessionContext: { messages, entities, practicesCompleted }
-    });
+    // Generate therapeutic response based on assessment (inline, no API call needed)
+    const stateResponses = {
+      ventral: `Beautiful! I can sense that you're feeling relatively safe and connected right now. Your nervous system is in a lovely place for exploration and integration work.`,
+      sympathetic: intensity > 7
+        ? `I can feel the activation and energy in your system. Your fight/flight response is very much online. Before we dive deeper, let's help your nervous system find some calm.`
+        : `I notice some activation energy in your system. That's completely normal when processing meaningful experiences.`,
+      dorsal: intensity > 6
+        ? `I sense your system might be in a protective shutdown right now. That's a wise response. We'll go very gently and follow your pace completely.`
+        : `It feels like part of you might be pulled back or protected right now. That's okay - we'll honor that and move slowly.`
+    };
+
+    let nsResponseText = stateResponses[state] || "Thank you for sharing how you're feeling. I'm here to support you wherever your nervous system is right now.";
+    if (notes) nsResponseText += ` I appreciate you sharing that ${notes}.`;
+    nsResponseText += " What insights or themes from your psychedelic experience would feel most important to explore therapeutically?";
+
+    const suggestedPractice = getSuggestedPracticeForState(state, intensity);
+
+    const contextualResponse = {
+      message: nsResponseText,
+      suggestedPractice
+    };
 
     const responseMessage = {
       role: 'assistant',
@@ -317,54 +348,76 @@ Before we dive in, let's check in with your nervous system. How is your body fee
     setIsLoading(true);
 
     try {
-      // Get therapeutic integration response with full cross-session context
-      const response = await therapeuticGuide.continueTherapeuticIntegration(
-        userInput.trim(),
-        {
-          messages: newMessages,
-          entities: entities,
-          nervousSystemState: nervousSystemState,
-          stateConfidence: stateConfidence,
-          practicesCompleted: practicesCompleted,
-          interventionsFocused: interventionsFocused
+      // Get therapeutic integration response via unified huxley service
+      const response = await huxleyService.chat(userInput.trim(), {
+        modeContext: {
+          entities,
+          nervousSystemState,
+          stateConfidence,
+          practicesCompleted,
+          interventionsFocused
         }
-      );
+      });
+
+      // Extract therapeutic data from unified response
+      const therapeuticData = response.therapeuticData || {};
+      const extractedThemes = therapeuticData.themes || [];
+      const nsUpdate = therapeuticData.nervousSystemState ? {
+        state: therapeuticData.nervousSystemState,
+        confidence: therapeuticData.confidence || stateConfidence
+      } : null;
+
+      // Resolve exercise recommendation if present
+      let suggestedPractice = null;
+      if (response.exerciseRecommendation) {
+        const exercise = getExerciseById(response.exerciseRecommendation);
+        if (exercise) {
+          recommendedExercisesRef.current.push(exercise.id);
+          suggestedPractice = {
+            type: exercise.category,
+            title: exercise.title,
+            description: exercise.instructions,
+            urgency: nervousSystemState === 'sympathetic' ? 'high' : 'medium',
+            practice: exercise
+          };
+        }
+      }
 
       const assistantMessage = {
         role: 'assistant',
         content: response.message,
         timestamp: new Date(),
-        entities: response.extractedEntities || [],
-        requiresPractice: response.suggestedPractice,
-        nervousSystemUpdate: response.nervousSystemUpdate,
-        therapeuticThemes: response.therapeuticThemes
+        entities: therapeuticData.entities || [],
+        requiresPractice: suggestedPractice,
+        nervousSystemUpdate: nsUpdate,
+        therapeuticThemes: extractedThemes
       };
 
       const updatedMessages = [...newMessages, assistantMessage];
       setMessages(updatedMessages);
 
       // Update entities if new ones were extracted
-      if (response.extractedEntities && response.extractedEntities.length > 0) {
-        const updatedEntities = [...entities, ...response.extractedEntities];
+      if (therapeuticData.entities && therapeuticData.entities.length > 0) {
+        const updatedEntities = [...entities, ...therapeuticData.entities];
         setEntities(updatedEntities);
       }
 
       // Update nervous system state if changed
-      if (response.nervousSystemUpdate) {
-        setNervousSystemState(response.nervousSystemUpdate.state);
-        setStateConfidence(response.nervousSystemUpdate.confidence);
+      if (nsUpdate) {
+        setNervousSystemState(nsUpdate.state);
+        setStateConfidence(nsUpdate.confidence);
       }
 
       // Track therapeutic interventions focused on
-      if (response.therapeuticThemes && response.therapeuticThemes.length > 0) {
-        setInterventionsFocused(prev => [...prev, ...response.therapeuticThemes]);
+      if (extractedThemes.length > 0) {
+        setInterventionsFocused(prev => [...prev, ...extractedThemes]);
       }
 
       // Show practice if recommended (but not constantly)
-      if (response.suggestedPractice && response.suggestedPractice.urgency !== 'low') {
+      if (suggestedPractice && suggestedPractice.urgency !== 'low') {
         setTimeout(() => {
           setCurrentPractice({
-            ...response.suggestedPractice,
+            ...suggestedPractice,
             onComplete: handlePracticeComplete
           });
         }, 2000);
@@ -402,12 +455,20 @@ Before we dive in, let's check in with your nervous system. How is your body fee
     setPracticesCompleted(prev => [...prev, completedPractice]);
     setCurrentPractice(null);
 
-    // Generate follow-up response from therapeutic guide
-    const followUpResponse = await therapeuticGuide.respondToPracticeCompletion({
-      practice: completedPractice,
-      currentState: nervousSystemState,
-      sessionContext: { messages, entities, practicesCompleted, interventionsFocused }
-    });
+    // Generate follow-up response (inline, no API call needed)
+    const practiceResponses = {
+      breathing_exercise: `How beautiful that you took that time for your nervous system. How are you feeling now, and what would you like to explore therapeutically?`,
+      parts_work: `Thank you for taking time to listen to your parts. What did you notice, and how does this connect to your daily life?`,
+      body_scan: `I love that you connected with your body. What sensations or insights came up, and how do they relate to your life patterns?`,
+      polyvagal_assessment: `Thank you for that nervous system check-in. Based on what you discovered, what aspects of your experience feel most important to explore?`,
+      gentle_activation: `So gentle and wise to move slowly back into feeling. How does it feel to be reconnecting, and what would you like to explore now?`,
+      self_compassion: `That self-compassion practice is so powerful for healing. How did that feel, and what did you notice about your inner dialogue?`
+    };
+
+    const followUpResponse = {
+      message: practiceResponses[completedPractice.type] || "Thank you for engaging with that practice. How was that experience for you?",
+      suggestedPractice: null
+    };
 
     const followUpMessage = {
       role: 'assistant',
@@ -515,12 +576,12 @@ Before we dive in, let's check in with your nervous system. How is your body fee
           message.role === 'user' ? styles.userBubble : styles.assistantBubble
         ]}
       >
-        <Text style={[
+        <FormattedText style={[
           styles.messageText,
           message.role === 'user' ? styles.userText : styles.assistantText
         ]}>
           {message.content}
-        </Text>
+        </FormattedText>
 
         {/* Show cross-session awareness indicator */}
         {message.crossSessionAware && (

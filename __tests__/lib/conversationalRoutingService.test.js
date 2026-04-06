@@ -5,12 +5,13 @@
  * and Claude API integration for the conversational routing service.
  */
 
-const { mockClaudeResponse, mockClaudeError, MOCK_USER_ID } = require('../helpers/aiTestFixtures');
+const { MOCK_USER_ID } = require('../helpers/aiTestFixtures');
 
 // Mock dependencies before importing service
-jest.mock('../../lib/config', () => ({
+jest.mock('../../lib/claudeAPI', () => ({
   __esModule: true,
-  default: { anthropicApiKey: 'test-api-key' }
+  callClaude: jest.fn(),
+  default: jest.fn(),
 }));
 
 jest.mock('../../lib/metricsService', () => ({
@@ -31,18 +32,17 @@ jest.mock('../../lib/huxleyKnowledgeBase', () => {
   return { __esModule: true, ...actual };
 });
 
-// Mock fetch
-global.fetch = jest.fn();
-
 describe('ConversationalRoutingService', () => {
   let ConversationalRoutingService;
   let service;
   let metricsService;
+  let callClaude;
 
   beforeAll(() => {
     const mod = require('../../lib/conversationalRoutingService');
     ConversationalRoutingService = mod.ConversationalRoutingService;
     metricsService = require('../../lib/metricsService').default;
+    callClaude = require('../../lib/claudeAPI').callClaude;
   });
 
   beforeEach(() => {
@@ -199,9 +199,10 @@ describe('ConversationalRoutingService', () => {
 
   describe('sendMessage', () => {
     it('should call Claude API and extract route from response', async () => {
-      global.fetch.mockResolvedValue(mockClaudeResponse(
-        "Let me help you journal about that. ROUTE: daily_journal"
-      ));
+      callClaude.mockResolvedValue({
+        content: [{ text: "Let me help you journal about that. ROUTE: daily_journal" }],
+        usage: { input_tokens: 500, output_tokens: 100 }
+      });
 
       const result = await service.sendMessage("I want to write about my day");
 
@@ -213,9 +214,10 @@ describe('ConversationalRoutingService', () => {
     });
 
     it('should return null route when Claude continues conversation', async () => {
-      global.fetch.mockResolvedValue(mockClaudeResponse(
-        "Can you tell me more about what happened?"
-      ));
+      callClaude.mockResolvedValue({
+        content: [{ text: "Can you tell me more about what happened?" }],
+        usage: { input_tokens: 500, output_tokens: 100 }
+      });
 
       const result = await service.sendMessage("Something weird happened");
 
@@ -225,7 +227,7 @@ describe('ConversationalRoutingService', () => {
     });
 
     it('should fall back to keyword routing on API error', async () => {
-      global.fetch.mockRejectedValue(new Error('Network error'));
+      callClaude.mockRejectedValue(new Error('Network error'));
 
       const result = await service.sendMessage("I'm having a panic attack");
 
@@ -235,7 +237,7 @@ describe('ConversationalRoutingService', () => {
     });
 
     it('should log error when API fails', async () => {
-      global.fetch.mockRejectedValue(new Error('API down'));
+      callClaude.mockRejectedValue(new Error('API down'));
 
       await service.sendMessage("Hello");
 
@@ -248,9 +250,10 @@ describe('ConversationalRoutingService', () => {
     });
 
     it('should log routing decision on successful route', async () => {
-      global.fetch.mockResolvedValue(mockClaudeResponse(
-        "Let me take you to your journal. ROUTE: daily_journal"
-      ));
+      callClaude.mockResolvedValue({
+        content: [{ text: "Let me take you to your journal. ROUTE: daily_journal" }],
+        usage: { input_tokens: 500, output_tokens: 100 }
+      });
 
       await service.sendMessage("I want to journal", MOCK_USER_ID);
 
@@ -263,7 +266,7 @@ describe('ConversationalRoutingService', () => {
     });
 
     it('should log fallback routing decision on API error', async () => {
-      global.fetch.mockRejectedValue(new Error('API error'));
+      callClaude.mockRejectedValue(new Error('API error'));
 
       await service.sendMessage("I want to journal");
 
@@ -281,37 +284,54 @@ describe('ConversationalRoutingService', () => {
   // =========================================================================
 
   describe('getAIResponse', () => {
-    it('should send correct request to Claude API', async () => {
-      global.fetch.mockResolvedValue(mockClaudeResponse("Hello!"));
+    it('should call callClaude with correct parameters', async () => {
+      callClaude.mockResolvedValue({
+        content: [{ text: "Hello!" }],
+        usage: { input_tokens: 200, output_tokens: 50 }
+      });
 
       await service.getAIResponse("Hey there");
 
-      expect(global.fetch).toHaveBeenCalledWith(
-        'https://api.anthropic.com/v1/messages',
+      expect(callClaude).toHaveBeenCalledWith(
         expect.objectContaining({
-          method: 'POST',
-          headers: expect.objectContaining({
-            'x-api-key': 'test-api-key',
-            'anthropic-version': '2023-06-01'
-          })
+          model: 'claude-sonnet-4-5-20250929',
+          max_tokens: 300,
+          messages: expect.arrayContaining([
+            expect.objectContaining({ role: 'user', content: 'Hey there' })
+          ])
         })
       );
     });
 
     it('should include conversation history in request', async () => {
-      global.fetch.mockResolvedValue(mockClaudeResponse("Response 1"));
+      callClaude.mockResolvedValue({
+        content: [{ text: "Response 1" }],
+        usage: { input_tokens: 200, output_tokens: 50 }
+      });
       await service.getAIResponse("Message 1");
 
-      global.fetch.mockResolvedValue(mockClaudeResponse("Response 2"));
+      callClaude.mockResolvedValue({
+        content: [{ text: "Response 2" }],
+        usage: { input_tokens: 200, output_tokens: 50 }
+      });
       await service.getAIResponse("Message 2");
 
-      const secondCall = global.fetch.mock.calls[1];
-      const body = JSON.parse(secondCall[1].body);
-      expect(body.messages.length).toBe(3); // msg1 + assistant + msg2
+      // After both calls complete, history has 4 items: user1 + assistant1 + user2 + assistant2.
+      // callClaude receives the live history array by reference, so we verify the
+      // final history state instead of the snapshot at call time.
+      const history = service.getConversationHistory();
+      expect(history.length).toBe(4); // msg1 + assistant1 + msg2 + assistant2
+      expect(history[0]).toMatchObject({ role: 'user', content: 'Message 1' });
+      expect(history[1]).toMatchObject({ role: 'assistant', content: 'Response 1' });
+      expect(history[2]).toMatchObject({ role: 'user', content: 'Message 2' });
+      expect(history[3]).toMatchObject({ role: 'assistant', content: 'Response 2' });
     });
 
     it('should add assistant response to history', async () => {
-      global.fetch.mockResolvedValue(mockClaudeResponse("I'm here for you"));
+      callClaude.mockResolvedValue({
+        content: [{ text: "I'm here for you" }],
+        usage: { input_tokens: 200, output_tokens: 50 }
+      });
 
       await service.getAIResponse("Hello");
 
@@ -321,17 +341,17 @@ describe('ConversationalRoutingService', () => {
       );
     });
 
-    it('should throw on API error status', async () => {
-      global.fetch.mockResolvedValue({
-        ok: false,
-        status: 500
-      });
+    it('should throw on callClaude error', async () => {
+      callClaude.mockRejectedValue(new Error('API error: 500'));
 
       await expect(service.getAIResponse("Hello")).rejects.toThrow('API error: 500');
     });
 
     it('should log success metrics', async () => {
-      global.fetch.mockResolvedValue(mockClaudeResponse("Hello!", 200, 50));
+      callClaude.mockResolvedValue({
+        content: [{ text: "Hello!" }],
+        usage: { input_tokens: 200, output_tokens: 50 }
+      });
 
       await service.getAIResponse("Hey", MOCK_USER_ID);
 
@@ -346,7 +366,7 @@ describe('ConversationalRoutingService', () => {
     });
 
     it('should log error metrics on failure', async () => {
-      global.fetch.mockResolvedValue({ ok: false, status: 429 });
+      callClaude.mockRejectedValue(new Error('Rate limited'));
 
       try {
         await service.getAIResponse("Hello");
@@ -401,9 +421,10 @@ describe('ConversationalRoutingService', () => {
 
   describe('routeMessage', () => {
     it('should map route codes to screen names', async () => {
-      global.fetch.mockResolvedValue(mockClaudeResponse(
-        "Let me take you to parts work. ROUTE: ifs_chat"
-      ));
+      callClaude.mockResolvedValue({
+        content: [{ text: "Let me take you to parts work. ROUTE: ifs_chat" }],
+        usage: { input_tokens: 500, output_tokens: 100 }
+      });
 
       const result = await service.routeMessage("I want to explore my parts");
 
@@ -412,9 +433,10 @@ describe('ConversationalRoutingService', () => {
     });
 
     it('should return null route when no route detected', async () => {
-      global.fetch.mockResolvedValue(mockClaudeResponse(
-        "Tell me more about what happened"
-      ));
+      callClaude.mockResolvedValue({
+        content: [{ text: "Tell me more about what happened" }],
+        usage: { input_tokens: 500, output_tokens: 100 }
+      });
 
       const result = await service.routeMessage("Something happened");
 
@@ -423,9 +445,10 @@ describe('ConversationalRoutingService', () => {
     });
 
     it('should map triggered_support to TriggeredSupport screen', async () => {
-      global.fetch.mockResolvedValue(mockClaudeResponse(
-        "I'm here for you. ROUTE: triggered_support"
-      ));
+      callClaude.mockResolvedValue({
+        content: [{ text: "I'm here for you. ROUTE: triggered_support" }],
+        usage: { input_tokens: 500, output_tokens: 100 }
+      });
 
       const result = await service.routeMessage("I'm panicking");
 
@@ -440,7 +463,10 @@ describe('ConversationalRoutingService', () => {
 
   describe('reset', () => {
     it('should clear conversation history', async () => {
-      global.fetch.mockResolvedValue(mockClaudeResponse("Hello!"));
+      callClaude.mockResolvedValue({
+        content: [{ text: "Hello!" }],
+        usage: { input_tokens: 200, output_tokens: 50 }
+      });
       await service.getAIResponse("First message");
 
       expect(service.getConversationHistory().length).toBeGreaterThan(0);
@@ -476,9 +502,10 @@ describe('ConversationalRoutingService', () => {
     });
 
     it('should route crisis via AI when API is available', async () => {
-      global.fetch.mockResolvedValue(mockClaudeResponse(
-        "I hear you. That sounds really hard. Let me connect you with support right now. ROUTE: triggered_support"
-      ));
+      callClaude.mockResolvedValue({
+        content: [{ text: "I hear you. That sounds really hard. Let me connect you with support right now. ROUTE: triggered_support" }],
+        usage: { input_tokens: 500, output_tokens: 100 }
+      });
 
       const result = await service.sendMessage("I want to end my life");
 

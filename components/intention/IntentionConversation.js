@@ -37,7 +37,10 @@ const IntentionConversation = ({
   disabled,
 }) => {
   const [messageText, setMessageText] = useState('');
+  const [isUserTyping, setIsUserTyping] = useState(false);
   const flatListRef = useRef(null);
+  const typingTimeoutRef = useRef(null);
+  const pendingMessageRef = useRef(null);
 
   // Scroll to bottom when new message arrives
   useEffect(() => {
@@ -59,14 +62,39 @@ const IntentionConversation = ({
     return () => sub.remove();
   }, []);
 
+  // Clean up typing timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    };
+  }, []);
+
+  /**
+   * Track when user is actively typing in the input.
+   * If Huxley is "thinking" (loading) and user starts typing more,
+   * we queue the follow-up so it gets appended before Huxley responds.
+   */
+  const handleTextChange = (text) => {
+    setMessageText(text);
+
+    // Mark user as typing
+    setIsUserTyping(true);
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    typingTimeoutRef.current = setTimeout(() => {
+      setIsUserTyping(false);
+    }, 1500);
+  };
+
   /**
    * Handle send message
    */
   const handleSend = () => {
-    if (!messageText.trim() || disabled || loading) return;
+    if (!messageText.trim() || disabled) return;
 
     onSendMessage(messageText.trim());
     setMessageText('');
+    setIsUserTyping(false);
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
   };
 
   /**
@@ -75,6 +103,9 @@ const IntentionConversation = ({
   const renderStageIndicator = () => {
     const stageLabels = {
       welcome: 'Getting Started',
+      direction: 'Finding Direction',
+      deepen: 'Going Deeper',
+      confirm: 'Your Intention',
       exploration: 'Exploring',
       formulation: 'Formulating',
       refinement: 'Refining',
@@ -83,6 +114,9 @@ const IntentionConversation = ({
 
     const stageIcons = {
       welcome: 'waving-hand',
+      direction: 'explore',
+      deepen: 'self-improvement',
+      confirm: 'check-circle',
       exploration: 'search',
       formulation: 'edit',
       refinement: 'auto-fix-high',
@@ -178,11 +212,13 @@ const IntentionConversation = ({
         onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
       />
 
-      {/* Loading Indicator */}
+      {/* Loading Indicator - shows waiting message if user is still typing */}
       {loading && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="small" color={colors.primary} />
-          <Text style={styles.loadingText}>Huxley is thinking...</Text>
+          <Text style={styles.loadingText}>
+            {isUserTyping ? 'Huxley is waiting for you to finish...' : 'Huxley is thinking...'}
+          </Text>
         </View>
       )}
 
@@ -191,12 +227,12 @@ const IntentionConversation = ({
         <TextInput
           style={styles.input}
           value={messageText}
-          onChangeText={setMessageText}
+          onChangeText={handleTextChange}
           placeholder="Share what's on your mind..."
           placeholderTextColor={colors.textLight}
           multiline
           maxLength={500}
-          editable={!disabled && !loading}
+          editable={!disabled}
           onSubmitEditing={handleSend}
           onFocus={() => {
             setTimeout(() => {
@@ -209,16 +245,16 @@ const IntentionConversation = ({
         <TouchableOpacity
           style={[
             styles.sendButton,
-            (!messageText.trim() || disabled || loading) && styles.sendButtonDisabled
+            (!messageText.trim() || disabled) && styles.sendButtonDisabled
           ]}
           onPress={handleSend}
-          disabled={!messageText.trim() || disabled || loading}
+          disabled={!messageText.trim() || disabled}
           activeOpacity={0.7}
         >
           <MaterialIcons
             name="send"
             size={24}
-            color={messageText.trim() && !disabled && !loading ? colors.textInverse : colors.textLight}
+            color={messageText.trim() && !disabled ? colors.textInverse : colors.textLight}
           />
         </TouchableOpacity>
       </View>

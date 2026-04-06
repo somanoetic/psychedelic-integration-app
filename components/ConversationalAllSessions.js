@@ -16,6 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AVATAR_OPTIONS } from './AvatarSelector';
 import { supabase } from '../lib/supabase';
 import { colors } from '../theme/colors';
+import { shareExperienceMapping } from '../lib/therapistShareService';
 
 const ConversationalAllSessions = ({ navigation }) => {
   const [selectedAvatar, setSelectedAvatar] = useState('brain');
@@ -263,6 +264,16 @@ const ConversationalAllSessions = ({ navigation }) => {
 
                     <View style={styles.sessionFooter}>
                       <Text style={styles.tapToOpen}>Tap to continue →</Text>
+                      <TouchableOpacity
+                        style={styles.shareIcon}
+                        onPress={(e) => {
+                          e.stopPropagation?.();
+                          shareExperienceMapping(session).catch(() => {});
+                        }}
+                        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                      >
+                        <MaterialIcons name="share" size={18} color={colors.primary} />
+                      </TouchableOpacity>
                     </View>
                   </TouchableOpacity>
                 );
@@ -480,7 +491,12 @@ const styles = StyleSheet.create({
     color: '#6b7280',
   },
   sessionFooter: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  shareIcon: {
+    padding: 4,
   },
   tapToOpen: {
     fontSize: 13,

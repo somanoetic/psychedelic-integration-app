@@ -1,0 +1,88 @@
+================================================================================
+TRANSCRIPT: Alex — Inner Critic Exploration
+Mode: ifs
+Description: User exploring a harsh inner critic that emerged after a psilocybin session
+Turns: 10
+Phases seen: find
+Started: 2026-04-02T14:37:09.359Z
+================================================================================
+
+--- Turn 1 [phase: find] (5043ms) ---
+USER: I've been noticing this really harsh voice in my head since my session last week. It keeps telling me I'm not doing enough.
+
+HUXLEY: That voice sounds exhausting to live with, especially when it's been running in the background all week.
+
+What does it say to you, exactly? I'm curious what "not doing enough" sounds like in its words.
+
+--- Turn 2 [phase: find] (5098ms) ---
+USER: Yeah, it's like a constant critic. Always judging everything I do. It got louder after the ceremony.
+
+HUXLEY: That makes sense - big experiences like that can stir things up, and sometimes our protective parts respond by getting louder.
+
+Can you notice where in your body you feel this critic? Does it have a location - maybe in your chest, your head, your shoulders?
+
+--- Turn 3 [phase: find] (4794ms) ---
+USER: I notice it mostly in my chest, like a tightness. And my jaw clenches when it gets going.
+
+HUXLEY: Chest tightness and a clenched jaw - your body really knows this part is there.
+
+As you notice those sensations right now, how do you feel toward this critic?
+
+--- Turn 4 [phase: find] (6841ms) ---
+USER: I think I feel... frustrated with it. Like, why can't it just shut up? I'm so tired of it.
+
+HUXLEY: That frustration makes complete sense - it's been relentless.
+
+And it's worth noticing that the frustration you're feeling toward it might actually be another part of you responding. Is there any part of you that can get just a little curious about this critic, even alongside the frustration? Not to excuse it, just to wonder about it?
+
+--- Turn 5 [phase: find] (6030ms) ---
+USER: Okay, I can try. I guess I notice that... it does seem worried. Like it's trying to keep me from failing.
+
+HUXLEY: That's a real shift - from frustration to noticing it might be worried. That's some genuine curiosity coming through.
+
+So underneath all that harshness, it seems like this part is actually trying to protect you from something. What do you think it's most afraid would happen if it stopped?
+
+--- Turn 6 [phase: find] (6653ms) ---
+USER: It's been around since I was a kid. My dad was very critical and I think this part learned to beat him to the punch.
+
+HUXLEY: That's such an important thing to see. It learned to criticize you first, before he could. In its own way, it was trying to protect you.
+
+How does it feel to understand that about it now?
+
+--- Turn 7 [phase: find] (7126ms) ---
+USER: That actually makes me feel sad for it. Like it's been working so hard all these years just to protect me.
+
+HUXLEY: That sadness and care you're feeling toward it - that's something really significant. That's Self energy coming through.
+
+What's it like to sit with this part right now, knowing what you know about where it came from?
+
+--- Turn 8 [phase: find] (7617ms) ---
+USER: I think it's afraid that if it stops criticizing me, I'll become lazy or complacent and people will reject me.
+
+HUXLEY: So it's been carrying that fear for a long time - that without its vigilance, you'd be vulnerable to exactly what your dad made you afraid of.
+
+Does this part know that you see it now? That you understand what it's been doing all these years?
+
+--- Turn 9 [phase: find] (8661ms) ---
+USER: I want to tell it that I appreciate what it's done. Even though it's been painful, I understand why it's there.
+
+HUXLEY: That's a beautiful thing to offer it. Take a moment and actually say that to it, in whatever way feels right - silently or out loud.
+
+What happens in your chest and jaw when you do?
+
+--- Turn 10 [phase: find] (9534ms) ---
+USER: I feel calmer now. Like there's more space between me and that critical voice. Thank you for guiding me through this.
+
+HUXLEY: That space you're feeling - that's real. Something shifted today.
+
+You moved from exhaustion and frustration all the way to genuine appreciation for a part that's been working so hard to protect you. That's not small.
+
+What do you want to take with you from this?
+
+--- THERAPEUTIC DATA (final state) ---
+Themes: ["inner critic","self-judgment","not enough narrative","post-ceremony activation","somatic awareness","blending","frustration toward parts","unblending","protective parts","origin of critic","childhood wound","preemptive self-protection","self-compassion","Self energy emerging","fear of rejection","fear of laziness","parts appreciation"]
+Parts: [{"name":"Harsh Voice / Critic","role":"manager","notes":"Lives in chest as tightness, jaw clenches when active. Got louder after ceremony. Learned to criticize preemptively to beat critical father to the punch. Afraid that without its vigilance, user will become lazy/complacent and face rejection. User accessed Self energy - feeling sadness and care toward the part. Now moving toward appreciation and direct communication with the part. User reported feeling calmer and more space from the part after expressing appreciation."}]
+NS State: ventral
+Exercise Rec: IFS-002
+
+================================================================================

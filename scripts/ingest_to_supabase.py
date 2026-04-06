@@ -32,6 +32,16 @@ except ImportError:
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 CHUNKS_FILE = PROJECT_ROOT / "scripts" / "chunked_documents.jsonl"
 
+# Load .env file if present (so we don't need export)
+ENV_FILE = PROJECT_ROOT / ".env"
+if ENV_FILE.exists():
+    with open(ENV_FILE) as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                key, _, value = line.partition("=")
+                os.environ.setdefault(key.strip(), value.strip())
+
 # Supabase config from environment
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_SERVICE_ROLE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")

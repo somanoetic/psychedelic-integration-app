@@ -9,6 +9,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { colors, shadows, spacing, borderRadius } from '../theme/colors';
+import ShareWithTherapistButton from '../components/ShareWithTherapistButton';
+import { shareExercise } from '../lib/therapistShareService';
 
 const GuidedExerciseScreen = ({ navigation, route }) => {
   const { exercise, categoryColor } = route.params;
@@ -125,6 +127,7 @@ const GuidedExerciseScreen = ({ navigation, route }) => {
       >
         <Text style={styles.doneButtonText}>Done</Text>
       </TouchableOpacity>
+      <ShareWithTherapistButton onShare={() => shareExercise(exercise)} />
     </View>
   );
 

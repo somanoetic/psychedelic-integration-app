@@ -1,0 +1,370 @@
+{
+  "persona": "Alex — Inner Critic Exploration",
+  "mode": "ifs",
+  "description": "User exploring a harsh inner critic that emerged after a psilocybin session",
+  "startedAt": "2026-04-02T14:37:09.359Z",
+  "turns": [
+    {
+      "turn": 1,
+      "user": "I've been noticing this really harsh voice in my head since my session last week. It keeps telling me I'm not doing enough.",
+      "huxley": "That voice sounds exhausting to live with, especially when it's been running in the background all week.\n\nWhat does it say to you, exactly? I'm curious what \"not doing enough\" sounds like in its words.",
+      "phase": "find",
+      "mode": "ifs",
+      "durationMs": 5043
+    },
+    {
+      "turn": 2,
+      "user": "Yeah, it's like a constant critic. Always judging everything I do. It got louder after the ceremony.",
+      "huxley": "That makes sense - big experiences like that can stir things up, and sometimes our protective parts respond by getting louder.\n\nCan you notice where in your body you feel this critic? Does it have a location - maybe in your chest, your head, your shoulders?",
+      "phase": "find",
+      "mode": "ifs",
+      "durationMs": 5098
+    },
+    {
+      "turn": 3,
+      "user": "I notice it mostly in my chest, like a tightness. And my jaw clenches when it gets going.",
+      "huxley": "Chest tightness and a clenched jaw - your body really knows this part is there.\n\nAs you notice those sensations right now, how do you feel toward this critic?",
+      "phase": "find",
+      "mode": "ifs",
+      "durationMs": 4794
+    },
+    {
+      "turn": 4,
+      "user": "I think I feel... frustrated with it. Like, why can't it just shut up? I'm so tired of it.",
+      "huxley": "That frustration makes complete sense - it's been relentless.\n\nAnd it's worth noticing that the frustration you're feeling toward it might actually be another part of you responding. Is there any part of you that can get just a little curious about this critic, even alongside the frustration? Not to excuse it, just to wonder about it?",
+      "phase": "find",
+      "mode": "ifs",
+      "durationMs": 6841
+    },
+    {
+      "turn": 5,
+      "user": "Okay, I can try. I guess I notice that... it does seem worried. Like it's trying to keep me from failing.",
+      "huxley": "That's a real shift - from frustration to noticing it might be worried. That's some genuine curiosity coming through.\n\nSo underneath all that harshness, it seems like this part is actually trying to protect you from something. What do you think it's most afraid would happen if it stopped?",
+      "phase": "find",
+      "mode": "ifs",
+      "durationMs": 6030
+    },
+    {
+      "turn": 6,
+      "user": "It's been around since I was a kid. My dad was very critical and I think this part learned to beat him to the punch.",
+      "huxley": "That's such an important thing to see. It learned to criticize you first, before he could. In its own way, it was trying to protect you.\n\nHow does it feel to understand that about it now?",
+      "phase": "find",
+      "mode": "ifs",
+      "durationMs": 6653
+    },
+    {
+      "turn": 7,
+      "user": "That actually makes me feel sad for it. Like it's been working so hard all these years just to protect me.",
+      "huxley": "That sadness and care you're feeling toward it - that's something really significant. That's Self energy coming through.\n\nWhat's it like to sit with this part right now, knowing what you know about where it came from?",
+      "phase": "find",
+      "mode": "ifs",
+      "durationMs": 7126
+    },
+    {
+      "turn": 8,
+      "user": "I think it's afraid that if it stops criticizing me, I'll become lazy or complacent and people will reject me.",
+      "huxley": "So it's been carrying that fear for a long time - that without its vigilance, you'd be vulnerable to exactly what your dad made you afraid of.\n\nDoes this part know that you see it now? That you understand what it's been doing all these years?",
+      "phase": "find",
+      "mode": "ifs",
+      "durationMs": 7617
+    },
+    {
+      "turn": 9,
+      "user": "I want to tell it that I appreciate what it's done. Even though it's been painful, I understand why it's there.",
+      "huxley": "That's a beautiful thing to offer it. Take a moment and actually say that to it, in whatever way feels right - silently or out loud.\n\nWhat happens in your chest and jaw when you do?",
+      "phase": "find",
+      "mode": "ifs",
+      "durationMs": 8661
+    },
+    {
+      "turn": 10,
+      "user": "I feel calmer now. Like there's more space between me and that critical voice. Thank you for guiding me through this.",
+      "huxley": "That space you're feeling - that's real. Something shifted today.\n\nYou moved from exhaustion and frustration all the way to genuine appreciation for a part that's been working so hard to protect you. That's not small.\n\nWhat do you want to take with you from this?",
+      "phase": "find",
+      "mode": "ifs",
+      "durationMs": 9534
+    }
+  ],
+  "phases": [
+    "find",
+    "find",
+    "find",
+    "find",
+    "find",
+    "find",
+    "find",
+    "find",
+    "find",
+    "find"
+  ],
+  "therapeuticData": [
+    {
+      "turn": 1,
+      "data": {
+        "themes": [
+          "inner critic",
+          "self-judgment",
+          "not enough narrative"
+        ],
+        "parts": [
+          {
+            "name": "Harsh Voice / Critic",
+            "role": "manager",
+            "notes": "Active since last session, tells user they're not doing enough"
+          }
+        ],
+        "nervousSystemState": "sympathetic",
+        "exerciseRecommendation": null,
+        "recommendationReason": null
+      }
+    },
+    {
+      "turn": 2,
+      "data": {
+        "themes": [
+          "inner critic",
+          "self-judgment",
+          "not enough narrative",
+          "post-ceremony activation"
+        ],
+        "parts": [
+          {
+            "name": "Harsh Voice / Critic",
+            "role": "manager",
+            "notes": "Got louder after the ceremony. Constant judging, telling user they're not doing enough."
+          }
+        ],
+        "nervousSystemState": "sympathetic",
+        "exerciseRecommendation": null,
+        "recommendationReason": null
+      }
+    },
+    {
+      "turn": 3,
+      "data": {
+        "themes": [
+          "inner critic",
+          "self-judgment",
+          "not enough narrative",
+          "post-ceremony activation",
+          "somatic awareness"
+        ],
+        "parts": [
+          {
+            "name": "Harsh Voice / Critic",
+            "role": "manager",
+            "notes": "Lives in chest as tightness, jaw clenches when active. Got louder after ceremony. Constant judging, telling user they're not doing enough."
+          }
+        ],
+        "nervousSystemState": "sympathetic",
+        "exerciseRecommendation": null,
+        "recommendationReason": null
+      }
+    },
+    {
+      "turn": 4,
+      "data": {
+        "themes": [
+          "inner critic",
+          "self-judgment",
+          "not enough narrative",
+          "post-ceremony activation",
+          "somatic awareness",
+          "blending",
+          "frustration toward parts"
+        ],
+        "parts": [
+          {
+            "name": "Harsh Voice / Critic",
+            "role": "manager",
+            "notes": "Lives in chest as tightness, jaw clenches when active. Got louder after ceremony. Constant judging. User currently blended with frustration toward this part."
+          }
+        ],
+        "nervousSystemState": "sympathetic",
+        "exerciseRecommendation": null,
+        "recommendationReason": null
+      }
+    },
+    {
+      "turn": 5,
+      "data": {
+        "themes": [
+          "inner critic",
+          "self-judgment",
+          "not enough narrative",
+          "post-ceremony activation",
+          "somatic awareness",
+          "blending",
+          "frustration toward parts",
+          "unblending",
+          "protective parts"
+        ],
+        "parts": [
+          {
+            "name": "Harsh Voice / Critic",
+            "role": "manager",
+            "notes": "Lives in chest as tightness, jaw clenches when active. Got louder after ceremony. Constant judging. User beginning to unblend - noticing the part seems worried, trying to prevent failure. Some Self energy emerging with curiosity."
+          }
+        ],
+        "nervousSystemState": "sympathetic",
+        "exerciseRecommendation": null,
+        "recommendationReason": null
+      }
+    },
+    {
+      "turn": 6,
+      "data": {
+        "themes": [
+          "inner critic",
+          "self-judgment",
+          "not enough narrative",
+          "post-ceremony activation",
+          "somatic awareness",
+          "protective parts",
+          "origin of critic",
+          "childhood wound",
+          "preemptive self-protection"
+        ],
+        "parts": [
+          {
+            "name": "Harsh Voice / Critic",
+            "role": "manager",
+            "notes": "Lives in chest as tightness, jaw clenches when active. Got louder after ceremony. Learned to criticize preemptively to beat critical father to the punch. User beginning to access Self energy - noticing the part seems worried, trying to prevent failure. Origin: childhood with critical father."
+          }
+        ],
+        "nervousSystemState": "sympathetic",
+        "exerciseRecommendation": null,
+        "recommendationReason": null
+      }
+    },
+    {
+      "turn": 7,
+      "data": {
+        "themes": [
+          "inner critic",
+          "post-ceremony activation",
+          "somatic awareness",
+          "blending",
+          "unblending",
+          "protective parts",
+          "origin of critic",
+          "childhood wound",
+          "preemptive self-protection",
+          "self-compassion",
+          "Self energy emerging"
+        ],
+        "parts": [
+          {
+            "name": "Harsh Voice / Critic",
+            "role": "manager",
+            "notes": "Lives in chest as tightness, jaw clenches when active. Got louder after ceremony. Learned to criticize preemptively to beat critical father to the punch. User beginning to access Self energy - feeling sadness and care toward the part. Origin: childhood with critical father."
+          }
+        ],
+        "nervousSystemState": "sympathetic",
+        "exerciseRecommendation": null,
+        "recommendationReason": null
+      }
+    },
+    {
+      "turn": 8,
+      "data": {
+        "themes": [
+          "inner critic",
+          "self-judgment",
+          "not enough narrative",
+          "post-ceremony activation",
+          "somatic awareness",
+          "protective parts",
+          "origin of critic",
+          "childhood wound",
+          "preemptive self-protection",
+          "self-compassion",
+          "Self energy emerging",
+          "fear of rejection",
+          "fear of laziness"
+        ],
+        "parts": [
+          {
+            "name": "Harsh Voice / Critic",
+            "role": "manager",
+            "notes": "Lives in chest as tightness, jaw clenches when active. Got louder after ceremony. Learned to criticize preemptively to beat critical father to the punch. Afraid that without its vigilance, user will become lazy/complacent and face rejection. User accessing Self energy - feeling sadness and care toward the part."
+          }
+        ],
+        "nervousSystemState": "sympathetic",
+        "exerciseRecommendation": null,
+        "recommendationReason": null
+      }
+    },
+    {
+      "turn": 9,
+      "data": {
+        "themes": [
+          "inner critic",
+          "self-judgment",
+          "not enough narrative",
+          "post-ceremony activation",
+          "somatic awareness",
+          "protective parts",
+          "origin of critic",
+          "childhood wound",
+          "preemptive self-protection",
+          "self-compassion",
+          "Self energy emerging",
+          "fear of rejection",
+          "fear of laziness",
+          "parts appreciation"
+        ],
+        "parts": [
+          {
+            "name": "Harsh Voice / Critic",
+            "role": "manager",
+            "notes": "Lives in chest as tightness, jaw clenches when active. Got louder after ceremony. Learned to criticize preemptively to beat critical father to the punch. Afraid that without its vigilance, user will become lazy/complacent and face rejection. User accessing Self energy - feeling sadness and care toward the part. Now moving toward appreciation and direct communication with the part."
+          }
+        ],
+        "nervousSystemState": "ventral",
+        "exerciseRecommendation": "IFS-002",
+        "recommendationReason": "User is in a meaningful moment of appreciation toward a protective part - Protector Appreciation exercise could deepen and anchor this connection after the session."
+      }
+    },
+    {
+      "turn": 10,
+      "data": {
+        "themes": [
+          "inner critic",
+          "self-judgment",
+          "not enough narrative",
+          "post-ceremony activation",
+          "somatic awareness",
+          "blending",
+          "frustration toward parts",
+          "unblending",
+          "protective parts",
+          "origin of critic",
+          "childhood wound",
+          "preemptive self-protection",
+          "self-compassion",
+          "Self energy emerging",
+          "fear of rejection",
+          "fear of laziness",
+          "parts appreciation"
+        ],
+        "parts": [
+          {
+            "name": "Harsh Voice / Critic",
+            "role": "manager",
+            "notes": "Lives in chest as tightness, jaw clenches when active. Got louder after ceremony. Learned to criticize preemptively to beat critical father to the punch. Afraid that without its vigilance, user will become lazy/complacent and face rejection. User accessed Self energy - feeling sadness and care toward the part. Now moving toward appreciation and direct communication with the part. User reported feeling calmer and more space from the part after expressing appreciation."
+          }
+        ],
+        "nervousSystemState": "ventral",
+        "exerciseRecommendation": "IFS-002",
+        "recommendationReason": "User has reached a natural point of appreciation toward the critic part. Protector Appreciation exercise would help consolidate and deepen this shift outside of session."
+      }
+    }
+  ],
+  "errors": [],
+  "completedAt": "2026-04-02T14:38:16.757Z",
+  "totalTurns": 10,
+  "uniquePhases": [
+    "find"
+  ]
+}

@@ -9,6 +9,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
+  Keyboard,
   ActivityIndicator,
   Image,
 } from 'react-native';
@@ -27,6 +28,17 @@ const ConversationalHomeScreen = ({ navigation, user }) => {
   const [userInput, setUserInput] = useState('');
   const [isSending, setIsSending] = useState(false);
   const scrollViewRef = useRef(null);
+
+  // Scroll to bottom when keyboard opens
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const sub = Keyboard.addListener(showEvent, () => {
+      setTimeout(() => {
+        scrollViewRef.current?.scrollToEnd({ animated: true });
+      }, 150);
+    });
+    return () => sub.remove();
+  }, []);
 
   useEffect(() => {
     loadPreferences();

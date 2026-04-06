@@ -9,13 +9,15 @@ import {
   Animated,
   ActivityIndicator,
   Platform,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  Image
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../lib/supabase';
-import ExperienceMappingService from '../lib/experienceMappingService';
+import huxleyService from '../lib/huxleyService';
+import FormattedText from '../components/FormattedText';
 
 const ExperienceMappingScreen = ({ navigation, route }) => {
   console.log('ExperienceMappingScreen route params:', route.params);
@@ -29,22 +31,12 @@ const ExperienceMappingScreen = ({ navigation, route }) => {
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [entities, setEntities] = useState([]);
+  const [sessionProgress, setSessionProgress] = useState(null);
+  const [showPaperReminder, setShowPaperReminder] = useState(true);
 
-  // Experience processing state (must be before early returns)
-  const [experienceData, setExperienceData] = useState({
-    associations: [],
-    dynamics: [],
-    integrations: [],
-    rituals: [],
-    currentPhase: 1
-  });
-  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
-  const [isReturningUser, setIsReturningUser] = useState(false);
-
-  // Refs (must be before early returns)
+  // Refs
   const scrollViewRef = useRef(null);
-  const experienceMapper = useRef(new ExperienceMappingService()).current;
+  const paperReminderOpacity = useRef(new Animated.Value(1)).current;
 
   // Auto-create session if none provided
   useEffect(() => {
@@ -59,6 +51,22 @@ const ExperienceMappingScreen = ({ navigation, route }) => {
       initializeConversation();
     }
   }, [session, creatingSession]);
+
+  const dismissPaperReminder = () => {
+    Animated.timing(paperReminderOpacity, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => setShowPaperReminder(false));
+  };
+
+  // Auto-dismiss paper reminder after 8 seconds
+  useEffect(() => {
+    if (showPaperReminder) {
+      const timer = setTimeout(dismissPaperReminder, 8000);
+      return () => clearTimeout(timer);
+    }
+  }, [showPaperReminder]);
 
   const createNewSession = async () => {
     try {
@@ -130,9 +138,6 @@ const ExperienceMappingScreen = ({ navigation, route }) => {
     try {
       const hasExistingMessages = await loadMessages();
 
-      // Check if user has done experience processing before
-      await checkUserHistory();
-
       if (!hasExistingMessages) {
         setTimeout(() => {
           initiateExperienceMapping();
@@ -140,27 +145,6 @@ const ExperienceMappingScreen = ({ navigation, route }) => {
       }
     } catch (error) {
       console.error('Error initializing conversation:', error);
-    }
-  };
-
-  const checkUserHistory = async () => {
-    try {
-      // Query for previous experience processing sessions
-      const { data, error } = await supabase
-        .from('sessions')
-        .select('id, session_data')
-        .eq('session_type', 'experience')
-        .not('session_data->experienceData', 'is', null)
-        .limit(1);
-
-      if (!error && data && data.length > 0) {
-        setIsReturningUser(true);
-        console.log('Returning user detected - will use shorter onboarding');
-      }
-    } catch (error) {
-      console.log('Could not check user history (offline?):', error);
-      // Assume new user if we can't check
-      setIsReturningUser(false);
     }
   };
 
@@ -172,30 +156,18 @@ const ExperienceMappingScreen = ({ navigation, route }) => {
         // Use session data passed from navigation
         const sessionData = session.session_data || {};
         const loadedMessages = sessionData.messages || [];
-        const loadedEntities = sessionData.entities || [];
-        const loadedExperienceData = sessionData.experienceData || {
-        associations: [],
-        dynamics: [],
-        integrations: [],
-        rituals: [],
-        currentPhase: 1
-        };
-        
+
         setMessages(loadedMessages);
-        setEntities(loadedEntities);
-        setExperienceData(loadedExperienceData);
-        
-        // Initialize service with context
-        experienceMapper.initializeSession({
-          sessionId: session.id,
-          messages: loadedMessages,
-          entities: loadedEntities,
-          experienceData: loadedExperienceData
-        });
-        
+
+        // Initialize mode handler with saved context
+        const handler = huxleyService.getModeHandler();
+        if (handler && handler.initializeWithContext) {
+          handler.initializeWithContext(sessionData.experienceData || {});
+        }
+
         return loadedMessages.length > 0;
       }
-      
+
       // Regular database session
       const { data, error } = await supabase
         .from('sessions')
@@ -207,36 +179,22 @@ const ExperienceMappingScreen = ({ navigation, route }) => {
 
       const sessionData = data?.session_data || {};
       const loadedMessages = sessionData.messages || [];
-      const loadedEntities = sessionData.entities || [];
-      const loadedExperienceData = sessionData.experienceData || {
-        associations: [],
-        dynamics: [],
-        integrations: [],
-        rituals: [],
-        currentPhase: 1
-      };
-      
+
       console.log('Loading experience mapping data:', {
       sessionId: session.id,
       messageCount: loadedMessages.length,
-      entityCount: loadedEntities.length,
-      currentPhase: loadedExperienceData.currentPhase
       });
-      
+
       setMessages(loadedMessages);
-      setEntities(loadedEntities);
-      setExperienceData(loadedExperienceData);
-      
-      // Initialize service with context
-      experienceMapper.initializeSession({
-        sessionId: session.id,
-        messages: loadedMessages,
-        entities: loadedEntities,
-        experienceData: loadedExperienceData
-      });
-      
+
+      // Initialize mode handler with saved context
+      const handler = huxleyService.getModeHandler();
+      if (handler && handler.initializeWithContext) {
+        handler.initializeWithContext(sessionData.experienceData || {});
+      }
+
       return loadedMessages.length > 0;
-      
+
     } catch (error) {
       console.error('Error loading messages:', error);
       return false;
@@ -247,8 +205,6 @@ const ExperienceMappingScreen = ({ navigation, route }) => {
     try {
       const sessionData = {
         messages: newMessages,
-        entities: entities,
-        experienceData: experienceData,
         sessionType: 'experience',
         conversationMode: 'experience_mapping',
         lastUpdated: new Date().toISOString(),
@@ -260,7 +216,7 @@ const ExperienceMappingScreen = ({ navigation, route }) => {
         try {
           const { error } = await supabase
             .from('sessions')
-            .update({ 
+            .update({
               session_data: sessionData
             })
             .eq('id', session.id);
@@ -292,7 +248,6 @@ const ExperienceMappingScreen = ({ navigation, route }) => {
       console.log('Saving session data locally:', {
         sessionId: session.id,
         messageCount: sessionData.messages.length,
-        entityCount: sessionData.entities?.length || 0
       });
       // TODO: Implement AsyncStorage.setItem(session.id, JSON.stringify(sessionData))
     } catch (error) {
@@ -301,31 +256,22 @@ const ExperienceMappingScreen = ({ navigation, route }) => {
   };
 
   const initiateExperienceMapping = () => {
-    let welcomeContent = '';
+    // Set Huxley to experience_mapping mode with a clean history
+    huxleyService.setMode('experience_mapping', { clearHistory: true });
 
-    if (isReturningUser) {
-      // Shorter welcome for returning users
-      welcomeContent = `Welcome back to **Experience Processing**!
-
-Ready to explore another journey? Let's dive right in.
-
-**What are the first images or experiences that come to mind from your recent journey?**`;
-    } else {
-      // Full welcome for new users
-      welcomeContent = `Welcome to **Experience Processing**!
+    const welcomeContent = `Welcome to **Experience Processing**!
 
 I'm here to help you systematically explore and document your psychedelic experience.
 
 **Before we begin:** Do you have paper and pen nearby? Writing things down helps anchor the memories.
 
 We'll work through 4 phases:
-📝 **Gathering Details** - Capturing symbols, sensations, emotions
-🔗 **Exploring Connections** - Mapping relationships
-💡 **Finding Meaning** - Life connections
-🎯 **Creating Practices** - Integration methods
+**Gathering Details** - Capturing symbols, sensations, emotions
+**Exploring Connections** - Mapping relationships
+**Finding Meaning** - Life connections
+**Creating Practices** - Integration methods
 
 **Let's start:** What are the first images or experiences that come to mind from your journey?`;
-    }
 
     const welcomeMessage = {
       role: 'assistant',
@@ -333,34 +279,21 @@ We'll work through 4 phases:
       timestamp: new Date(),
       currentPhase: 1,
       messageType: 'experience_mapping_intro',
-      isOnboarding: true,
-      systemContext: {
-        isReturningUser: isReturningUser,
-        onboardingMode: true
-      }
     };
 
     setMessages([welcomeMessage]);
-
-    // Initialize the experience mapper with onboarding context
-    experienceMapper.initializeSession({
-      sessionId: session.id,
-      messages: [welcomeMessage],
-      entities: [],
-      experienceData: experienceData,
-      isReturningUser: isReturningUser,
-      onboardingActive: true
-    });
   };
 
   const handleSendMessage = async () => {
     if (!userInput.trim() || isLoading) return;
 
+    const currentPhase = sessionProgress?.phase || 1;
+
     const userMessage = {
       role: 'user',
       content: userInput.trim(),
       timestamp: new Date(),
-      currentPhase: experienceData.currentPhase
+      currentPhase: currentPhase
     };
 
     const newMessages = [...messages, userMessage];
@@ -369,54 +302,32 @@ We'll work through 4 phases:
     setIsLoading(true);
 
     try {
-      // Get AI-powered experience mapping response
-      // The AI will handle onboarding responses naturally
-      const response = await experienceMapper.continueExperienceMapping(
-        userInput.trim(),
-        {
-          messages: newMessages,
-          entities: entities,
-          experienceData: experienceData,
-          isReturningUser: isReturningUser,
-          isOnboarding: messages.length <= 3 // First few exchanges might still be onboarding
-        }
-      );
+      const response = await huxleyService.chat(userInput.trim());
 
       const assistantMessage = {
         role: 'assistant',
         content: response.message,
         timestamp: new Date(),
-        entities: response.extractedEntities || [],
-        currentPhase: response.currentPhase,
-        experienceUpdate: response.experienceUpdate
+        currentPhase: response.sessionProgress?.phase || currentPhase,
       };
 
       const updatedMessages = [...newMessages, assistantMessage];
       setMessages(updatedMessages);
 
-      // Update entities if new ones were extracted
-      if (response.extractedEntities && response.extractedEntities.length > 0) {
-        const updatedEntities = [...entities, ...response.extractedEntities];
-        setEntities(updatedEntities);
-      }
-
-      // Update experience data if new information was gathered
-      if (response.experienceUpdate) {
-        setExperienceData(prev => ({
-          ...prev,
-          ...response.experienceUpdate
-        }));
+      // Update session progress from handler
+      if (response.sessionProgress) {
+        setSessionProgress(response.sessionProgress);
       }
 
       await saveMessages(updatedMessages);
 
     } catch (error) {
       console.error('Error sending message:', error);
-      
+
       // Enhanced error handling with network diagnostics
       let errorContent = "I'm here with you. Take a moment to breathe.";
       let showNetworkTest = false;
-      
+
       if (error.message && error.message.includes('Network request failed')) {
         errorContent = `I'm experiencing connectivity issues right now. This appears to be a network problem rather than anything you've done.
 
@@ -428,7 +339,7 @@ Would you like me to run a network diagnostic to help identify the issue?`;
 You can continue documenting your experience, and I'll be back online soon.`;
         showNetworkTest = true;
       }
-      
+
       const errorMessage = {
         role: 'assistant',
         content: errorContent,
@@ -436,97 +347,49 @@ You can continue documenting your experience, and I'll be back online soon.`;
         isError: true,
         showNetworkTest: showNetworkTest
       };
-      
+
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Dev helper: Jump to phase for testing
-  const jumpToPhase = (phaseNumber) => {
-    if (__DEV__) {  // Only in development mode
-      Alert.alert(
-        'Dev Mode: Jump to Phase',
-        `Jump to Phase ${phaseNumber}?`,
-        [
-          { text: 'Cancel', style: 'cancel' },
-          {
-            text: 'Jump',
-            onPress: () => {
-              setExperienceData(prev => ({
-                ...prev,
-                currentPhase: phaseNumber
-              }));
-              console.log(`🔧 DEV: Jumped to Phase ${phaseNumber}`);
-            }
-          }
-        ]
-      );
-    }
-  };
+  // (dismissPaperReminder moved up before early returns)
 
-  const renderProcessingProgress = () => {
-    const phases = [
-      { number: 1, name: 'Gathering', complete: experienceData.gatheredElements?.length > 0 },
-      { number: 2, name: 'Associations', complete: experienceData.associations?.length > 0 },
-      { number: 3, name: 'Connections', complete: experienceData.dynamics?.length > 0 },
-      { number: 4, name: 'Meaning', complete: experienceData.integrations?.length > 0 },
-      { number: 5, name: 'Practices', complete: experienceData.rituals?.length > 0 }
-    ];
+  const renderInlineProgress = () => {
+    const currentPhase = sessionProgress?.phase || 1;
+    const phaseNames = ['Gathering', 'Dynamics', 'Interpretation', 'Ritual'];
 
     return (
-      <View style={styles.progressContainer}>
-        <Text style={styles.progressTitle}>Experience Processing:</Text>
-        <View style={styles.phaseIndicators}>
-          {phases.map((phase) => (
-            <TouchableOpacity
-              key={phase.number}
-              style={styles.phaseIndicator}
-              onLongPress={() => jumpToPhase(phase.number)}
-              delayLongPress={1000}
-            >
+      <View style={styles.inlineProgress}>
+        {phaseNames.map((name, i) => {
+          const num = i + 1;
+          const isComplete = num < currentPhase;
+          const isCurrent = num === currentPhase;
+          return (
+            <React.Fragment key={num}>
+              {i > 0 && (
+                <View style={[
+                  styles.progressLine,
+                  isComplete && styles.progressLineComplete,
+                ]} />
+              )}
               <View style={[
-                styles.phaseCircle,
-                phase.complete && styles.phaseCircleComplete,
-                experienceData.currentPhase === phase.number && styles.phaseCircleCurrent
+                styles.progressDot,
+                isComplete && styles.progressDotComplete,
+                isCurrent && styles.progressDotCurrent,
               ]}>
                 <Text style={[
-                  styles.phaseNumber,
-                  phase.complete && styles.phaseNumberComplete
-                ]}>
-                  {phase.number}
-                </Text>
+                  styles.progressDotText,
+                  (isComplete || isCurrent) && styles.progressDotTextActive,
+                ]}>{num}</Text>
               </View>
-              <Text style={styles.phaseName}>{phase.name}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        {/* Phase Summary */}
-        <View style={styles.phaseSummary}>
-          <Text style={styles.phaseSummaryText}>
-            Current: Phase {experienceData.currentPhase} - {(() => {
-              switch(experienceData.currentPhase) {
-                case 1: return 'Gathering elements from your experience';
-                case 2: return 'Making associations to each element';
-                case 3: return 'Exploring connections and patterns';
-                case 4: return 'Finding meaning and life connections';
-                case 5: return 'Creating integration practices';
-                default: return 'Processing experience';
-              }
-            })()}
-          </Text>
-        </View>
-
-        {/* Phase 1 Paper Reminder */}
-        {experienceData.currentPhase === 1 && (
-          <View style={styles.paperReminder}>
-            <Text style={styles.paperReminderText}>
-              📝 Remember: Write each element on your paper as we talk
-            </Text>
-          </View>
-        )}
+            </React.Fragment>
+          );
+        })}
+        <Text style={styles.progressLabel}>
+          {phaseNames[currentPhase - 1] || 'Gathering'}
+        </Text>
       </View>
     );
   };
@@ -536,59 +399,47 @@ You can continue documenting your experience, and I'll be back online soon.`;
       <View
         key={index}
         style={[
-          styles.messageBubble,
-          message.role === 'user' ? styles.userBubble : styles.assistantBubble
+          styles.messageRow,
+          message.role === 'user' ? styles.userRow : styles.assistantRow
         ]}
       >
-        <Text style={[
+        {message.role === 'assistant' && (
+          <Image
+            source={require('../assets/images/huxley therapist.png')}
+            style={styles.huxleyAvatar}
+            resizeMode="contain"
+          />
+        )}
+        <View
+          style={[
+            styles.messageBubble,
+            message.role === 'user' ? styles.userBubble : styles.assistantBubble
+          ]}
+        >
+        <FormattedText style={[
           styles.messageText,
           message.role === 'user' ? styles.userText : styles.assistantText
         ]}>
           {message.content}
-        </Text>
-        
-        {/* Show current phase indicator */}
-        {message.currentPhase > 0 && (
-          <View style={styles.phaseStepIndicator}>
-            <Text style={styles.phaseStepText}>
-              Phase {message.currentPhase}: {(() => {
-                switch(message.currentPhase) {
-                  case 1: return 'Gathering Details';
-                  case 2: return 'Exploring Connections';
-                  case 3: return 'Finding Meaning';
-                  case 4: return 'Creating Practices';
-                  default: return 'Processing';
-                }
-              })()}
-            </Text>
-          </View>
-        )}
-        
-        {/* Show extracted entities - only in Phase 2+ */}
-        {message.entities && message.entities.length > 0 && experienceData.currentPhase >= 2 && (
-          <View style={styles.entitiesContainer}>
-            {message.entities.map((entity, entityIndex) => (
-              <View key={entityIndex} style={styles.entityChip}>
-                <Text style={styles.entityText}>{entity.name}</Text>
-              </View>
-            ))}
-          </View>
-        )}
-        
+        </FormattedText>
+
         {/* Show network test button for connectivity errors */}
         {message.showNetworkTest && (
           <TouchableOpacity
             style={styles.networkTestButton}
             onPress={() => navigation.navigate('NetworkTest')}
           >
-            <Text style={styles.networkTestButtonText}>🔍 Run Network Test</Text>
+            <Text style={styles.networkTestButtonText}>Run Network Test</Text>
           </TouchableOpacity>
         )}
+        </View>
       </View>
     ));
   };
 
   const renderInput = () => {
+    const currentPhase = sessionProgress?.phase || 1;
+
     return (
       <View style={styles.inputContainer}>
         <TextInput
@@ -596,7 +447,7 @@ You can continue documenting your experience, and I'll be back online soon.`;
           value={userInput}
           onChangeText={setUserInput}
           placeholder={(() => {
-            switch(experienceData.currentPhase) {
+            switch(currentPhase) {
               case 1: return "Share what you experienced - and write it down on your paper...";
               case 2: return "How did different elements relate to each other?";
               case 3: return "What meaning do these experiences hold for your life?";
@@ -628,46 +479,58 @@ You can continue documenting your experience, and I'll be back online soon.`;
 
   return (
     <LinearGradient colors={gradients.standard} start={{ x: 1.0, y: 0.0 }} end={{ x: 0.0, y: 1.0 }} style={{ flex: 1 }}>
-    <SafeAreaView style={[styles.container, { paddingBottom: insets.bottom }]} edges={['top', 'bottom']}>
-      {/* Header */}
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      {/* Header with inline progress */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Text style={styles.backText}>← Back</Text>
+        <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+          <Text style={styles.backText}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>Experience Processing</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('TherapeuticIntegration', { session })}>
-          <Text style={styles.switchText}>Switch to Integration →</Text>
+        {renderInlineProgress()}
+        <TouchableOpacity onPress={() => navigation.navigate('TherapeuticIntegration', { session })} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+          <Text style={styles.switchText}>Integration →</Text>
         </TouchableOpacity>
       </View>
-      
-      {/* Progress Indicator */}
-      {renderProcessingProgress()}
-      
+
       <ScrollView
         ref={scrollViewRef}
         style={styles.messagesContainer}
         contentContainerStyle={styles.messagesContent}
-        onContentSizeChange={() => 
+        onContentSizeChange={() =>
           scrollViewRef.current?.scrollToEnd({ animated: true })
         }
       >
         {renderMessages()}
-        
+
         {isLoading && (
           <View style={styles.typingIndicator}>
+            <Image
+              source={require('../assets/images/huxley therapist.png')}
+              style={styles.huxleyAvatar}
+              resizeMode="contain"
+            />
             <Text style={styles.typingText}>Processing your experience...</Text>
-            <ActivityIndicator size="small" color="#3b82f6" />
+            <ActivityIndicator size="small" color={colors.primary} />
           </View>
         )}
       </ScrollView>
 
       <KeyboardAvoidingView
-        behavior="padding"
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 20}
         style={{ flexShrink: 0 }}
       >
         {renderInput()}
       </KeyboardAvoidingView>
+
+      {/* Paper reminder toast */}
+      {showPaperReminder && (sessionProgress?.phase || 1) === 1 && (
+        <Animated.View style={[styles.paperToast, { opacity: paperReminderOpacity }]}>
+          <Text style={styles.paperToastText}>Have paper & pen nearby to anchor memories</Text>
+          <TouchableOpacity onPress={dismissPaperReminder} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+            <Text style={styles.paperToastDismiss}>✕</Text>
+          </TouchableOpacity>
+        </Animated.View>
+      )}
     </SafeAreaView>
     </LinearGradient>
   );
@@ -713,102 +576,96 @@ const styles = {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     backgroundColor: colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: '#e5e7eb',
   },
   backText: {
-    fontSize: 16,
-    color: colors.primary,
-  },
-  title: {
     fontSize: 18,
+    color: colors.primary,
     fontWeight: '600',
-    color: colors.text,
   },
   switchText: {
     fontSize: 12,
     color: '#10b981',
   },
-  progressContainer: {
-    backgroundColor: colors.surface,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
-  },
-  progressTitle: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: 8,
-  },
-  phaseIndicators: {
+  inlineProgress: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  phaseIndicator: {
     alignItems: 'center',
-    flex: 1,
+    gap: 0,
   },
-  phaseCircle: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+  progressDot: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
     backgroundColor: '#f3f4f6',
-    borderWidth: 2,
+    borderWidth: 1.5,
     borderColor: '#d1d5db',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 4,
   },
-  phaseCircleComplete: {
+  progressDotComplete: {
     backgroundColor: '#10b981',
     borderColor: '#10b981',
   },
-  phaseCircleCurrent: {
+  progressDotCurrent: {
     backgroundColor: colors.primary,
     borderColor: colors.primary,
   },
-  phaseNumber: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: colors.textSecondary,
-  },
-  phaseNumberComplete: {
-    color: colors.textInverse,
-  },
-  phaseName: {
-    fontSize: 10,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  phaseSummary: {
-    backgroundColor: '#f8fafc',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
-  },
-  phaseSummaryText: {
+  progressDotText: {
     fontSize: 11,
-    color: '#64748b',
-    textAlign: 'center',
+    fontWeight: 'bold',
+    color: '#9ca3af',
   },
-  paperReminder: {
+  progressDotTextActive: {
+    color: '#fff',
+  },
+  progressLine: {
+    width: 12,
+    height: 2,
+    backgroundColor: '#d1d5db',
+  },
+  progressLineComplete: {
+    backgroundColor: '#10b981',
+  },
+  progressLabel: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    marginLeft: 8,
+    fontWeight: '500',
+  },
+  paperToast: {
+    position: 'absolute',
+    bottom: 80,
+    left: 20,
+    right: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     backgroundColor: '#fef3c7',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
-    marginTop: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 10,
     borderLeftWidth: 3,
     borderLeftColor: '#f59e0b',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 4,
   },
-  paperReminderText: {
-    fontSize: 11,
+  paperToastText: {
+    fontSize: 13,
     color: '#92400e',
-    textAlign: 'center',
+    fontWeight: '500',
+    flex: 1,
+  },
+  paperToastDismiss: {
+    fontSize: 16,
+    color: '#92400e',
+    paddingLeft: 12,
     fontWeight: '600',
   },
   messagesContainer: {
@@ -818,20 +675,35 @@ const styles = {
     padding: 16,
     paddingBottom: 24,
   },
-  messageBubble: {
+  messageRow: {
+    flexDirection: 'row',
     marginVertical: 4,
+    alignItems: 'flex-end',
+  },
+  userRow: {
+    justifyContent: 'flex-end',
+  },
+  assistantRow: {
+    justifyContent: 'flex-start',
+  },
+  huxleyAvatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    marginRight: 8,
+    marginBottom: 2,
+  },
+  messageBubble: {
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 16,
-    maxWidth: '85%',
+    maxWidth: '80%',
   },
   userBubble: {
     backgroundColor: colors.primary,
-    alignSelf: 'flex-end',
   },
   assistantBubble: {
     backgroundColor: colors.surface,
-    alignSelf: 'flex-start',
     borderWidth: 1,
     borderColor: '#e5e7eb',
   },
@@ -844,35 +716,6 @@ const styles = {
   },
   assistantText: {
     color: colors.text,
-  },
-  phaseStepIndicator: {
-    marginTop: 8,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-    borderRadius: 8,
-  },
-  phaseStepText: {
-    fontSize: 11,
-    color: '#10b981',
-    fontWeight: '600',
-  },
-  entitiesContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 6,
-    marginTop: 8,
-  },
-  entityChip: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    backgroundColor: '#e0f2fe',
-    borderRadius: 12,
-  },
-  entityText: {
-    fontSize: 12,
-    color: '#0891b2',
-    fontWeight: '500',
   },
   typingIndicator: {
     flexDirection: 'row',

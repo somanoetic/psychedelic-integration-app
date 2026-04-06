@@ -1,0 +1,72 @@
+================================================================================
+TRANSCRIPT: Quinn — General Integration Chat
+Mode: general
+Description: User having a general conversation about their integration journey
+Turns: 8
+Phases seen: check_in
+Started: 2026-04-02T14:38:50.767Z
+================================================================================
+
+--- Turn 1 [phase: check_in] (4007ms) ---
+USER: Hi Huxley. I just need to talk through something. My integration journey feels stuck.
+
+HUXLEY: That makes sense to reach out when something feels stuck. I'm glad you're here.
+
+Can you tell me a little more about what "stuck" feels like for you right now? Is it more like a heaviness, a kind of spinning in place, or something else entirely?
+
+--- Turn 2 [phase: check_in] (4366ms) ---
+USER: It's been two months since my last ceremony and the initial glow has faded. I'm back in old patterns and it's discouraging.
+
+HUXLEY: Two months out, the glow fades, old patterns return. That's one of the most common and most discouraging parts of this work. You're not alone in it.
+
+What's the pattern that's bothering you most right now?
+
+--- Turn 3 [phase: check_in] (4335ms) ---
+USER: Like, during the experience I had this profound knowing that everything is connected and love is the foundation. Now it just feels like a nice memory.
+
+HUXLEY: Yeah. That gap between the knowing and the living it, that's the real work isn't it. The experience gave you a glimpse, but glimpses don't automatically rewire how we move through daily life.
+
+When you notice you're back in the old pattern, what's actually happening? What does the day look like?
+
+--- Turn 4 [phase: check_in] (4347ms) ---
+USER: I don't think there's one specific thing. It's more like the mundane pressures of life just slowly eroded the insights. Work stress, relationship stuff, the usual.
+
+HUXLEY: That erosion is so real. Life doesn't pause to let integration happen.
+
+I'm curious, when work stress or relationship stuff hits, where does that profound knowing go? Like, is it still somewhere in you, just harder to access? Or does it feel like it's actually gone?
+
+--- Turn 5 [phase: check_in] (6754ms) ---
+USER: Actually, I do still meditate most mornings. And I've been journaling more. I think the foundations are there, I just expected more dramatic change.
+
+HUXLEY: That's worth pausing on. You're meditating most mornings, journaling more. Those aren't small things. That is change.
+
+It sounds like part of you expected a transformation that looked a certain way, and because it doesn't look like that, it's hard to see what's actually happening. Does that land?
+
+--- Turn 6 [phase: check_in] (3811ms) ---
+USER: That's helpful to hear. Maybe I'm measuring integration wrong — looking for transformation when it's really about these small consistent practices.
+
+HUXLEY: Yes. And that shift you just made, from "I'm failing" to "maybe I'm measuring wrong," that's actually integration happening in real time.
+
+What would it feel like to trust the slow version of this?
+
+--- Turn 7 [phase: check_in] (3331ms) ---
+USER: You're right. I think I need to be more compassionate with myself about the pace of change. The ceremony planted seeds; I need to trust the growing.
+
+HUXLEY: That's a beautiful way to hold it. Seeds and growing.
+
+I want to gently name something I've noticed across our conversations. There's a part of you that expected dramatic transformation and gets discouraged when it doesn't show up. That part is still pretty active. Does that feel true?
+
+--- Turn 8 [phase: check_in] (3573ms) ---
+USER: Thank you. This conversation helped me shift from 'I'm failing at integration' to 'integration is happening, just not how I expected.' That's a big reframe.
+
+HUXLEY: It really is. And you did that, I just asked the questions.
+
+Before you go, what do you want to remember from this conversation? Something you can come back to when the discouragement creeps in again.
+
+--- THERAPEUTIC DATA (final state) ---
+Themes: ["integration plateau","fading insight","returning to old patterns","unmet expectations","discouragement","feeling stuck"]
+Parts: [{"name":"The Disappointed One","role":"exile","notes":"expected dramatic transformation, discouraged by the gap between insight and lived experience"}]
+NS State: ventral
+Exercise Rec: none
+
+================================================================================

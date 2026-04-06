@@ -1,0 +1,201 @@
+{
+  "persona": "Sam — Post-Ceremony Processing",
+  "mode": "journal",
+  "description": "User journaling about a difficult but transformative psilocybin ceremony",
+  "startedAt": "2026-04-02T14:38:16.778Z",
+  "turns": [
+    {
+      "turn": 1,
+      "user": "I want to write about my ceremony from Saturday. It was intense and I'm still processing.",
+      "huxley": "That sounds like it deserves real space and care. Take your time, and share whatever feels right to begin.\n\nWhat's the most present thing from Saturday - what keeps coming back to you?",
+      "phase": "journaling",
+      "mode": "journal",
+      "durationMs": 4099
+    },
+    {
+      "turn": 2,
+      "user": "It started beautiful — I saw these incredible geometric patterns and felt this deep sense of connection to everything. But then it shifted.",
+      "huxley": "That shift sounds significant. What happened when it changed?",
+      "phase": "journaling",
+      "mode": "journal",
+      "durationMs": 3933
+    },
+    {
+      "turn": 3,
+      "user": "I was taken to this memory of my mom leaving when I was seven. I felt the full weight of that abandonment for the first time as an adult.",
+      "huxley": "That's profound and tender - feeling something that old with fresh eyes and a grown heart.\n\nWhat was it like to be with that seven-year-old part of you?",
+      "phase": "journaling",
+      "mode": "journal",
+      "durationMs": 5100
+    },
+    {
+      "turn": 4,
+      "user": "I was crying a lot. The facilitator held space and I just let it move through me. It felt like grief I'd been carrying for twenty years.",
+      "huxley": "Twenty years of grief finally finding a way out. That takes real courage to let move through you.\n\nHow are you feeling now, a few days later?",
+      "phase": "journaling",
+      "mode": "journal",
+      "durationMs": 2538
+    },
+    {
+      "turn": 5,
+      "user": "I realized that so much of my people-pleasing comes from that moment. This belief that if I'm good enough, people won't leave me.",
+      "huxley": "That's a profound connection to make. That little seven-year-old found a way to try to stay safe.\n\nDoes that belief still feel true to you now, or does something feel different after Saturday?",
+      "phase": "journaling",
+      "mode": "journal",
+      "durationMs": 5429
+    },
+    {
+      "turn": 6,
+      "user": "The insight is clear in my head but I'm struggling to feel it in daily life. Like yesterday I caught myself over-apologizing to a coworker for no reason.",
+      "huxley": "That makes so much sense - the mind can see it before the body and nervous system catch up.\n\nWhat did you notice in yourself in that moment with your coworker?",
+      "phase": "journaling",
+      "mode": "journal",
+      "durationMs": 3289
+    },
+    {
+      "turn": 7,
+      "user": "I think what I need most right now is to be gentle with myself. The ceremony showed me these patterns but I don't have to fix everything overnight.",
+      "huxley": "That's real wisdom. The seeing is the first step, not the whole journey.\n\nWhat would being gentle with yourself look like today, in something small and concrete?",
+      "phase": "journaling",
+      "mode": "journal",
+      "durationMs": 2639
+    },
+    {
+      "turn": 8,
+      "user": "Thank you. Writing this out helps me see the thread more clearly. The abandonment, the people-pleasing, the over-apologizing — it's all connected.",
+      "huxley": "It really is all one thread. And you've been carrying it for a long time.\n\nYou've shared a lot today. Is there anything else wanting to come out, or does this feel like a natural place to rest?",
+      "phase": "journaling",
+      "mode": "journal",
+      "durationMs": 6951
+    }
+  ],
+  "phases": [
+    "journaling",
+    "journaling",
+    "journaling",
+    "journaling",
+    "journaling",
+    "journaling",
+    "journaling",
+    "journaling"
+  ],
+  "therapeuticData": [
+    {
+      "turn": 1,
+      "data": {
+        "themes": [
+          "psychedelic integration",
+          "ceremony processing"
+        ],
+        "parts": [],
+        "nervousSystemState": null,
+        "exerciseRecommendation": null,
+        "recommendationReason": null
+      }
+    },
+    {
+      "turn": 2,
+      "data": {
+        "themes": [
+          "psychedelic integration",
+          "ceremony processing",
+          "spirituality",
+          "connection"
+        ],
+        "parts": [],
+        "nervousSystemState": null,
+        "exerciseRecommendation": null,
+        "recommendationReason": null
+      }
+    },
+    {
+      "turn": 3,
+      "data": {
+        "themes": [
+          "psychedelic integration",
+          "ceremony processing",
+          "childhood wound",
+          "abandonment",
+          "mother wound",
+          "grief",
+          "parts work"
+        ],
+        "parts": [
+          {
+            "name": "Seven-year-old",
+            "role": "exile",
+            "notes": "Emerged during ceremony - carries abandonment wound from mother leaving at age 7. User felt the full weight of this for the first time as an adult."
+          }
+        ],
+        "nervousSystemState": "sympathetic",
+        "exerciseRecommendation": null,
+        "recommendationReason": null
+      }
+    },
+    {
+      "turn": 5,
+      "data": {
+        "themes": [
+          "psychedelic integration",
+          "ceremony processing",
+          "spirituality",
+          "connection",
+          "childhood wound",
+          "abandonment",
+          "mother wound",
+          "grief",
+          "parts work",
+          "people-pleasing",
+          "core beliefs"
+        ],
+        "parts": [
+          {
+            "name": "Seven-year-old",
+            "role": "exile",
+            "notes": "Carries abandonment wound from mother leaving at age 7. User felt full weight of this during ceremony. Connected to adult people-pleasing pattern - belief that being good enough prevents abandonment."
+          }
+        ],
+        "nervousSystemState": "sympathetic",
+        "exerciseRecommendation": null,
+        "recommendationReason": null
+      }
+    },
+    {
+      "turn": 8,
+      "data": {
+        "themes": [
+          "psychedelic integration",
+          "ceremony processing",
+          "spirituality",
+          "connection",
+          "childhood wound",
+          "abandonment",
+          "mother wound",
+          "grief",
+          "parts work",
+          "people-pleasing",
+          "core beliefs",
+          "self-compassion",
+          "work",
+          "insight"
+        ],
+        "parts": [
+          {
+            "name": "Seven-year-old",
+            "role": "exile",
+            "notes": "Carries abandonment wound from mother leaving at age 7. User felt full weight of this during ceremony. Connected to adult people-pleasing pattern - belief that being good enough prevents abandonment. Insight now clear cognitively but not yet embodied."
+          }
+        ],
+        "nervousSystemState": "ventral",
+        "exerciseRecommendation": "PI-004",
+        "recommendationReason": "User has clear insight from ceremony but struggling to embody it in daily life. Insight-to-Action Bridge could help translate the cognitive understanding into concrete behavioral shifts."
+      }
+    }
+  ],
+  "errors": [],
+  "completedAt": "2026-04-02T14:38:50.756Z",
+  "totalTurns": 8,
+  "uniquePhases": [
+    "journaling"
+  ]
+}

@@ -12,5 +12,14 @@
     "**/*.ts",
     "**/*.tsx",
     "types/**/*.d.ts"
+  ],
+  "exclude": [
+    "supabase/functions/**",
+    "components/ExternalLink.tsx",
+    "components/HapticTab.tsx",
+    "components/HelloWave.tsx",
+    "components/ParallaxScrollView.tsx",
+    "components/Collapsible.tsx",
+    "components/ui/**"
   ]
 }

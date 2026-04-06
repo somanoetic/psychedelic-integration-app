@@ -1,16 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   ScrollView,
   View,
   Text,
   TextInput,
   TouchableOpacity,
-  Alert
+  Alert,
+  Platform,
+  Keyboard,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../lib/supabase';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 import { LinearGradient } from 'expo-linear-gradient';
+import FormattedText from '../components/FormattedText';
 
 const SimpleEnhancedConversationScreen = ({ navigation, route }) => {
   console.log('SimpleEnhancedConversationScreen route params:', route.params);
@@ -37,6 +41,18 @@ const SimpleEnhancedConversationScreen = ({ navigation, route }) => {
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const scrollViewRef = useRef(null);
+
+  // Scroll to bottom when keyboard opens
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const sub = Keyboard.addListener(showEvent, () => {
+      setTimeout(() => {
+        scrollViewRef.current?.scrollToEnd({ animated: true });
+      }, 150);
+    });
+    return () => sub.remove();
+  }, []);
 
   useEffect(() => {
     loadMessages();
@@ -96,14 +112,23 @@ const SimpleEnhancedConversationScreen = ({ navigation, route }) => {
   return (
     <LinearGradient colors={gradients.standard} start={{ x: 1.0, y: 0.0 }} end={{ x: 0.0, y: 1.0 }} style={{ flex: 1 }}>
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+    >
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={styles.backText}>← Back</Text>
         </TouchableOpacity>
         <Text style={styles.title}>Integration Session (Simple)</Text>
       </View>
-      
-      <ScrollView style={styles.messagesContainer}>
+
+      <ScrollView
+        ref={scrollViewRef}
+        style={styles.messagesContainer}
+        onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
+      >
         {messages.map((message, index) => (
           <View
             key={index}
@@ -112,12 +137,12 @@ const SimpleEnhancedConversationScreen = ({ navigation, route }) => {
               message.role === 'user' ? styles.userBubble : styles.assistantBubble
             ]}
           >
-            <Text style={[
+            <FormattedText style={[
               styles.messageText,
               message.role === 'user' ? styles.userText : styles.assistantText
             ]}>
               {message.content}
-            </Text>
+            </FormattedText>
           </View>
         ))}
       </ScrollView>
@@ -139,6 +164,7 @@ const SimpleEnhancedConversationScreen = ({ navigation, route }) => {
           <Text style={styles.sendButtonText}>Send</Text>
         </TouchableOpacity>
       </View>
+    </KeyboardAvoidingView>
     </SafeAreaView>
     </LinearGradient>
   );

@@ -43,8 +43,7 @@ export default {
         "projectId": "51f2a410-267f-47c9-a2c8-f77b168d782c"
       },
       "supabaseUrl": process.env.SUPABASE_URL || '',
-      "supabaseAnonKey": process.env.SUPABASE_ANON_KEY || '',
-      "anthropicApiKey": process.env.ANTHROPIC_API_KEY || ''
+      "supabaseAnonKey": process.env.SUPABASE_ANON_KEY || ''
     },
     "owner": "alleviationtherapeutics",
     "updates": {

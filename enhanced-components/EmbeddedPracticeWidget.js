@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  View, 
-  Text, 
-  TouchableOpacity, 
+import {
+  View,
+  Text,
+  TouchableOpacity,
   TextInput,
   Animated,
   Dimensions,
@@ -10,12 +10,14 @@ import {
   ActivityIndicator,
   ScrollView
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { colors } from '../theme/colors';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const EmbeddedPracticeWidget = ({ practice, nervousSystemState, onComplete, onSkip }) => {
+  const insets = useSafeAreaInsets();
   const [currentStep, setCurrentStep] = useState(0);
   const [isActive, setIsActive] = useState(false);
   const [startTime, setStartTime] = useState(null);
@@ -524,7 +526,7 @@ const EmbeddedPracticeWidget = ({ practice, nervousSystemState, onComplete, onSk
           </ScrollView>
 
           {/* Footer */}
-          <View style={styles.footer}>
+          <View style={[styles.footer, { paddingBottom: 20 + insets.bottom }]}>
             {!isActive && practice.type !== 'polyvagal_assessment' ? (
               <TouchableOpacity style={styles.startButton} onPress={handleStart}>
                 <Text style={styles.buttonEmoji}>▶️</Text>

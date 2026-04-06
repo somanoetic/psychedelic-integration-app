@@ -16,9 +16,11 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { MaterialIcons } from '@expo/vector-icons';
 import Slider from '@react-native-community/slider';
 import { supabase } from '../lib/supabase';
-import coreBeliefsAIService from '../lib/coreBeliefsAIService';
+import huxleyService from '../lib/huxleyService';
 import { coreBeliefsDomains, coreBeliefQuestions } from '../data/coreBeliefQuestions';
 import { colors } from '../theme/colors';
+import ShareWithTherapistButton from './ShareWithTherapistButton';
+import { shareCoreBeliefs } from '../lib/therapistShareService';
 
 /**
  * Core Beliefs Assessment Component
@@ -154,11 +156,39 @@ const CoreBeliefsAssessment = ({ user: userProp, onComplete, navigation }) => {
   const startDiscussion = async () => {
     setPhase('discussion');
 
-    // Initialize AI service with results
-    await coreBeliefsAIService.initialize(domainScores);
+    // Initialize Huxley in core_beliefs mode with assessment scores
+    huxleyService.setMode('core_beliefs', { clearHistory: true });
 
-    // Prepare results summary
-    const resultsSummary = await coreBeliefsAIService.initialize(domainScores);
+    // Pass assessment scores to the mode handler
+    const handler = huxleyService.getModeHandler();
+    if (handler?.setAssessmentScores) {
+      handler.setAssessmentScores(domainScores);
+    }
+
+    // Prepare results summary locally
+    const domainNames = {
+      value_worthiness: { name: 'Value & Worthiness', statement: 'I am worthy' },
+      security_safety: { name: 'Security & Safety', statement: 'I am safe' },
+      performance_competence: { name: 'Performance & Competence', statement: 'I am competent' },
+      control_power: { name: 'Control & Power', statement: 'I am powerful' },
+      love_nurturance: { name: 'Love & Nurturance', statement: 'I am loved' },
+      autonomy_independence: { name: 'Autonomy & Independence', statement: 'I am autonomous' },
+      justice_fairness: { name: 'Justice & Fairness', statement: 'I am treated justly' },
+      belonging_connection: { name: 'Belonging & Connection', statement: 'I belong' },
+      others_trust: { name: 'Trust in Others', statement: 'People are good' },
+      standards_compassion: { name: 'Standards & Self-Compassion', statement: 'My standards are reasonable' }
+    };
+    const scores = {};
+    Object.keys(domainNames).forEach(key => { scores[domainNames[key].name] = domainScores[key] || 0; });
+    const sortedDomains = Object.entries(scores)
+      .map(([domain, score]) => ({ domain, score, statement: Object.values(domainNames).find(d => d.name === domain).statement }))
+      .sort((a, b) => a.score - b.score);
+    const resultsSummary = {
+      scores,
+      lowestDomains: sortedDomains.slice(0, 3),
+      highestDomains: sortedDomains.slice(-3).reverse(),
+      averageScore: Object.values(scores).reduce((a, b) => a + b, 0) / Object.values(scores).length
+    };
 
     const openingMessage = {
       id: Date.now(),
@@ -185,7 +215,8 @@ const CoreBeliefsAssessment = ({ user: userProp, onComplete, navigation }) => {
     setLoading(true);
 
     try {
-      const response = await coreBeliefsAIService.sendMessage(inputText.trim());
+      // Handler injects scores and phase context automatically
+      const response = await huxleyService.chat(inputText.trim());
 
       const aiMessage = {
         id: Date.now() + 1,
@@ -210,7 +241,7 @@ const CoreBeliefsAssessment = ({ user: userProp, onComplete, navigation }) => {
     setSaving(true);
 
     try {
-      const conversationHistory = coreBeliefsAIService.getConversationHistory();
+      const conversationHistory = huxleyService.getConversationHistory();
 
       // Update assessment with discussion
       const { error } = await supabase
@@ -494,6 +525,10 @@ const CoreBeliefsAssessment = ({ user: userProp, onComplete, navigation }) => {
       <Text style={styles.completeText}>
         Your core beliefs assessment has been saved. You can revisit these results anytime and track how your beliefs evolve over time.
       </Text>
+      <ShareWithTherapistButton
+        onShare={() => shareCoreBeliefs({ ...domainScores, created_at: new Date().toISOString() })}
+        style={{ marginTop: 20, alignSelf: 'stretch' }}
+      />
     </View>
   );
 
@@ -508,6 +543,16 @@ const CoreBeliefsAssessment = ({ user: userProp, onComplete, navigation }) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <View style={styles.topHeader}>
+        <TouchableOpacity
+          onPress={() => navigation?.goBack()}
+          style={styles.backButton}
+        >
+          <MaterialIcons name="arrow-back" size={24} color="#374151" />
+        </TouchableOpacity>
+        <Text style={styles.topHeaderTitle}>Core Beliefs</Text>
+        <View style={{ width: 40 }} />
+      </View>
       {phase === 'intro' && renderIntro()}
       {phase === 'questionnaire' && renderQuestionnaire()}
       {phase === 'results' && renderResults()}
@@ -521,6 +566,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f9fafb'
+  },
+  topHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+  },
+  backButton: {
+    padding: 4,
+  },
+  topHeaderTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1f2937',
   },
   content: {
     flex: 1,

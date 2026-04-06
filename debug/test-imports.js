@@ -2,9 +2,9 @@
 try {
   console.log('Testing imports...');
   
-  // Test enhanced Claude service
-  const IntegrationGuideService = require('../lib/enhancedClaudeService');
-  console.log('✅ enhancedClaudeService imported successfully');
+  // Test unified huxley service
+  const huxleyService = require('../lib/huxleyService');
+  console.log('✅ huxleyService imported successfully');
   
   // Test components
   const EmbeddedPracticeWidget = require('../components/EmbeddedPracticeWidget');

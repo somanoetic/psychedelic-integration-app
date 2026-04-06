@@ -12,7 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
-import { gradients } from '../theme/colors';
+import { colors, gradients } from '../theme/colors';
 import metricsService from '../lib/metricsService';
 import userRoleService from '../lib/userRoleService';
 
@@ -23,14 +23,6 @@ import CostSummaryCard from '../components/metrics/CostSummaryCard';
 import ErrorSummaryCard from '../components/metrics/ErrorSummaryCard';
 import RoutingEffectivenessCard from '../components/metrics/RoutingEffectivenessCard';
 
-const NOESIS_COLORS = {
-  background: '#1a1a2e',
-  card: '#252542',
-  text: '#f4f1de',
-  textSecondary: '#a0a0a0',
-  primary: '#9d84b7',
-  error: '#c17b7b',
-};
 
 const REFRESH_INTERVAL = 30000; // 30 seconds
 
@@ -159,7 +151,7 @@ const AdminMetricsDashboard = ({ navigation }) => {
       >
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={NOESIS_COLORS.primary} />
+          <ActivityIndicator size="large" color={colors.primary} />
           <Text style={styles.loadingText}>Loading metrics...</Text>
         </View>
       </SafeAreaView>
@@ -177,7 +169,7 @@ const AdminMetricsDashboard = ({ navigation }) => {
       >
       <SafeAreaView style={styles.container}>
         <View style={styles.errorContainer}>
-          <MaterialIcons name="error-outline" size={48} color={NOESIS_COLORS.error} />
+          <MaterialIcons name="error-outline" size={48} color={colors.error} />
           <Text style={styles.errorText}>{error}</Text>
           <TouchableOpacity style={styles.retryButton} onPress={loadData}>
             <Text style={styles.retryButtonText}>Retry</Text>
@@ -201,7 +193,7 @@ const AdminMetricsDashboard = ({ navigation }) => {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <MaterialIcons name="arrow-back" size={24} color={NOESIS_COLORS.text} />
+          <MaterialIcons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>AI Metrics Dashboard</Text>
         <View style={styles.headerSpacer} />
@@ -223,7 +215,7 @@ const AdminMetricsDashboard = ({ navigation }) => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={NOESIS_COLORS.primary}
+            tintColor={colors.primary}
           />
         }
       >
@@ -280,7 +272,7 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   headerTitle: {
-    color: NOESIS_COLORS.text,
+    color: colors.text,
     fontSize: 20,
     fontWeight: 'bold',
   },
@@ -293,7 +285,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   lastUpdatedText: {
-    color: NOESIS_COLORS.textSecondary,
+    color: colors.textSecondary,
     fontSize: 12,
     fontStyle: 'italic',
   },
@@ -304,7 +296,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   sectionTitle: {
-    color: NOESIS_COLORS.text,
+    color: colors.text,
     fontSize: 20,
     fontWeight: 'bold',
     marginTop: 8,
@@ -316,7 +308,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loadingText: {
-    color: NOESIS_COLORS.textSecondary,
+    color: colors.textSecondary,
     fontSize: 16,
     marginTop: 16,
   },
@@ -327,32 +319,32 @@ const styles = StyleSheet.create({
     padding: 32,
   },
   errorText: {
-    color: NOESIS_COLORS.error,
+    color: colors.error,
     fontSize: 16,
     textAlign: 'center',
     marginTop: 16,
     marginBottom: 24,
   },
   retryButton: {
-    backgroundColor: NOESIS_COLORS.primary,
+    backgroundColor: colors.primary,
     paddingVertical: 12,
     paddingHorizontal: 32,
     borderRadius: 8,
   },
   retryButtonText: {
-    color: NOESIS_COLORS.text,
+    color: colors.text,
     fontSize: 16,
     fontWeight: '600',
   },
   noDataContainer: {
-    backgroundColor: NOESIS_COLORS.card,
+    backgroundColor: colors.surface,
     borderRadius: 12,
     padding: 24,
     alignItems: 'center',
     marginBottom: 16,
   },
   noDataText: {
-    color: NOESIS_COLORS.textSecondary,
+    color: colors.textSecondary,
     fontSize: 14,
     fontStyle: 'italic',
   },

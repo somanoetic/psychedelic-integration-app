@@ -150,7 +150,7 @@ const SessionPreparationScreen = ({ navigation, route }) => {
     {
       id: 'overview',
       title: 'Session Overview',
-      emoji: '🌟',
+      emoji: '🧭',
       description: 'Prepare for this specific session',
       estimatedTime: '2 min'
     },
@@ -293,48 +293,50 @@ const SessionPreparationScreen = ({ navigation, route }) => {
   };
 
   const renderOverview = () => (
-    <ScrollView style={styles.sectionContainer}>
-      <LinearGradient
-        colors={gradients.warm}
-        start={{ x: 1.0, y: 0.0 }}
-        end={{ x: 0.0, y: 1.0 }}
-        style={styles.headerGradient}
+    <LinearGradient
+      colors={gradients.standard}
+      start={gradients.standardStart}
+      end={gradients.standardEnd}
+      style={styles.gradientFill}
+    >
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
       >
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <MaterialIcons name="arrow-back" size={24} color="#ffffff" />
-        </TouchableOpacity>
-        <Text style={styles.heroTitle}>Session Preparation</Text>
-        <Text style={styles.heroSubtitle}>
-          Prepare your mind, body, and spirit for this healing journey
-        </Text>
-      </LinearGradient>
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.navBackButton}
+            onPress={() => navigation.goBack()}
+          >
+            <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+          </TouchableOpacity>
+        </View>
 
-      <View style={styles.contentPadding}>
-        <Text style={styles.sectionTitle}>🎯 Today's Session</Text>
-        <Text style={styles.bodyText}>
-          Each session is a unique opportunity for healing and growth. This preparation 
-          helps you create the right mindset and gather what you need for a safe and meaningful experience.
-        </Text>
+        {/* Hero */}
+        <View style={styles.hero}>
+          <Text style={styles.heroEmoji}>🧭</Text>
+          <Text style={styles.heroTitle}>Session Preparation</Text>
+          <Text style={styles.heroSubtitle}>
+            Prepare your mind, body, and spirit for this healing journey.
+          </Text>
+        </View>
 
+        {/* Session Info */}
         <View style={styles.sessionInfoBox}>
-          <Text style={styles.sessionInfoTitle}>Session Information</Text>
+          <Text style={styles.sessionInfoTitle}>Today's Session</Text>
           <Text style={styles.sessionInfoText}>Date: {sessionData?.journey_date || 'Today'}</Text>
           <Text style={styles.sessionInfoText}>Type: {sessionData?.sessionType || 'Treatment Session'}</Text>
           <Text style={styles.sessionInfoText}>Title: {sessionData?.title || 'Healing Session'}</Text>
         </View>
 
-        <View style={styles.preparationFlow}>
-          <Text style={styles.flowTitle}>📋 Preparation Steps</Text>
-          {preparationSections.slice(1).map((section, index) => (
+        {/* Preparation Steps */}
+        <View style={styles.optionsContainer}>
+          {preparationSections.slice(1).map((section) => (
             <TouchableOpacity
               key={section.id}
-              style={[
-                styles.flowItem,
-                completedSections.includes(section.id) && styles.completedFlowItem
-              ]}
+              style={styles.optionCard}
               onPress={() => {
                 if (section.id === 'session_day_prep') {
                   navigation.navigate('SessionChecklist', {
@@ -346,40 +348,41 @@ const SessionPreparationScreen = ({ navigation, route }) => {
                   setCurrentSection(section.id);
                 }
               }}
+              activeOpacity={0.7}
             >
-              <View style={styles.flowItemLeft}>
-                <Text style={styles.flowEmoji}>{section.emoji}</Text>
-                <View style={styles.flowItemText}>
-                  <Text style={styles.flowItemTitle}>{section.title}</Text>
-                  <Text style={styles.flowItemDescription}>{section.description}</Text>
-                  <Text style={styles.flowItemTime}>{section.estimatedTime}</Text>
+              <View style={styles.optionLeft}>
+                <Text style={styles.optionEmoji}>{section.emoji}</Text>
+                <View style={styles.optionText}>
+                  <Text style={styles.optionTitle}>{section.title}</Text>
+                  <Text style={styles.optionDescription}>{section.description}</Text>
+                  <Text style={styles.optionTime}>⏱️ {section.estimatedTime}</Text>
                 </View>
               </View>
-              <View style={styles.flowItemRight}>
-                {completedSections.includes(section.id) ? (
-                  <MaterialIcons name="check-circle" size={24} color="#10b981" />
-                ) : (
-                  <MaterialIcons name="arrow-forward-ios" size={16} color="#9ca3af" />
-                )}
-              </View>
+              {completedSections.includes(section.id) ? (
+                <MaterialIcons name="check-circle" size={24} color={colors.success} />
+              ) : (
+                <MaterialIcons name="chevron-right" size={24} color={colors.textSecondary} />
+              )}
             </TouchableOpacity>
           ))}
         </View>
 
+        {/* Progress */}
         <View style={styles.progressBox}>
           <Text style={styles.progressTitle}>
             Progress: {completedSections.length}/{preparationSections.length - 1} Complete
           </Text>
           <View style={styles.progressBar}>
-            <View 
+            <View
               style={[
-                styles.progressFill, 
+                styles.progressFill,
                 { width: `${(completedSections.length / (preparationSections.length - 1)) * 100}%` }
-              ]} 
+              ]}
             />
           </View>
         </View>
 
+        {/* Start / Complete Buttons */}
         <TouchableOpacity
           style={styles.startButton}
           onPress={() => setCurrentSection('intention_setting')}
@@ -396,12 +399,12 @@ const SessionPreparationScreen = ({ navigation, route }) => {
                 'Preparation Complete!',
                 'You\'re ready for your session. Remember: Trust. Let go. Be open.',
                 [
-                  { 
-                    text: 'Start Session Tools', 
+                  {
+                    text: 'Start Session Tools',
                     onPress: () => navigation.navigate('SessionTools', { sessionId })
                   },
-                  { 
-                    text: 'Return to Session', 
+                  {
+                    text: 'Return to Session',
                     onPress: () => navigation.goBack()
                   }
                 ]
@@ -411,21 +414,44 @@ const SessionPreparationScreen = ({ navigation, route }) => {
             <Text style={styles.completeButtonText}>Ready for Session ✨</Text>
           </TouchableOpacity>
         )}
-      </View>
-    </ScrollView>
+
+        {/* Tip */}
+        <View style={styles.tipBox}>
+          <Text style={styles.tipTitle}>💡 Preparation Tip</Text>
+          <Text style={styles.tipText}>
+            Each session is a unique opportunity for healing and growth. Take your time with each step.
+          </Text>
+        </View>
+      </ScrollView>
+    </LinearGradient>
   );
 
   const renderLearningModules = () => (
-    <ScrollView style={styles.sectionContainer}>
-      <LinearGradient colors={gradients.warm} start={{ x: 1.0, y: 0.0 }} end={{ x: 0.0, y: 1.0 }} style={styles.headerGradient}>
-        <Text style={styles.heroTitle}>📚 Quick Learning Refresher</Text>
-        <Text style={styles.heroSubtitle}>
-          Review foundational concepts before your session
-        </Text>
-      </LinearGradient>
+    <LinearGradient
+      colors={gradients.standard}
+      start={gradients.standardStart}
+      end={gradients.standardEnd}
+      style={styles.gradientFill}
+    >
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.navBackButton} onPress={() => setCurrentSection('overview')}>
+            <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+          </TouchableOpacity>
+        </View>
 
-      <View style={styles.contentPadding}>
-        <Text style={styles.sectionTitle}>Foundation Review</Text>
+        <View style={styles.hero}>
+          <Text style={styles.heroEmoji}>📚</Text>
+          <Text style={styles.heroTitle}>Quick Learning Refresher</Text>
+          <Text style={styles.heroSubtitle}>
+            Review foundational concepts before your session
+          </Text>
+        </View>
+
         <Text style={styles.bodyText}>
           These quick modules refresh your understanding of nervous system states,
           internal parts work, and grounding techniques. Take what you need!
@@ -478,7 +504,7 @@ const SessionPreparationScreen = ({ navigation, route }) => {
               }}
             >
               <Text style={styles.moduleButtonText}>Review Module</Text>
-              <MaterialIcons name="arrow-forward" size={16} color="#ffffff" />
+              <MaterialIcons name="arrow-forward" size={16} color={colors.white} />
             </TouchableOpacity>
           </View>
         ))}
@@ -507,21 +533,36 @@ const SessionPreparationScreen = ({ navigation, route }) => {
         >
           <Text style={styles.backButtonText}>← Back to Overview</Text>
         </TouchableOpacity>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </LinearGradient>
   );
 
   const renderBeliefAssessments = () => (
-    <ScrollView style={styles.sectionContainer}>
-      <LinearGradient colors={[colors.primary, colors.primaryLight]} style={styles.headerGradient}>
-        <Text style={styles.heroTitle}>🔍 Belief Assessments</Text>
-        <Text style={styles.heroSubtitle}>
-          Understand your beliefs before your journey
-        </Text>
-      </LinearGradient>
+    <LinearGradient
+      colors={gradients.standard}
+      start={gradients.standardStart}
+      end={gradients.standardEnd}
+      style={styles.gradientFill}
+    >
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.navBackButton} onPress={() => setCurrentSection('overview')}>
+            <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+          </TouchableOpacity>
+        </View>
 
-      <View style={styles.contentPadding}>
-        <Text style={styles.sectionTitle}>Pre-Journey Assessment</Text>
+        <View style={styles.hero}>
+          <Text style={styles.heroEmoji}>🔍</Text>
+          <Text style={styles.heroTitle}>Belief Assessments</Text>
+          <Text style={styles.heroSubtitle}>
+            Understand your beliefs before your journey
+          </Text>
+        </View>
+
         <Text style={styles.bodyText}>
           These assessments help establish a baseline understanding of your beliefs,
           attachment patterns, and self-perception. You'll retake them after your
@@ -603,21 +644,37 @@ const SessionPreparationScreen = ({ navigation, route }) => {
         >
           <Text style={styles.backButtonText}>← Back to Overview</Text>
         </TouchableOpacity>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </LinearGradient>
   );
 
   const renderPhilosophicalExplorations = () => (
-    <ScrollView style={styles.sectionContainer}>
-      <LinearGradient colors={['#10b981', '#059669']} style={styles.headerGradient}>
-        <Text style={styles.heroTitle}>🤔 Philosophical Explorations</Text>
-        <Text style={styles.heroSubtitle}>
-          Contemplate the nature of self and identity
-        </Text>
-      </LinearGradient>
+    <LinearGradient
+      colors={gradients.standard}
+      start={gradients.standardStart}
+      end={gradients.standardEnd}
+      style={styles.gradientFill}
+    >
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.navBackButton} onPress={() => setCurrentSection('belief_assessments')}>
+            <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+          </TouchableOpacity>
+        </View>
 
-      <View style={styles.contentPadding}>
-        <Text style={styles.sectionTitle}>Preparing for Ego Dissolution</Text>
+        <View style={styles.hero}>
+          <Text style={styles.heroEmoji}>🤔</Text>
+          <Text style={styles.heroTitle}>Philosophical Explorations</Text>
+          <Text style={styles.heroSubtitle}>
+            Contemplate the nature of self and identity
+          </Text>
+        </View>
+
+        <Text style={[styles.bodyText, { fontWeight: '600', fontSize: 18 }]}>Preparing for Ego Dissolution</Text>
         <Text style={styles.bodyText}>
           Psychedelic experiences often challenge our fundamental sense of self. These
           thought experiments help prepare your mind for these profound shifts in identity
@@ -722,22 +779,35 @@ const SessionPreparationScreen = ({ navigation, route }) => {
         >
           <Text style={styles.backButtonText}>← Back to Assessments</Text>
         </TouchableOpacity>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </LinearGradient>
   );
 
   // Render based on current section
   const renderIntentionSetting = () => (
-    <ScrollView style={styles.sectionContainer}>
-      <LinearGradient colors={gradients.warm} start={{ x: 1.0, y: 0.0 }} end={{ x: 0.0, y: 1.0 }} style={styles.headerGradient}>
-        <TouchableOpacity style={styles.backButton} onPress={() => setCurrentSection('overview')}>
-          <MaterialIcons name="arrow-back" size={24} color={colors.white} />
-        </TouchableOpacity>
-        <Text style={styles.heroTitle}>🎯 Set Your Intention</Text>
-        <Text style={styles.heroSubtitle}>What do you hope to explore or heal?</Text>
-      </LinearGradient>
+    <LinearGradient
+      colors={gradients.standard}
+      start={gradients.standardStart}
+      end={gradients.standardEnd}
+      style={styles.gradientFill}
+    >
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.navBackButton} onPress={() => setCurrentSection('overview')}>
+            <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+          </TouchableOpacity>
+        </View>
 
-      <View style={styles.contentPadding}>
+        <View style={styles.hero}>
+          <Text style={styles.heroEmoji}>🎯</Text>
+          <Text style={styles.heroTitle}>Set Your Intention</Text>
+          <Text style={styles.heroSubtitle}>What do you hope to explore or heal?</Text>
+        </View>
+
         <Text style={styles.bodyText}>
           Your intention guides your journey. It doesn't need to be perfect - just honest and from your heart.
         </Text>
@@ -776,21 +846,34 @@ const SessionPreparationScreen = ({ navigation, route }) => {
         >
           <Text style={styles.primaryButtonText}>Save Intention</Text>
         </TouchableOpacity>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </LinearGradient>
   );
 
   const renderNervousSystemCheckin = () => (
-    <ScrollView style={styles.sectionContainer}>
-      <LinearGradient colors={gradients.earth} style={styles.headerGradient}>
-        <TouchableOpacity style={styles.backButton} onPress={() => setCurrentSection('overview')}>
-          <MaterialIcons name="arrow-back" size={24} color={colors.white} />
-        </TouchableOpacity>
-        <Text style={styles.heroTitle}>🧠 Nervous System Check-in</Text>
-        <Text style={styles.heroSubtitle}>How is your nervous system feeling right now?</Text>
-      </LinearGradient>
+    <LinearGradient
+      colors={gradients.standard}
+      start={gradients.standardStart}
+      end={gradients.standardEnd}
+      style={styles.gradientFill}
+    >
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.navBackButton} onPress={() => setCurrentSection('overview')}>
+            <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+          </TouchableOpacity>
+        </View>
 
-      <View style={styles.contentPadding}>
+        <View style={styles.hero}>
+          <Text style={styles.heroEmoji}>🧠</Text>
+          <Text style={styles.heroTitle}>Nervous System Check-in</Text>
+          <Text style={styles.heroSubtitle}>How is your nervous system feeling right now?</Text>
+        </View>
+
         <Text style={styles.bodyText}>
           Notice your current state without judgment. This awareness helps you prepare appropriately.
         </Text>
@@ -816,21 +899,34 @@ const SessionPreparationScreen = ({ navigation, route }) => {
         >
           <Text style={styles.primaryButtonText}>Save Check-in</Text>
         </TouchableOpacity>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </LinearGradient>
   );
 
   const renderPartsCheckin = () => (
-    <ScrollView style={styles.sectionContainer}>
-      <LinearGradient colors={gradients.calm} style={styles.headerGradient}>
-        <TouchableOpacity style={styles.backButton} onPress={() => setCurrentSection('overview')}>
-          <MaterialIcons name="arrow-back" size={24} color={colors.white} />
-        </TouchableOpacity>
-        <Text style={styles.heroTitle}>💭 Parts Check-in</Text>
-        <Text style={styles.heroSubtitle}>Which parts of you are present today?</Text>
-      </LinearGradient>
+    <LinearGradient
+      colors={gradients.standard}
+      start={gradients.standardStart}
+      end={gradients.standardEnd}
+      style={styles.gradientFill}
+    >
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.navBackButton} onPress={() => setCurrentSection('overview')}>
+            <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+          </TouchableOpacity>
+        </View>
 
-      <View style={styles.contentPadding}>
+        <View style={styles.hero}>
+          <Text style={styles.heroEmoji}>👥</Text>
+          <Text style={styles.heroTitle}>Parts Check-in</Text>
+          <Text style={styles.heroSubtitle}>Which parts of you are present today?</Text>
+        </View>
+
         <Text style={styles.bodyText}>
           Notice any parts that feel activated - worried, excited, protective, or curious parts.
         </Text>
@@ -856,8 +952,8 @@ const SessionPreparationScreen = ({ navigation, route }) => {
         >
           <Text style={styles.primaryButtonText}>Save Check-in</Text>
         </TouchableOpacity>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </LinearGradient>
   );
 
   const renderCurrentSection = () => {
@@ -879,10 +975,8 @@ const SessionPreparationScreen = ({ navigation, route }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       {renderCurrentSection()}
-
-      {/* Modal will be added in next part */}
     </SafeAreaView>
   );
 };
@@ -890,379 +984,423 @@ const SessionPreparationScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
-  sectionContainer: {
+  gradientFill: {
     flex: 1,
   },
-  headerGradient: {
-    paddingHorizontal: 24,
-    paddingVertical: 48,
-    paddingTop: 60,
+  scrollView: {
+    flex: 1,
   },
-  backButton: {
-    marginBottom: 16,
+  scrollContent: {
+    padding: spacing.lg,
+    paddingBottom: 80,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.md,
+  },
+  navBackButton: {
+    padding: spacing.sm,
+    borderRadius: borderRadius.sm,
+    minWidth: 44,
+    minHeight: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  hero: {
+    alignItems: 'center',
+    marginBottom: spacing.xl,
+  },
+  heroEmoji: {
+    fontSize: 56,
+    marginBottom: spacing.md,
   },
   heroTitle: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#ffffff',
+    fontSize: 28,
+    fontWeight: '700',
+    color: colors.text,
+    marginBottom: spacing.sm,
     textAlign: 'center',
-    marginBottom: 12,
   },
   heroSubtitle: {
     fontSize: 16,
-    color: '#e0e7ff',
+    color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 24,
-  },
-  contentPadding: {
-    padding: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1f2937',
-    marginBottom: 16,
+    paddingHorizontal: spacing.md,
   },
   bodyText: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
     lineHeight: 24,
-    marginBottom: 24,
+    marginBottom: spacing.lg,
   },
   sessionInfoBox: {
-    backgroundColor: '#f0fdf4',
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 24,
+    backgroundColor: colors.surface,
+    padding: spacing.md,
+    borderRadius: borderRadius.lg,
+    marginBottom: spacing.lg,
     borderLeftWidth: 4,
-    borderLeftColor: '#10b981',
+    borderLeftColor: colors.success,
+    ...shadows.soft,
   },
   sessionInfoTitle: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '600',
-    color: '#065f46',
-    marginBottom: 12,
+    color: colors.text,
+    marginBottom: spacing.sm,
   },
   sessionInfoText: {
     fontSize: 15,
-    color: '#065f46',
+    color: colors.textSecondary,
     marginBottom: 4,
   },
-  preparationFlow: {
-    marginBottom: 24,
+  optionsContainer: {
+    marginBottom: spacing.lg,
   },
-  flowTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1f2937',
-    marginBottom: 16,
-  },
-  flowItem: {
+  optionCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#ffffff',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
+    backgroundColor: colors.surface,
+    padding: spacing.md,
+    borderRadius: borderRadius.lg,
+    marginBottom: spacing.md,
+    ...shadows.soft,
   },
-  completedFlowItem: {
-    backgroundColor: '#f0f9ff',
-    borderColor: '#10b981',
-  },
-  flowItemLeft: {
+  optionLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
   },
-  flowEmoji: {
-    fontSize: 24,
-    marginRight: 12,
+  optionEmoji: {
+    fontSize: 36,
+    marginRight: spacing.md,
   },
-  flowItemText: {
+  optionText: {
     flex: 1,
   },
-  flowItemTitle: {
-    fontSize: 16,
+  optionTitle: {
+    fontSize: 17,
     fontWeight: '600',
-    color: '#1f2937',
-    marginBottom: 4,
+    color: colors.text,
+    marginBottom: 2,
   },
-  flowItemDescription: {
+  optionDescription: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
+    lineHeight: 20,
     marginBottom: 4,
   },
-  flowItemTime: {
-    fontSize: 12,
-    color: '#9ca3af',
-  },
-  flowItemRight: {
-    marginLeft: 12,
+  optionTime: {
+    fontSize: 13,
+    color: colors.textLight,
   },
   progressBox: {
-    backgroundColor: '#ffffff',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 24,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
+    backgroundColor: colors.surface,
+    padding: spacing.md,
+    borderRadius: borderRadius.lg,
+    marginBottom: spacing.lg,
+    ...shadows.soft,
   },
   progressTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
-    marginBottom: 12,
+    color: colors.text,
+    marginBottom: spacing.sm,
     textAlign: 'center',
   },
   progressBar: {
     height: 8,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: colors.sand,
     borderRadius: 4,
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#10b981',
+    backgroundColor: colors.success,
     borderRadius: 4,
   },
   startButton: {
-    backgroundColor: '#10b981',
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 12,
+    backgroundColor: colors.primary,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    borderRadius: borderRadius.md,
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: spacing.md,
+    ...shadows.soft,
   },
   startButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#ffffff',
+    fontSize: 17,
+    fontWeight: '700',
+    color: colors.white,
+    letterSpacing: 0.3,
   },
   completeButton: {
-    backgroundColor: colors.primary,
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 12,
+    backgroundColor: colors.success,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    borderRadius: borderRadius.md,
     alignItems: 'center',
+    marginBottom: spacing.md,
+    ...shadows.soft,
   },
   completeButtonText: {
-    fontSize: 16,
+    fontSize: 17,
+    fontWeight: '700',
+    color: colors.white,
+    letterSpacing: 0.3,
+  },
+  tipBox: {
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    padding: spacing.md,
+    borderRadius: borderRadius.lg,
+    borderLeftWidth: 4,
+    borderLeftColor: colors.primary,
+    marginTop: spacing.md,
+  },
+  tipTitle: {
+    fontSize: 15,
     fontWeight: '600',
-    color: '#ffffff',
+    color: colors.text,
+    marginBottom: spacing.xs,
+  },
+  tipText: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    lineHeight: 20,
+  },
+  // Sub-section styles (learning modules, assessments, philosophy)
+  sectionContainer: {
+    flex: 1,
+  },
+  headerGradient: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.lg,
+    paddingTop: spacing.md,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.sm,
   },
   assessmentCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
+    padding: spacing.md,
+    marginBottom: spacing.md,
+    ...shadows.soft,
   },
   assessmentTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#1f2937',
-    marginBottom: 8,
+    color: colors.text,
+    marginBottom: spacing.sm,
   },
   assessmentDescription: {
     fontSize: 14,
-    color: '#6b7280',
-    marginBottom: 12,
+    color: colors.textSecondary,
+    marginBottom: spacing.sm,
   },
   assessmentDomains: {
     fontSize: 13,
     color: colors.primary,
-    marginBottom: 12,
+    marginBottom: spacing.sm,
     fontStyle: 'italic',
   },
   assessmentMeta: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 16,
+    marginBottom: spacing.md,
   },
   assessmentMetaText: {
     fontSize: 13,
-    color: '#9ca3af',
+    color: colors.textLight,
   },
   assessmentButton: {
     backgroundColor: colors.primary,
-    paddingVertical: 12,
-    borderRadius: 8,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.sm,
     alignItems: 'center',
   },
   assessmentButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#ffffff',
+    color: colors.white,
   },
   philosophyCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 20,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
+    padding: spacing.md,
+    marginBottom: spacing.md,
     borderLeftWidth: 4,
-    borderLeftColor: '#10b981',
+    borderLeftColor: colors.success,
+    ...shadows.soft,
   },
   philosophyEmoji: {
     fontSize: 32,
-    marginBottom: 12,
+    marginBottom: spacing.sm,
   },
   philosophyTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#1f2937',
-    marginBottom: 12,
+    color: colors.text,
+    marginBottom: spacing.sm,
   },
   philosophyText: {
     fontSize: 15,
-    color: '#374151',
+    color: colors.textSecondary,
     lineHeight: 24,
-    marginBottom: 12,
+    marginBottom: spacing.sm,
   },
   reflectionBox: {
-    backgroundColor: '#f0fdf4',
-    padding: 16,
-    borderRadius: 8,
-    marginTop: 8,
+    backgroundColor: 'rgba(123, 157, 111, 0.1)',
+    padding: spacing.md,
+    borderRadius: borderRadius.sm,
+    marginTop: spacing.sm,
   },
   reflectionTitle: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#065f46',
-    marginBottom: 8,
+    color: colors.text,
+    marginBottom: spacing.sm,
   },
   reflectionText: {
     fontSize: 14,
-    color: '#047857',
+    color: colors.textSecondary,
     lineHeight: 22,
   },
   integrationBox: {
-    backgroundColor: '#fef3c7',
-    padding: 20,
-    borderRadius: 12,
-    marginTop: 8,
-    marginBottom: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    padding: spacing.md,
+    borderRadius: borderRadius.lg,
+    marginTop: spacing.sm,
+    marginBottom: spacing.lg,
     borderLeftWidth: 4,
-    borderLeftColor: '#f59e0b',
+    borderLeftColor: colors.warning,
   },
   integrationTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#92400e',
-    marginBottom: 12,
+    color: colors.text,
+    marginBottom: spacing.sm,
   },
   integrationText: {
     fontSize: 14,
-    color: '#78350f',
+    color: colors.textSecondary,
     lineHeight: 22,
   },
   continueButton: {
-    backgroundColor: '#10b981',
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 12,
+    backgroundColor: colors.primary,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    borderRadius: borderRadius.md,
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: spacing.sm,
+    ...shadows.soft,
   },
   continueButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#ffffff',
+    color: colors.white,
   },
   backButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 12,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    borderRadius: borderRadius.md,
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: spacing.lg,
   },
   backButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6b7280',
+    color: colors.textSecondary,
+  },
+  contentPadding: {
+    padding: spacing.lg,
+  },
+  sectionTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.text,
+    marginBottom: spacing.md,
   },
   inputLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#374151',
-    marginBottom: 8,
-    marginTop: 12,
+    color: colors.text,
+    marginBottom: spacing.sm,
+    marginTop: spacing.sm,
   },
   textInput: {
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
-    borderRadius: 8,
-    padding: 12,
+    borderColor: colors.sand,
+    borderRadius: borderRadius.sm,
+    padding: spacing.sm,
     fontSize: 16,
-    color: '#1f2937',
-    marginBottom: 8,
+    color: colors.text,
+    marginBottom: spacing.sm,
   },
   multilineInput: {
     minHeight: 100,
     textAlignVertical: 'top',
   },
   infoBox: {
-    backgroundColor: '#eff6ff',
-    padding: 16,
-    borderRadius: 12,
-    marginTop: 16,
-    marginBottom: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    padding: spacing.md,
+    borderRadius: borderRadius.lg,
+    marginTop: spacing.md,
+    marginBottom: spacing.lg,
     borderLeftWidth: 4,
     borderLeftColor: colors.primary,
   },
   infoTitle: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#1e40af',
-    marginBottom: 8,
+    color: colors.primary,
+    marginBottom: spacing.sm,
   },
   infoText: {
     fontSize: 14,
-    color: '#1e3a8a',
+    color: colors.textSecondary,
     lineHeight: 20,
   },
   moduleCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    padding: 20,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
+    padding: spacing.md,
+    marginBottom: spacing.md,
+    ...shadows.soft,
   },
   moduleEmoji: {
     fontSize: 28,
-    marginBottom: 12,
+    marginBottom: spacing.sm,
   },
   moduleTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#1f2937',
-    marginBottom: 8,
+    color: colors.text,
+    marginBottom: spacing.sm,
   },
   moduleDescription: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     lineHeight: 20,
-    marginBottom: 12,
+    marginBottom: spacing.sm,
   },
   topicsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginBottom: 12,
+    marginBottom: spacing.sm,
   },
   topicTag: {
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    backgroundColor: 'rgba(93, 134, 214, 0.1)',
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
-    marginRight: 8,
-    marginBottom: 8,
+    marginRight: spacing.sm,
+    marginBottom: spacing.sm,
   },
   topicText: {
     fontSize: 12,
@@ -1270,17 +1408,17 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   moduleMeta: {
-    marginBottom: 12,
+    marginBottom: spacing.sm,
   },
   moduleTime: {
     fontSize: 13,
-    color: '#9ca3af',
+    color: colors.textLight,
   },
   moduleButton: {
     backgroundColor: colors.primary,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: borderRadius.sm,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -1288,26 +1426,26 @@ const styles = StyleSheet.create({
   moduleButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#ffffff',
-    marginRight: 8,
+    color: colors.white,
+    marginRight: spacing.sm,
   },
   optionalBox: {
-    backgroundColor: '#fef3c7',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    padding: spacing.md,
+    borderRadius: borderRadius.lg,
+    marginBottom: spacing.lg,
     borderLeftWidth: 4,
-    borderLeftColor: '#f59e0b',
+    borderLeftColor: colors.warning,
   },
   optionalTitle: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#92400e',
-    marginBottom: 8,
+    color: colors.text,
+    marginBottom: spacing.sm,
   },
   optionalText: {
     fontSize: 14,
-    color: '#78350f',
+    color: colors.textSecondary,
     lineHeight: 20,
   },
   textArea: {

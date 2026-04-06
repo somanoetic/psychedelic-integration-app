@@ -8,49 +8,112 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  Keyboard,
   ActivityIndicator,
   Alert,
   Image
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
-import nervousSystemMappingAIService from '../lib/nervousSystemMappingAIService';
+import huxleyService from '../lib/huxleyService';
+import polyvagalContextService from '../lib/polyvagalContextService';
+import { shareNervousSystem } from '../lib/therapistShareService';
 import { colors } from '../theme/colors';
 
 /**
  * Conversational Nervous System Mapping
- * AI-guided exploration of polyvagal states, then prompts physical drawing
+ * AI-guided exploration of polyvagal states, then prompts physical drawing.
+ *
+ * Context-aware: loads prior patterns, initializes huxleyService with
+ * user context, and saves structured results back via polyvagalContextService.
  */
-const ConversationalNervousSystemMapping = ({ onComplete }) => {
+const ConversationalNervousSystemMapping = ({ onComplete, navigation }) => {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
+  const [initializing, setInitializing] = useState(true);
   const [currentState, setCurrentState] = useState('intro');
-  const [statesCompleted, setStatesCompleted] = useState({
-    ventral: false,
-    sympathetic: false,
-    dorsal: false
-  });
+  const [sessionProgress, setSessionProgress] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
   const scrollViewRef = useRef(null);
   const insets = useSafeAreaInsets();
+
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+
+  // Track keyboard visibility and scroll to bottom when it opens
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+    const showSub = Keyboard.addListener(showEvent, () => {
+      setKeyboardVisible(true);
+      setTimeout(() => {
+        scrollViewRef.current?.scrollToEnd({ animated: true });
+      }, 150);
+    });
+    const hideSub = Keyboard.addListener(hideEvent, () => {
+      setKeyboardVisible(false);
+    });
+    return () => { showSub.remove(); hideSub.remove(); };
+  }, []);
 
   useEffect(() => {
     initializeMapping();
   }, []);
 
-  const initializeMapping = () => {
-    nervousSystemMappingAIService.reset();
+  const initializeMapping = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setCurrentUser(user);
+        await huxleyService.initialize(user.id);
+      }
+      huxleyService.setMode('nervous_system_mapping', { clearHistory: true });
 
-    const openingMessage = {
-      id: Date.now(),
-      text: "Hi! I'm here to help you map your nervous system states. We'll explore three different states together: times when you feel safe and connected, times when you're activated or stressed, and times when you feel shut down. Which state feels most accessible to you right now?",
-      isAI: true,
-      timestamp: new Date()
-    };
+      // Load prior patterns to personalize opening
+      const priorPatterns = user
+        ? await polyvagalContextService.getPatternsForAI(user.id)
+        : null;
 
-    setMessages([openingMessage]);
+      const openingText = buildOpeningMessage(priorPatterns);
+
+      setMessages([{
+        id: Date.now(),
+        text: openingText,
+        isAI: true,
+        timestamp: new Date()
+      }]);
+    } catch (error) {
+      console.error('[NS Mapping] Init error:', error);
+      huxleyService.setMode('nervous_system_mapping', { clearHistory: true });
+      setMessages([{
+        id: Date.now(),
+        text: "Hi! I'm here to help you map your nervous system. We'll explore three states together and we'll end with your safe, connected state so you leave feeling grounded.\n\nFirst, I'm curious — when you leave that safe, connected place, where do you tend to go? Do you tend to go more toward activation — anxiety, stress, being wired, fight or flight? Or more toward shutdown — numbness, checking out, feeling stuck or collapsed?",
+        isAI: true,
+        timestamp: new Date()
+      }]);
+    } finally {
+      setInitializing(false);
+    }
+  };
+
+  const buildOpeningMessage = (patterns) => {
+    if (!patterns || !patterns.hasMappedStates) {
+      return "Hi! I'm here to help you map your nervous system. We'll explore three states together and we'll end with your safe, connected state so you leave feeling grounded.\n\nFirst, I'm curious — when you leave that safe, connected place, where do you tend to go? Do you tend to go more toward activation — anxiety, stress, being wired, fight or flight? Or more toward shutdown — numbness, checking out, feeling stuck or collapsed?";
+    }
+
+    // Returning user — reference what they've mapped before
+    const ventral = patterns.ventral?.body_sensations || [];
+    const sympathetic = patterns.sympathetic?.body_sensations || [];
+
+    let msg = "Welcome back! I can see you've mapped your nervous system before.";
+    if (ventral.length > 0) {
+      msg += ` Last time, you noticed sensations like "${ventral.slice(0, 2).join('" and "')}" in your safe state.`;
+    }
+    msg += "\n\nLet's deepen your map. Has anything shifted since your last mapping? Or would you like to explore a state more thoroughly this time?";
+
+    return msg;
   };
 
   const sendMessage = async () => {
@@ -68,10 +131,8 @@ const ConversationalNervousSystemMapping = ({ onComplete }) => {
     setLoading(true);
 
     try {
-      const response = await nervousSystemMappingAIService.sendMessage(
-        inputText.trim(),
-        currentState
-      );
+      // Handler controls phase and context automatically
+      const response = await huxleyService.chat(inputText.trim());
 
       const aiMessage = {
         id: Date.now() + 1,
@@ -81,6 +142,12 @@ const ConversationalNervousSystemMapping = ({ onComplete }) => {
       };
 
       setMessages(prev => [...prev, aiMessage]);
+
+      // Update from mode handler's session progress
+      if (response.sessionProgress) {
+        setSessionProgress(response.sessionProgress);
+        setCurrentState(response.sessionProgress.phase);
+      }
     } catch (error) {
       console.error('Error sending message:', error);
       Alert.alert('Error', 'Failed to send message. Please try again.');
@@ -90,38 +157,6 @@ const ConversationalNervousSystemMapping = ({ onComplete }) => {
         scrollViewRef.current?.scrollToEnd({ animated: true });
       }, 100);
     }
-  };
-
-  const markStateComplete = (state) => {
-    setStatesCompleted(prev => ({ ...prev, [state]: true }));
-
-    // Check if all states are done
-    const updated = { ...statesCompleted, [state]: true };
-    if (updated.ventral && updated.sympathetic && updated.dorsal) {
-      // All states mapped, move to drawing prompt
-      setTimeout(() => {
-        promptDrawing();
-      }, 1000);
-    }
-  };
-
-  const promptDrawing = async () => {
-    setCurrentState('drawing_prompt');
-    setLoading(true);
-
-    const drawingMessage = {
-      id: Date.now(),
-      text: "Great work exploring your nervous system states! Now for the creative part. I'd like you to grab some paper and colored pencils, crayons, or markers. We're going to create a visual body map showing where each state lives in your body. Ready?",
-      isAI: true,
-      timestamp: new Date()
-    };
-
-    setMessages(prev => [...prev, drawingMessage]);
-    setLoading(false);
-
-    setTimeout(() => {
-      scrollViewRef.current?.scrollToEnd({ animated: true });
-    }, 100);
   };
 
   const showDrawingGuidance = () => {
@@ -171,56 +206,33 @@ Take your time with this. When you're done, the app will show you a digital vers
     setSaving(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No user');
+      if (!currentUser) throw new Error('No user');
 
-      // Extract structured data
-      const mappingData = await nervousSystemMappingAIService.extractMappingData();
-      const conversation = nervousSystemMappingAIService.getConversationHistory();
+      // Get structured data from mode handler
+      const handlerSummary = huxleyService.getSessionSummary();
+      const mappedStates = handlerSummary?.mappedStates || {};
 
-      // Save each state's data to polyvagal_patterns table
-      for (const [state, data] of Object.entries(mappingData)) {
-        if (Object.keys(data).length === 0) continue; // Skip empty states
+      // Build mapping data from handler
+      const mappingData = {
+        ventral: mappedStates.ventral || {},
+        sympathetic: mappedStates.sympathetic || {},
+        dorsal: mappedStates.dorsal || {},
+      };
 
-        const stateType = state === 'ventral' ? 'ventral_vagal' :
-                         state === 'sympathetic' ? 'sympathetic' : 'dorsal_vagal';
-
-        // Check if pattern exists
-        const { data: existing } = await supabase
-          .from('polyvagal_patterns')
-          .select('id')
-          .eq('user_id', user.id)
-          .eq('state_type', stateType)
-          .single();
-
-        const patternData = {
-          user_id: user.id,
-          state_type: stateType,
-          conversation: conversation,
-          ...data
-        };
-
-        if (existing) {
-          // Update existing
-          await supabase
-            .from('polyvagal_patterns')
-            .update(patternData)
-            .eq('id', existing.id);
-        } else {
-          // Insert new
-          await supabase
-            .from('polyvagal_patterns')
-            .insert(patternData);
-        }
-      }
+      // Save via polyvagalContextService (handles upsert + merge with existing)
+      await polyvagalContextService.updatePatternsFromMapping(currentUser.id, mappingData);
 
       Alert.alert(
         'Mapping Saved!',
-        'Your nervous system map has been saved. You can view your digital visual map now.',
+        'Your nervous system map has been saved.',
         [
           {
             text: 'View Map',
             onPress: () => showDigitalMap(mappingData)
+          },
+          {
+            text: 'Share with Therapist',
+            onPress: () => shareNervousSystem({ state_mappings: mappingData, created_at: new Date().toISOString() }).catch(() => {}),
           },
           {
             text: 'Done',
@@ -229,7 +241,7 @@ Take your time with this. When you're done, the app will show you a digital vers
         ]
       );
 
-      nervousSystemMappingAIService.reset();
+      huxleyService.setMode('nervous_system_mapping', { clearHistory: true });
     } catch (error) {
       console.error('Error saving mapping:', error);
       Alert.alert('Error', 'Failed to save mapping. Please try again.');
@@ -303,18 +315,19 @@ Take your time with this. When you're done, the app will show you a digital vers
   };
 
   const renderStateButtons = () => {
-    if (currentState !== 'intro' && currentState !== 'drawing_prompt') {
+    const mappedStates = sessionProgress?.mappedStates || {};
+    if (currentState !== 'intro' && currentState !== 'drawing_prompt' && currentState !== 'complete') {
       return (
         <View style={styles.stateProgress}>
-          <Text style={styles.stateProgressText}>States Mapped:</Text>
+          <Text style={styles.stateProgressText}>States Mapped: {sessionProgress?.statesMapped || 0}/3</Text>
           <View style={styles.stateIndicators}>
-            <View style={[styles.stateIndicator, statesCompleted.ventral && styles.stateCompleted]}>
+            <View style={[styles.stateIndicator, mappedStates.ventral?.isMapped && styles.stateCompleted]}>
               <Text style={styles.stateIndicatorText}>Ventral</Text>
             </View>
-            <View style={[styles.stateIndicator, statesCompleted.sympathetic && styles.stateCompleted]}>
+            <View style={[styles.stateIndicator, mappedStates.sympathetic?.isMapped && styles.stateCompleted]}>
               <Text style={styles.stateIndicatorText}>Sympathetic</Text>
             </View>
-            <View style={[styles.stateIndicator, statesCompleted.dorsal && styles.stateCompleted]}>
+            <View style={[styles.stateIndicator, mappedStates.dorsal?.isMapped && styles.stateCompleted]}>
               <Text style={styles.stateIndicatorText}>Dorsal</Text>
             </View>
           </View>
@@ -347,23 +360,26 @@ Take your time with this. When you're done, the app will show you a digital vers
   };
 
   return (
+    <SafeAreaView style={styles.container} edges={['top']}>
     <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
     >
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerContent}>
+          <TouchableOpacity
+            onPress={() => navigation?.goBack()}
+            style={styles.backButton}
+          >
+            <MaterialIcons name="arrow-back" size={24} color="#374151" />
+          </TouchableOpacity>
           <MaterialIcons name="psychology" size={24} color={colors.primary} />
           <Text style={styles.headerTitle}>Nervous System Mapping</Text>
         </View>
         <Text style={styles.headerSubtitle}>
-          {currentState === 'intro' && 'Exploring your nervous system states'}
-          {currentState === 'ventral' && 'Mapping: Safe & Social'}
-          {currentState === 'sympathetic' && 'Mapping: Fight/Flight'}
-          {currentState === 'dorsal' && 'Mapping: Shutdown'}
-          {currentState === 'drawing_prompt' && 'Time to create your visual map!'}
+          {sessionProgress?.phaseLabel || 'Exploring your nervous system states'}
         </Text>
       </View>
 
@@ -395,7 +411,7 @@ Take your time with this. When you're done, the app will show you a digital vers
       {renderStateButtons()}
 
       {/* Input Area */}
-      <View style={[styles.inputContainer, { paddingBottom: Math.max(insets.bottom, 12) + 12 }]}>
+      <View style={[styles.inputContainer, !keyboardVisible && { paddingBottom: 8 + insets.bottom }]}>
         <TextInput
           style={styles.input}
           value={inputText}
@@ -427,6 +443,7 @@ Take your time with this. When you're done, the app will show you a digital vers
         </View>
       )}
     </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
@@ -438,9 +455,13 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: '#fff',
     padding: 20,
-    paddingTop: 60,
+    paddingTop: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#e5e7eb'
+  },
+  backButton: {
+    padding: 4,
+    marginRight: 8,
   },
   headerContent: {
     flexDirection: 'row',
@@ -463,7 +484,7 @@ const styles = StyleSheet.create({
   },
   messagesContent: {
     padding: 16,
-    paddingBottom: 100
+    paddingBottom: 16
   },
   aiMessageRow: {
     flexDirection: 'row',
@@ -575,7 +596,8 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     flexDirection: 'row',
-    padding: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
     backgroundColor: '#fff',
     borderTopWidth: 1,
     borderTopColor: '#e5e7eb',

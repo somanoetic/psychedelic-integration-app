@@ -46,7 +46,7 @@ const ScenarioUploadScreen = ({ navigation }) => {
       if (result.success) {
         Alert.alert(
           'Success!', 
-          `Successfully uploaded ${result.count} scenarios. Claude will now use these examples to improve responses.`,
+          `Successfully uploaded ${result.count} scenarios. Huxley will now use these examples to improve responses.`,
           [{ text: 'OK', onPress: () => setScenarioText('') }]
         );
       } else {
@@ -112,9 +112,9 @@ NOTES: Mystical experiences need validation and somatic integration`;
 
       {/* Info */}
       <View style={styles.infoSection}>
-        <Text style={styles.infoTitle}>📚 Train Claude to Respond Better</Text>
+        <Text style={styles.infoTitle}>📚 Train Huxley to Respond Better</Text>
         <Text style={styles.infoText}>
-          Upload examples of user messages and good therapeutic responses. Claude will learn from these patterns to provide better integration support.
+          Upload examples of user messages and good therapeutic responses. Huxley will learn from these patterns to provide better integration support.
         </Text>
       </View>
 

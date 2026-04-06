@@ -329,7 +329,7 @@ describe('IntentionGuidanceAIService - AI Layer', () => {
       expect(result.conversationStage).toBe('direction');
     });
 
-    it('should detect "confirm" stage with 2 or more user messages in history', async () => {
+    it('should detect "deepen" stage with exactly 2 user messages in history', async () => {
       const result = await service.continueIntentionConversation(mockMessage, {
         ...baseContext,
         conversationHistory: [
@@ -340,7 +340,7 @@ describe('IntentionGuidanceAIService - AI Layer', () => {
         ]
       });
 
-      expect(result.conversationStage).toBe('confirm');
+      expect(result.conversationStage).toBe('deepen');
     });
 
     it('should detect "confirm" stage with 3+ user messages (regardless of draft)', async () => {
@@ -729,7 +729,7 @@ describe('IntentionGuidanceAIService - AI Layer', () => {
       expect(stage).toBe('direction');
     });
 
-    it('should return "confirm" when 2 user messages in history', () => {
+    it('should return "deepen" when 2 user messages in history', () => {
       const stage = service.detectConversationStage(
         [
           { role: 'user', content: 'first' },
@@ -737,7 +737,7 @@ describe('IntentionGuidanceAIService - AI Layer', () => {
         ],
         null
       );
-      expect(stage).toBe('confirm');
+      expect(stage).toBe('deepen');
     });
 
     it('should return "confirm" when 3+ user messages in history', () => {

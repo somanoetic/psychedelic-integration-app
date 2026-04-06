@@ -10,9 +10,9 @@ import {
   ActivityIndicator
 } from 'react-native';
 import { supabase } from '../lib/supabase';
-import ExperienceMappingService from '../lib/experienceMappingService';
-import CrossSessionDataManager from '../enhanced-components/CrossSessionDataManager';
+import huxleyService from '../lib/huxleyService';
 import { colors } from '../theme/colors';
+import FormattedText from '../components/FormattedText';
 
 const EnhancedExperienceMappingScreen = ({ navigation, route }) => {
   console.log('EnhancedExperienceMappingScreen route params:', route.params);
@@ -40,27 +40,12 @@ const EnhancedExperienceMappingScreen = ({ navigation, route }) => {
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [entities, setEntities] = useState([]);
 
-  // Experience processing state
-  const [experienceData, setExperienceData] = useState({
-    associations: [],
-    dynamics: [],
-    integrations: [],
-    rituals: [],
-    currentPhase: 1
-  });
-
-  // Cross-session awareness
-  const [hasTherapeuticContext, setHasTherapeuticContext] = useState(false);
-  const [therapeuticSummary, setTherapeuticSummary] = useState(null);
+  // Session progress from mode handler
+  const [sessionProgress, setSessionProgress] = useState(null);
 
   // Refs
   const scrollViewRef = useRef(null);
-
-  // Services
-  const experienceMapper = useRef(new ExperienceMappingService()).current;
-  const dataManager = useRef(new CrossSessionDataManager()).current;
 
   // Initialize conversation
   useEffect(() => {
@@ -69,7 +54,10 @@ const EnhancedExperienceMappingScreen = ({ navigation, route }) => {
 
   const initializeConversation = async () => {
     try {
-      // Load full session data with cross-references
+      // Set Huxley to experience_mapping mode
+      huxleyService.setMode('experience_mapping', { clearHistory: true });
+
+      // Load existing session data if resuming
       await loadSessionData();
 
       if (messages.length === 0) {
@@ -84,54 +72,45 @@ const EnhancedExperienceMappingScreen = ({ navigation, route }) => {
 
   const loadSessionData = async () => {
     try {
-      // Use CrossSessionDataManager to load all session data
+      let sessionData = null;
+
       if (session.session_data) {
-        // Temporary session - set data directly
-        dataManager.setSessionData(session.session_data);
+        // Temporary session - use data directly
+        sessionData = session.session_data;
       } else {
         // Database session - load from supabase
-        await dataManager.loadFullSessionData(session.id, supabase);
+        const { data, error } = await supabase
+          .from('sessions')
+          .select('session_data')
+          .eq('id', session.id)
+          .single();
+
+        if (error) throw error;
+        sessionData = data?.session_data;
       }
 
-      // Get experience mapping specific data
-      const experienceContextData = dataManager.getExperienceContextWithTherapeuticData();
+      if (sessionData) {
+        // Restore messages if present
+        if (sessionData.messages && sessionData.messages.length > 0) {
+          setMessages(sessionData.messages);
+        }
 
-      setMessages(experienceContextData.messages);
-      setEntities(experienceContextData.entities);
-      setExperienceData(experienceContextData.experienceData);
+        // Restore session progress if present
+        if (sessionData.sessionProgress) {
+          setSessionProgress(sessionData.sessionProgress);
+        }
 
-      // Set therapeutic context awareness
-      setHasTherapeuticContext(experienceContextData.hasTherapeuticHistory);
-      if (experienceContextData.hasTherapeuticHistory) {
-        setTherapeuticSummary({
-          nervousSystemState: experienceContextData.therapeuticInsights.nervousSystemPatterns,
-          practicesCompleted: experienceContextData.therapeuticInsights.completedPractices.length,
-          themes: experienceContextData.therapeuticInsights.identifiedThemes
+        // Initialize the mode handler with any saved context
+        const handler = huxleyService.getModeHandler();
+        if (handler && handler.initializeWithContext) {
+          handler.initializeWithContext(sessionData);
+        }
+
+        console.log('Enhanced Experience Mapping initialized with session data:', {
+          messages: sessionData.messages?.length || 0,
+          phase: sessionData.phase || 1
         });
       }
-
-      // Initialize experience mapper with FULL cross-session context
-      const fullContext = {
-        sessionId: session.id,
-        messages: experienceContextData.messages,
-        entities: experienceContextData.entities,
-        experienceData: experienceContextData.experienceData,
-        // Cross-session therapeutic context
-        therapeuticMessages: experienceContextData.therapeuticInsights?.messages || [],
-        therapeuticEntities: experienceContextData.therapeuticInsights?.therapeuticEntities || [],
-        nervousSystemState: experienceContextData.therapeuticInsights?.nervousSystemPatterns || 'unknown',
-        practicesCompleted: experienceContextData.therapeuticInsights?.completedPractices || [],
-        interventionsFocused: experienceContextData.therapeuticInsights?.identifiedThemes || []
-      };
-
-      experienceMapper.initializeSession(fullContext);
-
-      console.log('Enhanced Experience Mapping initialized with cross-session data:', {
-        experienceMessages: experienceContextData.messages.length,
-        hasTherapeuticContext: experienceContextData.hasTherapeuticHistory,
-        currentPhase: experienceContextData.experienceData.currentPhase
-      });
-
     } catch (error) {
       console.error('Error loading session data:', error);
     }
@@ -139,16 +118,25 @@ const EnhancedExperienceMappingScreen = ({ navigation, route }) => {
 
   const saveMessages = async (newMessages, additionalData = {}) => {
     try {
-      // Use CrossSessionDataManager to save without overwriting other mode's data
-      await dataManager.saveExperienceMappingData(
-        newMessages,
-        entities,
-        experienceData,
-        additionalData,
-        supabase
-      );
+      const handler = huxleyService.getModeHandler();
+      const summary = handler ? handler.getSessionSummary() : {};
 
-      console.log('Experience mapping data saved with cross-session preservation');
+      const sessionDataPayload = {
+        messages: newMessages,
+        sessionProgress: sessionProgress,
+        ...summary,
+        ...additionalData,
+        updated_at: new Date().toISOString(),
+      };
+
+      const { error } = await supabase
+        .from('sessions')
+        .update({ session_data: sessionDataPayload })
+        .eq('id', session.id);
+
+      if (error) throw error;
+
+      console.log('Experience mapping data saved');
 
     } catch (error) {
       console.error('Error saving messages:', error);
@@ -156,7 +144,7 @@ const EnhancedExperienceMappingScreen = ({ navigation, route }) => {
   };
 
   const initiateExperienceMapping = () => {
-    let welcomeContent = `Welcome to **Experience Processing**!
+    const welcomeContent = `Welcome to **Experience Processing**!
 
 I'm here to help you systematically explore and document your psychedelic experience. This will give you comprehensive material for reflection and integration.
 
@@ -164,16 +152,7 @@ We'll work through:
 **Gathering Details** - Collecting all the elements (symbols, sensations, emotions)
 **Exploring Connections** - Mapping relationships and patterns
 **Finding Meaning** - Discovering insights and connections to your life
-**Creating Practices** - Developing ways to integrate your discoveries`;
-
-    // Add therapeutic context awareness if available
-    if (hasTherapeuticContext && therapeuticSummary) {
-      welcomeContent += `
-
-**Cross-Session Insight**: I can see you've been doing therapeutic integration work (${therapeuticSummary.nervousSystemState} nervous system state, ${therapeuticSummary.practicesCompleted} practices completed). I'll reference that work when relevant to your experience processing.`;
-    }
-
-    welcomeContent += `
+**Creating Practices** - Developing ways to integrate your discoveries
 
 Let's begin by **gathering all the details** from your experience.
 
@@ -185,7 +164,6 @@ Tell me about your recent psychedelic experience - what stands out most vividly?
       timestamp: new Date(),
       currentPhase: 1,
       messageType: 'experience_mapping_intro',
-      crossSessionAware: hasTherapeuticContext
     };
 
     setMessages([welcomeMessage]);
@@ -194,11 +172,13 @@ Tell me about your recent psychedelic experience - what stands out most vividly?
   const handleSendMessage = async () => {
     if (!userInput.trim() || isLoading) return;
 
+    const currentPhase = sessionProgress?.phase || 1;
+
     const userMessage = {
       role: 'user',
       content: userInput.trim(),
       timestamp: new Date(),
-      currentPhase: experienceData.currentPhase
+      currentPhase: currentPhase
     };
 
     const newMessages = [...messages, userMessage];
@@ -207,40 +187,22 @@ Tell me about your recent psychedelic experience - what stands out most vividly?
     setIsLoading(true);
 
     try {
-      // Get experience mapping response with full cross-session context
-      const response = await experienceMapper.continueExperienceMapping(
-        userInput.trim(),
-        {
-          messages: newMessages,
-          entities: entities,
-          experienceData: experienceData
-        }
-      );
+      // Get response from Huxley
+      const response = await huxleyService.chat(userInput.trim());
 
       const assistantMessage = {
         role: 'assistant',
         content: response.message,
         timestamp: new Date(),
-        entities: response.extractedEntities || [],
-        currentPhase: response.currentPhase,
-        experienceUpdate: response.experienceUpdate
+        currentPhase: response.sessionProgress?.phase || currentPhase,
       };
 
       const updatedMessages = [...newMessages, assistantMessage];
       setMessages(updatedMessages);
 
-      // Update entities if new ones were extracted
-      if (response.extractedEntities && response.extractedEntities.length > 0) {
-        const updatedEntities = [...entities, ...response.extractedEntities];
-        setEntities(updatedEntities);
-      }
-
-      // Update experience data if new information was gathered
-      if (response.experienceUpdate) {
-        setExperienceData(prev => ({
-          ...prev,
-          ...response.experienceUpdate
-        }));
+      // Update session progress from handler
+      if (response.sessionProgress) {
+        setSessionProgress(response.sessionProgress);
       }
 
       await saveMessages(updatedMessages);
@@ -279,22 +241,19 @@ You can continue documenting your experience, and I'll be back online soon.`;
   };
 
   const renderProcessingProgress = () => {
+    const currentPhase = sessionProgress?.phase || 1;
+
     const phases = [
-      { number: 1, name: 'Gathering', complete: experienceData.associations.length > 0 },
-      { number: 2, name: 'Connecting', complete: experienceData.dynamics.length > 0 },
-      { number: 3, name: 'Meaning', complete: experienceData.integrations.length > 0 },
-      { number: 4, name: 'Practices', complete: experienceData.rituals.length > 0 }
+      { number: 1, name: 'Gathering', complete: currentPhase > 1 },
+      { number: 2, name: 'Connecting', complete: currentPhase > 2 },
+      { number: 3, name: 'Meaning', complete: currentPhase > 3 },
+      { number: 4, name: 'Practices', complete: sessionProgress?.isComplete || false }
     ];
 
     return (
       <View style={styles.progressContainer}>
         <View style={styles.progressHeader}>
           <Text style={styles.progressTitle}>Experience Processing:</Text>
-          {hasTherapeuticContext && (
-            <Text style={styles.crossSessionIndicator}>
-              Connected to therapeutic work
-            </Text>
-          )}
         </View>
         <View style={styles.phaseIndicators}>
           {phases.map((phase) => (
@@ -302,7 +261,7 @@ You can continue documenting your experience, and I'll be back online soon.`;
               <View style={[
                 styles.phaseCircle,
                 phase.complete && styles.phaseCircleComplete,
-                experienceData.currentPhase === phase.number && styles.phaseCircleCurrent
+                currentPhase === phase.number && styles.phaseCircleCurrent
               ]}>
                 <Text style={[
                   styles.phaseNumber,
@@ -319,28 +278,16 @@ You can continue documenting your experience, and I'll be back online soon.`;
         {/* Phase Summary */}
         <View style={styles.phaseSummary}>
           <Text style={styles.phaseSummaryText}>
-            Current: Phase {experienceData.currentPhase} - {
-              experienceData.currentPhase === 1 ? 'Gathering symbols, emotions, and sensations' :
-              experienceData.currentPhase === 2 ? 'Exploring relationships and patterns' :
-              experienceData.currentPhase === 3 ? 'Finding meaning and life connections' :
-              'Creating integration practices'
+            Current: Phase {currentPhase} - {
+              sessionProgress?.phaseLabel || (
+                currentPhase === 1 ? 'Gathering symbols, emotions, and sensations' :
+                currentPhase === 2 ? 'Exploring relationships and patterns' :
+                currentPhase === 3 ? 'Finding meaning and life connections' :
+                'Creating integration practices'
+              )
             }
           </Text>
         </View>
-      </View>
-    );
-  };
-
-  const renderTherapeuticAwareness = () => {
-    if (!hasTherapeuticContext || !therapeuticSummary) return null;
-
-    return (
-      <View style={styles.therapeuticAwarenessContainer}>
-        <Text style={styles.therapeuticAwarenessTitle}>Therapeutic Context:</Text>
-        <Text style={styles.therapeuticAwarenessText}>
-          {therapeuticSummary.nervousSystemState} state • {therapeuticSummary.practicesCompleted} practices •
-          {therapeuticSummary.themes.slice(-2).join(', ') || 'Exploring themes'}
-        </Text>
       </View>
     );
   };
@@ -354,21 +301,12 @@ You can continue documenting your experience, and I'll be back online soon.`;
           message.role === 'user' ? styles.userBubble : styles.assistantBubble
         ]}
       >
-        <Text style={[
+        <FormattedText style={[
           styles.messageText,
           message.role === 'user' ? styles.userText : styles.assistantText
         ]}>
           {message.content}
-        </Text>
-
-        {/* Show cross-session awareness indicator */}
-        {message.crossSessionAware && (
-          <View style={styles.crossSessionIndicatorMessage}>
-            <Text style={styles.crossSessionIndicatorText}>
-              Aware of therapeutic integration work
-            </Text>
-          </View>
-        )}
+        </FormattedText>
 
         {/* Show current phase indicator */}
         {message.currentPhase && (
@@ -381,17 +319,6 @@ You can continue documenting your experience, and I'll be back online soon.`;
                 'Creating Practices'
               }
             </Text>
-          </View>
-        )}
-
-        {/* Show extracted entities */}
-        {message.entities && message.entities.length > 0 && (
-          <View style={styles.entitiesContainer}>
-            {message.entities.map((entity, entityIndex) => (
-              <View key={entityIndex} style={styles.entityChip}>
-                <Text style={styles.entityText}>{entity.name}</Text>
-              </View>
-            ))}
           </View>
         )}
 
@@ -409,6 +336,8 @@ You can continue documenting your experience, and I'll be back online soon.`;
   };
 
   const renderInput = () => {
+    const currentPhase = sessionProgress?.phase || 1;
+
     return (
       <View style={styles.inputContainer}>
         <TextInput
@@ -416,9 +345,9 @@ You can continue documenting your experience, and I'll be back online soon.`;
           value={userInput}
           onChangeText={setUserInput}
           placeholder={
-            experienceData.currentPhase === 1 ? "Describe what you experienced (colors, sounds, feelings, thoughts...)" :
-            experienceData.currentPhase === 2 ? "How did different elements relate to each other?" :
-            experienceData.currentPhase === 3 ? "What meaning do these experiences hold for your life?" :
+            currentPhase === 1 ? "Describe what you experienced (colors, sounds, feelings, thoughts...)" :
+            currentPhase === 2 ? "How did different elements relate to each other?" :
+            currentPhase === 3 ? "What meaning do these experiences hold for your life?" :
             "What practices would help you integrate these insights?"
           }
           multiline
@@ -458,9 +387,6 @@ You can continue documenting your experience, and I'll be back online soon.`;
 
       {/* Progress Indicator */}
       {renderProcessingProgress()}
-
-      {/* Therapeutic Awareness */}
-      {renderTherapeuticAwareness()}
 
       <ScrollView
         ref={scrollViewRef}

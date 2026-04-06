@@ -75,13 +75,15 @@ const SessionChecklistScreen = ({ navigation, route }) => {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
         <LinearGradient colors={gradients.warm} start={{ x: 1.0, y: 0.0 }} end={{ x: 0.0, y: 1.0 }} style={styles.headerGradient}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
-            <MaterialIcons name="arrow-back" size={24} color={colors.textInverse} />
-          </TouchableOpacity>
-          <Text style={styles.heroTitle}>Session Checklist</Text>
+          <View style={styles.headerRow}>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => navigation.goBack()}
+            >
+              <MaterialIcons name="arrow-back" size={24} color={colors.textInverse} />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>Session Checklist</Text>
+          </View>
         </LinearGradient>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
@@ -96,13 +98,15 @@ const SessionChecklistScreen = ({ navigation, route }) => {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
         <LinearGradient colors={gradients.warm} start={{ x: 1.0, y: 0.0 }} end={{ x: 0.0, y: 1.0 }} style={styles.headerGradient}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
-            <MaterialIcons name="arrow-back" size={24} color={colors.textInverse} />
-          </TouchableOpacity>
-          <Text style={styles.heroTitle}>Session Checklist</Text>
+          <View style={styles.headerRow}>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => navigation.goBack()}
+            >
+              <MaterialIcons name="arrow-back" size={24} color={colors.textInverse} />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>Session Checklist</Text>
+          </View>
         </LinearGradient>
         <View style={styles.errorContainer}>
           <MaterialIcons name="error-outline" size={64} color={colors.error} />
@@ -124,13 +128,15 @@ const SessionChecklistScreen = ({ navigation, route }) => {
     >
       {/* Header */}
       <LinearGradient colors={gradients.warm} style={styles.headerGradient}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <MaterialIcons name="arrow-back" size={24} color={colors.textInverse} />
-        </TouchableOpacity>
-        <Text style={styles.heroTitle}>Session Checklist</Text>
+        <View style={styles.headerRow}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <MaterialIcons name="arrow-back" size={24} color={colors.textInverse} />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Session Checklist</Text>
+        </View>
         {sessionData?.title && (
           <Text style={styles.heroSubtitle}>{sessionData.title}</Text>
         )}
@@ -217,15 +223,22 @@ const styles = StyleSheet.create({
   },
   headerGradient: {
     paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.xl,
-    paddingTop: 60,
-    position: 'relative',
+    paddingVertical: spacing.md,
+    paddingTop: spacing.sm,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: colors.textInverse,
+    flex: 1,
   },
   backButton: {
-    position: 'absolute',
-    top: 60,
-    left: spacing.lg,
-    zIndex: 10,
+    marginRight: spacing.sm,
+    padding: 4,
   },
   heroTitle: {
     fontSize: 28,
@@ -236,10 +249,11 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   heroSubtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: colors.textInverse,
     opacity: 0.9,
-    textAlign: 'center',
+    marginLeft: 40,
+    marginTop: 2,
   },
   scrollContainer: {
     flex: 1,

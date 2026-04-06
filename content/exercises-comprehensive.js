@@ -13,14 +13,14 @@
  * - Somatic Therapy for Healing Trauma
  * - 101 Trauma-Informed Interventions (Linda Curran)
  * - Trauma-Informed Yoga (47 practices)
- * - The Tools / Coming Alive (Stutz & Michels)
+ * - Depth psychology and Jungian visualization traditions
  * - Self-Therapy Vol 1-3 + Workbook (Jay Earley)
  * - IFS Skills Training Manual
  * - No Bad Parts (Richard Schwartz)
  * - Practicing Mindfulness (75 meditations)
  * - Real Happiness (Sharon Salzberg)
  * - 108 Meditation Instructions
- * - Atomic Habits / Tiny Habits
+ * - Behavioral psychology and habit formation research
  * - Complex PTSD Workbook
  * - After the Ceremony Ends
  * - The Psychedelic Explorer's Guide
@@ -37,7 +37,7 @@
  * - partsWork: IFS-based internal dialogue
  * - selfCompassion: Loving-kindness and self-care
  * - meditation: Seated/formal contemplative practices
- * - jungian: Shadow work and visualization tools (Stutz/Michels)
+ * - jungian: Shadow work, archetypes, and depth psychology visualization
  * - cbt: Cognitive restructuring and belief work
  * - habits: Behavioral change practices
  * - psychedelicIntegration: Integration-specific exercises
@@ -1066,19 +1066,19 @@ export const exercises = {
     },
     {
       id: 'SC-004',
-      title: "The Grateful Flow",
+      title: "Gratitude as Antidote",
       steps: [
-        "Silently state specific things you're grateful for, especially things you'd normally take for granted",
-        "Include bad things that aren't happening. Go slowly—really feel the gratefulness for each item",
-        "Use different items each time. Feel the slight strain of finding new things",
-        "After about 30 seconds, stop thinking and focus on the physical sensation of gratefulness",
-        "Feel it coming from your heart. This energy is the Grateful Flow",
-        "Your chest will soften and open. Feel an overwhelming presence approach you",
-        "You've connected to the Source—a force of infinite giving that dissolves all negativity"
+        "When negative thoughts spiral, pause and shift to gratitude deliberately",
+        "Name specific things you're grateful for — especially things you normally take for granted",
+        "Include absences: pain you're not in, losses you haven't suffered. Really feel each one",
+        "Use different items each time. The slight effort of searching for new ones is part of the practice",
+        "After 30 seconds of naming, stop thinking and focus on the physical sensation of gratitude",
+        "Notice where you feel it in your body — often a warmth or softening in the chest",
+        "Stay with that feeling. Gratitude isn't just a thought — it's a body state that crowds out negativity"
       ],
       duration: 3,
-      instructions: "Use immediately when attacked by negative thoughts. Gratefulness is the antidote to the 'Black Cloud' of negative thinking",
-      source: "The Tools (Phil Stutz & Barry Michels)"
+      instructions: "For breaking negative thought spirals. Gratitude is a somatic state, not just a cognitive exercise — feeling it in the body is what shifts your nervous system",
+      source: "App original — inspired by positive psychology and contemplative gratitude practices"
     },
     {
       id: 'SC-005',
@@ -1332,127 +1332,136 @@ export const exercises = {
   ],
 
   // ============================================================
-  // JUNGIAN / THE TOOLS (Stutz & Michels)
+  // JUNGIAN / DEPTH PSYCHOLOGY VISUALIZATION
   // ============================================================
   jungian: [
     {
       id: 'JU-001',
-      title: "The Reversal of Desire",
+      title: "Moving Toward Discomfort",
       steps: [
-        "Focus on the pain you're avoiding. See it appear in front of you as a dark cloud",
-        "Silently scream: 'BRING IT ON!' Demand the pain—you want it because it has great value",
-        "Scream silently: 'I LOVE PAIN!' Keep moving forward. Move so deeply into the pain you're at one with it",
-        "Feel the cloud spit you out and close behind you",
-        "Say inwardly: 'PAIN SETS ME FREE!'",
-        "Feel yourself propelled forward into a realm of pure light",
-        "Use this whenever you feel fear or resistance to something you need to do"
+        "Identify something you've been avoiding — a conversation, a task, a feeling",
+        "Close your eyes. Visualize that discomfort as a shape or presence in front of you",
+        "Instead of turning away, take a step toward it in your mind. Welcome it",
+        "Notice: the resistance itself is what causes most of your suffering, not the thing you're avoiding",
+        "Breathe into the discomfort. Let it be present without trying to fix it",
+        "Visualize yourself moving through it and arriving on the other side, lighter",
+        "Open your eyes. Take one small action toward the thing you've been avoiding"
       ],
       duration: 2,
-      instructions: "For overcoming avoidance. Connects you to the Force of Forward Motion. Use right before doing something uncomfortable, or whenever you think about something painful",
-      source: "The Tools (Phil Stutz & Barry Michels)"
+      instructions: "For overcoming avoidance and procrastination. The paradox: willingly approaching discomfort dissolves its power over you",
+      source: "App original — inspired by exposure-based and depth psychology principles"
     },
     {
       id: 'JU-002',
-      title: "Active Love",
+      title: "Compassion for Difficult People",
       steps: [
-        "CONCENTRATION: Feel your heart expand to encompass the world of infinite love surrounding you",
-        "When your heart contracts back to normal size, it concentrates all this love inside your chest",
-        "TRANSMISSION: Send all the love from your chest to the person who angered you, holding nothing back",
-        "PENETRATION: When the love enters the other person, don't just watch—feel it enter. Sense a oneness",
-        "Then relax, and feel all the energy you gave away returned to you",
-        "Use this when someone enrages you, when reliving an injustice, or to prepare for a difficult person"
+        "Bring to mind someone who has angered or hurt you",
+        "Notice the tension in your body — the grip of resentment. Acknowledge it",
+        "Now shift your attention to your heart. Place a hand on your chest if it helps",
+        "Imagine warmth expanding from your chest outward, like radiating heat",
+        "Direct that warmth toward the difficult person. You're not condoning their behavior — you're freeing yourself",
+        "Notice: sending compassion outward loosens the constriction inside you",
+        "Rest in whatever openness is available. Resentment harms the one who holds it most"
       ],
       duration: 2,
-      instructions: "For anger, resentment, and the Maze of injustice. Creates Outflow—the force that accepts everything as it is. You become the chief beneficiary",
-      source: "The Tools (Phil Stutz & Barry Michels)"
+      instructions: "For anger and resentment. Directing compassion outward — even toward someone who wronged you — breaks the cycle of rumination and frees your own energy",
+      source: "App original — inspired by loving-kindness and depth psychology traditions"
     },
     {
       id: 'JU-003',
-      title: "Inner Authority",
+      title: "Reclaiming Your Shadow",
       steps: [
-        "Standing before any audience (real or imagined, even one person)",
-        "See your Shadow off to one side, facing you—the embodiment of all your negative traits",
-        "Ignore the audience completely. Focus all attention on the Shadow",
-        "Feel an unbreakable bond between you and your Shadow—as a unit you're fearless",
-        "Together, you and the Shadow forcefully turn toward the audience",
-        "Silently command them: 'LISTEN!'",
-        "Feel the authority that comes when you and your Shadow speak with one voice"
+        "Think of a situation where you feel insecure, small, or silenced",
+        "Imagine the parts of yourself you hide — the messy, intense, 'unacceptable' parts",
+        "Visualize those parts as a figure standing beside you. This is your shadow self",
+        "Instead of pushing it away, acknowledge it: 'You are part of me. I need your strength'",
+        "Feel what it's like to stand with all of yourself — not just the polished version",
+        "Now turn toward the situation that intimidated you. Notice how much more grounded you feel",
+        "Your full self — light and shadow together — speaks with more authority than the curated version ever could"
       ],
       duration: 2,
-      instructions: "For insecurity and performance anxiety. Connects you to the Force of Self-Expression by integrating your Shadow. The Shadow holds your buried power",
-      source: "The Tools (Phil Stutz & Barry Michels)"
+      instructions: "For insecurity and performance anxiety. Jungian shadow integration: the traits you reject hold buried power. Welcoming them back makes you whole",
+      source: "App original — inspired by Jungian shadow work"
     },
     {
       id: 'JU-004',
-      title: "Jeopardy (The Deathbed Tool)",
+      title: "Mortality Reflection",
       steps: [
-        "See yourself lying on your deathbed",
-        "This older self looks back at your life with piercing clarity",
-        "Having run out of time, this older self screams at you: 'DON'T WASTE THE PRESENT!'",
-        "Feel the deep, hidden fear that you've been squandering your life",
-        "Let this create an urgent desire to use whichever tool you need right now",
-        "This generates the willpower to overcome the tendency to quit",
-        "Use whenever you can't get yourself to use the other tools, or when you feel you've outgrown them"
+        "Close your eyes. Imagine yourself at the very end of your life, looking back",
+        "From that vantage point, ask: 'What did I spend my time on? What did I avoid?'",
+        "Notice any regret that arises — not to punish yourself, but to clarify what matters",
+        "Let the awareness of limited time create urgency, not anxiety",
+        "Ask your future self: 'What would you tell me to do right now?'",
+        "Listen. The answer is usually simple and clear",
+        "Open your eyes and take one action aligned with that clarity"
       ],
       duration: 2,
-      instructions: "The meta-tool for overcoming the tendency to quit. Creates willpower—the one higher force you must generate yourself",
-      source: "The Tools (Phil Stutz & Barry Michels)"
+      instructions: "Memento mori — the ancient practice of reflecting on mortality to clarify what matters. Creates willpower by making the cost of inaction vivid",
+      source: "App original — inspired by Stoic memento mori and existential psychology"
     },
     {
       id: 'JU-005',
-      title: "The Black Sun",
+      title: "Transforming Craving into Fullness",
       steps: [
-        "DEPRIVATION: Feel the deprivation of not getting what you want, as intensely as possible. Let go of the thing you want. Let the outside world disappear",
-        "EMPTINESS: Look inside yourself. The feeling of deprivation becomes an endless void. Face it. Remain calm and still",
-        "FULLNESS: From the depths of the void, imagine a Black Sun ascending. It expands inside you until you become one with its warm, limitless energy",
-        "GIVING: Redirect attention to the outside world. The Black Sun energy overflows, surging out as pure white light of infinite giving",
-        "Use when flooded with impulses (cravings, checking phone, losing temper, etc.)"
+        "Notice the craving or impulse pulling at you — the urge to check, consume, react",
+        "Instead of acting on it, pause. Feel the wanting fully without satisfying it",
+        "Let the wanting deepen. Beneath it you'll find a raw emptiness. Stay with it",
+        "Breathe into that emptiness. Rather than a void to fill, see it as open space",
+        "Imagine warmth rising from within that space — your own inner vitality, not dependent on anything external",
+        "Let that warmth expand until it feels larger than the craving",
+        "From this fullness, notice: the impulse has less grip. You are already enough"
       ],
       duration: 3,
-      instructions: "For impulse control and addictive urges. Self-restraint transforms lower energy into higher Life Force. Being deprived of what you want doesn't kill you—it fulfills your potential",
-      source: "Coming Alive (Phil Stutz & Barry Michels)"
+      instructions: "For impulse control and cravings. The practice of sitting with wanting — without acting — reveals that the emptiness beneath craving can become a source of energy",
+      source: "App original — inspired by depth psychology and contemplative traditions"
     },
     {
       id: 'JU-006',
-      title: "The Vortex",
+      title: "Drawing Energy from Overwhelm",
       steps: [
-        "TWELVE SUNS: See twelve suns in a circle directly over your head",
-        "Silently scream 'HELP!' at them with focused intensity",
-        "This sets the circle spinning, creating a gentle tornado-shaped vortex",
-        "RISE: Relax. Allow your body to become one with the vortex. Feel it lift you up through the circle of suns",
-        "GROW: Once through the circle, feel yourself grow into a giant with unlimited energy",
-        "Move slowly but deliberately through the world without any resistance",
-        "Use when overwhelmed, exhausted, or unable to move forward"
+        "Acknowledge the exhaustion. Say to yourself: 'I am depleted right now. That's real'",
+        "Close your eyes. Imagine you can call on something larger than your personal energy — the life force itself",
+        "Silently ask for help. You don't need to know who or what you're asking",
+        "Visualize energy entering through the top of your head, warm and steady",
+        "Let it fill your body from head to feet. Feel yourself straightening, expanding",
+        "Imagine standing taller than your problems — seeing them from a higher vantage point",
+        "Move slowly and deliberately. Energy comes from engaging with life, not withdrawing from it"
       ],
       duration: 2,
-      instructions: "For depletion and overwhelm. Taps into infinite spiritual energy when physical energy runs out. Life energy comes from meeting demands, not withdrawing",
-      source: "Coming Alive (Phil Stutz & Barry Michels)"
+      instructions: "For depletion and overwhelm. When personal energy is exhausted, this visualization connects you to a sense of larger vitality beyond ego resources",
+      source: "App original — inspired by visualization and transpersonal psychology"
     },
     {
       id: 'JU-007',
-      title: "The Mother",
+      title: "The Nurturing Presence",
       steps: [
-        "TOXIC SUBSTANCE: Feel the demoralization as intensely as you can. Focus on its heaviness as an oppressive substance. Visualize it so vividly the feelings leave your head",
-        "THE MOTHER APPEARS: See the Mother hovering above you. Place faith in her power. Let go of the dark substance. She lifts it from you as if it's weightless. Watch it rise to her; she absorbs it",
-        "FEEL HER LOVE: Feel her eyes upon you. They radiate absolute confidence in you. She believes in you unreservedly. Let her unshakable faith fill you up. Everything feels possible",
-        "Use when feeling hopeless, defeated, blocked, or in despair"
+        "Notice the hopelessness or despair you're carrying. Don't resist it — feel its weight",
+        "Externalize it: imagine the heavy feeling as a dark substance you can set down",
+        "Now imagine a nurturing presence — an archetype of unconditional care. This could be a wise elder, a loving figure, or simply a warm light",
+        "This presence sees you completely and believes in you without reservation",
+        "Imagine the heavy feeling lifting from you, absorbed by this presence effortlessly",
+        "Feel their confidence in you. Let it fill the space where the despair was",
+        "Rest in this. Even a moment of feeling believed in can shift what feels possible"
       ],
       duration: 3,
-      instructions: "For hopelessness and despair. Creates hope out of despair and resilience to bounce back from any defeat. Reconnects you to the excitement of being alive",
-      source: "Coming Alive (Phil Stutz & Barry Michels)"
+      instructions: "For hopelessness and despair. Archetypal visualization of unconditional support. Accessing the inner 'good parent' archetype restores hope when personal reserves are empty",
+      source: "App original — inspired by Jungian archetypes and attachment theory"
     },
     {
       id: 'JU-008',
-      title: "The Tower",
+      title: "Symbolic Death and Renewal",
       steps: [
-        "DEATH: Call up the hurt feelings. Make them much worse. Feel them attacking your heart. They become so intense your heart breaks and you die. You lie motionless on the ground",
-        "ILLUMINATION: Hear a voice say with authority: 'Only the dead survive.' Your heart fills with light. You see you're at the bottom of a hollow tower, open at the top. Light spreads through your body",
-        "TRANSCENDENCE: Buoyed by light, effortlessly float up the tower and out the top. Continue ascending into perfect blue sky. Your body, purified of all pain, feels completely new",
-        "Use when reliving past hurts, in the midst of injury, or to prepare for potential future hurts"
+        "Bring to mind a wound you keep reliving — a betrayal, a loss, a deep hurt",
+        "Feel it fully. Let the pain be as big as it wants to be for a moment",
+        "Now imagine that the old version of you — the one defined by this wound — can be released",
+        "Visualize laying that identity down. It served you, but you are more than your injuries",
+        "Feel a lightness where the weight was. Imagine light filling your body from the inside",
+        "Sense yourself rising above the story of the wound — not denying it, but no longer trapped in it",
+        "You are not what happened to you. You are what you choose to become"
       ],
       duration: 3,
-      instructions: "For being stuck in victimhood after injury. Acceptance of fate lets you shift from victim to recovery. Your heart has the power to be reborn",
-      source: "Coming Alive (Phil Stutz & Barry Michels)"
+      instructions: "For being stuck in victimhood after being hurt. Symbolic 'death and rebirth' visualization — a universal motif across cultures — helps you release identification with old wounds",
+      source: "App original — inspired by death/rebirth archetypes across mythological and depth psychology traditions"
     },
   ],
 
@@ -1628,132 +1637,132 @@ export const exercises = {
   habits: [
     {
       id: 'HAB-001',
-      title: "Habit Stacking",
+      title: "Anchoring New Behaviors",
       steps: [
         "Identify a current habit you do reliably every day (e.g., making coffee, brushing teeth)",
         "Choose a new small behavior you want to build",
-        "Create a habit stack: 'After I [current habit], I will [new behavior]'",
-        "Start incredibly small—2 minutes or less",
+        "Link them: 'After I [existing habit], I will [new behavior]'",
+        "Start very small — 2 minutes or less",
         "Example: 'After I pour my morning coffee, I will sit and breathe for 60 seconds'",
         "Do this consistently for at least 2 weeks before adding complexity",
-        "Celebrate each time you complete the stack (even a small smile or fist pump)"
+        "Acknowledge each completion — even a quiet nod reinforces the pattern"
       ],
       duration: 2,
-      instructions: "Link new behaviors to existing habits. The existing habit becomes the cue for the new one. From Atomic Habits",
-      source: "Atomic Habits (James Clear)"
+      instructions: "An existing routine becomes the cue for a new behavior. This leverages your brain's existing neural pathways rather than building from scratch",
+      source: "App original — based on behavioral chaining principles from behavioral psychology"
     },
     {
       id: 'HAB-001.1',
-      title: "Tiny Habits Recipe",
+      title: "Micro-Habit Seeding",
       variationOf: 'HAB-001',
       steps: [
-        "Choose an 'anchor moment'—something you already do (e.g., sitting down at desk, flushing toilet)",
-        "Create a tiny behavior—the smallest version of the habit you want (e.g., one push-up, one deep breath)",
-        "Write the recipe: 'After I [anchor], I will [tiny behavior]'",
-        "Immediately celebrate: smile, say 'good job', do a small fist pump",
-        "The celebration is crucial—it wires the habit through positive emotion",
-        "Keep it tiny for at least a week. Don't scale up too fast",
-        "Let the habit grow naturally as it becomes automatic"
+        "Choose a moment that already happens daily (e.g., sitting down at your desk, finishing a meal)",
+        "Attach the smallest possible version of the habit you want — absurdly small (one push-up, one breath)",
+        "Write it down: 'After I [moment], I will [micro-behavior]'",
+        "Immediately after doing it, celebrate — smile, nod, say 'nice' to yourself",
+        "The positive emotion is what wires the habit. Repetition alone is not enough",
+        "Keep it tiny for at least a week. Resist the urge to scale up too fast",
+        "Let the habit grow naturally once the trigger-behavior-reward loop is automatic"
       ],
       duration: 1,
-      instructions: "BJ Fogg's Tiny Habits method. The key insight: emotions create habits, not repetition. Celebration is the secret ingredient",
-      source: "Tiny Habits (BJ Fogg)"
+      instructions: "Emotion, not repetition, creates lasting habits. By keeping the behavior absurdly small and celebrating immediately, you wire a new neural pathway with minimal friction",
+      source: "App original — based on behavioral design and positive reinforcement principles"
     },
     {
       id: 'HAB-002',
-      title: "The Two-Minute Rule",
+      title: "The Two-Minute Start",
       steps: [
         "Identify a habit you want to build",
         "Scale it down to a version that takes 2 minutes or less",
         "Reading: 'Read one page.' Exercise: 'Put on workout shoes.' Meditation: 'Sit on cushion for 60 seconds'",
         "Do only the 2-minute version. Stop after 2 minutes if you want to",
-        "The goal is to 'show up'—master the art of starting",
+        "The goal is to master the art of showing up — starting is the hardest part",
         "Once showing up is automatic, gradually extend the duration",
         "A habit must be established before it can be optimized"
       ],
       duration: 2,
-      instructions: "The gateway to bigger habits. Make it so easy you can't say no. Standardize before you optimize",
-      source: "Atomic Habits (James Clear)"
+      instructions: "Make the barrier to entry so low you can't say no. Consistency at a tiny scale beats sporadic effort at full scale",
+      source: "App original — based on behavioral activation and friction reduction principles"
     },
     {
       id: 'HAB-003',
-      title: "Implementation Intention",
+      title: "Specific Action Planning",
       steps: [
         "Choose a behavior you want to do more consistently",
         "Write a specific plan: 'I will [behavior] at [time] in [location]'",
         "Be precise: 'I will meditate for 5 minutes at 7:00 AM in the living room chair'",
         "Anticipate obstacles: 'If [obstacle], then I will [response]'",
         "Example: 'If I oversleep, then I will meditate for 2 minutes before leaving'",
-        "Post your intention where you'll see it",
-        "People who make implementation intentions are significantly more likely to follow through"
+        "Post your plan where you'll see it daily",
+        "Research consistently shows that specific when/where/how plans dramatically increase follow-through"
       ],
       duration: 5,
-      instructions: "Research shows implementation intentions dramatically increase follow-through. Specificity is the key",
-      source: "Atomic Habits (James Clear)"
+      instructions: "Vague intentions ('I should exercise more') rarely lead to action. Specifying the when, where, and how removes the decision-making that causes procrastination",
+      source: "App original — based on implementation intention research (Gollwitzer, 1999)"
     },
     {
       id: 'HAB-004',
-      title: "Temptation Bundling",
+      title: "Reward Pairing",
       steps: [
         "List activities you enjoy but feel guilty about (TV, social media, snacks)",
-        "List behaviors you know are good for you but avoid (exercise, studying, cleaning)",
+        "List behaviors you know are good for you but tend to avoid (exercise, studying, cleaning)",
         "Pair them: 'I will only [enjoyable thing] while/after [beneficial thing]'",
         "Example: 'I will only listen to my favorite podcast while exercising'",
         "Example: 'I will only check social media after I journal for 5 minutes'",
-        "Start with one bundle and practice it for a week",
-        "The enjoyable activity becomes a reward that pulls you toward the beneficial one"
+        "Start with one pairing and practice it for a week",
+        "The enjoyable activity becomes a built-in reward that pulls you toward the beneficial one"
       ],
       duration: 10,
-      instructions: "Temptation bundling links an action you want to do with an action you need to do, making habit formation more pleasurable",
-      source: "Atomic Habits (James Clear) / 30 Days to Better Habits"
+      instructions: "Linking a desired activity to a needed one makes the needed behavior more attractive. You harness existing motivation rather than relying on willpower alone",
+      source: "App original — based on Premack's principle and reinforcement scheduling from behavioral psychology"
     },
     {
       id: 'HAB-005',
-      title: "Habit Contract",
+      title: "Accountability Agreement",
       steps: [
         "Choose a habit you want to build and write it down clearly",
-        "Define exactly when, where, and how you'll do it (implementation intention)",
-        "List specific consequences for missing your habit (e.g., donate money, do a chore)",
-        "Find an accountability partner—someone who will hold you to it",
-        "Both of you sign the contract with start date",
+        "Define exactly when, where, and how you'll do it",
+        "List specific consequences for missing your habit (e.g., donate money, do a chore you dislike)",
+        "Find an accountability partner — someone who will hold you to it",
+        "Both of you agree on the terms and a start date",
         "Track your habit daily and check in with your partner weekly",
-        "Review and renew the contract monthly"
+        "Review and renew the agreement monthly"
       ],
       duration: 15,
-      instructions: "Social contracts with real consequences dramatically increase follow-through. The key is making the cost of skipping immediate and visible",
-      source: "Atomic Habits (James Clear)"
+      instructions: "Social accountability with real consequences dramatically increases follow-through. Making the cost of skipping immediate and visible bridges the gap between intention and action",
+      source: "App original — based on commitment device research and social accountability principles"
     },
     {
       id: 'HAB-006',
-      title: "Identity-Based Habit Setting",
+      title: "Becoming Before Doing",
       steps: [
-        "Instead of setting a goal, choose who you want to become",
-        "Example: instead of 'lose 10 pounds,' choose 'become a person who moves daily'",
-        "Ask: 'What would this person do?'",
-        "Choose the smallest possible action that casts a vote for this identity",
-        "Example: 'A healthy person would take the stairs'—so take the stairs",
-        "Each small action is a vote. You don't need unanimity, just a majority",
-        "Track your votes: each time you act in alignment, note it"
+        "Instead of setting a goal ('lose 10 pounds'), choose who you want to become ('a person who moves daily')",
+        "Write down this identity statement: 'I am becoming someone who...'",
+        "Ask: 'What would this person do right now?'",
+        "Choose the smallest possible action aligned with that identity",
+        "Example: 'Someone who cares for their body would take the stairs' — so take the stairs",
+        "Each small aligned action reinforces the identity. You don't need perfection, just consistency",
+        "Track your aligned actions: notice how your self-image shifts over time"
       ],
       duration: 10,
-      instructions: "True behavior change is identity change. Every action is a vote for the type of person you want to become",
-      source: "Atomic Habits (James Clear) / 30 Days to Better Habits"
+      instructions: "Sustainable behavior change starts with identity, not outcomes. When your self-concept shifts, the behaviors follow naturally rather than requiring constant willpower",
+      source: "App original — based on self-concept theory and identity-based motivation research"
     },
     {
       id: 'HAB-007',
-      title: "Environment Design for Habits",
+      title: "Shaping Your Environment",
       steps: [
         "Choose one habit you want to build",
         "Look at your physical environment: does it make this habit easy or hard?",
-        "Make the cue obvious: put your meditation cushion in plain sight",
-        "Reduce friction: lay out exercise clothes the night before",
-        "Increase friction for bad habits: put your phone in another room, delete apps",
-        "Prime your environment: set up your space so the desired action is the default",
-        "Redesign one element of your environment today"
+        "Make the cue obvious: put your meditation cushion in plain sight, set out your journal",
+        "Reduce friction: lay out exercise clothes the night before, pre-fill your water bottle",
+        "Increase friction for unwanted habits: put your phone in another room, delete distracting apps",
+        "Prime your space so the desired action is the easiest next step",
+        "Redesign one element of your environment today and observe the effect"
       ],
       duration: 10,
-      instructions: "We are products of our environment more than our willpower. Design your space to make good habits the path of least resistance",
-      source: "Atomic Habits (James Clear) / 30 Days to Better Habits"
+      instructions: "Willpower is unreliable. Environment design makes desired behaviors the path of least resistance and unwanted behaviors harder to do by default",
+      source: "App original — based on choice architecture and environmental design research"
     },
   ],
 
@@ -1921,7 +1930,7 @@ export const exercises = {
       ],
       duration: 5,
       instructions: "The most common integration failure is not lack of insight but lack of daily practice. Small, consistent action is how insights become transformation",
-      source: "After the Ceremony Ends / Atomic Habits"
+      source: "After the Ceremony Ends / behavioral psychology principles"
     },
   ],
 
@@ -2762,10 +2771,10 @@ export const exerciseCategories = [
   },
   {
     id: 'jungian',
-    name: 'The Tools',
+    name: 'Depth Psychology',
     icon: 'psychology',
     color: '#f97316',
-    description: 'Visualization tools for shadow work and growth (Stutz & Michels)'
+    description: 'Visualization tools for shadow work, archetypes, and inner transformation'
   },
   {
     id: 'cbt',

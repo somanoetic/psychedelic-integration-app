@@ -6,7 +6,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   Platform,
-  Dimensions
+  Dimensions,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -40,8 +41,8 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
       icon: 'auto-stories',
       color: '#3b82f6',
       emoji: '📖',
-      description: 'Foundation knowledge on IFS, Polyvagal Theory, and integration',
-      topics: ['nervous_system', 'ifs_basics', 'grounding_practices']
+      description: 'Foundation knowledge on integration, your nervous system, and how healing works',
+      topics: ['nervous_system', 'integration_basics', 'ifs_basics', 'grounding_practices']
     },
     {
       id: 'about_myself',
@@ -50,15 +51,42 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
       color: '#8b5cf6',
       emoji: '🧠',
       description: 'Interactive tools to explore your inner world and patterns',
-      topics: ['ifs_chat', 'polyvagal_mapping', 'triggers_glimmers', 'regulating_resources']
+      topics: ['ifs_chat', 'polyvagal_mapping', 'triggers_glimmers', 'regulating_resources', 'core_beliefs']
+    },
+    {
+      id: 'body_and_brain',
+      title: 'Body, brain & healing',
+      icon: 'healing',
+      color: '#ef4444',
+      emoji: '🫁',
+      description: 'How your body and brain process experiences and support healing',
+      topics: ['somatic_awareness', 'brain_and_healing', 'trauma_understanding', 'attachment_styles']
+    },
+    {
+      id: 'tools_and_practices',
+      title: 'Tools & daily practices',
+      icon: 'build',
+      color: '#f59e0b',
+      emoji: '🔧',
+      description: 'Practical skills for building lasting change',
+      topics: ['building_habits', 'cognitive_patterns', 'contemplative_practices', 'acceptance_commitment']
     },
     {
       id: 'therapies',
-      title: 'Teach me about the therapies',
-      icon: 'school',
+      title: 'Preparation & safety',
+      icon: 'shield',
       color: '#10b981',
+      emoji: '🛟',
+      description: 'Set & setting, harm reduction, and the full integration arc',
+      topics: ['psychedelic_preparation', 'harm_reduction']
+    },
+    {
+      id: 'deep_dives',
+      title: 'Deep dives & all topics',
+      icon: 'school',
+      color: '#6366f1',
       emoji: '🎓',
-      description: 'Deep dives into IFS, Polyvagal Theory, Buddhist ideas, and more',
+      description: 'Browse the complete library of integration education',
       topics: ['all_topics']
     }
   ];
@@ -121,21 +149,98 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
       description: 'What helps you regulate - alone and with others',
       time: '8-10 minutes',
       color: '#8b5cf6'
+    },
+    // New modules from knowledge base
+    integration_basics: {
+      title: 'Integration Basics',
+      emoji: '🌱',
+      description: 'What integration is and why it matters',
+      time: '7 minutes',
+      color: '#3b82f6'
+    },
+    somatic_awareness: {
+      title: 'Somatic Awareness & the Body',
+      emoji: '🫁',
+      description: 'Learn to read your body\'s signals and use body-based tools',
+      time: '10 minutes',
+      color: '#ef4444'
+    },
+    brain_and_healing: {
+      title: 'Your Brain on Healing',
+      emoji: '🧬',
+      description: 'How neuroscience explains why integration works',
+      time: '10 minutes',
+      color: '#ef4444'
+    },
+    building_habits: {
+      title: 'Building Integration Habits',
+      emoji: '🔄',
+      description: 'Use habit science to make your practices stick',
+      time: '8 minutes',
+      color: '#f59e0b'
+    },
+    cognitive_patterns: {
+      title: 'Cognitive Patterns & Distortions',
+      emoji: '💭',
+      description: 'Recognize thinking traps and learn to reframe them',
+      time: '9 minutes',
+      color: '#f59e0b'
+    },
+    trauma_understanding: {
+      title: 'Understanding Trauma',
+      emoji: '🌿',
+      description: 'What trauma is and how integration supports healing',
+      time: '10 minutes',
+      color: '#ef4444'
+    },
+    attachment_styles: {
+      title: 'Attachment & Relationships',
+      emoji: '🤝',
+      description: 'How your attachment patterns shape your inner world',
+      time: '9 minutes',
+      color: '#ef4444'
+    },
+    harm_reduction: {
+      title: 'Harm Reduction & Safety',
+      emoji: '🛟',
+      description: 'Practical safety knowledge for responsible use',
+      time: '8 minutes',
+      color: '#10b981'
+    },
+    contemplative_practices: {
+      title: 'Contemplative & Mindfulness',
+      emoji: '🧘',
+      description: 'Meditation and mindfulness approaches to integration',
+      time: '9 minutes',
+      color: '#f59e0b'
+    },
+    psychedelic_preparation: {
+      title: 'Preparation & The Integration Arc',
+      emoji: '🌅',
+      description: 'The full arc from preparation to long-term integration',
+      time: '12 minutes',
+      color: '#10b981'
+    },
+    acceptance_commitment: {
+      title: 'Acceptance & Commitment (ACT)',
+      emoji: '🎯',
+      description: 'Psychological flexibility through acceptance and values',
+      time: '9 minutes',
+      color: '#f59e0b'
     }
   };
 
   const renderHuxleyMessage = (message) => {
-    // AVATAR_OPTIONS is an array, need to find by id
-    const avatarConfig = AVATAR_OPTIONS.find(a => a.id === selectedAvatar) || AVATAR_OPTIONS[0];
-
     return (
       <View style={styles.messageContainer}>
         <View style={styles.huxleyMessageBubble}>
-          <View style={[styles.avatarContainer, { backgroundColor: avatarConfig.color + '20' }]}>
-            <MaterialIcons name={avatarConfig.icon} size={32} color={avatarConfig.color} />
-          </View>
+          <Image
+            source={require('../assets/images/huxley therapist.png')}
+            style={styles.huxleyAvatar}
+            resizeMode="contain"
+          />
           <View style={styles.messageBubble}>
-            <Text style={styles.huxleyName}>{avatarConfig.name}</Text>
+            <Text style={styles.huxleyName}>Huxley</Text>
             <Text style={styles.messageText}>{message}</Text>
           </View>
         </View>
@@ -223,6 +328,7 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
       <View style={styles.topicsContainer}>
         <Text style={styles.topicsLabel}>Foundation Topics:</Text>
         {renderTopicCard('nervous_system')}
+        {renderTopicCard('integration_basics')}
         {renderTopicCard('ifs_basics')}
         {renderTopicCard('grounding_practices')}
       </View>
@@ -250,6 +356,57 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
         {renderTopicCard('polyvagal_mapping')}
         {renderTopicCard('triggers_glimmers')}
         {renderTopicCard('regulating_resources')}
+        {renderTopicCard('core_beliefs')}
+      </View>
+
+      <View style={styles.optionsContainer}>
+        {renderUserOption(
+          'Back to main menu',
+          () => setConversationStep('greeting'),
+          'arrow-back',
+          '#6b7280'
+        )}
+      </View>
+    </>
+  );
+
+  const renderBodyAndBrain = () => (
+    <>
+      {renderHuxleyMessage(
+        "Understanding how your body and brain process experiences is powerful. These modules draw from neuroscience, somatic therapy, trauma research, and attachment theory to help you understand WHY integration works — not just how to do it."
+      )}
+
+      <View style={styles.topicsContainer}>
+        <Text style={styles.topicsLabel}>Body, Brain & Healing:</Text>
+        {renderTopicCard('somatic_awareness')}
+        {renderTopicCard('brain_and_healing')}
+        {renderTopicCard('trauma_understanding')}
+        {renderTopicCard('attachment_styles')}
+      </View>
+
+      <View style={styles.optionsContainer}>
+        {renderUserOption(
+          'Back to main menu',
+          () => setConversationStep('greeting'),
+          'arrow-back',
+          '#6b7280'
+        )}
+      </View>
+    </>
+  );
+
+  const renderToolsAndPractices = () => (
+    <>
+      {renderHuxleyMessage(
+        "These are practical tools you can use every day. From building lasting habits to working with your thinking patterns, these skills make the difference between a powerful experience and a transformed life."
+      )}
+
+      <View style={styles.topicsContainer}>
+        <Text style={styles.topicsLabel}>Practical Tools:</Text>
+        {renderTopicCard('building_habits')}
+        {renderTopicCard('cognitive_patterns')}
+        {renderTopicCard('contemplative_practices')}
+        {renderTopicCard('acceptance_commitment')}
       </View>
 
       <View style={styles.optionsContainer}>
@@ -266,16 +423,38 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
   const renderTherapies = () => (
     <>
       {renderHuxleyMessage(
-        "Great! Ready for the deep dives. These topics cover the theory and methods behind psychedelic integration - IFS, Polyvagal Theory, Buddhist psychology, and more. Browse the full library to explore everything available."
+        "Safety and preparation are essential. These modules cover the full arc of integration — from preparing well to practicing harm reduction — so you can approach every experience with confidence and care."
       )}
 
       <View style={styles.topicsContainer}>
-        <Text style={styles.topicsLabel}>Deep Theory & Methods:</Text>
+        <Text style={styles.topicsLabel}>Preparation & Safety:</Text>
+        {renderTopicCard('psychedelic_preparation')}
+        {renderTopicCard('harm_reduction')}
+      </View>
+
+      <View style={styles.optionsContainer}>
+        {renderUserOption(
+          'Back to main menu',
+          () => setConversationStep('greeting'),
+          'arrow-back',
+          '#6b7280'
+        )}
+      </View>
+    </>
+  );
+
+  const renderDeepDives = () => (
+    <>
+      {renderHuxleyMessage(
+        "Ready to explore everything? Browse the complete library of integration education — from foundational concepts to advanced therapeutic frameworks."
+      )}
+
+      <View style={styles.topicsContainer}>
+        <Text style={styles.topicsLabel}>Complete Library:</Text>
 
         <TouchableOpacity
           style={styles.allTopicsButton}
           onPress={() => {
-            // Switch to full education hub
             if (onViewAllTopics) {
               onViewAllTopics();
             } else if (navigation) {
@@ -284,19 +463,19 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
           }}
           activeOpacity={0.7}
         >
-          <MaterialIcons name="library-books" size={32} color="#10b981" />
+          <MaterialIcons name="library-books" size={32} color="#6366f1" />
           <View style={styles.allTopicsContent}>
-            <Text style={styles.allTopicsTitle}>Browse All Topics</Text>
+            <Text style={styles.allTopicsTitle}>Browse All 21 Topics</Text>
             <Text style={styles.allTopicsDescription}>
               View the complete education library with detailed theory and practice lessons
             </Text>
           </View>
-          <MaterialIcons name="open-in-new" size={24} color="#10b981" />
+          <MaterialIcons name="open-in-new" size={24} color="#6366f1" />
         </TouchableOpacity>
 
         <Text style={styles.popularLabel}>Recommended starting points:</Text>
         {renderTopicCard('nervous_system')}
-        {renderTopicCard('ifs_basics')}
+        {renderTopicCard('integration_basics')}
       </View>
 
       <View style={styles.optionsContainer}>
@@ -346,7 +525,10 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
           {conversationStep === 'greeting' && renderGreeting()}
           {conversationStep === 'basics' && renderBasics()}
           {conversationStep === 'about_myself' && renderAboutMyself()}
+          {conversationStep === 'body_and_brain' && renderBodyAndBrain()}
+          {conversationStep === 'tools_and_practices' && renderToolsAndPractices()}
           {conversationStep === 'therapies' && renderTherapies()}
+          {conversationStep === 'deep_dives' && renderDeepDives()}
         </View>
 
         {conversationStep === 'greeting' && renderProTip()}
@@ -397,6 +579,12 @@ const styles = StyleSheet.create({
   huxleyMessageBubble: {
     flexDirection: 'row',
     alignItems: 'flex-start',
+  },
+  huxleyAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 8,
   },
   avatarContainer: {
     width: 40,

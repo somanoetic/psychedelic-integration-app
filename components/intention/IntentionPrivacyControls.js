@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Switch, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { colors, spacing, borderRadius } from '../../theme/colors';
 
 /**
@@ -12,6 +13,7 @@ import { colors, spacing, borderRadius } from '../../theme/colors';
  * - Visual feedback
  */
 const IntentionPrivacyControls = ({ saveToDatabase, onToggle }) => {
+  const navigation = useNavigation();
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -55,9 +57,7 @@ const IntentionPrivacyControls = ({ saveToDatabase, onToggle }) => {
       {/* Learn More Link */}
       <TouchableOpacity
         style={styles.learnMore}
-        onPress={() => {
-          // Could open privacy policy or help modal
-        }}
+        onPress={() => navigation.navigate('PrivacyPolicy')}
         activeOpacity={0.7}
       >
         <Text style={styles.learnMoreText}>Learn more about privacy</Text>

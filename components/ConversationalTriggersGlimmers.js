@@ -8,6 +8,7 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  Keyboard,
   ActivityIndicator,
   Alert,
   Image
@@ -15,36 +16,99 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
-import triggersGlimmersAIService from '../lib/triggersGlimmersAIService';
+import huxleyService from '../lib/huxleyService';
+import polyvagalContextService from '../lib/polyvagalContextService';
 
 /**
  * Conversational Triggers & Glimmers Exploration
- * AI-guided discovery of what dysregulates and regulates the nervous system
+ * AI-guided discovery of what dysregulates and regulates the nervous system.
+ *
+ * Context-aware: loads prior patterns, initializes huxleyService with
+ * user context, and saves structured results via polyvagalContextService.
  */
-const ConversationalTriggersGlimmers = ({ onComplete }) => {
+const ConversationalTriggersGlimmers = ({ onComplete, navigation }) => {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
+  const [initializing, setInitializing] = useState(true);
   const [phase, setPhase] = useState('intro');
+  const [sessionProgress, setSessionProgress] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
   const scrollViewRef = useRef(null);
   const insets = useSafeAreaInsets();
+
+  // Scroll to bottom when keyboard opens
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const sub = Keyboard.addListener(showEvent, () => {
+      setTimeout(() => {
+        scrollViewRef.current?.scrollToEnd({ animated: true });
+      }, 150);
+    });
+    return () => sub.remove();
+  }, []);
 
   useEffect(() => {
     initializeExploration();
   }, []);
 
-  const initializeExploration = () => {
-    triggersGlimmersAIService.reset();
+  const initializeExploration = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setCurrentUser(user);
+        await huxleyService.initialize(user.id);
+      }
+      huxleyService.setMode('triggers_glimmers', { clearHistory: true });
 
-    const openingMessage = {
-      id: Date.now(),
-      text: "Hi! Let's explore what impacts your nervous system. We'll look at triggers - things that dysregulate you - and glimmers - small moments that bring you back to safety and connection. What would you like to start with?",
-      isAI: true,
-      timestamp: new Date()
-    };
+      const priorPatterns = user
+        ? await polyvagalContextService.getPatternsForAI(user.id)
+        : null;
 
-    setMessages([openingMessage]);
+      const openingText = buildOpeningMessage(priorPatterns);
+
+      setMessages([{
+        id: Date.now(),
+        text: openingText,
+        isAI: true,
+        timestamp: new Date()
+      }]);
+    } catch (error) {
+      console.error('[T&G] Init error:', error);
+      huxleyService.setMode('triggers_glimmers', { clearHistory: true });
+      setMessages([{
+        id: Date.now(),
+        text: "Hi! Let's explore what impacts your nervous system. We'll look at triggers — things that dysregulate you — and glimmers — small moments that bring you back to safety and connection. What would you like to start with?",
+        isAI: true,
+        timestamp: new Date()
+      }]);
+    } finally {
+      setInitializing(false);
+    }
+  };
+
+  const buildOpeningMessage = (patterns) => {
+    if (!patterns) {
+      return "Hi! Let's explore what impacts your nervous system. We'll look at triggers — things that dysregulate you — and glimmers — small moments that bring you back to safety and connection. What would you like to start with?";
+    }
+
+    const hasTriggers = patterns.knownTriggers?.length > 0;
+    const hasGlimmers = patterns.knownGlimmers?.length > 0;
+
+    if (hasTriggers && hasGlimmers) {
+      return "Welcome back! You've already identified some triggers and glimmers. Let's deepen your awareness — have you noticed any new patterns since last time? Or would you like to explore a specific trigger or glimmer more thoroughly?";
+    }
+
+    if (hasTriggers) {
+      return "Welcome back! You've explored some triggers before. Let's balance that out by discovering your glimmers — those small moments of safety and connection that your nervous system responds to. What comes to mind?";
+    }
+
+    if (patterns.hasMappedStates) {
+      return "Hi! I can see you've mapped your nervous system states. Now let's get specific — what triggers pull you out of your safe state, and what glimmers bring you back? Would you like to start with triggers or glimmers?";
+    }
+
+    return "Hi! Let's explore what impacts your nervous system. We'll look at triggers — things that dysregulate you — and glimmers — small moments that bring you back to safety and connection. What would you like to start with?";
   };
 
   const sendMessage = async () => {
@@ -62,7 +126,8 @@ const ConversationalTriggersGlimmers = ({ onComplete }) => {
     setLoading(true);
 
     try {
-      const response = await triggersGlimmersAIService.sendMessage(inputText.trim(), phase);
+      // Handler controls phase and context automatically
+      const response = await huxleyService.chat(inputText.trim());
 
       const aiMessage = {
         id: Date.now() + 1,
@@ -72,7 +137,12 @@ const ConversationalTriggersGlimmers = ({ onComplete }) => {
       };
 
       setMessages(prev => [...prev, aiMessage]);
-      setPhase(response.phase);
+
+      // Update from mode handler
+      if (response.sessionProgress) {
+        setSessionProgress(response.sessionProgress);
+        setPhase(response.sessionProgress.phase);
+      }
     } catch (error) {
       console.error('Error:', error);
       Alert.alert('Error', 'Failed to send message.');
@@ -86,27 +156,24 @@ const ConversationalTriggersGlimmers = ({ onComplete }) => {
     setSaving(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No user');
+      if (!currentUser) throw new Error('No user');
 
-      const extractedData = await triggersGlimmersAIService.extractData();
-      const conversation = triggersGlimmersAIService.getConversationHistory();
+      // Get structured data from mode handler
+      const handlerSummary = huxleyService.getSessionSummary();
+      const triggers = handlerSummary?.triggers || {};
+      const glimmers = handlerSummary?.glimmers || {};
 
-      const { error } = await supabase
-        .from('triggers_glimmers_mapping')
-        .insert({
-          user_id: user.id,
-          conversation,
-          sympathetic_triggers: extractedData.triggers?.sympathetic || [],
-          dorsal_triggers: extractedData.triggers?.dorsal || [],
-          general_triggers: extractedData.triggers?.general || [],
-          sensory_glimmers: extractedData.glimmers?.sensory || [],
-          relational_glimmers: extractedData.glimmers?.relational || [],
-          activity_glimmers: extractedData.glimmers?.activities || [],
-          nature_glimmers: extractedData.glimmers?.nature || []
-        });
-
-      if (error) throw error;
+      // Save to polyvagal patterns via context service
+      await polyvagalContextService.updateTriggersAndGlimmers(currentUser.id, {
+        sympathetic_triggers: triggers.sympathetic || triggers.general || [],
+        dorsal_triggers: triggers.dorsal || [],
+        glimmers: [
+          ...(glimmers.sensory || []),
+          ...(glimmers.relational || []),
+          ...(glimmers.activities || []),
+          ...(glimmers.nature || []),
+        ],
+      });
 
       Alert.alert(
         'Saved!',
@@ -114,7 +181,7 @@ const ConversationalTriggersGlimmers = ({ onComplete }) => {
         [{ text: 'Done', onPress: () => onComplete?.() }]
       );
 
-      triggersGlimmersAIService.reset();
+      huxleyService.setMode('triggers_glimmers', { clearHistory: true });
     } catch (error) {
       console.error('Save error:', error);
       Alert.alert('Error', 'Failed to save mapping.');
@@ -163,6 +230,12 @@ const ConversationalTriggersGlimmers = ({ onComplete }) => {
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={100}>
       <View style={styles.header}>
         <View style={styles.headerContent}>
+          <TouchableOpacity
+            onPress={() => navigation?.goBack()}
+            style={styles.backButton}
+          >
+            <MaterialIcons name="arrow-back" size={24} color="#374151" />
+          </TouchableOpacity>
           <MaterialIcons name="waves" size={24} color="#ec4899" />
           <Text style={styles.headerTitle}>Triggers & Glimmers</Text>
         </View>
@@ -224,6 +297,7 @@ const ConversationalTriggersGlimmers = ({ onComplete }) => {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F5F1E8' },
   header: { backgroundColor: '#fff', padding: 20, paddingTop: 60, borderBottomWidth: 1, borderBottomColor: '#e5e7eb' },
+  backButton: { padding: 4, marginRight: 8 },
   headerContent: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
   headerTitle: { fontSize: 24, fontWeight: 'bold', color: '#1f2937', marginLeft: 12 },
   headerSubtitle: { fontSize: 14, color: '#6b7280', marginLeft: 36 },

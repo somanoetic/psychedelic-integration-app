@@ -128,7 +128,7 @@ describe('IntentionGuidanceService - Database Layer', () => {
       expect(result).toHaveLength(1);
     });
 
-    it('should return empty array when no templates found', async () => {
+    it('should return built-in fallback templates when no templates found in DB', async () => {
       const mockQuery = {
         select: jest.fn().mockReturnThis(),
         eq: jest.fn().mockReturnThis(),
@@ -139,10 +139,13 @@ describe('IntentionGuidanceService - Database Layer', () => {
 
       const result = await intentionGuidanceService.getTemplates();
 
-      expect(result).toEqual([]);
+      // Service falls back to built-in templates when DB returns empty
+      expect(result).toBeInstanceOf(Array);
+      expect(result.length).toBeGreaterThan(0);
+      expect(result[0].id).toMatch(/^builtin-/);
     });
 
-    it('should handle database errors', async () => {
+    it('should return built-in fallback templates on database errors', async () => {
       const mockError = new Error('Database connection failed');
       const mockQuery = {
         select: jest.fn().mockReturnThis(),
@@ -152,7 +155,11 @@ describe('IntentionGuidanceService - Database Layer', () => {
       mockQuery.then = (resolve) => resolve({ data: null, error: mockError });
       mockFrom.mockReturnValue(mockQuery);
 
-      await expect(intentionGuidanceService.getTemplates()).rejects.toThrow('Database connection failed');
+      // Service catches errors and returns built-in templates as fallback
+      const result = await intentionGuidanceService.getTemplates();
+      expect(result).toBeInstanceOf(Array);
+      expect(result.length).toBeGreaterThan(0);
+      expect(result[0].id).toMatch(/^builtin-/);
     });
   });
 

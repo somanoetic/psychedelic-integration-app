@@ -20,6 +20,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
+import polyvagalContextService from '../lib/polyvagalContextService';
 
 const NS_STATES = [
   { id: 'ventral', label: 'Safe & Social', icon: 'favorite', color: '#10b981', description: 'Calm, connected, present, open' },
@@ -107,6 +108,14 @@ const NervousSystemCheckin = ({ navigation }) => {
         });
 
       if (error) throw error;
+
+      // Feed check-in data into long-term polyvagal patterns (fire-and-forget)
+      polyvagalContextService.updatePatternsFromCheckin(user.id, {
+        state: nsState,
+        bodyFeeling: bodyFeeling.trim(),
+        thoughts: thoughts.trim(),
+        context: context.trim(),
+      }).catch(err => console.warn('Pattern update failed:', err));
 
       Alert.alert(
         'Checked In',

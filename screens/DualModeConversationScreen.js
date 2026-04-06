@@ -8,7 +8,10 @@ import {
   Alert,
   Animated,
   Dimensions,
-  ActivityIndicator
+  ActivityIndicator,
+  Platform,
+  Keyboard,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../lib/supabase';
@@ -16,6 +19,7 @@ import DualModeClaudeService from '../enhanced-components/dualModeClaudeService'
 import EmbeddedPracticeWidget from '../enhanced-components/EmbeddedPracticeWidget';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 import { LinearGradient } from 'expo-linear-gradient';
+import FormattedText from '../components/FormattedText';
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 
@@ -74,6 +78,17 @@ const DualModeConversationScreen = ({ navigation, route }) => {
   
   // Dual Mode Claude service
   const integrationGuide = useRef(new DualModeClaudeService()).current;
+
+  // Scroll to bottom when keyboard opens
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const sub = Keyboard.addListener(showEvent, () => {
+      setTimeout(() => {
+        scrollViewRef.current?.scrollToEnd({ animated: true });
+      }, 150);
+    });
+    return () => sub.remove();
+  }, []);
 
   // Initialize conversation
   useEffect(() => {
@@ -507,13 +522,13 @@ What themes or insights from your experience would you like to explore in relati
           message.role === 'user' ? styles.userBubble : styles.assistantBubble
         ]}
       >
-        <Text style={[
+        <FormattedText style={[
           styles.messageText,
           message.role === 'user' ? styles.userText : styles.assistantText
         ]}>
           {message.content}
-        </Text>
-        
+        </FormattedText>
+
         {/* Show Johnson step if in experience mapping mode */}
         {message.johnsonStep && conversationMode === 'experience_mapping' && (
           <View style={styles.johnsonStepIndicator}>
@@ -632,6 +647,11 @@ What themes or insights from your experience would you like to explore in relati
   return (
     <LinearGradient colors={gradients.standard} start={{ x: 1.0, y: 0.0 }} end={{ x: 0.0, y: 1.0 }} style={{ flex: 1 }}>
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+    >
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -639,26 +659,26 @@ What themes or insights from your experience would you like to explore in relati
         </TouchableOpacity>
         <Text style={styles.title}>Dual Mode Integration</Text>
       </View>
-      
+
       {/* Mode Toggle */}
       {renderModeToggle()}
-      
+
       {/* Nervous System Header */}
       {renderNervousSystemHeader()}
-      
+
       {/* Johnson Progress (Experience Mapping Mode Only) */}
       {renderJohnsonProgress()}
-      
+
       <ScrollView
         ref={scrollViewRef}
         style={styles.messagesContainer}
         contentContainerStyle={styles.messagesContent}
-        onContentSizeChange={() => 
+        onContentSizeChange={() =>
           scrollViewRef.current?.scrollToEnd({ animated: true })
         }
       >
         {renderMessages()}
-        
+
         {isLoading && (
           <View style={styles.typingIndicator}>
             <Text style={styles.typingText}>Claude is thinking...</Text>
@@ -678,6 +698,7 @@ What themes or insights from your experience would you like to explore in relati
           onSkip={() => setCurrentPractice(null)}
         />
       )}
+    </KeyboardAvoidingView>
     </SafeAreaView>
     </LinearGradient>
   );

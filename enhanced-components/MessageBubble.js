@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { colors } from '../theme/colors';
+import FormattedText from '../components/FormattedText';
 
 const MessageBubble = ({ message, entities = [], nervousSystemState, onEntityPress }) => {
   const isUser = message.role === 'user';
@@ -73,7 +74,7 @@ const MessageBubble = ({ message, entities = [], nervousSystemState, onEntityPre
 
   return (
     <View style={getBubbleStyle()}>
-      <Text style={getTextStyle()}>{message.content}</Text>
+      <FormattedText style={getTextStyle()}>{message.content}</FormattedText>
       {renderEntities()}
 
       {/* Show nervous system context if available */}

@@ -203,7 +203,7 @@ const TherapistVerificationScreen = ({ navigation }) => {
       <View style={styles.infoSection}>
         <Text style={styles.infoTitle}>🩺 Professional Verification</Text>
         <Text style={styles.infoText}>
-          To upload training scenarios and help improve Claude's therapeutic responses, you need to be a verified mental health professional.
+          To upload training scenarios and help improve Huxley's therapeutic responses, you need to be a verified mental health professional.
         </Text>
       </View>
 
@@ -301,7 +301,7 @@ const TherapistVerificationScreen = ({ navigation }) => {
           • We will verify your license with your state licensing board{"\n"}
           • Verification typically takes 2-3 business days{"\n"}
           • You will receive an email with the verification result{"\n"}
-          • Once verified, you can upload training scenarios to improve Claude's responses
+          • Once verified, you can upload training scenarios to improve Huxley's responses
         </Text>
       </View>
 

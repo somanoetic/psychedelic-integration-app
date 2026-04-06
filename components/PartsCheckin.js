@@ -20,6 +20,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
+import polyvagalContextService from '../lib/polyvagalContextService';
 
 const PART_TYPES = [
   { id: 'protector', label: 'Protector', icon: 'shield', color: '#3b82f6', description: 'Managing, controlling, keeping safe' },
@@ -107,6 +108,11 @@ const PartsCheckin = ({ navigation }) => {
         });
 
       if (error) throw error;
+
+      // Signal to AI services that this user engages with parts work (fire-and-forget)
+      polyvagalContextService.updateNervousSystemContext(user.id, {
+        engages_with_parts_work: true,
+      }).catch(err => console.warn('Context update failed:', err));
 
       Alert.alert(
         'Checked In',
