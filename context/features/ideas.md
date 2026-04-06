@@ -1,7 +1,7 @@
 # Feature Ideas Backlog
 
 **File Size Limit:** 300 lines
-**Last Updated:** 2026-02-07
+**Last Updated:** 2026-03-03
 
 ---
 
@@ -14,99 +14,28 @@
 **Target:** Q3 2026
 
 **Concept:**
-Expand beyond Polyvagal Theory to include other evidence-based ANS approaches, particularly Somatic Experiencing (SE) and complementary nervous system frameworks.
+Expand beyond Polyvagal Theory to include Somatic Experiencing (SE), Window of Tolerance (Dan Siegel), and complementary ANS frameworks.
 
-**Additional Modalities to Integrate:**
-- **Somatic Experiencing (Peter Levine)**: Trauma resolution through body awareness
-  - Pendulation (moving between activation and regulation)
-  - Titration (working with small doses of activation)
-  - Completion of survival responses
-  - Resource building and resilience
-
-- **Neuroception**: Extend polyvagal understanding
-  - Safety/danger/life-threat detection
-  - Co-regulation and social engagement
-
-- **Window of Tolerance (Dan Siegel)**:
-  - Hyperarousal zone (above window)
-  - Hypoarousal zone (below window)
-  - Optimal arousal zone (within window)
-  - Visual tracking over time
-
-- **Embodiment Practices**:
-  - Grounding techniques (5-4-3-2-1, etc.)
-  - Orienting exercises
-  - Boundary work
-  - Resourcing practices
+**Key Modalities:**
+- **Somatic Experiencing (Peter Levine):** Pendulation, titration, completion of survival responses, resource building
+- **Neuroception:** Safety/danger/life-threat detection, co-regulation, social engagement
+- **Window of Tolerance (Dan Siegel):** Hyper/hypoarousal tracking, visual tracking over time
+- **Embodiment Practices:** Grounding, orienting, boundary work, resourcing
 
 **Implementation Ideas:**
-- Extend existing `polyvagalAIService` to include SE concepts
-- Add "Window of Tolerance" visualization alongside polyvagal ladder
+- Extend `polyvagalAIService` to include SE concepts
+- Add Window of Tolerance visualization alongside polyvagal ladder
 - Integrate pendulation exercises into nervous system check-ins
-- Create SE-informed body scan practices
 - Track completion of activation cycles
-- Add somatic resources library
 
 **Why This Matters:**
-- Polyvagal + SE are highly complementary
-- SE adds practical completion practices for stuck activation
+- Polyvagal + SE are highly complementary — SE adds practical completion practices
 - Window of Tolerance is more accessible language for some users
 - Deepens the nervous system regulation toolkit
-- Aligns with trauma-informed integration practices
-
-**Research Foundation:**
-- Peter Levine's "Waking the Tiger" and "In an Unspoken Voice"
-- Dan Siegel's "The Developing Mind"
-- Pat Ogden's Sensorimotor Psychotherapy
-- Strong evidence base for SE in trauma treatment
 
 **Dependencies:**
 - FEAT-104 (Polyvagal Ladder Visualization) should be complete first
-- Core nervous system mapping already exists
 - Would extend, not replace, existing polyvagal implementation
-
-**Next Steps:**
-1. Research SE framework integration points
-2. Consult with SE practitioners on accurate implementation
-3. Design window of tolerance visualization
-4. Create SE-informed practice library
-5. Test with users familiar with both approaches
-
-**Notes:**
-- Don't dilute polyvagal foundation - add complementary layers
-- Ensure clinical accuracy for SE concepts
-- Consider certification/training resources for users to deepen learning
-- Potential partnership with SE training organizations
-
----
-
-### FEAT-301: "Huxley" AI Guide Character
-**Priority:** Medium
-**Status:** Idea - Needs Exploration
-**Estimated Effort:** 5-7 days
-
-**Concept:**
-A wise, gentle AI guide character named after Aldous Huxley that provides companionship and guidance throughout the app.
-
-**Open Questions:**
-- Character vs. tool approach?
-- Chat interface or ambient presence?
-- Avatar design or text-only?
-- User preference to enable/disable?
-
-**Concerns:**
-- Could feel gimmicky
-- Privacy (users may not want AI analyzing everything)
-- API costs for chat
-- Dependency risk
-
-**Alternative:**
-Simple "AI Guide" or "Integration Assistant" without character persona.
-
-**Next Steps:**
-- Test with simple AI guidance first
-- Gather user feedback
-- Decide on personality vs. utility
 
 ---
 
@@ -126,13 +55,24 @@ Incorporate frameworks and practices from "After the Ceremony" book into the app
 
 **Legal Blockers:**
 - Need permission from author/publisher
-- May require licensing agreement
 - Alternative: Summarize principles without direct quotes
 
 **Next Steps:**
 1. Contact author/publisher
 2. Extract key frameworks (while awaiting permission)
 3. If denied, create original inspired content
+
+---
+
+### FEAT-313: Cognitive Bias Modification (CBM) Integration
+**Priority:** Medium-High
+**Status:** Idea - Research Complete
+**Estimated Effort:** 4-5 months (3 phases)
+**Target:** Q2 2026
+
+Evidence-based cognitive bias modification training during the neuroplastic window after psychedelic experiences. First psychedelic + CBM protocol (no published research exists).
+
+**See:** `docs/FEAT-313-cbm-integration.md` (full spec) and `docs/CBM-strategy.md` (literature review)
 
 ---
 
@@ -145,15 +85,10 @@ Incorporate frameworks and practices from "After the Ceremony" book into the app
 Add tooltips, tips, and progressive disclosure throughout app to educate users.
 
 **Implementation Ideas:**
-- Info icons (ℹ️) next to features
+- Info icons next to features
 - First-time pop-up tips
 - Optional "Guide Mode"
 - Help center section
-
-**Content Needed:**
-- Write tips for each screen
-- Create visual indicators
-- Test for helpfulness vs. annoyance
 
 ---
 
@@ -188,10 +123,7 @@ First-time user experience explaining app features and purpose.
 - Indigenous wisdom (interconnection)
 - Perennial philosophy
 
-**Format:**
-- Text articles
-- Audio talkthroughs
-- Interactive explorations
+**Format:** Text articles, audio talkthroughs, interactive explorations
 
 ---
 
@@ -202,14 +134,7 @@ First-time user experience explaining app features and purpose.
 **Status:** Idea
 **Estimated Effort:** 3-4 days
 
-**Concept:**
-Gentle reminders for breathwork, meditation, and practices.
-
-**Requirements:**
-- Push notification infrastructure
-- User preference settings
-- Scheduling logic
-- Opt-in/opt-out flow
+Gentle reminders for breathwork, meditation, and practices. Requires push notification infrastructure, user preference settings, scheduling logic, opt-in/opt-out flow.
 
 ---
 
@@ -218,12 +143,7 @@ Gentle reminders for breathwork, meditation, and practices.
 **Status:** Idea (really a task)
 **Estimated Effort:** 5-7 days
 
-**Needed:**
-- Test on iOS devices (iPhone SE, 12, 14 Pro)
-- Test on various Android versions
-- Test on tablets (iPad, Android)
-- Test landscape mode
-- Document device compatibility
+Test on iOS devices (iPhone SE, 12, 14 Pro), various Android versions, tablets, and landscape mode. Document device compatibility.
 
 ---
 
@@ -232,12 +152,7 @@ Gentle reminders for breathwork, meditation, and practices.
 **Status:** Idea
 **Estimated Effort:** 2-3 days
 
-**Areas:**
-- Initial load time profiling
-- Screen transition optimization
-- Database query performance
-- Image loading/caching
-- Bundle size reduction
+Initial load time profiling, screen transition optimization, database query performance, image loading/caching, bundle size reduction.
 
 ---
 
@@ -246,19 +161,7 @@ Gentle reminders for breathwork, meditation, and practices.
 **Status:** Idea
 **Estimated Effort:** 3-4 days
 
-**Concept:**
-Allow users to export journal entries and data in multiple formats.
-
-**Formats:**
-- PDF (formatted nicely)
-- JSON (machine-readable)
-- CSV (spreadsheet)
-
-**Use Cases:**
-- Share with therapist
-- Backup data
-- Analyze in other tools
-- Data portability (GDPR)
+Allow users to export journal entries and data in PDF, JSON, CSV formats. Use cases: share with therapist, backup, GDPR data portability.
 
 ---
 
@@ -269,20 +172,7 @@ Allow users to export journal entries and data in multiple formats.
 **Status:** Idea - Needs User Consent
 **Estimated Effort:** 1 week
 
-**Concept:**
-Use Claude API to analyze journal entries and provide insights.
-
-**Features:**
-- Pattern identification
-- Emotional progress tracking
-- Suggest integration practices
-- Highlight themes
-
-**Considerations:**
-- User consent required
-- Privacy concerns
-- API cost management
-- Accuracy and liability
+Use Claude API to analyze journal entries for pattern identification, emotional progress tracking, and integration practice suggestions. Requires user consent and careful privacy handling.
 
 ---
 
@@ -291,19 +181,7 @@ Use Claude API to analyze journal entries and provide insights.
 **Status:** Idea - High Complexity
 **Estimated Effort:** 2+ weeks
 
-**Concept:**
-Connect users for peer support.
-
-**Features:**
-- Anonymous sharing
-- Integration practice groups
-- Moderated forums
-
-**Blockers:**
-- Moderation requirements
-- Privacy and anonymity concerns
-- Legal liability
-- Platform maintenance cost
+Connect users for peer support: anonymous sharing, integration practice groups, moderated forums. Blocked by moderation requirements, privacy concerns, legal liability.
 
 ---
 
@@ -312,74 +190,84 @@ Connect users for peer support.
 **Status:** Idea - Long-term
 **Estimated Effort:** 2+ weeks
 
-**Concept:**
-Track biometrics during breathwork and meditation.
-
-**Metrics:**
-- Heart rate variability (HRV)
-- Sleep quality
-- Activity levels
-
-**Devices:**
-- Apple Watch
-- Fitbit
-- Oura Ring
-- Whoop
-
-**Blockers:**
-- API access
-- Device partnerships
-- Complex integration
+Track biometrics (HRV, sleep quality, activity levels) during breathwork and meditation via Apple Watch, Fitbit, Oura Ring, Whoop.
 
 ---
 
-### FEAT-313: Cognitive Bias Modification (CBM) Integration
+### FEAT-315: Voice Conversation Mode (STT + TTS)
+**Priority:** Medium
+**Status:** Idea - Future Paid Feature
+**Estimated Effort:** 3-5 days
+**Monetization:** Paid subscription tier
+
+Allow users to have voice conversations with the AI — speak instead of type, hear responses spoken aloud. Enables "eyes closed" integration experience. Leading approach: Whisper (OpenAI) for STT + ElevenLabs for TTS.
+
+---
+
+### FEAT-316: Relocate Progress Tracking from Practice Section
+**Priority:** Medium
+**Status:** Idea - UX Improvement
+**Estimated Effort:** 1-2 days
+
+Move "Progress Tracking" out of "Practice" section to a more intuitive location (top-level nav, "Insights" section, or home screen widget).
+
+---
+
+### FEAT-317: Therapist Portal (Share + Custom Exercises/RAG)
 **Priority:** Medium-High
-**Status:** Idea - Research Complete ✅
-**Estimated Effort:** 4-5 months (3 phases)
-**Target:** Q2 2026
+**Status:** Idea - Future (post-RAG deployment)
+**Estimated Effort:** 2-3 weeks
+**Depends On:** FEAT-205/206 (RAG pipeline deployed and validated)
+
+Two-sided therapist integration: (1) "Share with your therapist" with selective, revocable sharing; (2) Therapist dashboard for custom exercises and reference materials fed into RAG pipeline for per-client personalization.
+
+---
+
+### FEAT-318: Replace OpenAI Embeddings with Voyage AI
+**Priority:** Medium
+**Status:** Idea - Near-term
+**Estimated Effort:** 1-2 days
+
+**Motivation:** Remove OpenAI dependency entirely. Voyage AI is Anthropic's recommended embedding partner.
+
+**Current State:**
+- `supabase/functions/embeddings/index.ts` calls OpenAI `text-embedding-3-small` (1536 dims)
+- DB column: `vector(1536)` in `document_chunks` table
+- `scripts/chunk_documents.py` uses `cl100k_base` tokenizer (local only, low priority)
+
+**Migration Steps:**
+1. Get Voyage AI API key, store as Supabase secret (`VOYAGE_API_KEY`)
+2. Update edge function to call Voyage API (`voyage-3`, 1024 dims)
+3. DB migration: alter `embedding` column from `vector(1536)` to `vector(1024)`, update IVFFlat index
+4. Re-run ingestion pipeline to re-embed all chunks
+5. Remove `OPENAI_API_KEY` from Supabase secrets
+
+**Notes:**
+- All existing embeddings must be regenerated (incompatible across models)
+- Voyage `voyage-3` is top-ranked on MTEB benchmarks
+- Cost comparable (~$0.06/1M tokens)
+
+### FEAT-319: Voice Recording During Sessions
+**Priority:** Medium
+**Status:** Idea - Session Tool
+**Estimated Effort:** 3-5 days
 
 **Concept:**
-Evidence-based cognitive bias modification training to help users retrain automatic thought patterns during the neuroplastic window after psychedelic experiences.
+Allow users to make voice recordings during a session to capture insights, realizations, and experiences in the moment. Recordings are saved and can be reviewed, transcribed, and integrated later.
 
 **Key Features:**
-- Interpretation bias modification (CBM-I) scenarios
-- Attention training (visual probe tasks)
-- AI-personalized scenarios from journal entries
-- Integration with nervous system mapping, core beliefs, IFS
-- Progress tracking and bias score analytics
+- One-tap voice recording from Session Tools
+- Automatic transcription (Whisper) for later review
+- Link recordings to session timeline
+- Integration prompts based on transcribed content
 
-**Innovation:** 🌟
-- **First psychedelic + CBM protocol** (no published research exists)
-- AI-generated personalized scenarios (novel LLM application)
-- Multi-modal integration (CBM + polyvagal + IFS + journaling)
+### FEAT-320: Expand Progress Tracking Beyond Exercises
+**Priority:** Medium
+**Status:** Idea - UX Enhancement
+**Estimated Effort:** 2-3 days
 
-**Evidence Base:**
-- Strong research for CBM in anxiety/depression (mobile apps validated)
-- Strong research for psychedelics + cognitive flexibility
-- Natural synergy: belief relaxation + cognitive retraining
-
-**Documentation:**
-- **Research:** [CBM-strategy.md](CBM-strategy.md) - Complete literature review & analysis
-- **Feature Spec:** [FEAT-313-cbm-integration.md](FEAT-313-cbm-integration.md) - Full implementation plan
-
-**3-Phase Roadmap:**
-1. **Phase 1 (2-3 months):** Core CBM-I + ABM, pre-built scenarios, progress tracking
-2. **Phase 2 (1-2 months):** AI personalization, Claude API integration
-3. **Phase 3 (1 month):** Adaptive training, research dashboard
-
-**Next Steps:**
-1. ✅ Research complete (comprehensive strategy doc created)
-2. Stakeholder review and prioritization decision
-3. Design mockups (Noesis aesthetic)
-4. Create pre-built scenario library (content work)
-5. Move to planned.md when committed to timeline
-
-**Why This Matters:**
-- Fills research gap in integration science
-- Provides daily self-guided therapeutic practice
-- Leverages neuroplasticity window for lasting change
-- Potential research partnership opportunity
+**Concept:**
+The CurriculumTracker currently only tracks exercise completions. Expand it to also track progress across learning modules (Education/Learn tab content) and other app features like completed inner work sessions, journal streaks, and nervous system check-in history — giving users a holistic view of their growth.
 
 ---
 
@@ -387,34 +275,15 @@ Evidence-based cognitive bias modification training to help users retrain automa
 
 ### REJECTED: Auto-Post to Social Media
 **Reason:** Privacy concerns, not aligned with app values
-**Date:** N/A (never seriously considered)
-
----
-
-## Migration Notes
-
-**From old BUGS_AND_FEATURE_REQUESTS.md:**
-- Many features migrated to planned.md (high priority)
-- Medium/low priority features moved here
-- Some features are really tasks (testing, documentation)
 
 ---
 
 ## Review Process
 
-**Quarterly Review:**
-- Go through all ideas
-- Promote promising ones to planned.md
-- Archive/reject stale ideas
-- Add new ideas from user feedback
+**Quarterly:** Review all ideas, promote promising ones to planned.md, archive stale ideas.
 
-**Criteria for Promotion:**
-- Clear user value
-- Feasible to build
-- Aligns with vision
-- Resources available
+**Criteria for Promotion:** Clear user value, feasible to build, aligns with vision, resources available.
 
 ---
 
-**Current Count:** 12 ideas (active consideration)
-**File Status:** Under limit (280 lines / 300 max)
+**Current Count:** 16 ideas (active consideration)

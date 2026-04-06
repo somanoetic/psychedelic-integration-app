@@ -1,7 +1,7 @@
 # High Priority Bugs (P1)
 
 **File Size Limit:** 300 lines
-**Last Updated:** 2026-02-24
+**Last Updated:** 2026-03-03
 
 ---
 
@@ -9,7 +9,7 @@
 
 ### BUG-101: Screens Missing Noesis Aesthetic
 **Priority:** P1 - High (UI/UX)
-**Status:** Open
+**Status:** Resolved (2026-04-02)
 **Reported:** 2026-02-07 (migrated)
 **Assigned:** Unassigned
 
@@ -39,23 +39,14 @@ Warning: #d4a574
 Error: #c17b7b
 ```
 
-**Proposed Solution:**
-1. Audit all screens systematically
-2. Update colors file-by-file
-3. Test on device after each change
-4. Create checklist in this bug
-
-**Estimated Effort:** 2-3 days
-
-**Notes:**
-- Most screens already updated
-- Need systematic audit to catch all
+**Resolution:**
+Comprehensive audit completed. Only AdminMetricsDashboard.js was using the old dark Noesis palette (NOESIS_COLORS constant with #1a1a2e, #252542, etc.). Replaced all references with `colors.*` from theme/colors.js. No other screens use old colors — all other screens properly import from the theme system. Two minor screens (InteractiveSessionMindMap, QuickNetworkTest) use hardcoded colors but not the old dark palette; these are dev/debug screens.
 
 ---
 
 ### BUG-102: Android Keyboard Overlap
 **Priority:** P1 - High (Platform)
-**Status:** Open
+**Status:** Resolved (2026-04-02)
 **Reported:** 2026-02-07 (migrated)
 **Assigned:** Unassigned
 
@@ -78,57 +69,18 @@ On some Android devices, navigation buttons may overlap with app content, especi
 - [ ] Text inputs at bottom of screen
 - [ ] Landscape mode
 
-**Current Status:**
-- SafeAreaProvider added but not fully tested
-- May need KeyboardAvoidingView on specific screens
-
-**Proposed Solution:**
-1. Test on multiple Android devices/emulators
-2. Add KeyboardAvoidingView where needed
-3. Ensure proper SafeAreaView usage
-4. Test landscape orientation
-
-**Estimated Effort:** 2-3 days (including testing)
-
----
-
-### BUG-103: Git Repository Disorganization
-**Priority:** P1 - High (DevOps)
-**Status:** ✅ RESOLVED
-**Reported:** 2026-02-07 (migrated)
-**Started:** 2026-02-08
-**Resolved:** 2026-02-08
-**Assigned:** Completed
-
-**Description:**
-Many untracked files, large binary files in repo, security files exposed.
-
 **Resolution:**
-1. ✅ Updated .gitignore - excluded knowledge-base/ (1.5GB), IFS-resources/ (828MB)
-2. ✅ Removed junk files - deleted `nul` and `App.js.backup`
-3. ✅ Committed documentation - all context files, CLAUDE.md, ADRs, new components
-4. ✅ Organized commits - 5 logical commits grouping related changes
-5. ✅ Removed large files from history - IFS-resources videos (668MB + 155MB)
-6. ✅ Cleaned secrets from history - removed API keys using git-filter-repo
-7. ✅ Updated repository URL - moved to somanoetic org
-8. ✅ Force pushed to remote - successfully synced with GitHub
-
-**Security Actions Taken:**
-- Removed .env file from ALL git history (67 commits rewritten)
-- Redacted Anthropic API key from documentation
-- Redacted Supabase keys from git history
-- Used git-filter-repo to clean entire repository history
-
-**Outcome:**
-Repository completely cleaned and secure! All secrets removed from history, large media files excluded, documentation committed, working tree clean. Successfully pushed to GitHub without violations.
-
-**Actual Effort:** 2 hours (including complex security cleanup)
+- `softwareKeyboardLayoutMode: "resize"` confirmed set in app.json
+- All 10 screens with TextInput have KeyboardAvoidingView
+- Fixed ExperienceMappingScreen and TherapeuticIntegrationScreen: changed `behavior="padding"` (iOS-only) to `behavior={Platform.OS === 'ios' ? 'padding' : 'height'}` with Android offset of 20
+- Standardized keyboardVerticalOffset across ConversationScreen
+- Remaining: manual QA on physical Android devices recommended
 
 ---
 
 ### BUG-104: PM2 Process High Restart Count
 **Priority:** P1 - High (Infrastructure)
-**Status:** Open
+**Status:** Resolved (2026-04-02 — Oracle Cloud VM no longer in use)
 **Reported:** 2026-02-07 (migrated)
 **Assigned:** Unassigned
 
@@ -168,135 +120,11 @@ PM2 process manager showing 438+ restarts for expo server, indicating instabilit
 
 ---
 
-### BUG-105: Session Creation Doesn't Navigate Into Session
-**Priority:** P1 - High (Navigation/UX)
-**Status:** ✅ RESOLVED
-**Reported:** 2026-02-17
-**Resolved:** 2026-02-24
-
-**Resolution:** `AllSessionsScreen.createNewSession()` navigates directly to the new session after creation.
-
----
-
-### BUG-106: Keyboard Covers Text Input in SetIntentionScreen
-**Priority:** P1 - High (Usability)
-**Status:** ✅ RESOLVED
-**Reported:** 2026-02-17
-**Resolved:** 2026-02-24
-
-**Resolution:** `KeyboardAvoidingView` with proper `keyboardVerticalOffset` implemented in SetIntentionScreen. Also resolves BUG-102 for this screen.
-
----
-
-### BUG-107: SetIntentionScreen Needs Huxley Theme + Avatar
-**Priority:** P1 - High (Design/Branding)
-**Status:** ✅ RESOLVED
-**Reported:** 2026-02-17
-**Resolved:** 2026-02-24
-
-**Resolution:** Huxley avatar displayed in `IntentionMessageBubble` for AI messages. Noesis/Huxley theme applied throughout.
-
----
-
-### BUG-108: Chat Doesn't Auto-Scroll When Huxley Responds
-**Priority:** P1 - High (UX)
-**Status:** ✅ RESOLVED
-**Reported:** 2026-02-17
-**Resolved:** 2026-02-24
-
-**Resolution:** `IntentionConversation` implements auto-scroll on new messages, keyboard show, content size change, and input focus.
-
----
-
-### BUG-109: Conversation Lost on Back Navigation (No Auto-Save)
-**Priority:** P1 - High (Data Loss)
-**Status:** ✅ RESOLVED
-**Reported:** 2026-02-17
-**Resolved:** 2026-02-24
-
-**Resolution:** Draft persistence via AsyncStorage (`intention_draft_${userId}_${sessionId}`), back navigation "Save Draft?" alert, and persisted state across navigation.
-
----
-
-## Recently Resolved
-
-### BUG-100: EAS Build Validation Errors
-**Priority:** P1 - High
-**Status:** Resolved
-**Resolved:** 2026-02-XX
-
-**Description:**
-Build validation failing for Android.
-
-**Solution:**
-Fixed Android version to 1.1.0 (build 4) in native code.
-
-**Commit:** e8ad96e
-
----
-
-## Migration Candidates (from old docs)
-
-The following items from BUGS_AND_FEATURE_REQUESTS.md may belong here but need triage:
-
-- Device cache persistence issues (may be resolved)
-- TypeScript configuration updates (may be low priority)
-- Cross-platform testing needs (feature, not bug)
-- Testing strategy (feature/improvement, not bug)
-
-Review these during next bug triage session.
-
----
-
-### BUG-110: Learn/Sessions Buttons Navigate to Wrong Route
-**Priority:** P1 - High (Navigation)
-**Status:** RESOLVED
-**Reported:** 2026-02-25
-**Resolved:** 2026-02-25
-
-**Description:** "Learn" tile used route 'Education' (screen named 'Learn' in Tab). "Sessions" tile used route 'AllSessions' (screen named 'History' in Tab).
-**Fix:** Updated routes to 'Learn' and 'History'. Removed dead `Education` special-casing.
-
----
-
-### BUG-111: Glimmer Swiper Crash on First Swipe
-**Priority:** P1 - High (Crash)
-**Status:** RESOLVED
-**Reported:** 2026-02-25
-**Resolved:** 2026-02-25
-
-**Description:** PanResponder used stale closure capturing initial empty `deck` and `currentIndex`. `card.category` crash because card was undefined.
-**Fix:** Added `deckRef`/`currentIndexRef` to keep PanResponder in sync with state. Added null guard.
-
----
-
-### BUG-112: ExperienceMapping Shows "No Session Data" Error
-**Priority:** P1 - High (UX)
-**Status:** RESOLVED
-**Reported:** 2026-02-25
-**Resolved:** 2026-02-25
-
-**Description:** "Process and Integrate" navigated to ExperienceMappingScreen without session params. Screen requires `route.params.session`.
-**Fix:** Screen now auto-creates a new session via Supabase if none provided.
-
----
-
-### BUG-113: Core Beliefs Assessment Crash on Completion
-**Priority:** P1 - High (Crash)
-**Status:** RESOLVED
-**Reported:** 2026-02-25
-**Resolved:** 2026-02-25
-
-**Description:** `user` prop never passed when used as Stack.Screen. `user.id` → TypeError.
-**Fix:** Component now fetches user from `supabase.auth.getUser()` if prop not provided.
-
----
-
 ### BUG-114: "Save Intention" Button Does Nothing
 **Priority:** P1 - High (Core Feature)
-**Status:** Open
+**Status:** Resolved
 **Reported:** 2026-03-03
-**Assigned:** Unassigned
+**Resolved:** 2026-03-03
 
 **Description:**
 Tapping the "Save Intention" button on the Set Intention screen produces no visible response — no save, no navigation, no feedback.
@@ -315,5 +143,69 @@ Tapping the "Save Intention" button on the Set Intention screen produces no visi
 
 ---
 
-**Current Count:** 4 active (BUG-101, BUG-102, BUG-104, BUG-114), 11 resolved
-**File Status:** Under limit (300 max)
+### BUG-215: Experience Processing Screen — Conversation Window Too Small
+**Priority:** P1 - High (UX)
+**Status:** Resolved (confirmed 2026-04-02)
+**Reported:** 2026-03-08
+**Assigned:** Unassigned
+
+**Description:**
+The Experience Processing conversation screen (`ExperienceMappingScreen.js`) has too many UI elements consuming vertical space, leaving a cramped conversation window.
+
+**Elements eating space (~250px total on a ~700px screen):**
+1. **Header bar** (~50px) — back button + title + "Switch to Integration" link
+2. **Progress indicator** (~120-130px) — "Experience Processing:" label, 5 phase circles with names, phase summary text box, paper reminder (Phase 1)
+3. **Per-message phase badges** (lines 551-565) — redundant "Phase X: Gathering Details" on every message bubble
+4. **Input area bottom padding** (~70px) — extra padding between text input and navigation bar
+
+**Impact:**
+- Conversation area is roughly 1/3 of screen
+- Users must scroll constantly
+- Feels cramped during deep processing work
+- Worse on smaller phones
+
+**Proposed Solution:**
+1. Make progress indicator collapsible/minimized (show only current phase dot, expand on tap)
+2. Remove per-message phase badges (redundant with top progress indicator)
+3. Reduce input container padding — tighten gap between text box and nav bar
+4. Consider making header slimmer or auto-hiding on scroll
+
+**Estimated Effort:** 1-2 days
+
+**Related:** BUG-102 (Android keyboard overlap)
+
+---
+
+### BUG-216: Excessive Bottom Padding Below Input on Conversation Screens
+**Priority:** P1 - High (UX)
+**Status:** Resolved (confirmed 2026-04-02)
+**Reported:** 2026-03-08
+**Assigned:** Unassigned
+
+**Description:**
+There is extra padding/space between the bottom of the text input box and the top of the tab navigation bar on conversation screens (ExperienceMappingScreen and likely others).
+
+**Impact:**
+- Wastes vertical space on every conversation screen
+- Compounds with BUG-215 to further shrink conversation area
+- Particularly noticeable on smaller devices
+
+**Likely Cause:**
+- `SafeAreaView` with `edges={['top', 'bottom']}` adding bottom inset AND tab bar already accounts for safe area
+- `inputContainer` has 16px padding on all sides
+- `KeyboardAvoidingView` offset may add extra space
+
+**Proposed Solution:**
+1. Audit SafeAreaView bottom edge — may be double-accounting for tab bar
+2. Reduce `inputContainer` bottom padding
+3. Check if `paddingBottom: insets.bottom` in container style is redundant with SafeAreaView edges
+4. Test fix across all conversation screens (ExperienceMapping, HuxleyChat, EnhancedConversation, etc.)
+
+**Estimated Effort:** 0.5-1 day
+
+**Related:** BUG-215, BUG-102
+
+---
+
+**Current Count:** 0 active
+**Resolved bugs archived in:** [resolved.md](resolved.md)

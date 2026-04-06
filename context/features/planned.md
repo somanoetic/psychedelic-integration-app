@@ -45,11 +45,23 @@ As a user, I want AI guidance to assess my nervous system state and IFS parts so
 - [ ] State-specific guidance (dorsal, sympathetic, ventral)
 - [ ] Tracking over time
 
+**Visual Examples & Guidance:**
+The mapping screen should include example visuals showing users *how* to create a nervous system map, with descriptions for each state:
+
+- **Ventral Vagal (Safe & Social):** Show example body outline with warmth/openness markers — soft glow in chest, relaxed shoulders, open hands. Description: "Where do you feel safety in your body? Warmth, openness, softness?"
+- **Sympathetic (Fight/Flight):** Show example with activation markers — tension in jaw/fists, heat in chest, buzzing energy. Description: "Where do you feel activation? Tightness, heat, restlessness, racing?"
+- **Dorsal Vagal (Shutdown/Freeze):** Show example with heaviness/numbness markers — grey/cold areas, heaviness in limbs, fog in head. Description: "Where do you feel shutdown? Heaviness, numbness, disconnection, fog?"
+
+Each example should use a simple body silhouette with color-coded overlays (warm colors for activation, cool colors for shutdown, soft colors for safety). Users can reference these while creating their own map — either by tapping body regions or drawing/annotating. Interactive body map (tap regions to mark sensations) is the goal, but can start with static reference visuals and iterate.
+
+**Note:** User has reference visuals to provide when implementation begins — ask for them before starting design work.
+
 **Technical Notes:**
-- Simple questionnaire
+- Simple questionnaire + visual body map component
 - AI analyzes and identifies likely state
 - Polyvagal ladder visualization
 - Color-coded indicators
+- Example images as onboarding/reference (could be static assets or animated walkthroughs)
 
 **Dependencies:**
 - Polyvagal mapping AI (see FEAT-104)
@@ -203,6 +215,36 @@ As a user, I want guided philosophical explorations so that I can deepen my unde
 
 ---
 
+### FEAT-205: Living Regulation Toolkit (Progress View)
+**Priority:** Medium
+**Status:** Planned
+**Target Phase:** Phase 2-3
+**Estimated Effort:** 3-5 days
+
+**User Story:**
+As a user, I want to see my regulation toolkit as a living document in the Progress/Insights area so I can track how my resources evolve over time.
+
+**Requirements:**
+- [ ] Dedicated screen showing current toolkit organized by NS state (sympathetic/dorsal/ventral)
+- [ ] Resources ordered passive → active within each state
+- [ ] Version history: see how toolkit changed across sessions
+- [ ] Diff view: what was added, removed, or flagged between versions
+- [ ] Visual indicators for resources flagged during review (dual-purpose, gaps)
+- [ ] Quick-access from home screen or progress area
+
+**Technical Notes:**
+- Data already exists: `regulating_resources` table stores versioned snapshots (each session = new row)
+- `session_type` field distinguishes 'initial' vs 'update' sessions
+- `state_based_resources` JSON column has the state-organized data
+- `polyvagal_patterns` table has the merged/current view
+- Need: new screen component, navigation entry, version comparison logic
+
+**Dependencies:**
+- Regulating resources conversation flow (done)
+- Versioned saving (done)
+
+---
+
 ## Notes
 
 **Lower Priority Features:**
@@ -224,5 +266,5 @@ See [ideas.md](ideas.md) for:
 
 ---
 
-**Current Count:** 4 features still planned (FEAT-103, 104, 202, 203, 204), 3 completed
+**Current Count:** 5 features still planned (FEAT-103, 104, 202, 203, 204, 205), 3 completed
 **File Status:** Under limit (300 max)

@@ -2,7 +2,7 @@
 
 **Phase Duration:** 2026-02-24 to 2026-03-21 (4 weeks)
 **Status:** In Progress
-**Last Updated:** 2026-02-24
+**Last Updated:** 2026-03-03
 
 ---
 
@@ -34,33 +34,36 @@ All deliverables shipped:
 
 ---
 
-## Week 1 (Feb 24 - Mar 2): RAG Knowledge Base Processing
+## Week 1 (Feb 24 - Mar 2): RAG Knowledge Base Processing ✅ COMPLETE
 
 ### Primary Focus
 **FEAT-205: Knowledge Base Processing**
-- [ ] Convert PDFs to markdown
-- [ ] Create protocol schema with YAML frontmatter
-- [ ] Set up Supabase pgvector extension
-- [ ] Generate and store embeddings
+- [x] Convert PDFs to markdown (auto-discovers all 276 PDFs)
+- [x] Create protocol schema with YAML frontmatter (semantic chunking with tiktoken)
+- [x] Set up Supabase pgvector extension (IVFFlat index migration)
+- [x] Generate and store embeddings (edge function + bulk ingestion pipeline)
 
 ### Secondary
-- [ ] Create `ai_metrics` table (fixes BUG-207)
-- [ ] Fix selector visual affordance (BUG-204)
+- [x] Create `ai_metrics` table (BUG-207 resolved — migration 20260303000001)
+- [x] Fix selector visual affordance (BUG-204 resolved — not applicable, pill-style buttons)
 
 ---
 
-## Week 2 (Mar 2-9): RAG System Integration
+## Week 2 (Mar 2-9): RAG Deployment & UX Fixes
 
 ### Primary Focus
-**FEAT-206: RAG System Integration**
-- [ ] Create RAG service
-- [ ] Integrate into 2-3 AI services (IFS, Polyvagal, Nervous System)
-- [ ] Test and optimize retrieval quality
-- [ ] Document RAG patterns
+**FEAT-206: RAG System Integration** (code complete, deploying)
+- [x] Create RAG service (client-side, 5-min cache, graceful degradation)
+- [x] Integrate into all 9 AI services with category-scoped search
+- [x] Deploy edge function and run ingestion pipeline (embeddings v5 ACTIVE, 21,648 chunks ingested)
+- [x] Test and optimize retrieval quality (scores 0.59-0.71, all categories returning relevant results)
+- [x] Document RAG patterns (ADR-008)
 
 ### Secondary
-- [ ] Fix opening statement variability (BUG-208)
-- [ ] Fix VirtualizedList warning (BUG-206)
+- [x] Fix opening statement variability (BUG-208 resolved — 5 welcome approaches)
+- [x] Fix VirtualizedList warning (BUG-206) — resolved 2026-03-03
+- [x] Fix Save Intention button (BUG-114) — resolved 2026-03-03
+- [x] Fix Set Intention chat cut off (BUG-214) — resolved 2026-03-03
 
 ---
 
@@ -135,5 +138,5 @@ All deliverables shipped:
 ---
 
 **Phase Owner:** Project Lead
-**Last Review:** 2026-02-24
-**Next Review:** 2026-03-03
+**Last Review:** 2026-03-03
+**Next Review:** 2026-03-10

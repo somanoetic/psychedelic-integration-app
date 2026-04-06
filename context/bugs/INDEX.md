@@ -1,6 +1,6 @@
 # Bug Tracker Index
 
-**Last Updated:** 2026-02-24
+**Last Updated:** 2026-03-08
 
 ---
 
@@ -12,11 +12,12 @@ Bugs are organized by priority across three files to keep each manageable.
 
 | File | Priority | Description | Count |
 |------|----------|-------------|-------|
-| [critical.md](critical.md) | P0 | Show-stoppers, crashes, security issues | 0 active (5 resolved) |
-| [high.md](high.md) | P1 | Major issues affecting key features | 3 active (11 resolved) |
-| [medium-low.md](medium-low.md) | P2-P3 | Minor issues, polish, edge cases | 8 active (5 resolved) |
+| [critical.md](critical.md) | P0 | Show-stoppers, crashes, security issues | 0 active |
+| [high.md](high.md) | P1 | Major issues affecting key features | 0 active (17 resolved) |
+| [medium-low.md](medium-low.md) | P2-P3 | Minor issues, polish, edge cases | 5 active (16 resolved) |
+| [resolved.md](resolved.md) | -- | Archived resolved bugs | 28 resolved |
 
-**Total Active Bugs:** 11 (21 resolved)
+**Total Active Bugs:** 5 (38 resolved)
 
 ---
 
@@ -53,38 +54,41 @@ Bugs are organized by priority across three files to keep each manageable.
 ## Quick Stats
 
 **By Status:**
-- Open: 11
+- Open: 5
 - In Progress: 0
 - Blocked: 0
-- Resolved (last 30 days): 21
+- Resolved (last 30 days): 38
 
 **By Category:**
-- Infrastructure: 1 open (BUG-104)
-- UI/UX: 5 open (BUG-101, BUG-204, BUG-206, BUG-208)
-- Security: 0 open (all resolved)
-- Performance: 2 open (BUG-301, BUG-302)
-- Platform-specific: 1 open (BUG-102)
-- Observability: 1 open (BUG-207)
-- Documentation/Legal: 3 open (BUG-303, BUG-304, BUG-305)
+- UI/UX: 1 open (BUG-213)
+- Observability: 1 open (BUG-221 — no crash reporting)
+- Platform/Build: 1 open (BUG-306 — iOS beta stale)
+- Performance: 1 open (BUG-301)
+- Documentation: 1 open (BUG-303)
 
 ---
 
 ## Recent Activity
 
+**Week of 2026-04-02:**
+- Added: BUG-221 (No crash reporting — Sentry removed, need replacement)
+- Added: BUG-306 (iOS beta build stale — needs rebuild + full regression)
+
+**Week of 2026-03-08:**
+- Added: BUG-215 (Experience Processing conversation window too small)
+- Added: BUG-216 (Excessive bottom padding below input on conversation screens)
+
+**Week of 2026-03-03:**
+- Resolved: BUG-114 (Save Intention button)
+- Resolved: BUG-206 (VirtualizedList warning)
+- Resolved: BUG-214 (Set Intention chat cut off)
+- Resolved: BUG-207 (ai_metrics table created)
+- Resolved: BUG-204 (selector affordance — not applicable)
+- Resolved: BUG-208 (opening statement variability)
+
 **Week of 2026-02-24:**
-- Resolved: BUG-105 (session creation navigation)
-- Resolved: BUG-106 (keyboard covers input)
-- Resolved: BUG-107 (Huxley theme/avatar)
-- Resolved: BUG-108 (auto-scroll on messages)
-- Resolved: BUG-109 (conversation draft persistence)
-- Resolved: BUG-203 (no automated testing — 477 tests now passing)
-- Resolved: BUG-110 (Learn/Sessions nav wrong routes)
-- Resolved: BUG-111 (GlimmerSwiper crash on first swipe)
-- Resolved: BUG-112 (ExperienceMapping no session data)
-- Resolved: BUG-113 (CoreBeliefs user.id crash)
-- Resolved: BUG-209 (Journal keyboard gap)
-- Resolved: BUG-210 (RegulatingResources cut off)
-- Resolved: BUG-211 (Quick Grounding nav to library)
+- Resolved: BUG-105 through BUG-113 (9 bugs total)
+- Resolved: BUG-203, BUG-209, BUG-210, BUG-211, BUG-212
 
 **Week of 2026-02-08:**
 - Resolved: BUG-001, BUG-002, BUG-003, BUG-004 (all P0 security/infra)
@@ -118,6 +122,7 @@ Bugs are organized by priority across three files to keep each manageable.
 - [Critical Bugs (P0)](critical.md)
 - [High Priority Bugs (P1)](high.md)
 - [Medium/Low Priority Bugs (P2-P3)](medium-low.md)
+- [Resolved Bugs Archive](resolved.md)
 - [Status Overview](../STATUS.md)
 - [Current Roadmap](../roadmap/current-phase.md)
 

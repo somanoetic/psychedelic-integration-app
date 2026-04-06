@@ -14,7 +14,7 @@ The roadmap is organized into three time horizons to keep planning focused and r
 |------|-----------|-------------|
 | [current-phase.md](current-phase.md) | Next 2-4 weeks | Active work and immediate next steps |
 | [next-phase.md](next-phase.md) | 4-8 weeks | Committed work for upcoming phase |
-| [phase-3-evidence-based-interventions.md](phase-3-evidence-based-interventions.md) | Q2 2026 | CBM + Evidence-Based Modalities |
+| [phase-3 (in docs/)](../../docs/phase-3-evidence-based-interventions.md) | Q2 2026 | CBM + Evidence-Based Modalities |
 | [future.md](future.md) | 8+ weeks | Long-term vision and possibilities |
 
 ---
@@ -76,7 +76,7 @@ The roadmap is organized into three time horizons to keep planning focused and r
 
 **Status:** Planned (High Priority)
 
-[View Details →](phase-3-evidence-based-interventions.md)
+[View Details →](../../docs/phase-3-evidence-based-interventions.md)
 
 ---
 
@@ -224,8 +224,8 @@ The roadmap is organized into three time horizons to keep planning focused and r
 
 - [Current Phase (2 weeks)](current-phase.md)
 - [Next Phase (4-8 weeks)](next-phase.md)
-- [Phase 3: Evidence-Based Interventions](phase-3-evidence-based-interventions.md)
-- [Evidence-Based Feature Queue](evidence-based-feature-queue.md) - 📚 All researched opportunities
+- [Phase 3: Evidence-Based Interventions](../../docs/phase-3-evidence-based-interventions.md)
+- [Evidence-Based Feature Queue](../../docs/evidence-based-feature-queue.md) - All researched opportunities
 - [Future Vision (8+ weeks)](future.md)
 - [Features Backlog](../features/INDEX.md)
 - [Bugs Tracker](../bugs/INDEX.md)

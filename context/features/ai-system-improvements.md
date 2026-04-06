@@ -1,7 +1,7 @@
 # AI System Improvements
 
 **File Size Limit:** 300 lines
-**Last Updated:** 2026-02-24
+**Last Updated:** 2026-03-03
 
 ---
 
@@ -15,162 +15,20 @@ This feature tracks the systematic improvement of the AI guidance system based o
 
 ---
 
-## Phase 1: Foundation & Cleanup (Weeks 1-2)
+## Phase 1: Foundation & Cleanup (Complete)
 
-### FEAT-201: Code Organization Cleanup ✅
-**Priority:** High
-**Status:** Complete
-**Effort:** 1 day
-**Completed:** 2026-02-09
+All Phase 1 features delivered 2026-02-09 to 2026-02-24.
 
-**Problems Fixed:**
-- ✅ Service file duplication removed
-- ✅ Services moved to correct directory
-- ✅ Naming conventions documented
-- ✅ Context service relationships clarified
-
-**Completed Tasks:**
-- [x] Move all services from `enhanced-components/` to `lib/`
-  - `experienceMappingService.js`
-  - `therapeuticIntegrationService.js`
-  - `fallbackIntegrationService.js`
-- [x] Remove duplicate `enhancedClaudeService.js` files
-- [x] Remove duplicate `EnhancedConversationScreen.js`
-- [x] Update all imports (6 files updated)
-- [x] Document service structure in `lib/README.md`
-  - Naming conventions (stateful classes vs singletons)
-  - Service relationships and architecture
-  - Master context system diagram
-  - Usage examples and best practices
-
-**Acceptance Criteria Met:**
-- ✅ No duplicate service files
-- ✅ All services in `lib/` directory
-- ✅ Consistent naming pattern documented
-- ✅ Service hierarchy documented in `lib/README.md`
-
-**Commit:** d691963 "FEAT-201: Clean up service organization and naming"
+| Feature | Summary | Completed |
+|---------|---------|-----------|
+| FEAT-201 | Code organization cleanup — deduplicated services, moved to `lib/`, documented in `lib/README.md` | 2026-02-09 (d691963) |
+| FEAT-202 | AI architecture docs — 3 Mermaid diagrams, `docs/AI_ARCHITECTURE.md` (~850 lines), `docs/PROMPT_ENGINEERING.md` (~700 lines), JSDoc on 3 critical services | 2026-02-09 |
+| FEAT-203 | AI monitoring — MetricsService (`lib/metricsService.js`), AdminMetricsDashboard, ai_metrics DB schema. Sentry deferred (version mismatch with Expo) | 2026-02-24 |
+| FEAT-204 | Testing infrastructure — Jest configured, 365 tests across 9 suites, 92% statement coverage on 4 critical services, crisis detection verified | 2026-02-24 |
 
 ---
 
-### FEAT-202: AI Architecture Documentation ✅
-**Priority:** High
-**Status:** Complete
-**Effort:** 2 days (actual: 0.5 days)
-**Completed:** 2026-02-09
-
-**Problems Solved:**
-- ✅ No architecture diagrams → 3 Mermaid diagrams created
-- ✅ Minimal documentation → 1,550+ lines of comprehensive docs
-- ✅ No prompt engineering documentation → Complete guide created
-- ✅ No inline JSDoc → 3 critical services documented
-
-**Completed Tasks:**
-- [x] Create visual diagrams of service relationships (3 Mermaid diagrams)
-  - System architecture (user → routing → services → context → DB/API)
-  - Master context flow (9 data sources → aggregation → caching → services)
-  - Conversation flow (sequence diagram of user interaction)
-- [x] Document master context system thoroughly
-  - 9 data sources aggregated
-  - Cross-domain connection examples with code
-  - Performance considerations (5-min caching, lazy loading)
-  - Usage patterns with detailed examples
-- [x] Add inline JSDoc comments to 3 critical services
-  - `lib/masterContextService.js` - getMasterContext(), discoverPotentialConnections()
-  - `lib/conversationalRoutingService.js` - Routing logic, crisis detection
-  - `lib/enhancedClaudeService.js` - Context injection, Huxley's role
-- [x] Write comprehensive architectural overview
-  - Multi-agent architecture patterns
-  - Cross-domain intelligence system
-  - 9 AI services documented in detail
-  - 30-minute developer quickstart guide
-- [x] Document prompt engineering decisions
-  - Therapeutic frameworks (Johnson, IFS, Polyvagal)
-  - 7 voice principles with clinical rationale
-  - Context injection strategy (4 patterns)
-  - Safety & ethics protocols
-  - 3 example prompts with annotations
-
-**Deliverables Created:**
-- ✅ `docs/AI_ARCHITECTURE.md` (~850 lines) with 3 Mermaid diagrams
-- ✅ `docs/PROMPT_ENGINEERING.md` (~700 lines) with framework documentation
-- ✅ Enhanced JSDoc in `lib/masterContextService.js`
-- ✅ Enhanced JSDoc in `lib/conversationalRoutingService.js`
-- ✅ Enhanced JSDoc in `lib/enhancedClaudeService.js`
-
-**Acceptance Criteria Met:**
-- ✅ New developer (or AI agent) can understand system in < 1 hour
-- ✅ Service relationships clear (diagrams + explanations)
-- ✅ Prompt engineering decisions documented with rationale
-- ✅ Diagrams visualize architecture effectively
-- ✅ Master context system (the "secret weapon") thoroughly explained
-- ✅ Cross-domain intelligence examples provided
-- ✅ Clinical voice principles documented
-- ✅ JSDoc enables IDE integration and autocomplete
-
-**Key Achievement:**
-This documentation captures the sophistication of the AI system (cross-domain intelligence, trauma-informed design, multi-agent architecture) while making it accessible to new developers and AI agents. The master context system's ability to connect insights across therapeutic domains is now well-documented as the competitive advantage.
-
-**Commit:** (pending)
-
----
-
-### FEAT-203: AI Monitoring & Observability ✅
-**Priority:** High
-**Status:** Complete
-**Effort:** 2 days
-**Completed:** 2026-02-24
-
-**Completed Tasks:**
-- [x] Create AI metrics logging (MetricsService in lib/metricsService.js)
-  - Response times, routing decisions, API errors, cost tracking
-- [x] Build admin dashboard (screens/AdminMetricsDashboard.js)
-- [x] Database schema for ai_metrics and ai_routing_decisions
-- [~] Sentry: Installed then removed — `@sentry/react-native 7.x` had version mismatch with `@sentry/core 10.x` causing Metro bundling failure (`Unable to resolve "./tracing/utils.js"`). Package uninstalled, init code commented out in App.js:11-12. Re-add when Expo publishes compatible Sentry version.
-
-**Note:** Real-time alerting (Slack/email) and Sentry deferred as future enhancements. Core monitoring infrastructure (MetricsService + dashboard) is production-ready.
-
-**Acceptance Criteria Met:**
-- ✅ All AI calls logged to metrics table
-- ✅ Dashboard showing key metrics
-- ⚠️ Sentry removed due to bundling failure (version mismatch) — re-add later
-
----
-
-### FEAT-204: AI Testing Infrastructure ✅
-**Priority:** High
-**Status:** Complete (core scope)
-**Effort:** 4 days
-**Completed:** 2026-02-24
-
-**Completed Tasks:**
-- [x] Jest infrastructure set up (jest.config.js, jest.setup.js, test scripts)
-- [x] Shared test fixtures created (`__tests__/helpers/aiTestFixtures.js`)
-  - Mock Claude API responses, Supabase query chains, therapeutic data
-- [x] Unit tests for 4 critical AI services (205 new tests):
-  - `huxleyKnowledgeBase.js` — 53 tests, 100% statement coverage
-  - `conversationalRoutingService.js` — 48 tests, 99% statement coverage
-  - `masterContextService.js` — 30 tests, 88% statement coverage
-  - `enhancedClaudeService.js` — 30+ tests, 88% statement coverage
-- [x] Crisis detection path testing (safety-critical)
-- [x] Error resilience and fallback behavior testing
-
-**Test Results:**
-- 365 total tests across 9 test suites, all passing
-- Coverage: 92% statements, 88% branches, 91% functions, 93% lines (across 4 services)
-- All tests run in < 5s (no real API calls)
-
-**Deferred:** claudeService.js and claudeProxyService.js tests (lower priority, simpler services)
-
-**Acceptance Criteria Met:**
-- ✅ Jest configured and running
-- ✅ 205 new unit tests passing (far exceeds 20+ target)
-- ✅ 80%+ coverage on all 4 critical services
-- ✅ Crisis detection routing verified
-
----
-
-## Phase 2: RAG Integration (Weeks 3-4)
+## Phase 2: RAG Integration (Planned)
 
 ### FEAT-205: Knowledge Base Processing
 **Priority:** High
@@ -181,51 +39,14 @@ This documentation captures the sophistication of the AI system (cross-domain in
 **Current State:** 1.5GB knowledge base (276 PDFs) not integrated
 
 **Tasks:**
-- [ ] Convert PDFs to markdown (2 days)
-  - Use `scripts/convert-pdfs.py` or similar
-  - Structure with YAML frontmatter
-  - Organize by modality/category
-  - Quality check conversions
-- [ ] Create protocol schema (1 day)
-  ```yaml
-  ---
-  id: ifs-six-fs
-  modality: IFS
-  phase: active-session
-  safety_level: standard
-  requires_stabilization: false
-  contraindications: [acute-psychosis, active-suicidality]
-  tags: [parts-work, self-energy, unburdening]
-  ---
-  ```
-- [ ] Set up Supabase pgvector (1 day)
-  - Enable pgvector extension
-  - Create embeddings table
-  - Create similarity search functions
-- [ ] Generate embeddings (1 day)
-  - Chunk content semantically
-  - Generate embeddings (OpenAI or Anthropic)
-  - Store in Supabase
-  - Create indexes
-
-**Database Schema:**
-```sql
-protocols (
-  id, name, modality, phase, safety_level,
-  contraindications, tags, content, version,
-  created_at, updated_at
-)
-
-protocol_embeddings (
-  id, protocol_id, chunk_text, embedding,
-  chunk_index, metadata
-)
-```
+- [ ] Convert PDFs to markdown with YAML frontmatter
+- [ ] Create protocol schema (id, modality, phase, safety_level, contraindications, tags)
+- [ ] Set up Supabase pgvector (extension, embeddings table, similarity search functions)
+- [ ] Generate embeddings (semantic chunking, indexing)
 
 **Acceptance Criteria:**
 - All PDFs converted to markdown
-- Protocols stored in database
-- Embeddings generated and indexed
+- Protocols stored in database with embeddings
 - Semantic search working
 
 ---
@@ -237,43 +58,20 @@ protocol_embeddings (
 **Target:** Week 4
 
 **Tasks:**
-- [ ] Create RAG service (1 day)
-  ```javascript
-  class RAGService {
-    async retrieveProtocols(query, options = {
-      topK: 3,
-      similarityThreshold: 0.7,
-      modality: null,
-      safetyLevel: 'standard'
-    })
-  }
-  ```
-- [ ] Integrate into 2-3 AI services (2 days)
-  - Start with `ifsAIService.js`
-  - Add to `polyvagalAIService.js`
-  - Test with `nervousSystemMappingAIService.js`
-  - Inject retrieved protocols into prompts
-- [ ] Test and optimize (1 day)
-  - Compare responses with/without RAG
-  - Tune similarity thresholds
-  - Measure latency impact
-  - Implement caching
-- [ ] Document and rollout plan (1 day)
-  - Document RAG patterns
-  - Create integration guide
-  - Plan rollout to remaining services
-  - User testing protocol
+- [ ] Create RAGService (retrieveProtocols with topK, similarity threshold, modality filter)
+- [ ] Integrate into 2-3 AI services (ifsAIService, polyvagalAIService, nervousSystemMappingAIService)
+- [ ] Test and optimize (compare with/without RAG, tune thresholds, measure latency, implement caching)
+- [ ] Document and create rollout plan
 
 **Acceptance Criteria:**
 - RAG service retrieving relevant protocols
 - 3 services using RAG successfully
 - Response quality improved measurably
 - Latency acceptable (< 2s p95)
-- Rollout plan documented
 
 ---
 
-## Phase 3: Outcome Measurement (Weeks 5-6)
+## Phase 3: Outcome Measurement (Planned)
 
 ### FEAT-207: Assessment Integration
 **Priority:** Medium
@@ -282,47 +80,16 @@ protocol_embeddings (
 **Target:** Week 5
 
 **Tasks:**
-- [ ] Add standardized assessments (2 days)
-  - PHQ-9 (depression) - 9 questions
-  - GAD-7 (anxiety) - 7 questions
-  - PCL-5 (PTSD) - 20 questions
-  - Custom integration metrics
-  - Scoring algorithms
-- [ ] Progress tracking system (2 days)
-  - Database schema for metrics
-  - Calculation engine
-  - Historical tracking
-  - Trend analysis
-  - Goal setting
-- [ ] Data collection points (1 day)
-  - Pre/post session assessments
-  - Weekly check-ins
-  - Milestone tracking
-  - Practice adherence
+- [ ] Add standardized assessments (PHQ-9, GAD-7, PCL-5, custom integration metrics)
+- [ ] Progress tracking system (DB schema, calculation engine, trend analysis, goal setting)
+- [ ] Data collection points (pre/post session, weekly check-ins, milestone tracking)
 
 **Database Schema:**
 ```sql
-assessments (
-  id, user_id, type, score, responses,
-  timestamp, session_id
-)
-
-progress_metrics (
-  id, user_id, metric_type, value,
-  timestamp, context
-)
-
-milestones (
-  id, user_id, type, title, description,
-  achieved_at, metadata
-)
+assessments (id, user_id, type, score, responses, timestamp, session_id)
+progress_metrics (id, user_id, metric_type, value, timestamp, context)
+milestones (id, user_id, type, title, description, achieved_at, metadata)
 ```
-
-**Acceptance Criteria:**
-- Assessments implemented and validated
-- Scoring algorithms accurate
-- Data collection automated
-- Historical tracking working
 
 ---
 
@@ -333,38 +100,13 @@ milestones (
 **Target:** Week 6
 
 **Tasks:**
-- [ ] Design dashboard UI (1 day)
-  - Wireframes
-  - Noesis color scheme
-  - Chart types selection
-- [ ] Implement visualizations (3 days)
-  - Nervous system state timeline
-  - Parts work progression chart
-  - Assessment scores over time
-  - Integration milestone markers
-  - Practice adherence graphs
-  - Belief change tracking
-- [ ] Generate insights (1 day)
-  - Pattern identification
-  - Progress summaries
-  - Celebration of wins
-  - Next steps recommendations
-
-**Deliverables:**
-- ProgressDashboardScreen component
-- Chart components
-- Insights engine
-- Celebration system
-
-**Acceptance Criteria:**
-- Dashboard shows comprehensive progress
-- Charts are clear and meaningful
-- Insights are actionable
-- Users motivated by visualizations
+- [ ] Design dashboard UI (wireframes, Noesis color scheme, chart types)
+- [ ] Implement visualizations (nervous system timeline, parts work progression, assessment scores, integration milestones, practice adherence, belief change tracking)
+- [ ] Generate insights (pattern identification, progress summaries, celebration of wins)
 
 ---
 
-## Phase 4: Advanced Features (Weeks 7-8)
+## Phase 4: Advanced Features (Planned)
 
 ### FEAT-209: Multi-Model Support
 **Priority:** Medium
@@ -373,98 +115,38 @@ milestones (
 **Target:** Week 7
 
 **Tasks:**
-- [ ] Design model router (1 day)
-  ```javascript
-  class AIModelRouter {
-    async getResponse(prompt, options = {
-      preferredModel: 'claude',
-      fallbacks: ['gpt4', 'gemini'],
-      maxLatency: 3000,
-      prioritizeCost: false
-    })
-  }
-  ```
-- [ ] Integrate GPT-4 (2 days)
-  - OpenAI API integration
-  - Adapt prompts for GPT-4
-  - Test response quality
-  - Cost comparison
-- [ ] A/B testing framework (2 days)
-  - Test different models per service
-  - Measure quality metrics
-  - User satisfaction tracking
-  - Cost analysis
+- [ ] Design model router (preferred model, fallbacks, max latency, cost priority)
+- [ ] Integrate GPT-4 as fallback (adapt prompts, test quality, cost comparison)
+- [ ] A/B testing framework (quality metrics, user satisfaction, cost analysis)
 
-**Benefits:**
-- 99.9%+ uptime (fallback to GPT-4)
-- 30-50% cost savings potential
-- Quality optimization per task
-- Vendor independence
-
-**Acceptance Criteria:**
-- GPT-4 integrated as fallback
-- Model selection working
-- Cost savings demonstrated
-- Quality maintained or improved
+**Benefits:** 99.9%+ uptime, 30-50% cost savings potential, vendor independence
 
 ---
 
 ### FEAT-210: Implement Planned AI Features
-**Priority:** High (from context/features/planned.md)
+**Priority:** High
 **Status:** Planned
 **Effort:** 5 days
 **Target:** Week 8
 
-**Includes:**
-- FEAT-102: AI Intention Setting Guidance (3 days)
-- FEAT-103: Pre-Session Check-In (2 days)
-
-See `context/features/planned.md` for full details.
+Includes FEAT-102 (AI Intention Setting Guidance, 3 days) and FEAT-103 (Pre-Session Check-In, 2 days). See `context/features/planned.md` for full details.
 
 ---
 
 ## Success Metrics
 
-### Technical Metrics
-- Response time < 2s (p95)
-- Context cache hit rate > 70%
-- API error rate < 1%
-- Test coverage > 80% for critical paths
-- Uptime > 99.5%
-
-### User Experience Metrics
-- User satisfaction with AI > 4.5/5
-- Crisis detection accuracy > 95%
-- Routing accuracy > 90%
-- Session completion rate > 70%
-
-### Clinical Metrics
-- PHQ-9/GAD-7 improvement tracked
-- Parts unburdening completion rate
-- Nervous system regulation trends
-- Integration milestone achievement
-
-### Business Metrics
-- AI cost per user per month
-- Time saved vs. human therapy
-- User retention
-- Clinical outcomes vs. benchmarks
+- **Technical:** Response time < 2s (p95), cache hit rate > 70%, API error rate < 1%, test coverage > 80%, uptime > 99.5%
+- **UX:** User satisfaction > 4.5/5, crisis detection accuracy > 95%, routing accuracy > 90%, session completion > 70%
+- **Clinical:** PHQ-9/GAD-7 improvement tracked, parts unburdening completion rate, nervous system regulation trends
+- **Business:** AI cost per user per month, user retention, clinical outcomes vs. benchmarks
 
 ---
 
 ## Long-Term Vision (Month 3+)
 
-**Month 3:**
-- FEAT-104: Full polyvagal mapping
-- Clinician oversight portal
-- Advanced RAG with re-ranking
-- Custom fine-tuned models
+**Month 3:** Full polyvagal mapping, clinician oversight portal, advanced RAG with re-ranking, custom fine-tuned models
 
-**Month 4-6:**
-- Community protocol contributions
-- Research study capabilities
-- Advanced analytics
-- Mobile optimization
+**Month 4-6:** Community protocol contributions, research study capabilities, advanced analytics, mobile optimization
 
 ---
 
@@ -473,12 +155,9 @@ See `context/features/planned.md` for full details.
 - `docs/AI_SYSTEM_ASSESSMENT.md` - Comprehensive assessment
 - `docs/AI_THERAPY_SPECIALIZATION_ROADMAP.md` - Long-term vision
 - `context/features/planned.md` - Other planned features
-- `context/bugs/INDEX.md` - Related bugs (BUG-203: Testing)
+- `context/bugs/INDEX.md` - Related bugs
 
 ---
 
-**Current Count:** 10 features in roadmap
+**Current Count:** 8 features in roadmap (4 complete, 4 planned)
 **Total Estimated Effort:** 8 weeks
-**Status:** Ready for implementation
-
-**Next Action:** Present to user, get prioritization, begin Phase 1

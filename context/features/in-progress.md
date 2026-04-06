@@ -1,7 +1,7 @@
 # Features In Progress
 
 **File Size Limit:** 300 lines
-**Last Updated:** 2026-02-25
+**Last Updated:** 2026-03-03
 
 ---
 
@@ -9,11 +9,11 @@
 
 ### FEAT-205 + FEAT-206: RAG Knowledge Base (Combined)
 **Priority:** High
-**Status:** Code complete, pending deployment
-**Target:** Completed 2026-02-25
+**Status:** Code complete, deploying this week
+**Target:** Completed code 2026-02-25, deploying Mar 3-9
 **Assigned:** Claude AI
 
-**Deliverables:**
+**Code Complete:**
 - [x] PDF extraction script (auto-discovers all 276 PDFs)
 - [x] Semantic chunking script (tiktoken, section-aware)
 - [x] Supabase pgvector migration (IVFFlat index)
@@ -24,7 +24,7 @@
 - [x] 19 unit tests (all passing)
 - [x] ADR-008 documented
 
-**Remaining to deploy:**
+**Remaining deployment steps:**
 - [ ] Run `python scripts/extract_all_pdfs.py` to extract remaining ~85 PDFs
 - [ ] Run `python scripts/chunk_documents.py` to generate chunks
 - [ ] Run `supabase db push` to apply migration
@@ -94,5 +94,5 @@
 
 ---
 
-**Current Count:** 1 pending deployment, 7 completed this month
+**Current Count:** 1 deploying, 7 completed this month
 **File Status:** Under limit (300 max)

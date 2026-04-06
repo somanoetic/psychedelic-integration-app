@@ -9,43 +9,26 @@
 
 ### BUG-202: TypeScript Configuration Updates
 **Priority:** P2 - Medium
-**Status:** Open
+**Status:** Resolved (2026-04-02)
 **Reported:** 2026-02-07 (migrated)
 
-**Description:**
-tsconfig.json#include property updated during recent changes, need to verify all imports working correctly.
-
-**Impact:**
-- Potential import resolution issues
-- May affect TypeScript features
-
-**Testing Needed:**
-- [ ] Verify all imports resolve
-- [ ] Check no TS errors in console
-- [ ] Test with fresh install
-
-**Estimated Effort:** 1-2 hours
+**Resolution:**
+`npx tsc --noEmit` now passes with zero errors. Added `exclude` to tsconfig.json for unused Expo starter template files (ExternalLink, HapticTab, HelloWave, ParallaxScrollView, Collapsible, ui/) and Supabase edge functions (Deno runtime, not Node).
 
 ---
 
 ### BUG-205: 'Learn More About Privacy' Not Linked
 **Priority:** P2 - Medium (Pre-Production Required)
-**Status:** Open
+**Status:** Resolved
 **Reported:** 2026-02-17
+**Resolved:** 2026-04-01
 **Screen:** SetIntentionScreen (privacy opt-in section)
 
 **Description:**
-The "Learn more about privacy" link in the intention saving section is not connected to any documentation. Tapping it does nothing (or renders a placeholder).
+The "Learn more about privacy" link in the intention saving section was not connected to any documentation.
 
-**Impact:**
-- Users cannot understand the privacy model before opting in
-- Must be resolved before production release
-- Relates to BUG-304 (Missing Privacy Policy)
-
-**Proposed Fix:**
-Link to: (a) an in-app privacy screen, or (b) a web URL with the privacy policy. At minimum, show a modal explaining the opt-in storage model until a full privacy policy exists.
-
-**Estimated Effort:** 2-4 hours (in-app modal) or 30 min (link to URL once policy exists)
+**Resolution:**
+Created PrivacyPolicyScreen.js with comprehensive privacy policy. "Learn more about privacy" link in IntentionPrivacyControls now navigates to PrivacyPolicy screen via React Navigation.
 
 ---
 
@@ -143,19 +126,11 @@ No performance metrics or monitoring currently implemented.
 
 ### BUG-302: Bundle Size Not Optimized
 **Priority:** P3 - Low
-**Status:** Open
+**Status:** Resolved (2026-04-02)
 **Reported:** 2026-02-07 (migrated)
 
-**Description:**
-Haven't analyzed or optimized app bundle size.
-
-**Tasks:**
-- [ ] Analyze bundle composition
-- [ ] Remove unused dependencies
-- [ ] Optimize images
-- [ ] Implement code splitting (if needed)
-
-**Estimated Effort:** 2-3 days
+**Resolution:**
+Analyzed bundle. Removed 4 unused dependencies: `@anthropic-ai/sdk` (migrated to proxy), `react-native-dotenv`, `react-native-web`, `react-dom`. Reduced from 29 to 25 deps. Assets total 3.6MB (reasonable). Glimmer Swiper images are bundled locally at 1.6MB total (40 images).
 
 ---
 
@@ -184,49 +159,35 @@ Some documentation incomplete or outdated.
 
 ### BUG-304: Missing Privacy Policy & Terms
 **Priority:** P3 - Low (Required for Production)
-**Status:** Open
+**Status:** Resolved
 **Reported:** 2026-02-07 (migrated)
+**Resolved:** 2026-04-01
 
 **Description:**
-No privacy policy or terms of service documents created yet.
+No privacy policy or terms of service documents existed.
 
-**Impact:**
-- Required for app store submission
-- Legal requirement for data collection
-- User trust and transparency
+**Resolution:**
+Created both as in-app screens:
+- `screens/PrivacyPolicyScreen.js` — 11-section policy covering data collection, AI processing, storage, security, user rights, retention, age requirements, third parties
+- `screens/TermsOfServiceScreen.js` — 14-section terms covering medical disclaimer, eligibility, content ownership, AI limitations, harm reduction commitment, liability
+- Both registered in App.js navigation (PrivacyPolicy, TermsOfService routes)
+- Privacy policy linked from IntentionPrivacyControls "Learn more about privacy" (BUG-205)
 
-**Tasks:**
-- [ ] Draft privacy policy
-- [ ] Draft terms of service
-- [ ] Add to app (link in settings)
-- [ ] Legal review (if possible)
-
-**Estimated Effort:** 1-2 days + legal review
+**Remaining:** Legal review recommended before production. Contact email addresses (privacy@, legal@alleviationtherapeutics.com) should be verified/configured.
 
 ---
 
 ### BUG-305: No User Data Export Feature
 **Priority:** P3 - Low
-**Status:** Open
+**Status:** Resolved (2026-04-02)
 **Reported:** 2026-02-07 (migrated)
 
-**Description:**
-Users cannot export their journal entries or app data.
-
-**Use Cases:**
-- Sharing with therapist
-- Backup
-- Switching apps
-- Data portability (GDPR)
-
-**Proposed Solution:**
-- Export to PDF / JSON / CSV
-- Share functionality
-
-**Estimated Effort:** 3-4 days
-
-**Notes:**
-- See [FEAT-309](../features/ideas.md) for full feature spec
+**Resolution:**
+- Created `lib/dataExportService.js` — exports all 19 user data tables as JSON via `expo-file-system` + `expo-sharing`
+- Created `screens/SettingsScreen.js` — settings hub with Export My Data, Privacy Policy, Terms of Service, and Sign Out
+- Added settings gear icon to GridHomeScreen header
+- Registered Settings route in App.js
+- Installed `expo-file-system` and `expo-sharing` dependencies
 
 ---
 
@@ -297,32 +258,97 @@ When Huxley starts "thinking" after a user message, the input was disabled. If t
 
 ### BUG-220: Exercise Library IP Review Needed Before Production
 **Priority:** P2 - Medium (Legal/Pre-Production Required)
-**Status:** Open
+**Status:** Resolved
 **Reported:** 2026-03-08
+**Resolved:** 2026-04-01
 
 **Description:**
-The comprehensive exercise library (`content/exercises-comprehensive.js`) includes step-by-step reproductions of copyrighted/trademarked techniques. Must be resolved before public release.
+The comprehensive exercise library (`content/exercises-comprehensive.js`) included step-by-step reproductions of copyrighted/trademarked techniques.
 
-**High Risk:**
-- **Stutz & Michels "The Tools"** (JU-001 through JU-008) — branded visualization sequences reproduced verbatim from *The Tools* and *Coming Alive*
-- "Reversal of Desire," "Active Love," "Inner Authority," "The Black Sun," "The Vortex," "The Mother," "The Tower" are proprietary names
+**Resolution:**
+All 18 flagged exercises genericized (Option 2). Branded names, proprietary step sequences, and author attributions removed. Exercises rewritten with original language preserving the underlying therapeutic mechanism. Sources now reference general traditions (depth psychology, behavioral psychology, etc.). Category label renamed from "The Tools" to "Depth Psychology". Also cleaned `education.js` of branded references.
 
-**Moderate Risk:**
-- Atomic Habits / Tiny Habits — specific framing of concepts
-- IFS — trademark of IFS Institute (though techniques are widely practiced)
+**Exercises rewritten:**
+- JU-001 through JU-008 + SC-004 (Stutz & Michels)
+- HAB-001 through HAB-007 + HAB-001.1 (Atomic Habits / Tiny Habits)
 
-**Lower Risk:**
+**Remaining lower risk (acceptable):**
+- IFS — trademark of IFS Institute but techniques widely practiced; exercises teach general concepts
 - Polyvagal, CBT, breathing, grounding, somatic, stoic — general therapeutic/philosophical techniques
-
-**Options:**
-1. Seek licensing/permission from authors
-2. Genericize — describe the underlying principle without branded scripts
-3. Reference only — name the tool and source, don't reproduce steps
-4. Remove highest-risk entries entirely
-
-**Estimated Effort:** Research + legal consultation, then 2-4 hours of edits
 
 ---
 
-**Current Count:** 4 P2 active, 5 P3 active (9 total)
+### BUG-221: No Crash Reporting in Production (Sentry Removed)
+**Priority:** P2 - Medium (Pre-Production Required)
+**Status:** Resolved
+**Reported:** 2026-04-02
+**Resolved:** 2026-04-02
+
+**Description:**
+Sentry was removed (FEAT-203 work, 2026-02-24) because `@sentry/react-native 7.x` had a version mismatch with `@sentry/core 10.x` that caused Metro bundling failures. The package was uninstalled and the import commented out in App.js. There is currently **no crash reporting or error tracking** in the app.
+
+**Impact:**
+- Zero visibility into production crashes
+- No way to know if users are hitting errors
+- Can't prioritize bug fixes based on real crash data
+- Flying blind once the app is in users' hands
+
+**Proposed Solution:**
+1. Check if `@sentry/react-native` has a compatible release now (v8+ may resolve the `@sentry/core` conflict)
+2. If Sentry still incompatible, evaluate alternatives:
+   - **Bugsnag** — React Native SDK, free tier available
+   - **Firebase Crashlytics** — free, good React Native support via `@react-native-firebase/crashlytics`
+   - **Datadog RUM** — if also want performance monitoring
+3. Whichever tool: wire into App.js error boundary, test on both platforms
+4. Verify it captures: JS exceptions, native crashes, unhandled promise rejections
+
+**Estimated Effort:** 1-2 days
+**Related:** FEAT-203 (monitoring), BUG-301 (performance monitoring)
+
+**Resolution:**
+Reinstalled `@sentry/react-native@7.2.0` (Expo SDK 54 compatible). All `@sentry/core` deps now resolve to 10.12.0 (no conflict). Created `lib/sentry.js` with `initSentry()`, `captureException()`, `setUser()` helpers. Wired into App.js: init at top, `Sentry.wrap(App)`, user set on auth state change. PII scrubbed from breadcrumbs via `beforeSend`. Disabled in `__DEV__`, active in production. Added `@sentry/react-native/expo` plugin to app.json. Jest mock added. 519 tests still passing.
+
+**Remaining:** Create a Sentry project at sentry.io and set `SENTRY_DSN` in `.env`.
+
+---
+
+### BUG-306: iOS Beta Build Stale — Needs Rebuild and Testing
+**Priority:** P2 - Medium (Pre-Production Required)
+**Status:** Open
+**Reported:** 2026-04-02
+
+**Description:**
+An earlier iOS build was distributed for beta testing, but significant changes have landed since then. The current beta build does not reflect the app's actual state. A fresh iOS build is needed to validate all recent work on a real device.
+
+**Changes since last iOS build (non-exhaustive):**
+- Exercise library (160 exercises) wired in
+- RAG knowledge base integration (FEAT-205/206)
+- Set Intention flow fixes (BUG-114, BUG-214, BUG-216–219)
+- Privacy Policy + Terms of Service screens
+- User data export (BUG-305)
+- Settings screen
+- Bundle optimization (4 deps removed)
+- Keyboard overlap fixes for Android (BUG-102) — need iOS verification
+- Noesis theme audit (BUG-101)
+- Experience Processing conversation UX fixes (BUG-215, BUG-216)
+
+**Steps to Rebuild:**
+1. Run `eas build --platform ios --profile preview` (or internal distribution profile)
+2. Upload to TestFlight or use ad-hoc distribution
+3. Full regression pass on physical iOS device:
+   - All conversation screens (Huxley, Intention, Experience Processing)
+   - Exercise library browsing + guided exercise playback
+   - Journal entry creation
+   - Settings → Export Data, Privacy Policy, Terms of Service
+   - Education/Learning Hub
+   - Keyboard behavior on text inputs
+   - Navigation and safe area insets (notch/Dynamic Island)
+4. Document any iOS-specific issues as new bugs
+
+**Estimated Effort:** 0.5 day (build) + 1-2 days (testing)
+**Related:** BUG-102 (keyboard overlap needs iOS verification)
+
+---
+
+**Current Count:** 3 P2 active (BUG-213, BUG-221, BUG-306), 2 P3 active (BUG-301, BUG-303)
 **Resolved bugs archived in:** [resolved.md](resolved.md)

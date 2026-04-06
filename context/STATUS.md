@@ -1,8 +1,8 @@
 # Project Status
 
-**Last Updated:** 2026-02-24
+**Last Updated:** 2026-03-03
 **Version:** 1.1.0 (Build 4)
-**Phase:** AI System Improvements Phase 1 — Complete
+**Phase:** UX Polish & Core Features (Week 2)
 
 ---
 
@@ -21,19 +21,20 @@
 - **NEW:** Complete AI architecture documentation (FEAT-202)
 
 ### What's In Progress 🚧
-- Phase 2: RAG Integration planning (next up)
+- RAG system integration into AI services (FEAT-206, code complete, pending deployment)
+- Root directory cleanup & docs reorganization
 - Nervous System Check-in feature (database schema ready)
 
 ### What's Blocked 🚫
 - None currently
 
-### Recently Completed ✅ (Phase 1)
-- FEAT-201: Code Organization Cleanup
-- FEAT-202: AI Architecture Documentation
-- FEAT-203: AI Monitoring & Observability (MetricsService + dashboard; Sentry removed due to version mismatch)
-- FEAT-204: AI Testing Infrastructure (477 tests passing, 81 skipped component tests)
-- Test infrastructure overhaul: jest config, mocks, ESM→CJS, service alignment
-- BUG-105 through BUG-109: All SetIntentionScreen UX bugs resolved
+### Recently Completed ✅
+- FEAT-205: Knowledge Base Processing (PDF extraction, chunking, pgvector migration, embeddings edge function)
+- FEAT-206: RAG System Integration (client-side RAG service, integrated into all 9 AI services, 19 tests)
+- BUG-207: ai_metrics table created (migration 20260303000001)
+- BUG-204: Selector affordance resolved (not applicable — pill-style buttons already visible)
+- BUG-208: Opening statement variability added (5 distinct welcome approaches)
+- Root directory cleanup: 63 → 3 markdown files, docs reorganized
 
 ---
 
@@ -165,24 +166,24 @@
 
 **Technical Debt:**
 - Some screens still need Noesis styling updates (BUG-101)
-- Missing ai_metrics table (BUG-207)
 - No E2E tests yet (unit tests solid at 477)
 - Privacy policy / terms of service needed before production (BUG-304)
+- RAG pipeline needs deployment (edge function, ingestion, reindex)
 
 ---
 
-## This Week's Focus (Feb 24 - Mar 2)
+## This Week's Focus (Mar 3-9)
 
 ### Top 3 Priorities
-1. **RAG Knowledge Base Processing** (FEAT-205) - Convert PDFs, set up pgvector
-2. **Create ai_metrics table** (BUG-207) - Unblock metrics persistence
-3. **UX Polish** - Fix BUG-204 (selector affordance), BUG-208 (opening variability)
+1. **Deploy RAG Pipeline** (FEAT-205/206) - Run ingestion, deploy edge function, reindex
+2. **RAG System Integration Testing** - Verify retrieval quality across AI services
+3. **UX Bug Fixes** - BUG-114 (Save Intention), BUG-214 (chat cut off by nav bar)
 
 ### Goals for This Week
-- [ ] Start PDF-to-markdown conversion pipeline
-- [ ] Enable Supabase pgvector extension
-- [ ] Create ai_metrics database table
-- [ ] Fix 1-2 P2 UI bugs
+- [ ] Deploy RAG edge function and run ingestion pipeline
+- [ ] Test RAG retrieval quality in 2-3 AI services
+- [ ] Fix BUG-114 (Save Intention button does nothing)
+- [ ] Fix BUG-214 (Set Intention chat cut off by nav bar)
 
 ---
 
@@ -239,4 +240,4 @@
 
 ---
 
-**Next Status Update:** 2026-03-03
+**Next Status Update:** 2026-03-10
