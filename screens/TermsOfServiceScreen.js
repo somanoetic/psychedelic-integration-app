@@ -44,13 +44,13 @@ const TermsOfServiceScreen = ({ navigation }) => {
         <Text style={styles.lastUpdated}>Last updated: {LAST_UPDATED}</Text>
 
         <Paragraph>
-          Welcome to Psycheteleos. By creating an account or using the App, you agree to these Terms of Service ("Terms"). Please read them carefully.
+          Welcome to Huxley. By creating an account or using the App, you agree to these Terms of Service ("Terms"). Please read them carefully.
         </Paragraph>
 
         {/* ---- 1. ABOUT THE APP ---- */}
-        <Section title="1. About Psycheteleos">
+        <Section title="1. About Huxley">
           <Paragraph>
-            Psycheteleos is a personal integration tool designed to help individuals process and integrate transformative experiences into daily life. The App provides journaling, AI-guided reflection, nervous system tracking, and educational resources.
+            Huxley is a personal integration tool designed to help individuals process and integrate transformative experiences into daily life. The App provides journaling, AI-guided reflection, nervous system tracking, and educational resources.
           </Paragraph>
         </Section>
 
@@ -60,7 +60,7 @@ const TermsOfServiceScreen = ({ navigation }) => {
             This is the most important section of these Terms:
           </Paragraph>
           <BulletList items={[
-            'Psycheteleos is NOT a substitute for professional medical, psychiatric, or therapeutic care',
+            'Huxley is NOT a substitute for professional medical, psychiatric, or therapeutic care',
             'The AI guide (Huxley) is a supportive tool, not a therapist. It cannot diagnose, treat, or provide clinical recommendations',
             'Content in the App (exercises, educational material, AI responses) is for informational and personal reflection purposes only',
             'If you are in crisis or experiencing a mental health emergency, contact emergency services (911) or the 988 Suicide & Crisis Lifeline immediately',
@@ -162,7 +162,7 @@ const TermsOfServiceScreen = ({ navigation }) => {
         {/* ---- 11. HARM REDUCTION ---- */}
         <Section title="11. Harm Reduction Commitment">
           <Paragraph>
-            Psycheteleos is built on principles of harm reduction, informed consent, and personal agency. We believe:
+            Huxley is built on principles of harm reduction, informed consent, and personal agency. We believe:
           </Paragraph>
           <BulletList items={[
             'Individuals have the right to make informed choices about their own experiences',

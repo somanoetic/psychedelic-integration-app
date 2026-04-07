@@ -195,7 +195,7 @@ const ConversationalTriggersGlimmers = ({ onComplete, navigation }) => {
       return (
         <View key={message.id} style={styles.aiMessageRow}>
           <Image
-            source={require('../assets/images/huxley therapist.png')}
+            source={require('../assets/images/huxley-avatar.png')}
             style={styles.huxleyAvatar}
             resizeMode="contain"
           />
@@ -247,7 +247,7 @@ const ConversationalTriggersGlimmers = ({ onComplete, navigation }) => {
         {loading && (
           <View style={styles.aiMessageRow}>
             <Image
-              source={require('../assets/images/huxley therapist.png')}
+              source={require('../assets/images/huxley-avatar.png')}
               style={styles.huxleyAvatar}
               resizeMode="contain"
             />

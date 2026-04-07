@@ -28,80 +28,23 @@ See ADR-007 for design decision (brevity over depth).
 
 ---
 
-### FEAT-103: AI Nervous System & Parts Check-In
+### FEAT-103: AI Nervous System & Parts Check-In ✅
 **Priority:** High
-**Status:** Planned
-**Target Phase:** Phase 1 (Week 3-4)
-**Estimated Effort:** 4-5 days
+**Status:** Complete
+**Completed:** 2026-03-15 (approx)
 
-**User Story:**
-As a user, I want AI guidance to assess my nervous system state and IFS parts so that I understand my current state before/after sessions.
+Implemented: NervousSystemCheckin, PartsCheckin, NervousSystemSummaryScreen, PartsSummaryScreen, ConversationalNervousSystemMapping, education widgets, state indicators. 4 database tables with RLS. All navigation routes registered.
 
-**Requirements:**
-- [ ] Nervous system state assessment (polyvagal)
-- [ ] IFS parts identification
-- [ ] Body sensation mapping
-- [ ] Visual state indicators
-- [ ] State-specific guidance (dorsal, sympathetic, ventral)
-- [ ] Tracking over time
-
-**Visual Examples & Guidance:**
-The mapping screen should include example visuals showing users *how* to create a nervous system map, with descriptions for each state:
-
-- **Ventral Vagal (Safe & Social):** Show example body outline with warmth/openness markers — soft glow in chest, relaxed shoulders, open hands. Description: "Where do you feel safety in your body? Warmth, openness, softness?"
-- **Sympathetic (Fight/Flight):** Show example with activation markers — tension in jaw/fists, heat in chest, buzzing energy. Description: "Where do you feel activation? Tightness, heat, restlessness, racing?"
-- **Dorsal Vagal (Shutdown/Freeze):** Show example with heaviness/numbness markers — grey/cold areas, heaviness in limbs, fog in head. Description: "Where do you feel shutdown? Heaviness, numbness, disconnection, fog?"
-
-Each example should use a simple body silhouette with color-coded overlays (warm colors for activation, cool colors for shutdown, soft colors for safety). Users can reference these while creating their own map — either by tapping body regions or drawing/annotating. Interactive body map (tap regions to mark sensations) is the goal, but can start with static reference visuals and iterate.
-
-**Note:** User has reference visuals to provide when implementation begins — ask for them before starting design work.
-
-**Technical Notes:**
-- Simple questionnaire + visual body map component
-- AI analyzes and identifies likely state
-- Polyvagal ladder visualization
-- Color-coded indicators
-- Example images as onboarding/reference (could be static assets or animated walkthroughs)
-
-**Dependencies:**
-- Polyvagal mapping AI (see FEAT-104)
-
-**Estimated Effort:** 4-5 days
+**Remaining polish (optional):** Interactive in-app body map (currently prompts pen/paper), polyvagal ladder visual component (currently text-based).
 
 ---
 
-### FEAT-104: Integrate Polyvagal Mapping AI
+### FEAT-104: Integrate Polyvagal Mapping AI ✅
 **Priority:** High
-**Status:** Planned
-**Target Phase:** Phase 2 (Week 5-6)
-**Estimated Effort:** 5-7 days
+**Status:** Complete
+**Completed:** 2026-03-15 (approx)
 
-**User Story:**
-As a user, I want polyvagal state tracking integrated throughout the app so that I can understand my nervous system patterns.
-
-**Requirements:**
-- [ ] Port polyvagal mapping code from other project
-- [ ] State assessment component
-- [ ] Polyvagal ladder visualization
-- [ ] Recommendation engine (practices per state)
-- [ ] Integration points (pre/post session, daily check-in)
-- [ ] State history tracking
-
-**Polyvagal States:**
-- **Dorsal Vagal**: Shutdown, freeze, dissociation
-- **Sympathetic**: Fight-or-flight, activation
-- **Ventral Vagal**: Safe and social, regulated
-
-**Technical Notes:**
-- Adapt AI model from existing project
-- Create reusable components
-- Store state history in database
-
-**Dependencies:**
-- Access to polyvagal mapping code
-- Deb Dana resources for content
-
-**Estimated Effort:** 5-7 days
+Implemented: polyvagalAIService, nervousSystemMappingAIService, polyvagalContextService. Three mode handlers: NervousSystemMappingModeHandler (full Deb Dana protocol), NervousSystemExplorationModeHandler (freeform), PolyvagalCheckinModeHandler (quick). Versioned pattern tracking with triggers, glimmers, resources, interventions.
 
 ---
 
@@ -266,5 +209,5 @@ See [ideas.md](ideas.md) for:
 
 ---
 
-**Current Count:** 5 features still planned (FEAT-103, 104, 202, 203, 204, 205), 3 completed
+**Current Count:** 4 features still planned (FEAT-202, 203, 204, 205), 5 completed
 **File Status:** Under limit (300 max)

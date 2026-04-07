@@ -437,7 +437,7 @@ const CoreBeliefsAssessment = ({ user: userProp, onComplete, navigation }) => {
       >
         {message.isAI && (
           <Image
-            source={require('../assets/images/huxley therapist.png')}
+            source={require('../assets/images/huxley-avatar.png')}
             style={styles.huxleyAvatar}
             resizeMode="contain"
           />
@@ -470,7 +470,7 @@ const CoreBeliefsAssessment = ({ user: userProp, onComplete, navigation }) => {
           {loading && (
             <View style={styles.loadingContainer}>
               <Image
-                source={require('../assets/images/huxley therapist.png')}
+                source={require('../assets/images/huxley-avatar.png')}
                 style={styles.huxleyAvatar}
                 resizeMode="contain"
               />

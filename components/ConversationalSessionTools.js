@@ -147,7 +147,7 @@ const ConversationalSessionTools = ({ navigation }) => {
     <View style={styles.huxleyBubble}>
       <View style={styles.huxleyHeader}>
         <Image
-          source={require('../assets/images/huxley therapist.png')}
+          source={require('../assets/images/huxley-avatar.png')}
           style={styles.huxleyAvatarSmall}
           resizeMode="contain"
         />

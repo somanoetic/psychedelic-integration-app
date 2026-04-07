@@ -37,6 +37,14 @@
 
 ## Recently Completed (Last 30 Days)
 
+### FEAT-103: AI Nervous System & Parts Check-In ✅
+**Completed:** 2026-03-15 (approx)
+**Deliverables:** NervousSystemCheckin, PartsCheckin components, NervousSystemSummaryScreen, PartsSummaryScreen, ConversationalNervousSystemMapping, NervousSystemEducationWidget, PolyvagalEducationWidget, NervousSystemIndicator, 4 database tables (nervous_system_checkins, parts_checkins, nervous_system_context, polyvagal_patterns)
+
+### FEAT-104: Polyvagal Mapping AI Integration ✅
+**Completed:** 2026-03-15 (approx)
+**Deliverables:** polyvagalAIService, nervousSystemMappingAIService, polyvagalContextService, NervousSystemMappingModeHandler (full Deb Dana protocol), NervousSystemExplorationModeHandler (freeform), PolyvagalCheckinModeHandler (quick), versioned pattern tracking
+
 ### FEAT-101: Session Day Checklist ✅
 **Completed:** 2026-02-24
 **Deliverables:** SessionChecklistScreen, sessionChecklistService, useSessionChecklist hook

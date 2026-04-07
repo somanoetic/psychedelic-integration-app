@@ -350,5 +350,5 @@ An earlier iOS build was distributed for beta testing, but significant changes h
 
 ---
 
-**Current Count:** 3 P2 active (BUG-213, BUG-221, BUG-306), 2 P3 active (BUG-301, BUG-303)
+**Current Count:** 2 P2 active (BUG-213, BUG-306), 2 P3 active (BUG-301, BUG-303)
 **Resolved bugs archived in:** [resolved.md](resolved.md)

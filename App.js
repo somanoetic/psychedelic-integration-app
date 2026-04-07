@@ -59,6 +59,8 @@ import ProcessIntegrateScreen from './screens/ProcessIntegrateScreen';
 import InnerWorkScreen from './screens/InnerWorkScreen';
 import PracticeScreen from './screens/PracticeScreen';
 import ActiveImaginationScreen from './screens/ActiveImaginationScreen';
+import PhilosophicalTalkthroughsHubScreen from './screens/PhilosophicalTalkthroughsHubScreen';
+import PhilosophicalTalkthroughScreen from './screens/PhilosophicalTalkthroughScreen';
 import PrivacyPolicyScreen from './screens/PrivacyPolicyScreen';
 import TermsOfServiceScreen from './screens/TermsOfServiceScreen';
 import SettingsScreen from './screens/SettingsScreen';
@@ -316,7 +318,7 @@ function App() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingTitle}>Psycheteleos</Text>
+        <Text style={styles.loadingTitle}>Huxley</Text>
         <Text style={styles.debugText}>{debugInfo}</Text>
         <Text style={styles.debugHint}>
           If stuck here, check console logs or try restarting
@@ -484,14 +486,6 @@ function App() {
                 options={{
                   headerShown: false,
                   title: 'Journal Entry'
-                }}
-              />
-              <Stack.Screen
-                name="DailyJournal"
-                component={DailyJournal}
-                options={{
-                  headerShown: false,
-                  title: 'Daily Journal'
                 }}
               />
               <Stack.Screen
@@ -676,6 +670,22 @@ function App() {
                 options={{
                   headerShown: false,
                   title: 'Active Imagination'
+                }}
+              />
+              <Stack.Screen
+                name="PhilosophicalTalkthroughs"
+                component={PhilosophicalTalkthroughsHubScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Philosophical Talkthroughs'
+                }}
+              />
+              <Stack.Screen
+                name="PhilosophicalTalkthrough"
+                component={PhilosophicalTalkthroughScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Philosophical Talkthrough'
                 }}
               />
               <Stack.Screen

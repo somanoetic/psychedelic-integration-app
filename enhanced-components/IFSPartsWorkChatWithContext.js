@@ -664,7 +664,7 @@ This is a beginning. Parts work is about ongoing relationship. You can return to
       return (
         <View key={message.id} style={styles.assistantMessageRow}>
           <Image
-            source={require('../assets/images/huxley therapist.png')}
+            source={require('../assets/images/huxley-avatar.png')}
             style={styles.huxleyAvatar}
             resizeMode="contain"
           />
@@ -778,7 +778,7 @@ This is a beginning. Parts work is about ongoing relationship. You can return to
           {isTyping && (
             <View style={styles.assistantMessageRow}>
               <Image
-                source={require('../assets/images/huxley therapist.png')}
+                source={require('../assets/images/huxley-avatar.png')}
                 style={styles.huxleyAvatar}
                 resizeMode="contain"
               />

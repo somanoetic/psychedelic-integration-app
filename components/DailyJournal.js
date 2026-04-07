@@ -13,6 +13,8 @@ import {
   Image,
   Keyboard
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
 import huxleyService from '../lib/huxleyService';
@@ -22,30 +24,34 @@ import { shareJournal } from '../lib/therapistShareService';
  * Daily Journal - Conversational AI-Guided Journaling
  * Allows free-form journaling with optional AI discussion and insights
  */
-const DailyJournal = ({ onComplete }) => {
+const DailyJournal = ({ onComplete, navigation }) => {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
   const [phase, setPhase] = useState('choosing'); // 'choosing', 'journaling', 'discussion', 'suggestions', 'complete'
+  const [journalMode, setJournalMode] = useState(null); // 'prompt', 'feedback', 'freewrite'
   const [saving, setSaving] = useState(false);
+  const [pastEntries, setPastEntries] = useState([]);
+  const [showPastEntries, setShowPastEntries] = useState(false);
+  const [loadingEntries, setLoadingEntries] = useState(false);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const scrollViewRef = useRef(null);
+  const insets = useSafeAreaInsets();
 
-  // Track keyboard visibility to adjust bottom padding
+  // Track keyboard visibility and scroll to bottom when keyboard opens
   useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
-      () => setKeyboardVisible(true)
-    );
-    const keyboardDidHideListener = Keyboard.addListener(
-      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
-      () => setKeyboardVisible(false)
-    );
-
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-    };
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+    const showSub = Keyboard.addListener(showEvent, () => {
+      setKeyboardVisible(true);
+      setTimeout(() => {
+        scrollViewRef.current?.scrollToEnd({ animated: true });
+      }, 150);
+    });
+    const hideSub = Keyboard.addListener(hideEvent, () => {
+      setKeyboardVisible(false);
+    });
+    return () => { showSub.remove(); hideSub.remove(); };
   }, []);
 
   const initializeJournal = async (mode) => {
@@ -69,11 +75,44 @@ const DailyJournal = ({ onComplete }) => {
     };
 
     setMessages([openingMessage]);
+    setJournalMode(mode);
     setPhase('journaling');
   };
 
   const handleModeChoice = (mode) => {
     initializeJournal(mode);
+  };
+
+  const handleBack = () => {
+    setMessages([]);
+    setInputText('');
+    setPhase('choosing');
+    setJournalMode(null);
+    huxleyService.setMode('journal', { clearHistory: true });
+  };
+
+  const loadPastEntries = async () => {
+    setLoadingEntries(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('daily_journals')
+        .select('id, title, mood, created_at, raw_text, emotions, themes, insights')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (error) throw error;
+      setPastEntries(data || []);
+      setShowPastEntries(true);
+    } catch (error) {
+      console.error('Error loading entries:', error);
+      Alert.alert('Error', 'Could not load past entries.');
+    } finally {
+      setLoadingEntries(false);
+    }
   };
 
   const sendMessage = async () => {
@@ -88,6 +127,15 @@ const DailyJournal = ({ onComplete }) => {
 
     setMessages(prev => [...prev, userMessage]);
     setInputText('');
+
+    // In freewrite mode, just add the message — no AI response
+    if (journalMode === 'freewrite') {
+      setTimeout(() => {
+        scrollViewRef.current?.scrollToEnd({ animated: true });
+      }, 100);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -284,20 +332,27 @@ Only include fields with clear evidence.`);
         created_at: new Date().toISOString(),
       };
 
+      const resetJournal = () => {
+        setMessages([]);
+        setPhase('choosing');
+        setJournalMode(null);
+        setInputText('');
+        huxleyService.setMode('journal', { clearHistory: true });
+      };
+
       Alert.alert(
         'Journal Saved',
         'Your journal entry has been saved. Take care of yourself!',
         [
           {
             text: 'Share with Therapist',
-            onPress: () => shareJournal(savedEntry).catch(() => {}).finally(() => onComplete?.()),
+            onPress: () => shareJournal(savedEntry).catch(() => {}).finally(() => {
+              onComplete ? onComplete() : resetJournal();
+            }),
           },
-          { text: 'Done', onPress: () => onComplete?.() },
+          { text: 'Done', onPress: () => onComplete ? onComplete() : resetJournal() },
         ]
       );
-
-      // Reset for next time
-      huxleyService.setMode('journal', { clearHistory: true });
     } catch (error) {
       console.error('Error saving journal:', error);
       Alert.alert('Error', 'Failed to save journal. Please try again.');
@@ -311,7 +366,7 @@ Only include fields with clear evidence.`);
       return (
         <View key={message.id} style={styles.aiMessageRow}>
           <Image
-            source={require('../assets/images/huxley therapist.png')}
+            source={require('../assets/images/huxley-avatar.png')}
             style={styles.huxleyAvatar}
             resizeMode="contain"
           />
@@ -409,19 +464,26 @@ Only include fields with clear evidence.`);
   };
 
   return (
+    <SafeAreaView style={styles.container} edges={['top']}>
     <KeyboardAvoidingView
-      style={styles.container}
-      behavior="padding"
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
     >
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerContent}>
+          {(phase !== 'choosing' || showPastEntries) && (
+            <TouchableOpacity onPress={() => { showPastEntries ? setShowPastEntries(false) : handleBack(); }} style={styles.backButton}>
+              <MaterialIcons name="arrow-back" size={24} color="#6366f1" />
+            </TouchableOpacity>
+          )}
           <MaterialIcons name="auto-stories" size={24} color="#6366f1" />
           <Text style={styles.headerTitle}>Daily Journal</Text>
         </View>
         <Text style={styles.headerSubtitle}>
-          {phase === 'choosing' && 'How would you like to journal today?'}
+          {phase === 'choosing' && !showPastEntries && 'How would you like to journal today?'}
+          {showPastEntries && 'Your journal entries'}
           {phase === 'journaling' && "Share what's on your mind..."}
           {phase === 'discussion' && 'Exploring together...'}
           {phase === 'suggestions' && 'Finding helpful practices...'}
@@ -429,11 +491,53 @@ Only include fields with clear evidence.`);
         </Text>
       </View>
 
-      {phase === 'choosing' ? (
+      {showPastEntries ? (
+        /* Past Entries List */
+        <ScrollView style={styles.messagesContainer} contentContainerStyle={{ padding: 16 }}>
+          {pastEntries.length === 0 ? (
+            <Text style={styles.emptyText}>No journal entries yet. Start writing!</Text>
+          ) : (
+            pastEntries.map((entry) => (
+              <TouchableOpacity
+                key={entry.id}
+                style={styles.entryCard}
+                onPress={() => {
+                  Alert.alert(
+                    entry.title || 'Journal Entry',
+                    (entry.raw_text || '').slice(0, 500) + (entry.raw_text?.length > 500 ? '...' : ''),
+                    [{ text: 'Close' }]
+                  );
+                }}
+              >
+                <View style={styles.entryCardHeader}>
+                  <Text style={styles.entryCardTitle} numberOfLines={1}>
+                    {entry.title || 'Untitled'}
+                  </Text>
+                  {entry.mood ? (
+                    <Text style={styles.entryCardMood}>{entry.mood}</Text>
+                  ) : null}
+                </View>
+                <Text style={styles.entryCardDate}>
+                  {new Date(entry.created_at).toLocaleDateString(undefined, {
+                    weekday: 'short', month: 'short', day: 'numeric'
+                  })}
+                </Text>
+                {entry.themes?.length > 0 && (
+                  <View style={styles.entryCardTags}>
+                    {entry.themes.slice(0, 3).map((theme, i) => (
+                      <Text key={i} style={styles.entryCardTag}>{theme}</Text>
+                    ))}
+                  </View>
+                )}
+              </TouchableOpacity>
+            ))
+          )}
+        </ScrollView>
+      ) : phase === 'choosing' ? (
         /* Mode Selection */
         <View style={styles.choosingContainer}>
           <Image
-            source={require('../assets/images/huxley therapist.png')}
+            source={require('../assets/images/huxley-avatar.png')}
             style={styles.choosingAvatar}
             resizeMode="contain"
           />
@@ -471,6 +575,19 @@ Only include fields with clear evidence.`);
               <Text style={styles.modeCardDescription}>Open space to journal on your own</Text>
             </View>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.pastEntriesButton}
+            onPress={loadPastEntries}
+            disabled={loadingEntries}
+          >
+            {loadingEntries ? (
+              <ActivityIndicator size="small" color="#6366f1" />
+            ) : (
+              <MaterialIcons name="history" size={20} color="#6366f1" />
+            )}
+            <Text style={styles.pastEntriesButtonText}>Past Entries</Text>
+          </TouchableOpacity>
         </View>
       ) : (
         <>
@@ -479,6 +596,8 @@ Only include fields with clear evidence.`);
             ref={scrollViewRef}
             style={styles.messagesContainer}
             contentContainerStyle={styles.messagesContent}
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="interactive"
             onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
           >
             {messages.map(renderMessage)}
@@ -486,7 +605,7 @@ Only include fields with clear evidence.`);
             {loading && (
               <View style={styles.aiMessageRow}>
                 <Image
-                  source={require('../assets/images/huxley therapist.png')}
+                  source={require('../assets/images/huxley-avatar.png')}
                   style={styles.huxleyAvatar}
                   resizeMode="contain"
                 />
@@ -536,6 +655,7 @@ Only include fields with clear evidence.`);
         </View>
       )}
     </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
@@ -547,7 +667,6 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: '#fff',
     padding: 20,
-    paddingTop: 60,
     borderBottomWidth: 1,
     borderBottomColor: '#e5e7eb'
   },
@@ -555,6 +674,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 8
+  },
+  backButton: {
+    marginRight: 8,
+    padding: 4,
   },
   headerTitle: {
     fontSize: 24,
@@ -706,6 +829,7 @@ const styles = StyleSheet.create({
   choosingContainer: {
     flex: 1,
     padding: 24,
+    paddingBottom: 40,
     alignItems: 'center',
     justifyContent: 'center'
   },
@@ -745,6 +869,69 @@ const styles = StyleSheet.create({
   modeCardDescription: {
     fontSize: 13,
     color: '#6b7280'
+  },
+  pastEntriesButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 8,
+    paddingVertical: 12,
+  },
+  pastEntriesButtonText: {
+    fontSize: 15,
+    color: '#6366f1',
+    fontWeight: '600',
+    marginLeft: 6,
+  },
+  emptyText: {
+    textAlign: 'center',
+    color: '#6b7280',
+    fontSize: 16,
+    marginTop: 40,
+  },
+  entryCard: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+  },
+  entryCardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  entryCardTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1f2937',
+    flex: 1,
+    marginRight: 8,
+  },
+  entryCardMood: {
+    fontSize: 13,
+    color: '#6366f1',
+    fontWeight: '500',
+  },
+  entryCardDate: {
+    fontSize: 13,
+    color: '#9ca3af',
+    marginBottom: 6,
+  },
+  entryCardTags: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  entryCardTag: {
+    fontSize: 12,
+    color: '#6366f1',
+    backgroundColor: '#eef2ff',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
   },
   savingOverlay: {
     position: 'absolute',

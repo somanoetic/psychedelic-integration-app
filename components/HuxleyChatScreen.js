@@ -400,7 +400,7 @@ const HuxleyChatScreen = ({ navigation }) => {
         {!isUser && (
           <View style={styles.huxleyRow}>
             <Image
-              source={require('../assets/images/huxley therapist.png')}
+              source={require('../assets/images/huxley-avatar.png')}
               style={styles.huxleyAvatar}
               resizeMode="contain"
             />
@@ -456,7 +456,7 @@ const HuxleyChatScreen = ({ navigation }) => {
       <View style={styles.messageContainer}>
         <View style={styles.huxleyRow}>
           <Image
-            source={require('../assets/images/huxley therapist.png')}
+            source={require('../assets/images/huxley-avatar.png')}
             style={styles.huxleyAvatar}
             resizeMode="contain"
           />

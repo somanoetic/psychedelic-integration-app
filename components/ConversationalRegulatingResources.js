@@ -278,7 +278,7 @@ const ConversationalRegulatingResources = ({ user: userProp, onComplete, navigat
       >
         {message.isAI && (
           <Image
-            source={require('../assets/images/huxley therapist.png')}
+            source={require('../assets/images/huxley-avatar.png')}
             style={styles.huxleyAvatar}
             resizeMode="contain"
           />
@@ -339,7 +339,7 @@ const ConversationalRegulatingResources = ({ user: userProp, onComplete, navigat
         {loading && (
           <View style={styles.loadingContainer}>
             <Image
-              source={require('../assets/images/huxley therapist.png')}
+              source={require('../assets/images/huxley-avatar.png')}
               style={styles.huxleyAvatar}
               resizeMode="contain"
             />

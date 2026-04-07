@@ -235,7 +235,7 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
       <View style={styles.messageContainer}>
         <View style={styles.huxleyMessageBubble}>
           <Image
-            source={require('../assets/images/huxley therapist.png')}
+            source={require('../assets/images/huxley-avatar.png')}
             style={styles.huxleyAvatar}
             resizeMode="contain"
           />

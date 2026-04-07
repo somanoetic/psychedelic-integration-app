@@ -204,7 +204,7 @@ const PartsCheckin = ({ navigation }) => {
         {/* Huxley intro */}
         <View style={styles.huxleySection}>
           <Image
-            source={require('../assets/images/huxley therapist.png')}
+            source={require('../assets/images/huxley-avatar.png')}
             style={styles.huxleyAvatar}
             resizeMode="contain"
           />

@@ -184,7 +184,7 @@ const IntentionDraftEditor = ({
           <View style={styles.extractedCallout}>
             <View style={styles.extractedHeader}>
               <Image
-                source={require('../../assets/images/huxley therapist.png')}
+                source={require('../../assets/images/huxley-avatar.png')}
                 style={styles.extractedAvatar}
                 resizeMode="contain"
               />

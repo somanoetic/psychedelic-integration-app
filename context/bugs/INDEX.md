@@ -14,10 +14,10 @@ Bugs are organized by priority across three files to keep each manageable.
 |------|----------|-------------|-------|
 | [critical.md](critical.md) | P0 | Show-stoppers, crashes, security issues | 0 active |
 | [high.md](high.md) | P1 | Major issues affecting key features | 0 active (17 resolved) |
-| [medium-low.md](medium-low.md) | P2-P3 | Minor issues, polish, edge cases | 5 active (16 resolved) |
+| [medium-low.md](medium-low.md) | P2-P3 | Minor issues, polish, edge cases | 3 active (18 resolved) |
 | [resolved.md](resolved.md) | -- | Archived resolved bugs | 28 resolved |
 
-**Total Active Bugs:** 5 (38 resolved)
+**Total Active Bugs:** 3 (40 resolved)
 
 ---
 
@@ -54,17 +54,16 @@ Bugs are organized by priority across three files to keep each manageable.
 ## Quick Stats
 
 **By Status:**
-- Open: 5
+- Open: 3
 - In Progress: 0
 - Blocked: 0
-- Resolved (last 30 days): 38
+- Resolved (last 30 days): 40
 
 **By Category:**
 - UI/UX: 1 open (BUG-213)
-- Observability: 1 open (BUG-221 — no crash reporting)
 - Platform/Build: 1 open (BUG-306 — iOS beta stale)
 - Performance: 1 open (BUG-301)
-- Documentation: 1 open (BUG-303)
+- Documentation: 1 open (BUG-303, in progress)
 
 ---
 

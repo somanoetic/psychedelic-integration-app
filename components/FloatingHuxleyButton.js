@@ -47,7 +47,7 @@ const FloatingHuxleyButton = ({ onPress }) => {
         activeOpacity={0.9}
       >
         <Image
-          source={require('../assets/images/huxley therapist.png')}
+          source={require('../assets/images/huxley-avatar.png')}
           style={styles.huxleyImage}
           resizeMode="contain"
         />

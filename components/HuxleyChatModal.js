@@ -162,7 +162,7 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
           <View style={styles.header}>
             <View style={styles.headerLeft}>
               <Image
-                source={require('../assets/images/huxley therapist.png')}
+                source={require('../assets/images/huxley-avatar.png')}
                 style={styles.huxleyAvatar}
                 resizeMode="contain"
               />
@@ -190,7 +190,7 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
               >
                 {message.role === 'assistant' && (
                   <Image
-                    source={require('../assets/images/huxley therapist.png')}
+                    source={require('../assets/images/huxley-avatar.png')}
                     style={styles.messageAvatar}
                     resizeMode="contain"
                   />
@@ -225,7 +225,7 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
             {isLoading && (
               <View style={[styles.messageRow, styles.assistantRow]}>
                 <Image
-                  source={require('../assets/images/huxley therapist.png')}
+                  source={require('../assets/images/huxley-avatar.png')}
                   style={styles.messageAvatar}
                   resizeMode="contain"
                 />

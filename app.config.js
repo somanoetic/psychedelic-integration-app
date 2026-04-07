@@ -2,7 +2,7 @@ import 'dotenv/config';
 
 export default {
   "expo": {
-    "name": "Psycheteleos",
+    "name": "Huxley",
     "slug": "psychedelic-integration-app",
     "version": "1.2.0",
     "orientation": "portrait",

@@ -1,5 +1,5 @@
 /**
- * Psycheteleos Design System - Color Palette
+ * Huxley Design System - Color Palette
  * Calm blue accent with soft gradient aesthetic
  */
 

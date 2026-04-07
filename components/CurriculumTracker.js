@@ -437,7 +437,7 @@ const CurriculumTracker = ({ navigation }) => {
             </Text>
           </View>
           <Image
-            source={require('../assets/images/huxley therapist.png')}
+            source={require('../assets/images/huxley-avatar.png')}
             style={styles.huxleyAvatar}
             resizeMode="contain"
           />

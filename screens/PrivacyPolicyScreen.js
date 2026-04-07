@@ -44,7 +44,7 @@ const PrivacyPolicyScreen = ({ navigation }) => {
         <Text style={styles.lastUpdated}>Last updated: {LAST_UPDATED}</Text>
 
         <Paragraph>
-          Psycheteleos ("the App") is operated by Alleviation Therapeutics ("we", "us", "our"). We are committed to protecting the privacy and security of your personal information. This policy explains what data we collect, how we use it, and your rights.
+          Huxley ("the App") is operated by Alleviation Therapeutics ("we", "us", "our"). We are committed to protecting the privacy and security of your personal information. This policy explains what data we collect, how we use it, and your rights.
         </Paragraph>
 
         <Paragraph>
@@ -177,7 +177,7 @@ const PrivacyPolicyScreen = ({ navigation }) => {
         {/* ---- 8. CHILDREN ---- */}
         <Section title="8. Age Requirement">
           <Paragraph>
-            Psycheteleos is intended for adults aged 18 and older. We do not knowingly collect data from anyone under 18. If you believe a minor has created an account, please contact us and we will delete the account.
+            Huxley is intended for adults aged 18 and older. We do not knowingly collect data from anyone under 18. If you believe a minor has created an account, please contact us and we will delete the account.
           </Paragraph>
         </Section>
 

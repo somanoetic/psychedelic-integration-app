@@ -109,7 +109,7 @@ export default function AuthScreen({ navigation }) {
           {/* Logo/Header */}
           <View style={styles.header}>
             <Text style={styles.logo}>✦</Text>
-            <Text style={styles.appName}>Psycheteleos</Text>
+            <Text style={styles.appName}>Huxley</Text>
             <Text style={styles.tagline}>Direct knowing through integration</Text>
           </View>
 

@@ -188,7 +188,7 @@ const FindSupportScreen = ({ navigation }) => {
           <View style={styles.disclaimerCard}>
             <MaterialIcons name="info-outline" size={16} color={colors.textSecondary} />
             <Text style={styles.disclaimerText}>
-              Psycheteleos provides these links as resources. We do not endorse,
+              Huxley provides these links as resources. We do not endorse,
               verify, or guarantee any provider. Always verify credentials and
               fit before beginning a therapeutic relationship.
             </Text>

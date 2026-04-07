@@ -112,7 +112,7 @@ const IntentionMessageBubble = ({ message, nervousSystemState, isLatest, onActio
     <View style={styles.aiMessageContainer}>
       {/* Huxley Avatar */}
       <Image
-        source={require('../../assets/images/huxley therapist.png')}
+        source={require('../../assets/images/huxley-avatar.png')}
         style={styles.huxleyAvatar}
         resizeMode="contain"
       />

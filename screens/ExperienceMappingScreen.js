@@ -405,7 +405,7 @@ You can continue documenting your experience, and I'll be back online soon.`;
       >
         {message.role === 'assistant' && (
           <Image
-            source={require('../assets/images/huxley therapist.png')}
+            source={require('../assets/images/huxley-avatar.png')}
             style={styles.huxleyAvatar}
             resizeMode="contain"
           />
@@ -504,7 +504,7 @@ You can continue documenting your experience, and I'll be back online soon.`;
         {isLoading && (
           <View style={styles.typingIndicator}>
             <Image
-              source={require('../assets/images/huxley therapist.png')}
+              source={require('../assets/images/huxley-avatar.png')}
               style={styles.huxleyAvatar}
               resizeMode="contain"
             />

@@ -184,7 +184,7 @@ const HuxleyWelcomeScreen = ({ onComplete }) => {
             ]}
           >
             <Image
-              source={require('../assets/images/huxley therapist.png')}
+              source={require('../assets/images/huxley-avatar.png')}
               style={styles.huxleyImage}
               resizeMode="contain"
             />

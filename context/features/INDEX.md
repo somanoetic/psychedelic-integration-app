@@ -12,8 +12,8 @@ Features organized by status across three files to keep each manageable.
 
 | File | Status | Description | Count |
 |------|--------|-------------|-------|
-| [in-progress.md](in-progress.md) | Active Work | Currently being developed | 2 (+ 7 recently completed) |
-| [planned.md](planned.md) | Committed | Scheduled for next 1-2 phases | 5 remaining |
+| [in-progress.md](in-progress.md) | Active Work | Currently being developed | 1 (+ 9 recently completed) |
+| [planned.md](planned.md) | Committed | Scheduled for next 1-2 phases | 4 remaining |
 | [ideas.md](ideas.md) | Backlog | Future considerations | 16+ |
 | [ai-system-improvements.md](ai-system-improvements.md) | AI Roadmap | 4-phase AI improvement plan | Phase 1 complete, Phase 2 next |
 

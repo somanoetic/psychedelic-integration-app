@@ -197,7 +197,7 @@ const ConversationalHomeScreen = ({ navigation, user }) => {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.appName}>Psycheteleos</Text>
+          <Text style={styles.appName}>Huxley</Text>
           <TouchableOpacity
             style={styles.avatarButton}
             onPress={() => {
@@ -228,7 +228,7 @@ const ConversationalHomeScreen = ({ navigation, user }) => {
               >
                 {message.isAI && (
                   <Image
-                    source={require('../assets/images/huxley therapist.png')}
+                    source={require('../assets/images/huxley-avatar.png')}
                     style={styles.huxleyAvatar}
                     resizeMode="contain"
                   />
@@ -249,7 +249,7 @@ const ConversationalHomeScreen = ({ navigation, user }) => {
             {isSending && (
               <View style={[styles.messageBubbleContainer, styles.aiMessageContainer]}>
                 <Image
-                  source={require('../assets/images/huxley therapist.png')}
+                  source={require('../assets/images/huxley-avatar.png')}
                   style={styles.huxleyAvatar}
                   resizeMode="contain"
                 />

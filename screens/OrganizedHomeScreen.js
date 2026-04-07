@@ -341,7 +341,7 @@ const OrganizedHomeScreen = ({ navigation }) => {
       colors={[colors.cream, colors.sand]}
       style={styles.welcomeContainer}
     >
-      <Text style={styles.welcomeTitle}>Welcome to Psycheteleos</Text>
+      <Text style={styles.welcomeTitle}>Welcome to Huxley</Text>
       <Text style={styles.welcomeSubtitle}>
         Direct knowing through integration
       </Text>
@@ -358,7 +358,7 @@ const OrganizedHomeScreen = ({ navigation }) => {
       >
       <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
         <Appbar.Header style={styles.appbar}>
-          <Appbar.Content title="Psycheteleos" titleStyle={styles.appbarTitle} />
+          <Appbar.Content title="Huxley" titleStyle={styles.appbarTitle} />
         </Appbar.Header>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
@@ -378,7 +378,7 @@ const OrganizedHomeScreen = ({ navigation }) => {
     >
     <SafeAreaView style={styles.container} edges={['top']}>
       <Appbar.Header style={styles.appbar}>
-        <Appbar.Content title="Psycheteleos" titleStyle={styles.appbarTitle} />
+        <Appbar.Content title="Huxley" titleStyle={styles.appbarTitle} />
         <Appbar.Action
           icon="cog"
           onPress={() => navigation.navigate('NetworkTest')}

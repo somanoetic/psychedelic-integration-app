@@ -283,7 +283,7 @@ Take your time with this. When you're done, the app will show you a digital vers
       return (
         <View key={message.id} style={styles.aiMessageRow}>
           <Image
-            source={require('../assets/images/huxley therapist.png')}
+            source={require('../assets/images/huxley-avatar.png')}
             style={styles.huxleyAvatar}
             resizeMode="contain"
           />
@@ -395,7 +395,7 @@ Take your time with this. When you're done, the app will show you a digital vers
         {loading && (
           <View style={styles.aiMessageRow}>
             <Image
-              source={require('../assets/images/huxley therapist.png')}
+              source={require('../assets/images/huxley-avatar.png')}
               style={styles.huxleyAvatar}
               resizeMode="contain"
             />
