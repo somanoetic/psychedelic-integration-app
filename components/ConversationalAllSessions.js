@@ -9,24 +9,23 @@ import {
   ActivityIndicator,
   Platform,
   Alert,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AVATAR_OPTIONS } from './AvatarSelector';
 import { supabase } from '../lib/supabase';
-import { colors } from '../theme/colors';
+import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 import { shareExperienceMapping } from '../lib/therapistShareService';
+import { icons } from '../lib/uiIcons';
 
 const ConversationalAllSessions = ({ navigation }) => {
-  const [selectedAvatar, setSelectedAvatar] = useState('brain');
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [fadeAnim] = useState(new Animated.Value(0));
   const [filter, setFilter] = useState('all'); // all, inProgress, completed
 
   useEffect(() => {
-    loadPreferences();
     loadSessions();
     Animated.timing(fadeAnim, {
       toValue: 1,
@@ -34,15 +33,6 @@ const ConversationalAllSessions = ({ navigation }) => {
       useNativeDriver: true,
     }).start();
   }, []);
-
-  const loadPreferences = async () => {
-    try {
-      const avatar = await AsyncStorage.getItem('huxley_avatar');
-      if (avatar) setSelectedAvatar(avatar);
-    } catch (error) {
-      console.error('Error loading preferences:', error);
-    }
-  };
 
   const loadSessions = async () => {
     try {
@@ -72,12 +62,6 @@ const ConversationalAllSessions = ({ navigation }) => {
     }
   };
 
-  const getAvatar = () => {
-    return AVATAR_OPTIONS.find(a => a.id === selectedAvatar) || AVATAR_OPTIONS[0];
-  };
-
-  const avatar = getAvatar();
-
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const today = new Date();
@@ -94,10 +78,10 @@ const ConversationalAllSessions = ({ navigation }) => {
     const experience = session.session_data?.experienceProcessing;
     const integration = session.session_data?.integration;
 
-    if (integration?.completed) return { text: 'Integrated', emoji: '✅', color: '#10b981', category: 'completed' };
-    if (experience?.completed) return { text: 'Processed', emoji: '📝', color: '#3b82f6', category: 'inProgress' };
-    if (prep?.completedSections?.length > 0) return { text: 'In Progress', emoji: '⏳', color: '#f59e0b', category: 'inProgress' };
-    return { text: 'New', emoji: '✨', color: '#6b7280', category: 'inProgress' };
+    if (integration?.completed) return { text: 'Integrated', emoji: '✅', icon: icons.integration, color: colors.success, category: 'completed' };
+    if (experience?.completed) return { text: 'Processed', emoji: '📝', icon: icons.journal, color: colors.primary, category: 'inProgress' };
+    if (prep?.completedSections?.length > 0) return { text: 'In Progress', emoji: '⏳', icon: icons.trailProgress, color: colors.warning, category: 'inProgress' };
+    return { text: 'New', emoji: '✨', icon: icons.newBeginning, color: colors.textSecondary, category: 'inProgress' };
   };
 
   const getFilteredSessions = () => {
@@ -134,10 +118,12 @@ const ConversationalAllSessions = ({ navigation }) => {
   const renderHuxleyMessage = (message) => (
     <View style={styles.huxleyBubble}>
       <View style={styles.huxleyHeader}>
-        <View style={[styles.huxleyAvatarSmall, { backgroundColor: `${avatar.color}20` }]}>
-          <MaterialIcons name={avatar.icon} size={24} color={avatar.color} />
-        </View>
-        <Text style={styles.huxleyName}>{avatar.name}</Text>
+        <Image
+          source={require('../assets/images/huxley-avatar.png')}
+          style={styles.huxleyAvatarSmall}
+          resizeMode="contain"
+        />
+        <Text style={styles.huxleyName}>Huxley</Text>
       </View>
       <Text style={styles.huxleyText}>{message}</Text>
     </View>
@@ -155,7 +141,7 @@ const ConversationalAllSessions = ({ navigation }) => {
       <MaterialIcons
         name={icon}
         size={18}
-        color={filter === filterValue ? '#ffffff' : '#6b7280'}
+        color={filter === filterValue ? '#ffffff' : colors.textSecondary}
         style={{ marginRight: 6 }}
       />
       <Text style={[
@@ -168,24 +154,30 @@ const ConversationalAllSessions = ({ navigation }) => {
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <MaterialIcons name="arrow-back" size={24} color="#1f2937" />
-        </TouchableOpacity>
-        <Text style={styles.appName}>My Sessions</Text>
-        <View style={{ width: 24 }} />
-      </View>
+    <LinearGradient
+      colors={gradients.standard}
+      start={gradients.standardStart}
+      end={gradients.standardEnd}
+      style={styles.gradientFill}
+    >
+      <SafeAreaView style={styles.container} edges={['top']}>
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.headerBack} onPress={() => navigation.goBack()}>
+            <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+          </TouchableOpacity>
+          <Text style={styles.appName}>My Sessions</Text>
+          <View style={{ width: 40 }} />
+        </View>
 
-      <ScrollView
-        style={styles.content}
-        contentContainerStyle={styles.contentContainer}
-        showsVerticalScrollIndicator={false}
-      >
-        <Animated.View style={{ opacity: fadeAnim }}>
-          {/* Huxley's Message */}
-          {renderHuxleyMessage(getHuxleyMessage())}
+        <ScrollView
+          style={styles.content}
+          contentContainerStyle={styles.contentContainer}
+          showsVerticalScrollIndicator={false}
+        >
+          <Animated.View style={{ opacity: fadeAnim }}>
+            {/* Huxley's Message */}
+            {renderHuxleyMessage(getHuxleyMessage())}
 
           {/* Filter Options */}
           {sessions.length > 0 && (
@@ -202,7 +194,7 @@ const ConversationalAllSessions = ({ navigation }) => {
           {/* Sessions List */}
           {loading ? (
             <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color={avatar.color} />
+              <ActivityIndicator size="large" color={colors.primary} />
             </View>
           ) : filteredSessions.length === 0 && sessions.length > 0 ? (
             <View style={styles.emptyFilterContainer}>
@@ -230,7 +222,11 @@ const ConversationalAllSessions = ({ navigation }) => {
                         </View>
                       </View>
                       <View style={[styles.statusBadge, { backgroundColor: status.color }]}>
-                        <Text style={styles.statusEmoji}>{status.emoji}</Text>
+                        {status.icon ? (
+                          <Image source={status.icon} style={styles.statusIconImage} />
+                        ) : (
+                          <Text style={styles.statusEmoji}>{status.emoji}</Text>
+                        )}
                       </View>
                     </View>
 
@@ -240,7 +236,7 @@ const ConversationalAllSessions = ({ navigation }) => {
                         <MaterialIcons
                           name={session.session_data?.preparation?.completedSections?.length > 0 ? 'check-circle' : 'radio-button-unchecked'}
                           size={16}
-                          color={session.session_data?.preparation?.completedSections?.length > 0 ? '#10b981' : '#d1d5db'}
+                          color={session.session_data?.preparation?.completedSections?.length > 0 ? colors.success : '#d1d5db'}
                         />
                         <Text style={styles.progressLabel}>Prep</Text>
                       </View>
@@ -248,7 +244,7 @@ const ConversationalAllSessions = ({ navigation }) => {
                         <MaterialIcons
                           name={session.session_data?.experienceProcessing?.completed ? 'check-circle' : 'radio-button-unchecked'}
                           size={16}
-                          color={session.session_data?.experienceProcessing?.completed ? '#10b981' : '#d1d5db'}
+                          color={session.session_data?.experienceProcessing?.completed ? colors.success : '#d1d5db'}
                         />
                         <Text style={styles.progressLabel}>Process</Text>
                       </View>
@@ -256,7 +252,7 @@ const ConversationalAllSessions = ({ navigation }) => {
                         <MaterialIcons
                           name={session.session_data?.integration?.completed ? 'check-circle' : 'radio-button-unchecked'}
                           size={16}
-                          color={session.session_data?.integration?.completed ? '#10b981' : '#d1d5db'}
+                          color={session.session_data?.integration?.completed ? colors.success : '#d1d5db'}
                         />
                         <Text style={styles.progressLabel}>Integrate</Text>
                       </View>
@@ -286,7 +282,7 @@ const ConversationalAllSessions = ({ navigation }) => {
             <View style={styles.optionsContainer}>
               <Text style={styles.optionsLabel}>You:</Text>
               <TouchableOpacity
-                style={[styles.responseBubble, { backgroundColor: '#10b981' }]}
+                style={[styles.responseBubble, { backgroundColor: colors.primary }]}
                 onPress={() => navigation.navigate('SessionTools')}
                 activeOpacity={0.8}
               >
@@ -295,7 +291,7 @@ const ConversationalAllSessions = ({ navigation }) => {
                 <MaterialIcons name="arrow-forward" size={16} color="rgba(255,255,255,0.8)" />
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.responseBubble, { backgroundColor: '#6b7280' }]}
+                style={[styles.responseBubble, { backgroundColor: colors.darkGray }]}
                 onPress={() => navigation.goBack()}
                 activeOpacity={0.8}
               >
@@ -305,81 +301,84 @@ const ConversationalAllSessions = ({ navigation }) => {
               </TouchableOpacity>
             </View>
           ) : null}
-        </Animated.View>
-      </ScrollView>
-    </SafeAreaView>
+          </Animated.View>
+        </ScrollView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
+  gradientFill: {
+    flex: 1,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb',
+    backgroundColor: 'transparent',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  headerBack: {
+    width: 40,
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: borderRadius.sm,
   },
   appName: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '700',
-    color: '#1f2937',
+    color: colors.text,
+    letterSpacing: 0.3,
   },
   content: {
     flex: 1,
   },
   contentContainer: {
-    padding: 20,
+    padding: spacing.lg,
+    paddingBottom: spacing.xl,
   },
   huxleyBubble: {
-    backgroundColor: '#ffffff',
-    borderRadius: 20,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
     borderTopLeftRadius: 4,
-    padding: 20,
-    marginBottom: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
+    padding: spacing.md,
+    marginBottom: spacing.lg,
+    ...shadows.soft,
   },
   huxleyHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: spacing.sm,
   },
   huxleyAvatarSmall: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 10,
+    width: 54,
+    height: 54,
+    marginRight: spacing.sm,
   },
   huxleyName: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   huxleyText: {
     fontSize: 16,
     lineHeight: 24,
-    color: '#374151',
+    color: colors.text,
   },
   filterContainer: {
-    marginBottom: 24,
+    marginBottom: spacing.lg,
   },
   filterLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6b7280',
-    marginBottom: 12,
+    color: colors.textSecondary,
+    marginBottom: spacing.sm,
     marginLeft: 4,
   },
   filterRow: {
@@ -391,11 +390,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    backgroundColor: '#ffffff',
-    borderWidth: 2,
-    borderColor: '#e5e7eb',
+    paddingHorizontal: spacing.md,
+    borderRadius: borderRadius.lg,
+    backgroundColor: colors.surfaceAlt,
+    borderWidth: 1,
+    borderColor: colors.sand,
   },
   filterBubbleActive: {
     backgroundColor: colors.primary,
@@ -404,10 +403,10 @@ const styles = StyleSheet.create({
   filterText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   filterTextActive: {
-    color: '#ffffff',
+    color: colors.textInverse,
   },
   loadingContainer: {
     paddingVertical: 40,
@@ -419,41 +418,37 @@ const styles = StyleSheet.create({
   },
   emptyFilterText: {
     fontSize: 15,
-    color: '#9ca3af',
+    color: colors.textLight,
     textAlign: 'center',
     fontStyle: 'italic',
   },
   sessionsListContainer: {
-    marginBottom: 24,
+    marginBottom: spacing.lg,
   },
   sessionCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    padding: 18,
-    marginBottom: 14,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
+    marginBottom: spacing.sm,
+    borderLeftWidth: 4,
+    borderLeftColor: colors.primary,
+    ...shadows.soft,
   },
   sessionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 12,
+    marginBottom: spacing.sm,
   },
   sessionTitleContainer: {
     flex: 1,
-    marginRight: 12,
+    marginRight: spacing.sm,
   },
   sessionTitle: {
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '600',
-    color: '#1f2937',
-    marginBottom: 6,
+    color: colors.text,
+    marginBottom: 4,
   },
   sessionMeta: {
     flexDirection: 'row',
@@ -461,7 +456,7 @@ const styles = StyleSheet.create({
   },
   sessionDate: {
     fontSize: 13,
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   statusBadge: {
     width: 36,
@@ -473,13 +468,18 @@ const styles = StyleSheet.create({
   statusEmoji: {
     fontSize: 18,
   },
+  statusIconImage: {
+    width: 52,
+    height: 52,
+    resizeMode: 'contain',
+  },
   progressRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingVertical: 12,
+    paddingVertical: spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: '#f3f4f6',
-    marginBottom: 8,
+    borderTopColor: colors.sand,
+    marginBottom: spacing.xs,
   },
   progressDot: {
     flexDirection: 'row',
@@ -488,7 +488,7 @@ const styles = StyleSheet.create({
   },
   progressLabel: {
     fontSize: 11,
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   sessionFooter: {
     flexDirection: 'row',
@@ -504,39 +504,35 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   optionsContainer: {
-    marginTop: 12,
+    marginTop: spacing.sm,
   },
   optionsLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6b7280',
-    marginBottom: 12,
+    color: colors.textSecondary,
+    marginBottom: spacing.sm,
     marginLeft: 4,
   },
   responseBubble: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    borderRadius: 20,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.md,
+    borderRadius: borderRadius.lg,
     borderTopRightRadius: 4,
-    marginBottom: 12,
+    marginBottom: spacing.sm,
     alignSelf: 'flex-end',
     maxWidth: '85%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
-    elevation: 3,
+    ...shadows.soft,
   },
   responseIcon: {
-    marginRight: 12,
+    marginRight: spacing.sm,
   },
   responseText: {
     flex: 1,
     fontSize: 16,
     fontWeight: '600',
-    color: '#ffffff',
+    color: colors.textInverse,
   },
 });
 

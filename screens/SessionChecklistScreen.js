@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,11 +11,17 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 import { useSessionChecklist } from '../useSessionChecklist';
 import ChecklistHeader from '../components/checklist/ChecklistHeader';
 import ChecklistItemsList from '../components/checklist/ChecklistItemsList';
 import AddItemModal from '../components/checklist/AddItemModal';
+
+// Local override flag — when the user explicitly taps "Mark Checklist Complete"
+// we persist this so SessionPreparationScreen treats the section as done even
+// if some items are unchecked or N/A markers are local-only.
+const checklistDoneKey = (sessionId) => `checklist_user_complete_${sessionId}`;
 
 /**
  * SessionChecklistScreen - Main screen for session preparation checklist
@@ -30,6 +36,7 @@ const SessionChecklistScreen = ({ navigation, route }) => {
   const context = route.params?.context;
 
   const [addModalVisible, setAddModalVisible] = useState(false);
+  const [userMarkedComplete, setUserMarkedComplete] = useState(false);
 
   const {
     checklist,
@@ -38,14 +45,48 @@ const SessionChecklistScreen = ({ navigation, route }) => {
     syncing,
     offline,
     toggleItem,
+    toggleItemNA,
     addItem,
     deleteItem,
     retry,
   } = useSessionChecklist(sessionId, context);
 
+  // Hydrate the "user marked complete" flag from AsyncStorage on mount so
+  // returning to this screen reflects the prior state.
+  useEffect(() => {
+    if (!sessionId) return;
+    AsyncStorage.getItem(checklistDoneKey(sessionId))
+      .then((val) => setUserMarkedComplete(val === 'true'))
+      .catch((err) => console.error('Error loading checklist done flag:', err));
+  }, [sessionId]);
+
+  const handleToggleComplete = async () => {
+    if (!sessionId) return;
+    const next = !userMarkedComplete;
+    setUserMarkedComplete(next);
+    try {
+      if (next) {
+        await AsyncStorage.setItem(checklistDoneKey(sessionId), 'true');
+      } else {
+        await AsyncStorage.removeItem(checklistDoneKey(sessionId));
+      }
+    } catch (err) {
+      console.error('Error saving checklist done flag:', err);
+    }
+    // After locking it in, return to the Session Preparation overview so
+    // the user sees the section marked complete in context.
+    if (next) {
+      navigation.goBack();
+    }
+  };
+
   // Handle item toggle
   const handleToggleItem = (itemId) => {
     toggleItem(itemId);
+  };
+
+  const handleToggleItemNA = (itemId) => {
+    toggleItemNA(itemId);
   };
 
   // Handle delete item with confirmation
@@ -173,6 +214,7 @@ const SessionChecklistScreen = ({ navigation, route }) => {
             <ChecklistItemsList
               items={checklist.items}
               onToggleItem={handleToggleItem}
+              onToggleItemNA={handleToggleItemNA}
               onDeleteItem={handleDeleteItem}
               disabled={syncing}
             />
@@ -189,6 +231,26 @@ const SessionChecklistScreen = ({ navigation, route }) => {
             <Text style={styles.addButtonText}>Add Custom Item</Text>
           </TouchableOpacity>
 
+          {/* Mark Complete button — locks in the checklist as done so the
+              prep overview can advance even if some items are unchecked. */}
+          <TouchableOpacity
+            style={[
+              styles.markCompleteButton,
+              userMarkedComplete && styles.markCompleteButtonActive,
+            ]}
+            onPress={handleToggleComplete}
+            activeOpacity={0.7}
+          >
+            <MaterialIcons
+              name={userMarkedComplete ? 'check-circle' : 'radio-button-unchecked'}
+              size={22}
+              color={colors.textInverse}
+            />
+            <Text style={styles.markCompleteText}>
+              {userMarkedComplete ? 'Checklist Complete ✓' : 'Mark Checklist Complete'}
+            </Text>
+          </TouchableOpacity>
+
           {/* Tip box */}
           <View style={styles.tipBox}>
             <MaterialIcons name="lightbulb" size={20} color={colors.golden} />
@@ -197,6 +259,7 @@ const SessionChecklistScreen = ({ navigation, route }) => {
               <Text style={styles.tipText}>
                 • Customize this checklist for your unique needs{'\n'}
                 • Essential items are marked with a badge{'\n'}
+                • Tap "N/A" on items that don't apply (Safety items always require confirmation){'\n'}
                 • Your progress syncs automatically{'\n'}
                 • Come back to this checklist anytime
               </Text>
@@ -343,6 +406,26 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: colors.primary,
+  },
+  markCompleteButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.sm,
+    backgroundColor: colors.primary,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.md,
+    marginBottom: spacing.lg,
+    ...shadows.soft,
+  },
+  markCompleteButtonActive: {
+    backgroundColor: colors.success,
+  },
+  markCompleteText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.textInverse,
+    letterSpacing: 0.3,
   },
   tipBox: {
     flexDirection: 'row',

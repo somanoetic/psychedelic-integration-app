@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,21 +7,34 @@ import {
   StyleSheet,
   Alert,
   TextInput,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
-import { colors, gradients, spacing, borderRadius, shadows } from '../../theme/colors';
+import sessionChecklistService from '../../lib/sessionChecklistService';
+import { colors, gradients, spacing, borderRadius, shadows, typography } from '../../theme/colors';
+import { icons } from '../../lib/uiIcons';
 
 const SessionPreparationScreen = ({ navigation, route }) => {
   const { sessionId: passedSessionId, sessionData } = route.params || {};
   const [sessionId, setSessionId] = useState(passedSessionId || null);
+  const [currentSession, setCurrentSession] = useState(sessionData || null);
   const [currentSection, setCurrentSection] = useState('overview');
   const [completedSections, setCompletedSections] = useState([]);
   const [creatingSession, setCreatingSession] = useState(false);
+  // Gate the auto-save effect so it doesn't fire with empty state on the
+  // initial render and overwrite previously-saved preparation data.
+  const hasLoadedRef = useRef(false);
 
   // Session Info
+  const [sessionTitle, setSessionTitle] = useState(sessionData?.title || '');
+  const [journeyDate, setJourneyDate] = useState(
+    sessionData?.journey_date || new Date().toISOString().split('T')[0]
+  );
   const [medicine, setMedicine] = useState('');
   const [dosage, setDosage] = useState('');
   const [setting, setSetting] = useState('');
@@ -70,6 +83,7 @@ const SessionPreparationScreen = ({ navigation, route }) => {
 
       if (error) throw error;
       setSessionId(data.id);
+      setCurrentSession(data);
       console.log('Auto-created session:', data.id);
     } catch (err) {
       console.error('Error creating session:', err);
@@ -78,11 +92,113 @@ const SessionPreparationScreen = ({ navigation, route }) => {
     }
   };
 
+  // When this screen regains focus (e.g. after returning from the
+  // SessionChecklistScreen), check whether the day-of checklist is complete
+  // and auto-mark the section. Without this, completing the checklist would
+  // not register here and the "Begin Session Preparation" button would loop
+  // back to intention setting.
+  useFocusEffect(
+    useCallback(() => {
+      if (!sessionId) return;
+      let cancelled = false;
+      (async () => {
+        try {
+          // Establish (or reuse) a "prep started at" timestamp for this session.
+          // We use it to detect whether the user has just completed a check-in
+          // in the standalone tracker screens.
+          const startedKey = `prep_started_${sessionId}`;
+          let startedAt = await AsyncStorage.getItem(startedKey);
+          if (!startedAt) {
+            startedAt = new Date().toISOString();
+            await AsyncStorage.setItem(startedKey, startedAt);
+          }
+
+          const { data: { user } } = await supabase.auth.getUser();
+
+          // ---- Session Day Checklist ----
+          // Two ways it can count as done:
+          //   1. User explicitly tapped "Mark Checklist Complete"
+          //   2. Every DB-tracked item is checked
+          const userFlag = await AsyncStorage.getItem(`checklist_user_complete_${sessionId}`);
+          let checklistDone = userFlag === 'true';
+          if (!checklistDone) {
+            const cl = await sessionChecklistService.getOrCreateChecklist(sessionId);
+            if (cl && cl.totalItems > 0 && cl.completedItems >= cl.totalItems) {
+              checklistDone = true;
+            }
+          }
+
+          // ---- Nervous System & Parts check-ins ----
+          // Considered complete if the user logged a check-in in the
+          // standalone tracker after this prep session was started.
+          let nsDone = false;
+          let partsDone = false;
+          if (user) {
+            const [{ data: nsRows }, { data: partsRows }] = await Promise.all([
+              supabase
+                .from('nervous_system_checkins')
+                .select('id')
+                .eq('user_id', user.id)
+                .gte('created_at', startedAt)
+                .limit(1),
+              supabase
+                .from('parts_checkins')
+                .select('id')
+                .eq('user_id', user.id)
+                .gte('created_at', startedAt)
+                .limit(1),
+            ]);
+            nsDone = !!(nsRows && nsRows.length > 0);
+            partsDone = !!(partsRows && partsRows.length > 0);
+          }
+
+          if (cancelled) return;
+
+          setCompletedSections(prev => {
+            const set = new Set(prev);
+            const apply = (id, done) => {
+              if (done) set.add(id);
+              else set.delete(id);
+            };
+            apply('session_day_prep', checklistDone);
+            // Only add for NS/Parts — don't auto-remove, so a manual mark
+            // earlier in the flow isn't undone by network hiccups.
+            if (nsDone) set.add('nervous_system_checkin');
+            if (partsDone) set.add('parts_checkin');
+            const next = [...set];
+            // Avoid spurious state updates when nothing changed
+            if (next.length === prev.length && next.every(s => prev.includes(s))) {
+              return prev;
+            }
+            return next;
+          });
+        } catch (err) {
+          console.error('Error checking section completion:', err);
+        }
+      })();
+      return () => { cancelled = true; };
+    }, [sessionId])
+  );
+
+  // Persist preparation data whenever the completed-sections list changes
+  // (covers both manual marks and the auto-mark above). Skipped until the
+  // initial load has finished so we don't overwrite saved data with empties.
+  useEffect(() => {
+    if (!sessionId) return;
+    if (!hasLoadedRef.current) return;
+    savePreparationData();
+    // savePreparationData reads other state via closure; we deliberately
+    // depend on completedSections so writes happen on completion changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [completedSections, sessionId]);
+
   // Load existing session data if available
   useEffect(() => {
     if (sessionData) {
-      const prep = sessionData.preparation || {};
+      const prep = sessionData.session_data?.preparation || sessionData.preparation || {};
       // Session info
+      setSessionTitle(sessionData.title || '');
+      setJourneyDate(sessionData.journey_date || new Date().toISOString().split('T')[0]);
       setMedicine(prep.medicine || '');
       setDosage(prep.dosage || '');
       setSetting(prep.setting || '');
@@ -99,6 +215,7 @@ const SessionPreparationScreen = ({ navigation, route }) => {
       setPartsNotes(prep.partsNotes || '');
       setCompletedSections(prep.completedSections || []);
     }
+    hasLoadedRef.current = true;
   }, [sessionData]);
 
   // Save preparation data to session
@@ -126,15 +243,19 @@ const SessionPreparationScreen = ({ navigation, route }) => {
         completedAt: new Date().toISOString()
       };
 
-      const currentSessionData = sessionData?.session_data || {};
+      const currentSessionData = currentSession?.session_data || sessionData?.session_data || {};
       const updatedSessionData = {
         ...currentSessionData,
         preparation: preparationData
       };
 
+      const updates = { session_data: updatedSessionData };
+      if (sessionTitle && sessionTitle.trim()) updates.title = sessionTitle.trim();
+      if (journeyDate) updates.journey_date = journeyDate;
+
       const { error } = await supabase
         .from('sessions')
-        .update({ session_data: updatedSessionData })
+        .update(updates)
         .eq('id', sessionId);
 
       if (error) throw error;
@@ -151,13 +272,23 @@ const SessionPreparationScreen = ({ navigation, route }) => {
       id: 'overview',
       title: 'Session Overview',
       emoji: '🧭',
+      icon: icons.guidance,
       description: 'Prepare for this specific session',
       estimatedTime: '2 min'
+    },
+    {
+      id: 'session_details',
+      title: 'Session Details',
+      emoji: '📝',
+      icon: icons.journal,
+      description: 'Medicine, dosage, date, setting, and context',
+      estimatedTime: '3 min'
     },
     {
       id: 'intention_setting',
       title: 'Set Your Intention',
       emoji: '🎯',
+      icon: icons.intention,
       description: 'Create your compass for this journey',
       estimatedTime: '10-15 min'
     },
@@ -165,6 +296,7 @@ const SessionPreparationScreen = ({ navigation, route }) => {
       id: 'nervous_system_checkin',
       title: 'Nervous System Check-in',
       emoji: '🧠',
+      icon: icons.bodyScanAlt,
       description: 'Assess your current state',
       estimatedTime: '5 min'
     },
@@ -172,6 +304,7 @@ const SessionPreparationScreen = ({ navigation, route }) => {
       id: 'parts_checkin',
       title: 'Parts Check-in',
       emoji: '👥',
+      icon: icons.roles,
       description: 'Notice what parts are active today',
       estimatedTime: '7 min'
     },
@@ -179,6 +312,7 @@ const SessionPreparationScreen = ({ navigation, route }) => {
       id: 'session_day_prep',
       title: 'Session Day Checklist',
       emoji: '📋',
+      icon: icons.checklist,
       description: 'Items and final preparations',
       estimatedTime: '5 min'
     }
@@ -316,7 +450,7 @@ const SessionPreparationScreen = ({ navigation, route }) => {
 
         {/* Hero */}
         <View style={styles.hero}>
-          <Text style={styles.heroEmoji}>🧭</Text>
+          <Image source={icons.mapRefined} style={styles.heroIcon} />
           <Text style={styles.heroTitle}>Session Preparation</Text>
           <Text style={styles.heroSubtitle}>
             Prepare your mind, body, and spirit for this healing journey.
@@ -326,9 +460,10 @@ const SessionPreparationScreen = ({ navigation, route }) => {
         {/* Session Info */}
         <View style={styles.sessionInfoBox}>
           <Text style={styles.sessionInfoTitle}>Today's Session</Text>
-          <Text style={styles.sessionInfoText}>Date: {sessionData?.journey_date || 'Today'}</Text>
-          <Text style={styles.sessionInfoText}>Type: {sessionData?.sessionType || 'Treatment Session'}</Text>
-          <Text style={styles.sessionInfoText}>Title: {sessionData?.title || 'Healing Session'}</Text>
+          <Text style={styles.sessionInfoText}>Title: {sessionTitle || 'New Session'}</Text>
+          <Text style={styles.sessionInfoText}>Date: {journeyDate || 'Today'}</Text>
+          {medicine ? <Text style={styles.sessionInfoText}>Medicine: {medicine}{dosage ? ` • ${dosage}` : ''}</Text> : null}
+          {setting ? <Text style={styles.sessionInfoText}>Setting: {setting}</Text> : null}
         </View>
 
         {/* Preparation Steps */}
@@ -344,6 +479,12 @@ const SessionPreparationScreen = ({ navigation, route }) => {
                     sessionData,
                     context: { medicine, setting, facilitator }
                   });
+                } else if (section.id === 'nervous_system_checkin') {
+                  // Use the full tracker so the prep flow stays consistent
+                  // with the standalone Nervous System Check-in.
+                  navigation.navigate('NervousSystemCheckin', { returnTo: 'SessionPreparation' });
+                } else if (section.id === 'parts_checkin') {
+                  navigation.navigate('PartsCheckin', { returnTo: 'SessionPreparation' });
                 } else {
                   setCurrentSection(section.id);
                 }
@@ -351,7 +492,11 @@ const SessionPreparationScreen = ({ navigation, route }) => {
               activeOpacity={0.7}
             >
               <View style={styles.optionLeft}>
-                <Text style={styles.optionEmoji}>{section.emoji}</Text>
+                {section.icon ? (
+                  <Image source={section.icon} style={styles.optionIconImage} />
+                ) : (
+                  <Text style={styles.optionEmoji}>{section.emoji}</Text>
+                )}
                 <View style={styles.optionText}>
                   <Text style={styles.optionTitle}>{section.title}</Text>
                   <Text style={styles.optionDescription}>{section.description}</Text>
@@ -383,12 +528,36 @@ const SessionPreparationScreen = ({ navigation, route }) => {
         </View>
 
         {/* Start / Complete Buttons */}
-        <TouchableOpacity
-          style={styles.startButton}
-          onPress={() => setCurrentSection('intention_setting')}
-        >
-          <Text style={styles.startButtonText}>Begin Session Preparation</Text>
-        </TouchableOpacity>
+        {(() => {
+          const stepOrder = ['session_details', 'intention_setting', 'nervous_system_checkin', 'parts_checkin', 'session_day_prep'];
+          const nextStep = stepOrder.find(s => !completedSections.includes(s));
+          if (!nextStep) return null;
+          const label = completedSections.length === 0
+            ? 'Begin Session Preparation'
+            : 'Continue Preparation';
+          return (
+            <TouchableOpacity
+              style={styles.startButton}
+              onPress={() => {
+                if (nextStep === 'session_day_prep') {
+                  navigation.navigate('SessionChecklist', {
+                    sessionId,
+                    sessionData,
+                    context: { medicine, setting, facilitator }
+                  });
+                } else if (nextStep === 'nervous_system_checkin') {
+                  navigation.navigate('NervousSystemCheckin', { returnTo: 'SessionPreparation' });
+                } else if (nextStep === 'parts_checkin') {
+                  navigation.navigate('PartsCheckin', { returnTo: 'SessionPreparation' });
+                } else {
+                  setCurrentSection(nextStep);
+                }
+              }}
+            >
+              <Text style={styles.startButtonText}>{label}</Text>
+            </TouchableOpacity>
+          );
+        })()}
 
         {completedSections.length === preparationSections.length - 1 && (
           <TouchableOpacity
@@ -445,7 +614,7 @@ const SessionPreparationScreen = ({ navigation, route }) => {
         </View>
 
         <View style={styles.hero}>
-          <Text style={styles.heroEmoji}>📚</Text>
+          <Image source={icons.educationProgress} style={styles.heroIcon} />
           <Text style={styles.heroTitle}>Quick Learning Refresher</Text>
           <Text style={styles.heroSubtitle}>
             Review foundational concepts before your session
@@ -556,7 +725,7 @@ const SessionPreparationScreen = ({ navigation, route }) => {
         </View>
 
         <View style={styles.hero}>
-          <Text style={styles.heroEmoji}>🔍</Text>
+          <Image source={icons.coreBeliefs} style={styles.heroIcon} />
           <Text style={styles.heroTitle}>Belief Assessments</Text>
           <Text style={styles.heroSubtitle}>
             Understand your beliefs before your journey
@@ -667,7 +836,7 @@ const SessionPreparationScreen = ({ navigation, route }) => {
         </View>
 
         <View style={styles.hero}>
-          <Text style={styles.heroEmoji}>🤔</Text>
+          <Image source={icons.philosophical} style={styles.heroIcon} />
           <Text style={styles.heroTitle}>Philosophical Explorations</Text>
           <Text style={styles.heroSubtitle}>
             Contemplate the nature of self and identity
@@ -783,6 +952,123 @@ const SessionPreparationScreen = ({ navigation, route }) => {
     </LinearGradient>
   );
 
+  const renderSessionDetails = () => (
+    <LinearGradient
+      colors={gradients.standard}
+      start={gradients.standardStart}
+      end={gradients.standardEnd}
+      style={styles.gradientFill}
+    >
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.navBackButton} onPress={() => setCurrentSection('overview')}>
+            <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.hero}>
+          <Image source={icons.journal} style={styles.heroIcon} />
+          <Text style={styles.heroTitle}>Session Details</Text>
+          <Text style={styles.heroSubtitle}>
+            Capture the practical details for this journey.
+          </Text>
+        </View>
+
+        <Text style={styles.inputLabel}>Session Title</Text>
+        <TextInput
+          style={styles.textInput}
+          value={sessionTitle}
+          onChangeText={setSessionTitle}
+          placeholder="e.g., Spring Integration Session"
+          placeholderTextColor={colors.textLight}
+        />
+
+        <Text style={styles.inputLabel}>Journey Date</Text>
+        <TextInput
+          style={styles.textInput}
+          value={journeyDate}
+          onChangeText={setJourneyDate}
+          placeholder="YYYY-MM-DD"
+          placeholderTextColor={colors.textLight}
+        />
+
+        <Text style={styles.inputLabel}>Medicine / Substance</Text>
+        <TextInput
+          style={styles.textInput}
+          value={medicine}
+          onChangeText={setMedicine}
+          placeholder="e.g., Ketamine, Psilocybin, MDMA"
+          placeholderTextColor={colors.textLight}
+        />
+
+        <Text style={styles.inputLabel}>Dosage</Text>
+        <TextInput
+          style={styles.textInput}
+          value={dosage}
+          onChangeText={setDosage}
+          placeholder="e.g., 100mg IM, 3.5g dried"
+          placeholderTextColor={colors.textLight}
+        />
+
+        <Text style={styles.inputLabel}>Setting / Location</Text>
+        <TextInput
+          style={styles.textInput}
+          value={setting}
+          onChangeText={setSetting}
+          placeholder="e.g., Home, Clinic, Retreat center"
+          placeholderTextColor={colors.textLight}
+        />
+
+        <Text style={styles.inputLabel}>Facilitator / Guide</Text>
+        <TextInput
+          style={styles.textInput}
+          value={facilitator}
+          onChangeText={setFacilitator}
+          placeholder="e.g., Dr. Smith, Solo journey"
+          placeholderTextColor={colors.textLight}
+        />
+
+        <Text style={styles.inputLabel}>Other Participants</Text>
+        <TextInput
+          style={styles.textInput}
+          value={participants}
+          onChangeText={setParticipants}
+          placeholder="e.g., Partner, Solo"
+          placeholderTextColor={colors.textLight}
+        />
+
+        <Text style={styles.inputLabel}>Additional Context</Text>
+        <TextInput
+          style={[styles.textInput, styles.multilineInput]}
+          value={sessionContext}
+          onChangeText={setSessionContext}
+          placeholder="What's happening in your life right now?"
+          placeholderTextColor={colors.textLight}
+          multiline
+          numberOfLines={4}
+        />
+
+        <TouchableOpacity
+          style={styles.primaryButton}
+          onPress={() => {
+            if (!completedSections.includes('session_details')) {
+              setCompletedSections([...completedSections, 'session_details']);
+            }
+            savePreparationData();
+            setCurrentSection('overview');
+          }}
+        >
+          <Text style={styles.primaryButtonText}>Save Session Details</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </LinearGradient>
+  );
+
   // Render based on current section
   const renderIntentionSetting = () => (
     <LinearGradient
@@ -803,7 +1089,7 @@ const SessionPreparationScreen = ({ navigation, route }) => {
         </View>
 
         <View style={styles.hero}>
-          <Text style={styles.heroEmoji}>🎯</Text>
+          <Image source={icons.intention} style={styles.heroIcon} />
           <Text style={styles.heroTitle}>Set Your Intention</Text>
           <Text style={styles.heroSubtitle}>What do you hope to explore or heal?</Text>
         </View>
@@ -869,7 +1155,7 @@ const SessionPreparationScreen = ({ navigation, route }) => {
         </View>
 
         <View style={styles.hero}>
-          <Text style={styles.heroEmoji}>🧠</Text>
+          <Image source={icons.nsMap} style={styles.heroIcon} />
           <Text style={styles.heroTitle}>Nervous System Check-in</Text>
           <Text style={styles.heroSubtitle}>How is your nervous system feeling right now?</Text>
         </View>
@@ -922,7 +1208,7 @@ const SessionPreparationScreen = ({ navigation, route }) => {
         </View>
 
         <View style={styles.hero}>
-          <Text style={styles.heroEmoji}>👥</Text>
+          <Image source={icons.roles} style={styles.heroIcon} />
           <Text style={styles.heroTitle}>Parts Check-in</Text>
           <Text style={styles.heroSubtitle}>Which parts of you are present today?</Text>
         </View>
@@ -960,6 +1246,8 @@ const SessionPreparationScreen = ({ navigation, route }) => {
     switch (currentSection) {
       case 'overview':
         return renderOverview();
+      case 'session_details':
+        return renderSessionDetails();
       case 'intention_setting':
         return renderIntentionSetting();
       case 'nervous_system_checkin':
@@ -1012,13 +1300,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.xl,
   },
-  heroEmoji: {
-    fontSize: 56,
+  heroIcon: {
+    width: 192,
+    height: 192,
     marginBottom: spacing.md,
+    resizeMode: 'contain',
   },
   heroTitle: {
     fontSize: 28,
-    fontWeight: '700',
+    fontFamily: typography.serif,
     color: colors.text,
     marginBottom: spacing.sm,
     textAlign: 'center',
@@ -1075,6 +1365,12 @@ const styles = StyleSheet.create({
   },
   optionEmoji: {
     fontSize: 36,
+    marginRight: spacing.md,
+  },
+  optionIconImage: {
+    width: 112,
+    height: 112,
+    resizeMode: 'contain',
     marginRight: spacing.md,
   },
   optionText: {

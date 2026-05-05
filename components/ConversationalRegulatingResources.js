@@ -304,7 +304,7 @@ const ConversationalRegulatingResources = ({ user: userProp, onComplete, navigat
           onPress={() => navigation?.goBack()}
           style={styles.backButton}
         >
-          <MaterialIcons name="arrow-back" size={24} color="#374151" />
+          <MaterialIcons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <MaterialIcons name="self-improvement" size={24} color={colors.primary} />
         <Text style={styles.headerTitle}>Regulating Resources</Text>
@@ -422,7 +422,7 @@ const ConversationalRegulatingResources = ({ user: userProp, onComplete, navigat
             value={inputText}
             onChangeText={setInputText}
             placeholder="Share your resources..."
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor={colors.textLight}
             multiline
             maxLength={1000}
           />
@@ -451,7 +451,7 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#fff',
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
     gap: 8
   },
   backButton: {
@@ -467,7 +467,7 @@ const styles = StyleSheet.create({
     padding: 12,
     backgroundColor: '#fff',
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
     gap: 8
   },
   phaseItem: {
@@ -483,7 +483,7 @@ const styles = StyleSheet.create({
   },
   phaseText: {
     fontSize: 12,
-    color: '#6b7280',
+    color: colors.textSecondary,
     fontWeight: '500'
   },
   messagesContainer: {
@@ -506,15 +506,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row-reverse'
   },
   huxleyAvatar: {
-    width: 40,
-    height: 40,
+    width: 60,
+    height: 60,
     marginRight: 8,
     marginTop: 4
   },
   loadingBubble: {
     backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
     borderRadius: 16,
     padding: 12,
     flexDirection: 'row',
@@ -522,16 +522,17 @@ const styles = StyleSheet.create({
     gap: 8
   },
   messageBubble: {
-    maxWidth: '75%',
     padding: 12,
     borderRadius: 16
   },
   aiBubble: {
+    flex: 1,
     backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#e5e7eb'
+    borderColor: colors.lightGray
   },
   userBubble: {
+    maxWidth: '75%',
     backgroundColor: colors.primary
   },
   messageText: {
@@ -552,14 +553,14 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     fontStyle: 'italic'
   },
   actionsContainer: {
     padding: 16,
     backgroundColor: '#fff',
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: colors.lightGray,
     gap: 8
   },
   actionButton: {
@@ -587,7 +588,7 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#fff',
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: colors.lightGray,
     gap: 12
   },
   input: {

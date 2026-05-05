@@ -32,9 +32,9 @@ const EnhancedMessageBubble = ({
   const getNervousSystemIcon = () => {
     switch (nervousSystemState) {
       case 'ventral':
-        return <Heart size={12} color="#10b981" />;
+        return <Heart size={12} color={colors.success} />;
       case 'sympathetic':
-        return <Zap size={12} color="#ef4444" />;
+        return <Zap size={12} color={colors.error} />;
       case 'dorsal':
         return <Shield size={12} color={colors.primary} />;
       default:
@@ -49,13 +49,13 @@ const EnhancedMessageBubble = ({
       case 'archetypal':
         return <Sparkles {...iconProps} color={colors.primary} />;
       case 'emotional':
-        return <Heart {...iconProps} color="#ef4444" />;
+        return <Heart {...iconProps} color={colors.error} />;
       case 'somatic':
-        return <Activity {...iconProps} color="#f59e0b" />;
+        return <Activity {...iconProps} color={colors.warning} />;
       case 'spiritual':
         return <Eye {...iconProps} color={colors.primary} />;
       case 'parts':
-        return <Users {...iconProps} color="#10b981" />;
+        return <Users {...iconProps} color={colors.success} />;
       default:
         return <Brain {...iconProps} />;
     }
@@ -64,10 +64,10 @@ const EnhancedMessageBubble = ({
   const getEntityColor = (category) => {
     switch (category) {
       case 'archetypal': return colors.primary;
-      case 'emotional': return '#ef4444';
-      case 'somatic': return '#f59e0b';
+      case 'emotional': return colors.error;
+      case 'somatic': return colors.warning;
       case 'spiritual': return colors.primary;
-      case 'parts': return '#10b981';
+      case 'parts': return colors.success;
       default: return colors.textSecondary;
     }
   };
@@ -100,10 +100,10 @@ const EnhancedMessageBubble = ({
                     styles.confidenceDot,
                     {
                       backgroundColor: entity.confidence > 0.7
-                        ? '#10b981'
+                        ? colors.success
                         : entity.confidence > 0.4
-                        ? '#f59e0b'
-                        : '#ef4444'
+                        ? colors.warning
+                        : colors.error
                     }
                   ]} />
                 )}
@@ -153,9 +153,9 @@ const EnhancedMessageBubble = ({
     if (!message.requiresPractice) return null;
 
     const urgencyColor = {
-      high: '#ef4444',
-      medium: '#f59e0b',
-      low: '#10b981'
+      high: colors.error,
+      medium: colors.warning,
+      low: colors.success
     }[message.requiresPractice.urgency] || colors.textSecondary;
 
     return (
@@ -223,7 +223,7 @@ const EnhancedMessageBubble = ({
 
           {message.practiceFollowUp && (
             <View style={styles.followUpIndicator}>
-              <Activity size={10} color="#10b981" />
+              <Activity size={10} color={colors.success} />
               <Text style={styles.followUpText}>Post-practice</Text>
             </View>
           )}
@@ -354,7 +354,7 @@ const styles = {
     padding: 8,
     borderWidth: 1,
     borderRadius: 8,
-    backgroundColor: '#fef3c7',
+    backgroundColor: colors.bubbleArchetypal,
   },
   practiceIndicatorText: {
     fontSize: 12,
@@ -399,7 +399,7 @@ const styles = {
   },
   followUpText: {
     fontSize: 10,
-    color: '#10b981',
+    color: colors.success,
     fontWeight: '500',
   },
 };

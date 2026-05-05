@@ -7,14 +7,16 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   RefreshControl,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../lib/supabase';
-import { colors, gradients, shadows, spacing, borderRadius } from '../theme/colors';
+import { colors, gradients, shadows, spacing, borderRadius, typography } from '../theme/colors';
 import ShareWithTherapistButton from '../components/ShareWithTherapistButton';
 import { shareRegulatingResources } from '../lib/therapistShareService';
+import { icons } from '../lib/uiIcons';
 
 const STATE_EMOJIS = { ventral: '💚', sympathetic: '⚡', dorsal: '🫥' };
 const STATE_LABELS = { ventral: 'Safe & Connected', sympathetic: 'Fight / Flight', dorsal: 'Shutdown / Freeze' };
@@ -190,7 +192,7 @@ const RegulationToolkitScreen = ({ navigation }) => {
 
             {/* Hero */}
             <View style={styles.hero}>
-              <Text style={styles.heroEmoji}>🛠️</Text>
+              <Image source={icons.tools} style={styles.heroIcon} />
               <Text style={styles.heroTitle}>Regulation Toolkit</Text>
               <Text style={styles.heroSubtitle}>
                 {resources
@@ -287,13 +289,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.xl,
   },
-  heroEmoji: {
-    fontSize: 56,
+  heroIcon: {
+    width: 192,
+    height: 192,
     marginBottom: spacing.md,
+    resizeMode: 'contain',
   },
   heroTitle: {
     fontSize: 28,
-    fontWeight: '700',
+    fontFamily: typography.serif,
     color: colors.text,
     marginBottom: spacing.sm,
     textAlign: 'center',

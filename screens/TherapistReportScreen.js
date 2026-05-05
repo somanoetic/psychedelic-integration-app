@@ -56,9 +56,9 @@ const ROLE_CONFIG = {
 };
 
 const getScoreColor = (score) => {
-  if (score <= 3) return '#ef4444';
-  if (score <= 5) return '#f59e0b';
-  if (score <= 7) return '#10b981';
+  if (score <= 3) return colors.error;
+  if (score <= 5) return colors.warning;
+  if (score <= 7) return colors.success;
   return colors.primary;
 };
 
@@ -371,7 +371,7 @@ const TherapistReportScreen = ({ navigation }) => {
                 </Text>
               </View>
               {part.unburdened && (
-                <MaterialIcons name="check-circle" size={16} color="#10b981" />
+                <MaterialIcons name="check-circle" size={16} color={colors.success} />
               )}
             </View>
           );

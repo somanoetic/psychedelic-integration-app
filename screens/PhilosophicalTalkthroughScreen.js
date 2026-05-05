@@ -211,7 +211,7 @@ const PhilosophicalTalkthroughScreen = ({ navigation, route }) => {
       return (
         <View key={message.id} style={styles.assistantMessageRow}>
           <Image
-            source={require('../assets/images/huxley therapist.png')}
+            source={require('../assets/images/huxley-avatar.png')}
             style={styles.huxleyAvatar}
             resizeMode="contain"
           />
@@ -305,7 +305,7 @@ const PhilosophicalTalkthroughScreen = ({ navigation, route }) => {
           {isTyping && (
             <View style={styles.assistantMessageRow}>
               <Image
-                source={require('../assets/images/huxley therapist.png')}
+                source={require('../assets/images/huxley-avatar.png')}
                 style={styles.huxleyAvatar}
                 resizeMode="contain"
               />
@@ -329,7 +329,7 @@ const PhilosophicalTalkthroughScreen = ({ navigation, route }) => {
               value={userInput}
               onChangeText={setUserInput}
               placeholder="Share what comes to mind..."
-              placeholderTextColor="#9ca3af"
+              placeholderTextColor={colors.textLight}
               multiline
               maxLength={1000}
               onSubmitEditing={() => {
@@ -422,8 +422,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   huxleyAvatar: {
-    width: 36,
-    height: 36,
+    width: 54,
+    height: 54,
     marginRight: 8,
     marginTop: 4,
   },

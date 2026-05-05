@@ -415,7 +415,7 @@ const styles = {
     padding: 24,
     backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   headerTop: {
     flexDirection: 'row',
@@ -516,15 +516,15 @@ const styles = {
     borderRadius: 12,
     padding: 16,
     borderWidth: 1.5,
-    borderColor: '#10b981',
+    borderColor: colors.success,
     marginBottom: 12,
   },
   triggersCard: {
-    backgroundColor: '#fef3c7',
+    backgroundColor: colors.bubbleArchetypal,
     borderRadius: 12,
     padding: 16,
     borderWidth: 1.5,
-    borderColor: '#f59e0b',
+    borderColor: colors.warning,
     marginBottom: 12,
   },
   resourcesCard: {
@@ -559,7 +559,7 @@ const styles = {
   },
   mappingTime: {
     fontSize: 12,
-    color: '#9ca3af',
+    color: colors.textLight,
   },
   quickStartContent: {
     alignItems: 'center',
@@ -622,11 +622,11 @@ const styles = {
     fontStyle: 'italic',
   },
   restrictedCard: {
-    backgroundColor: '#fef3c7',
+    backgroundColor: colors.bubbleArchetypal,
     borderRadius: 16,
     padding: 20,
     borderWidth: 2,
-    borderColor: '#f59e0b',
+    borderColor: colors.warning,
   },
   restrictedNote: {
     fontSize: 12,
@@ -642,7 +642,7 @@ const styles = {
     borderRadius: 12,
     padding: 20,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
@@ -667,7 +667,7 @@ const styles = {
   },
   topicTime: {
     fontSize: 12,
-    color: '#9ca3af',
+    color: colors.textLight,
     fontWeight: '500',
   },
   tipsContainer: {
@@ -680,7 +680,7 @@ const styles = {
     padding: 16,
     borderRadius: 8,
     borderLeftWidth: 4,
-    borderLeftColor: '#10b981',
+    borderLeftColor: colors.success,
   },
   tipEmoji: {
     fontSize: 20,
@@ -689,7 +689,7 @@ const styles = {
   },
   tipText: {
     fontSize: 14,
-    color: '#374151',
+    color: colors.text,
     lineHeight: 20,
     flex: 1,
   },
@@ -701,7 +701,7 @@ const styles = {
   topicHeader: {
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   backButton: {
     fontSize: 16,
@@ -757,7 +757,7 @@ const styles = {
   },
   alternativeButtonText: {
     fontSize: 16,
-    color: '#374151',
+    color: colors.text,
     fontWeight: '500',
   },
   // New styles for content display
@@ -778,7 +778,7 @@ const styles = {
   },
   contentSectionText: {
     fontSize: 15,
-    color: '#374151',
+    color: colors.text,
     lineHeight: 24,
   },
   takeawaysContainer: {
@@ -813,7 +813,7 @@ const styles = {
     flex: 1,
   },
   completeButton: {
-    backgroundColor: '#10b981',
+    backgroundColor: colors.success,
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',

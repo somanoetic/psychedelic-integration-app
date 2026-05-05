@@ -4,7 +4,8 @@
       "Bash(*)",
       "WebSearch",
       "mcp__claude_ai_PubMed__search_articles",
-      "mcp__ide__getDiagnostics"
+      "mcp__ide__getDiagnostics",
+      "Skill(schedule)"
     ],
     "deny": [],
     "ask": []

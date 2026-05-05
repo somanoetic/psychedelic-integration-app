@@ -1,6 +1,6 @@
 # Roadmap Index
 
-**Last Updated:** 2026-02-24
+**Last Updated:** 2026-05-05
 
 ---
 
@@ -14,6 +14,7 @@ The roadmap is organized into three time horizons to keep planning focused and r
 |------|-----------|-------------|
 | [current-phase.md](current-phase.md) | Next 2-4 weeks | Active work and immediate next steps |
 | [next-phase.md](next-phase.md) | 4-8 weeks | Committed work for upcoming phase |
+| [production-readiness.md](production-readiness.md) | May 5 – Jun 2 | **Release-prep track (parallel)** |
 | [phase-3 (in docs/)](../../docs/phase-3-evidence-based-interventions.md) | Q2 2026 | CBM + Evidence-Based Modalities |
 | [future.md](future.md) | 8+ weeks | Long-term vision and possibilities |
 
@@ -64,7 +65,23 @@ The roadmap is organized into three time horizons to keep planning focused and r
 
 ---
 
-## Phase 3 (High Priority)
+## Production Readiness (Parallel Track)
+
+**Focus:** Move app from internal/dev state to public-ready release
+**Duration:** 2026-05-05 to 2026-06-02 (4 weeks)
+**Themes:**
+1. Legal review + crash reporting + env separation
+2. iOS rebuild + closed beta on TestFlight & Play internal
+3. Beta feedback + Play Store listing assets
+4. Submission + go/no-go decision
+
+**Status:** Planned (Active)
+
+[View Details →](production-readiness.md)
+
+---
+
+## Phase 3 (High Priority — Feature Track)
 
 **Focus:** Evidence-Based Therapeutic Interventions
 **Duration:** 2026-04-01 to 2026-08-31 (5 months)
@@ -224,6 +241,7 @@ The roadmap is organized into three time horizons to keep planning focused and r
 
 - [Current Phase (2 weeks)](current-phase.md)
 - [Next Phase (4-8 weeks)](next-phase.md)
+- [Production Readiness (parallel release-prep)](production-readiness.md)
 - [Phase 3: Evidence-Based Interventions](../../docs/phase-3-evidence-based-interventions.md)
 - [Evidence-Based Feature Queue](../../docs/evidence-based-feature-queue.md) - All researched opportunities
 - [Future Vision (8+ weeks)](future.md)

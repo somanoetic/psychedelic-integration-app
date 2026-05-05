@@ -102,7 +102,7 @@ const DebugConnectionScreen = ({ navigation }) => {
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={{ backgroundColor: '#10b981', padding: 15, borderRadius: 8, marginBottom: 20 }}
+        style={{ backgroundColor: colors.success, padding: 15, borderRadius: 8, marginBottom: 20 }}
         onPress={tryLogin}
       >
         <Text style={{ color: colors.textInverse, textAlign: 'center', fontWeight: 'bold' }}>
@@ -123,7 +123,7 @@ const DebugConnectionScreen = ({ navigation }) => {
       </View>
       
       <TouchableOpacity
-        style={{ backgroundColor: '#f59e0b', padding: 15, borderRadius: 8, marginTop: 20 }}
+        style={{ backgroundColor: colors.warning, padding: 15, borderRadius: 8, marginTop: 20 }}
         onPress={() => navigation.goBack()}
       >
         <Text style={{ color: colors.textInverse, textAlign: 'center', fontWeight: 'bold' }}>
@@ -132,7 +132,7 @@ const DebugConnectionScreen = ({ navigation }) => {
       </TouchableOpacity>
 
       <TouchableOpacity
-        style={{ backgroundColor: '#10b981', padding: 15, borderRadius: 8, marginTop: 10 }}
+        style={{ backgroundColor: colors.success, padding: 15, borderRadius: 8, marginTop: 10 }}
         onPress={() => navigation.navigate('TestApp')}
       >
         <Text style={{ color: colors.textInverse, textAlign: 'center', fontWeight: 'bold' }}>

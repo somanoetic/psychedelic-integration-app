@@ -347,7 +347,7 @@ const CoreBeliefsAssessment = ({ user: userProp, onComplete, navigation }) => {
               onPress={goToPrevious}
               disabled={currentQuestion === 0}
             >
-              <MaterialIcons name="arrow-back" size={24} color={currentQuestion === 0 ? '#9ca3af' : colors.primary} />
+              <MaterialIcons name="arrow-back" size={24} color={currentQuestion === 0 ? colors.textLight : colors.primary} />
               <Text style={[styles.navButtonText, currentQuestion === 0 && styles.navButtonTextDisabled]}>Previous</Text>
             </TouchableOpacity>
 
@@ -375,9 +375,9 @@ const CoreBeliefsAssessment = ({ user: userProp, onComplete, navigation }) => {
       .sort((a, b) => a.score - b.score);
 
     const getScoreColor = (score) => {
-      if (score <= 3) return '#ef4444'; // Red - severely limiting
-      if (score <= 6) return '#f59e0b'; // Orange - moderately limiting
-      if (score <= 8) return '#10b981'; // Green - healthy
+      if (score <= 3) return colors.error; // Red - severely limiting
+      if (score <= 6) return colors.warning; // Orange - moderately limiting
+      if (score <= 8) return colors.success; // Green - healthy
       return colors.primary; // Blue - very healthy
     };
 
@@ -502,7 +502,7 @@ const CoreBeliefsAssessment = ({ user: userProp, onComplete, navigation }) => {
             value={inputText}
             onChangeText={setInputText}
             placeholder="Share your thoughts..."
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor={colors.textLight}
             multiline
             maxLength={1000}
           />
@@ -520,7 +520,7 @@ const CoreBeliefsAssessment = ({ user: userProp, onComplete, navigation }) => {
 
   const renderComplete = () => (
     <View style={styles.completeContainer}>
-      <MaterialIcons name="check-circle" size={64} color="#10b981" />
+      <MaterialIcons name="check-circle" size={64} color={colors.success} />
       <Text style={styles.completeTitle}>Assessment Complete!</Text>
       <Text style={styles.completeText}>
         Your core beliefs assessment has been saved. You can revisit these results anytime and track how your beliefs evolve over time.
@@ -548,7 +548,7 @@ const CoreBeliefsAssessment = ({ user: userProp, onComplete, navigation }) => {
           onPress={() => navigation?.goBack()}
           style={styles.backButton}
         >
-          <MaterialIcons name="arrow-back" size={24} color="#374151" />
+          <MaterialIcons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.topHeaderTitle}>Core Beliefs</Text>
         <View style={{ width: 40 }} />
@@ -574,7 +574,7 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#fff',
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   backButton: {
     padding: 4,
@@ -582,7 +582,7 @@ const styles = StyleSheet.create({
   topHeaderTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
   },
   content: {
     flex: 1,
@@ -608,14 +608,14 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: 12,
     lineHeight: 24
   },
   timeEstimate: {
     fontSize: 14,
-    color: '#9ca3af',
+    color: colors.textLight,
     textAlign: 'center',
     fontStyle: 'italic',
     marginTop: 8,
@@ -651,7 +651,7 @@ const styles = StyleSheet.create({
   },
   progressContainer: {
     height: 4,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: colors.lightGray,
     marginBottom: 8
   },
   progressBar: {
@@ -660,12 +660,12 @@ const styles = StyleSheet.create({
   },
   progressText: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     paddingVertical: 12,
     backgroundColor: '#fff',
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb'
+    borderBottomColor: colors.lightGray
   },
   questionContainer: {
     flex: 1
@@ -703,7 +703,7 @@ const styles = StyleSheet.create({
   },
   sliderLabel: {
     fontSize: 12,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     maxWidth: 80
   },
@@ -735,7 +735,7 @@ const styles = StyleSheet.create({
     gap: 8
   },
   navButtonDisabled: {
-    borderColor: '#e5e7eb'
+    borderColor: colors.lightGray
   },
   navButtonText: {
     fontSize: 16,
@@ -743,7 +743,7 @@ const styles = StyleSheet.create({
     color: colors.primary
   },
   navButtonTextDisabled: {
-    color: '#9ca3af'
+    color: colors.textLight
   },
   resultsContainer: {
     flex: 1
@@ -758,7 +758,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#e5e7eb'
+    borderColor: colors.lightGray
   },
   domainResultHeader: {
     flexDirection: 'row',
@@ -784,7 +784,7 @@ const styles = StyleSheet.create({
   },
   domainResultStatement: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     fontStyle: 'italic',
     marginBottom: 8
   },
@@ -800,7 +800,7 @@ const styles = StyleSheet.create({
   },
   domainResultLabel: {
     fontSize: 12,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'right'
   },
   resultsActions: {
@@ -812,7 +812,7 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#fff',
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
     gap: 12
   },
   discussionHeaderTitle: {
@@ -840,15 +840,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row-reverse'
   },
   huxleyAvatar: {
-    width: 40,
-    height: 40,
+    width: 60,
+    height: 60,
     marginRight: 8,
     marginTop: 4
   },
   loadingBubble: {
     backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
     borderRadius: 16,
     padding: 12,
     flexDirection: 'row',
@@ -856,16 +856,17 @@ const styles = StyleSheet.create({
     gap: 8
   },
   messageBubble: {
-    maxWidth: '75%',
     padding: 12,
     borderRadius: 16
   },
   aiBubble: {
+    flex: 1,
     backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#e5e7eb'
+    borderColor: colors.lightGray
   },
   userBubble: {
+    maxWidth: '75%',
     backgroundColor: colors.primary
   },
   messageText: {
@@ -886,17 +887,17 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     fontStyle: 'italic'
   },
   discussionActions: {
     padding: 16,
     backgroundColor: '#fff',
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb'
+    borderTopColor: colors.lightGray
   },
   completeDiscussionButton: {
-    backgroundColor: '#10b981',
+    backgroundColor: colors.success,
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 8,
@@ -912,7 +913,7 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#fff',
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: colors.lightGray,
     gap: 12
   },
   input: {
@@ -948,7 +949,7 @@ const styles = StyleSheet.create({
   savingText: {
     marginTop: 16,
     fontSize: 16,
-    color: '#6b7280'
+    color: colors.textSecondary
   },
   completeContainer: {
     flex: 1,
@@ -966,7 +967,7 @@ const styles = StyleSheet.create({
   },
   completeText: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 24
   }

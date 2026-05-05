@@ -6,9 +6,19 @@ import {
   Text,
   TouchableOpacity,
   View,
-  ActivityIndicator
+  ActivityIndicator,
+  Image,
 } from 'react-native';
 import educationProgressService from '../lib/educationProgressService';
+import { icons } from '../lib/uiIcons';
+import { colors } from '../theme/colors';
+
+const SlideEmoji = ({ slide, style, imageStyle }) =>
+  slide.icon ? (
+    <Image source={slide.icon} style={imageStyle} />
+  ) : (
+    <Text style={style}>{slide.emoji}</Text>
+  );
 
 const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -66,6 +76,7 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
       id: 'intro',
       title: 'Parts of You (IFS)',
       emoji: '👥',
+      icon: icons.group,
       content: `Internal Family Systems (IFS) recognizes that we all have different "parts" of ourselves. These parts developed to protect us and help us navigate life. Understanding them brings self-compassion and healing.`,
       type: 'info'
     },
@@ -73,6 +84,7 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
       id: 'self_concept',
       title: 'Your Core Self',
       emoji: '🌟',
+      icon: icons.transcendence,
       content: `At your center is your Self - the wise, compassionate, curious part of you. When you're in Self, you feel calm, clear, connected, and courageous. This is who you truly are beneath all the protection.`,
       characteristics: [
         'Naturally curious and open',
@@ -87,7 +99,8 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
       id: 'manager_parts',
       title: 'Manager Parts',
       emoji: '👔',
-      color: '#3b82f6',
+      icon: icons.manager,
+      color: colors.primary,
       content: `Manager parts work hard to keep you safe by controlling your environment and preventing bad things from happening. They're proactive protectors who try to make sure you're accepted and successful.`,
       characteristics: [
         'The Achiever: Drives you to succeed and be perfect',
@@ -103,6 +116,7 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
       id: 'firefighter_parts',
       title: 'Firefighter Parts',
       emoji: '🚒',
+      icon: icons.firefighter,
       color: '#dc2626',
       content: `Firefighter parts react when you're already hurt or triggered. They jump into action to distract from pain, numb difficult feelings, or get immediate relief - even if it creates other problems.`,
       characteristics: [
@@ -119,6 +133,7 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
       id: 'exile_parts',
       title: 'Exile Parts',
       emoji: '🧸',
+      icon: icons.softness,
       color: '#a855f7',
       content: `Exile parts carry our deepest wounds, unmet needs, and authentic feelings. Other parts try to protect them by keeping them hidden, but they hold our creativity, spontaneity, and capacity for joy.`,
       characteristics: [
@@ -135,6 +150,7 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
       id: 'parts_interaction',
       title: 'How Parts Interact',
       emoji: '🔄',
+      icon: icons.integrationCycle,
       content: `Your parts are constantly working together, sometimes in harmony and sometimes in conflict. Understanding their relationships helps you navigate internal struggles with compassion.`,
       examples: [
         {
@@ -156,6 +172,7 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
       id: 'parts_check',
       title: 'Meet Your Parts',
       emoji: '🪞',
+      icon: icons.selfReflect,
       content: `Let's identify some of your parts. Think about which ones show up most often in your life. Remember, all parts are welcome and have good intentions.`,
       type: 'parts_identification',
       prompts: [
@@ -177,6 +194,7 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
       id: 'self_leadership',
       title: 'Self-Leadership',
       emoji: '🧭',
+      icon: icons.guidance,
       content: `When you're in Self, you can lead your parts with curiosity and compassion. Instead of being taken over by parts, you can listen to them, understand their concerns, and make choices from a centered place.`,
       practices: [
         {
@@ -201,6 +219,7 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
       id: 'session_guidance',
       title: 'Parts Work During Sessions',
       emoji: '🌈',
+      icon: icons.wholenessInfinity,
       content: `During your psychedelic experience, different parts may become more visible or vocal. This is an opportunity for healing and integration.`,
       guidance: [
         {
@@ -286,7 +305,7 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
       case 'info':
         return (
           <View style={styles.slideContent}>
-            <Text style={styles.slideEmoji}>{slide.emoji}</Text>
+            <SlideEmoji slide={slide} style={styles.slideEmoji} imageStyle={styles.slideIconImage} />
             <Text style={styles.slideTitle}>{slide.title}</Text>
             <Text style={styles.slideText}>{slide.content}</Text>
           </View>
@@ -295,7 +314,7 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
       case 'self_info':
         return (
           <View style={styles.slideContent}>
-            <Text style={styles.slideEmoji}>{slide.emoji}</Text>
+            <SlideEmoji slide={slide} style={styles.slideEmoji} imageStyle={styles.slideIconImage} />
             <Text style={styles.slideTitle}>{slide.title}</Text>
             <Text style={styles.slideText}>{slide.content}</Text>
             
@@ -314,7 +333,7 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
       case 'parts_info':
         return (
           <View style={styles.slideContent}>
-            <Text style={styles.slideEmoji}>{slide.emoji}</Text>
+            <SlideEmoji slide={slide} style={styles.slideEmoji} imageStyle={styles.slideIconImage} />
             <Text style={[styles.slideTitle, { color: slide.color }]}>{slide.title}</Text>
             <Text style={styles.slideText}>{slide.content}</Text>
             
@@ -338,7 +357,7 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
       case 'interaction':
         return (
           <View style={styles.slideContent}>
-            <Text style={styles.slideEmoji}>{slide.emoji}</Text>
+            <SlideEmoji slide={slide} style={styles.slideEmoji} imageStyle={styles.slideIconImage} />
             <Text style={styles.slideTitle}>{slide.title}</Text>
             <Text style={styles.slideText}>{slide.content}</Text>
             
@@ -367,7 +386,7 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
       case 'parts_identification':
         return (
           <View style={styles.slideContent}>
-            <Text style={styles.slideEmoji}>{slide.emoji}</Text>
+            <SlideEmoji slide={slide} style={styles.slideEmoji} imageStyle={styles.slideIconImage} />
             <Text style={styles.slideTitle}>{slide.title}</Text>
             <Text style={styles.slideText}>{slide.content}</Text>
             
@@ -395,7 +414,7 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
                             {example}
                           </Text>
                           {isSelected && (
-                            <MaterialIcons name="check-circle" size={16} color="#10b981" style={styles.checkIcon} />
+                            <MaterialIcons name="check-circle" size={16} color={colors.success} style={styles.checkIcon} />
                           )}
                         </TouchableOpacity>
                       );
@@ -430,7 +449,7 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
       case 'practices':
         return (
           <View style={styles.slideContent}>
-            <Text style={styles.slideEmoji}>{slide.emoji}</Text>
+            <SlideEmoji slide={slide} style={styles.slideEmoji} imageStyle={styles.slideIconImage} />
             <Text style={styles.slideTitle}>{slide.title}</Text>
             <Text style={styles.slideText}>{slide.content}</Text>
             
@@ -452,7 +471,7 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
       case 'guidance':
         return (
           <View style={styles.slideContent}>
-            <Text style={styles.slideEmoji}>{slide.emoji}</Text>
+            <SlideEmoji slide={slide} style={styles.slideEmoji} imageStyle={styles.slideIconImage} />
             <Text style={styles.slideTitle}>{slide.title}</Text>
             <Text style={styles.slideText}>{slide.content}</Text>
             
@@ -473,7 +492,7 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
       case 'completion':
         return (
           <View style={styles.slideContent}>
-            <Text style={styles.slideEmoji}>{slide.emoji}</Text>
+            <SlideEmoji slide={slide} style={styles.slideEmoji} imageStyle={styles.slideIconImage} />
             <Text style={styles.slideTitle}>{slide.title}</Text>
             <Text style={styles.slideText}>{slide.content}</Text>
             
@@ -544,7 +563,7 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
           onPress={prevSlide}
           disabled={currentSlide === 0}
         >
-          <MaterialIcons name="arrow-back" size={20} color={currentSlide === 0 ? '#9ca3af' : '#6b7280'} />
+          <MaterialIcons name="arrow-back" size={20} color={currentSlide === 0 ? colors.textLight : colors.textSecondary} />
           <Text style={[styles.navButtonText, currentSlide === 0 && styles.disabledText]}>
             Previous
           </Text>
@@ -580,7 +599,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 16,
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   header: {
     flexDirection: 'row',
@@ -590,27 +609,27 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   skipButton: {
     padding: 8,
   },
   skipText: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   progressContainer: {
     alignItems: 'flex-end',
   },
   progressText: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 4,
   },
   progressBar: {
     width: 100,
     height: 4,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: colors.lightGray,
     borderRadius: 2,
   },
   progressFill: {
@@ -629,16 +648,22 @@ const styles = StyleSheet.create({
     fontSize: 48,
     marginBottom: 16,
   },
+  slideIconImage: {
+    width: 160,
+    height: 160,
+    resizeMode: 'contain',
+    marginBottom: 16,
+  },
   slideTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1f2937',
+    color: colors.text,
     textAlign: 'center',
     marginBottom: 16,
   },
   slideText: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 24,
     marginBottom: 24,
@@ -654,7 +679,7 @@ const styles = StyleSheet.create({
   subsectionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.text,
     marginBottom: 12,
   },
   characteristicItem: {
@@ -669,19 +694,19 @@ const styles = StyleSheet.create({
   },
   bullet: {
     fontSize: 16,
-    color: '#9ca3af',
+    color: colors.textLight,
     marginRight: 8,
     marginTop: 2,
   },
   characteristicText: {
     fontSize: 14,
-    color: '#374151',
+    color: colors.text,
     lineHeight: 20,
     flex: 1,
   },
   partText: {
     fontSize: 14,
-    color: '#374151',
+    color: colors.text,
     lineHeight: 20,
     flex: 1,
   },
@@ -712,12 +737,12 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
   },
   exampleScenario: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 12,
   },
   examplePart: {
@@ -728,13 +753,13 @@ const styles = StyleSheet.create({
   partLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.text,
     marginRight: 8,
     minWidth: 90,
   },
   partExample: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     lineHeight: 20,
     flex: 1,
   },
@@ -747,12 +772,12 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
   },
   promptQuestion: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 12,
   },
   examplesRow: {
@@ -772,12 +797,12 @@ const styles = StyleSheet.create({
   },
   exampleButtonSelected: {
     backgroundColor: '#d1fae5',
-    borderColor: '#10b981',
+    borderColor: colors.success,
     borderWidth: 2,
   },
   exampleButtonText: {
     fontSize: 12,
-    color: '#374151',
+    color: colors.text,
     fontWeight: '500',
   },
   exampleButtonTextSelected: {
@@ -813,7 +838,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 2,
-    borderColor: '#3b82f6',
+    borderColor: colors.primary,
   },
   identifiedPartText: {
     fontSize: 14,
@@ -826,7 +851,7 @@ const styles = StyleSheet.create({
   },
   tapToRemoveHint: {
     fontSize: 12,
-    color: '#3b82f6',
+    color: colors.primary,
     marginTop: 12,
     fontStyle: 'italic',
   },
@@ -839,17 +864,17 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
   },
   practiceName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 8,
   },
   practiceDescription: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 12,
     lineHeight: 20,
   },
@@ -868,7 +893,7 @@ const styles = StyleSheet.create({
   },
   exampleText: {
     fontSize: 14,
-    color: '#374151',
+    color: colors.text,
     fontStyle: 'italic',
   },
   guidanceContainer: {
@@ -952,7 +977,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 16,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: colors.lightGray,
     backgroundColor: '#ffffff',
   },
   navButton: {
@@ -965,11 +990,11 @@ const styles = StyleSheet.create({
   },
   navButtonText: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginLeft: 4,
   },
   disabledText: {
-    color: '#9ca3af',
+    color: colors.textLight,
   },
   nextButton: {
     flexDirection: 'row',

@@ -1,5 +1,6 @@
 // components/IntegrationStepsNative.js - React Native version
 import { useEffect, useState } from 'react';
+import { colors } from '../theme/colors';
 import {
     Dimensions,
     ScrollView,
@@ -28,7 +29,7 @@ const IntegrationStepsNative = ({
       id: 1,
       title: "Associations",
       subtitle: "What comes to mind?",
-      color: "#3B82F6",
+      color: colors.primary,
       description: "Explore personal associations with symbols and experiences from your journey",
       questions: [
         "What does this symbol remind you of from your own life?",
@@ -42,7 +43,7 @@ const IntegrationStepsNative = ({
       id: 2,
       title: "Inner Dynamics",
       subtitle: "How does this relate to my inner world?",
-      color: "#EF4444",
+      color: colors.error,
       description: "Map how journey elements connect to your internal parts, patterns, and current life situations",
       questions: [
         "What part of me does this represent?",
@@ -56,7 +57,7 @@ const IntegrationStepsNative = ({
       id: 3,
       title: "Integration & Values",
       subtitle: "What does this mean for how I want to live?",
-      color: "#F59E0B",
+      color: colors.warning,
       description: "Synthesize insights and align them with your core values and ethical framework",
       questions: [
         "How does this insight align with my values?",
@@ -293,17 +294,17 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB'
+    borderBottomColor: colors.lightGray
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1F2937',
+    color: colors.text,
     marginBottom: 8
   },
   subtitle: {
     fontSize: 16,
-    color: '#6B7280'
+    color: colors.textSecondary
   },
   stepsContainer: {
     padding: 16
@@ -316,7 +317,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#E5E7EB',
+    borderColor: colors.lightGray,
     position: 'relative'
   },
   activeStep: {
@@ -324,7 +325,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8FAFC'
   },
   completedStep: {
-    borderColor: '#10B981',
+    borderColor: colors.success,
     backgroundColor: '#F0FDF4'
   },
   stepNumber: {
@@ -336,7 +337,7 @@ const styles = StyleSheet.create({
     marginRight: 16
   },
   completedStepNumber: {
-    backgroundColor: '#10B981'
+    backgroundColor: colors.success
   },
   stepNumberText: {
     color: 'white',
@@ -349,7 +350,7 @@ const styles = StyleSheet.create({
   stepTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1F2937',
+    color: colors.text,
     marginBottom: 4
   },
   activeStepTitle: {
@@ -357,7 +358,7 @@ const styles = StyleSheet.create({
   },
   stepSubtitle: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
     marginBottom: 8
   },
   progressContainer: {
@@ -368,7 +369,7 @@ const styles = StyleSheet.create({
   progressBackground: {
     flex: 1,
     height: 8,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: colors.lightGray,
     borderRadius: 4,
     marginRight: 8
   },
@@ -378,12 +379,12 @@ const styles = StyleSheet.create({
   },
   progressText: {
     fontSize: 12,
-    color: '#6B7280',
+    color: colors.textSecondary,
     minWidth: 40
   },
   entityCount: {
     fontSize: 12,
-    color: '#9CA3AF'
+    color: colors.textLight
   },
   activeIndicator: {
     position: 'absolute',
@@ -404,12 +405,12 @@ const styles = StyleSheet.create({
   detailTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#1F2937',
+    color: colors.text,
     marginBottom: 8
   },
   detailDescription: {
     fontSize: 16,
-    color: '#6B7280',
+    color: colors.textSecondary,
     lineHeight: 24,
     marginBottom: 20
   },
@@ -419,7 +420,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1F2937',
+    color: colors.text,
     marginBottom: 12
   },
   questionItem: {
@@ -485,7 +486,7 @@ const styles = StyleSheet.create({
     marginRight: 8
   },
   secondaryButtonText: {
-    color: '#374151',
+    color: colors.text,
     fontWeight: '600',
     textAlign: 'center'
   },
@@ -499,7 +500,7 @@ const styles = StyleSheet.create({
   progressTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1F2937',
+    color: colors.text,
     marginBottom: 12
   }
 });

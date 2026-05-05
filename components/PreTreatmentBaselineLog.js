@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
+import { colors } from '../theme/colors';
 
 /**
  * Pre-Treatment Baseline Log
@@ -92,7 +93,7 @@ const PreTreatmentBaselineLog = ({ onComplete, onSkip }) => {
       id: 'energy',
       title: 'Energy & Vitality',
       emoji: '⚡',
-      color: '#f59e0b',
+      color: colors.warning,
       questions: [
         {
           key: 'energy_level',
@@ -170,7 +171,7 @@ const PreTreatmentBaselineLog = ({ onComplete, onSkip }) => {
       id: 'work',
       title: 'Work & Purpose',
       emoji: '💼',
-      color: '#3b82f6',
+      color: colors.primary,
       questions: [
         {
           key: 'work_satisfaction',
@@ -196,7 +197,7 @@ const PreTreatmentBaselineLog = ({ onComplete, onSkip }) => {
       id: 'self_care',
       title: 'Self-Care & Health',
       emoji: '🌸',
-      color: '#10b981',
+      color: colors.success,
       questions: [
         {
           key: 'self_care_rating',
@@ -349,7 +350,7 @@ const PreTreatmentBaselineLog = ({ onComplete, onSkip }) => {
           <Text style={styles.domainTitle}>{domain.title}</Text>
           <Text style={styles.infoContent}>{domain.content}</Text>
           <View style={styles.tipBox}>
-            <MaterialIcons name="tips-and-updates" size={20} color="#f59e0b" />
+            <MaterialIcons name="tips-and-updates" size={20} color={colors.warning} />
             <Text style={styles.tipText}>{domain.tip}</Text>
           </View>
         </View>
@@ -363,7 +364,7 @@ const PreTreatmentBaselineLog = ({ onComplete, onSkip }) => {
           <Text style={styles.domainTitle}>{domain.title}</Text>
           <Text style={styles.summaryContent}>{domain.content}</Text>
           <View style={styles.completionBox}>
-            <MaterialIcons name="check-circle" size={32} color="#10b981" />
+            <MaterialIcons name="check-circle" size={32} color={colors.success} />
             <Text style={styles.completionText}>
               Your baseline is ready. Use this as a reference point to notice changes after your session.
             </Text>
@@ -393,7 +394,7 @@ const PreTreatmentBaselineLog = ({ onComplete, onSkip }) => {
                   value={responses[domain.id]?.[question.key] || ''}
                   onChangeText={(value) => updateResponse(domain.id, question.key, value)}
                   placeholder={question.placeholder}
-                  placeholderTextColor="#9ca3af"
+                  placeholderTextColor={colors.textLight}
                 />
               )}
 
@@ -403,7 +404,7 @@ const PreTreatmentBaselineLog = ({ onComplete, onSkip }) => {
                   value={responses[domain.id]?.[question.key] || ''}
                   onChangeText={(value) => updateResponse(domain.id, question.key, value)}
                   placeholder={question.placeholder}
-                  placeholderTextColor="#9ca3af"
+                  placeholderTextColor={colors.textLight}
                   multiline
                   numberOfLines={4}
                   textAlignVertical="top"
@@ -419,7 +420,7 @@ const PreTreatmentBaselineLog = ({ onComplete, onSkip }) => {
   if (loadingData) {
     return (
       <View style={[styles.container, styles.centerContent]}>
-        <ActivityIndicator size="large" color="#3b82f6" />
+        <ActivityIndicator size="large" color={colors.primary} />
         <Text style={styles.loadingText}>Loading baseline...</Text>
       </View>
     );
@@ -431,7 +432,7 @@ const PreTreatmentBaselineLog = ({ onComplete, onSkip }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={onSkip} style={styles.closeButton}>
-          <MaterialIcons name="close" size={24} color="#6b7280" />
+          <MaterialIcons name="close" size={24} color={colors.textSecondary} />
         </TouchableOpacity>
         <View style={styles.headerInfo}>
           <Text style={styles.headerTitle}>Pre-Treatment Baseline</Text>
@@ -466,7 +467,7 @@ const PreTreatmentBaselineLog = ({ onComplete, onSkip }) => {
           <MaterialIcons
             name="arrow-back"
             size={20}
-            color={currentDomain === 0 ? '#9ca3af' : '#6b7280'}
+            color={currentDomain === 0 ? colors.textLight : colors.textSecondary}
           />
           <Text
             style={[
@@ -521,7 +522,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 16,
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   header: {
     flexDirection: 'row',
@@ -530,7 +531,7 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   closeButton: {
     padding: 8,
@@ -542,16 +543,16 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
   },
   headerSubtitle: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginTop: 2,
   },
   progressBarContainer: {
     height: 4,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: colors.lightGray,
     marginHorizontal: 20,
     marginTop: 16,
     borderRadius: 2,
@@ -559,7 +560,7 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: '100%',
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.primary,
   },
   content: {
     flex: 1,
@@ -578,11 +579,11 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '600',
     textAlign: 'center',
-    color: '#1f2937',
+    color: colors.text,
   },
   infoContent: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 24,
   },
@@ -602,7 +603,7 @@ const styles = StyleSheet.create({
   },
   summaryContent: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 24,
   },
@@ -628,7 +629,7 @@ const styles = StyleSheet.create({
   questionLabel: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.text,
   },
   scaleContainer: {
     gap: 12,
@@ -640,13 +641,13 @@ const styles = StyleSheet.create({
   },
   scaleLabel: {
     fontSize: 12,
-    color: '#6b7280',
+    color: colors.textSecondary,
     flex: 1,
   },
   scaleValue: {
     fontSize: 24,
     fontWeight: '600',
-    color: '#3b82f6',
+    color: colors.primary,
     textAlign: 'center',
     minWidth: 40,
   },
@@ -668,8 +669,8 @@ const styles = StyleSheet.create({
   },
   scalePointActive: {},
   scalePointInnerActive: {
-    backgroundColor: '#3b82f6',
-    borderColor: '#3b82f6',
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   scaleNumbers: {
     flexDirection: 'row',
@@ -677,22 +678,22 @@ const styles = StyleSheet.create({
   },
   scaleNumber: {
     fontSize: 12,
-    color: '#9ca3af',
+    color: colors.textLight,
     width: 32,
     textAlign: 'center',
   },
   scaleNumberActive: {
-    color: '#3b82f6',
+    color: colors.primary,
     fontWeight: '600',
   },
   textInput: {
     borderWidth: 2,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 12,
     fontSize: 15,
-    color: '#1f2937',
+    color: colors.text,
     backgroundColor: '#f9fafb',
   },
   textareaInput: {
@@ -705,7 +706,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 16,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: colors.lightGray,
     backgroundColor: '#ffffff',
   },
   navButton: {
@@ -721,18 +722,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#f3f4f6',
   },
   nextButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.primary,
   },
   navButtonDisabled: {
-    backgroundColor: '#e5e7eb',
+    backgroundColor: colors.lightGray,
   },
   navButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.text,
   },
   navButtonTextDisabled: {
-    color: '#9ca3af',
+    color: colors.textLight,
   },
   nextButtonText: {
     fontSize: 16,

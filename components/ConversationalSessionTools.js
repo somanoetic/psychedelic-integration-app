@@ -16,6 +16,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
 import { colors } from '../theme/colors';
+import { icons } from '../lib/uiIcons';
 
 const ConversationalSessionTools = ({ navigation }) => {
   // Avatar state removed - using Huxley image directly
@@ -137,10 +138,10 @@ const ConversationalSessionTools = ({ navigation }) => {
     const experience = session.session_data?.experienceProcessing;
     const integration = session.session_data?.integration;
 
-    if (integration?.completed) return { text: 'Integrated', emoji: '✅' };
-    if (experience?.completed) return { text: 'Processed', emoji: '📝' };
-    if (prep?.completedSections?.length > 0) return { text: 'In Progress', emoji: '⏳' };
-    return { text: 'New', emoji: '✨' };
+    if (integration?.completed) return { text: 'Integrated', emoji: '✅', icon: icons.integration };
+    if (experience?.completed) return { text: 'Processed', emoji: '📝', icon: icons.journal };
+    if (prep?.completedSections?.length > 0) return { text: 'In Progress', emoji: '⏳', icon: icons.trailProgress };
+    return { text: 'New', emoji: '✨', icon: icons.newBeginning };
   };
 
   const renderHuxleyMessage = (message) => (
@@ -176,15 +177,15 @@ const ConversationalSessionTools = ({ navigation }) => {
       )}
       <View style={styles.optionsContainer}>
         <Text style={styles.optionsLabel}>You:</Text>
-        {renderUserOption('Create a new session', () => setConversationStep('create_new'), 'add-circle', '#10b981')}
+        {renderUserOption('Create a new session', () => setConversationStep('create_new'), 'add-circle', colors.success)}
         {sessions.length > 0 && renderUserOption(
           'View my recent sessions',
           () => setConversationStep('view_existing'),
           'history',
-          '#3b82f6'
+          colors.primary
         )}
         {renderUserOption('Play Glimmer Swiper 🎮', () => navigation.navigate('GlimmerSwiper'), 'sports-esports', '#06b6d4')}
-        {renderUserOption('Go back', () => navigation.goBack(), 'arrow-back', '#6b7280')}
+        {renderUserOption('Go back', () => navigation.goBack(), 'arrow-back', colors.textSecondary)}
       </View>
     </>
   );
@@ -202,7 +203,7 @@ const ConversationalSessionTools = ({ navigation }) => {
           value={sessionTitle}
           onChangeText={setSessionTitle}
           placeholder="e.g., Healing Session - December 2024"
-          placeholderTextColor="#9ca3af"
+          placeholderTextColor={colors.textLight}
         />
 
         <Text style={styles.inputLabel}>Journey Date</Text>
@@ -211,7 +212,7 @@ const ConversationalSessionTools = ({ navigation }) => {
           value={sessionDate}
           onChangeText={setSessionDate}
           placeholder="YYYY-MM-DD"
-          placeholderTextColor="#9ca3af"
+          placeholderTextColor={colors.textLight}
         />
       </View>
 
@@ -221,9 +222,9 @@ const ConversationalSessionTools = ({ navigation }) => {
           isCreating ? 'Creating...' : 'Create this session',
           createSession,
           'check-circle',
-          '#10b981'
+          colors.success
         )}
-        {renderUserOption('Go back', () => setConversationStep('initial'), 'arrow-back', '#6b7280')}
+        {renderUserOption('Go back', () => setConversationStep('initial'), 'arrow-back', colors.textSecondary)}
       </View>
     </>
   );
@@ -250,7 +251,12 @@ const ConversationalSessionTools = ({ navigation }) => {
               >
                 <View style={styles.sessionBubbleHeader}>
                   <Text style={styles.sessionBubbleTitle}>{session.title}</Text>
-                  <Text style={styles.sessionBubbleStatus}>{status.emoji} {status.text}</Text>
+                  <View style={styles.sessionBubbleStatusRow}>
+                    {status.icon ? (
+                      <Image source={status.icon} style={styles.sessionBubbleStatusIcon} />
+                    ) : null}
+                    <Text style={styles.sessionBubbleStatus}>{status.text}</Text>
+                  </View>
                 </View>
                 <Text style={styles.sessionBubbleDate}>
                   📅 {formatDate(session.journey_date)}
@@ -263,8 +269,8 @@ const ConversationalSessionTools = ({ navigation }) => {
 
       <View style={styles.optionsContainer}>
         <Text style={styles.optionsLabel}>You:</Text>
-        {renderUserOption('Create a new session instead', () => setConversationStep('create_new'), 'add-circle', '#10b981')}
-        {renderUserOption('Go back', () => setConversationStep('initial'), 'arrow-back', '#6b7280')}
+        {renderUserOption('Create a new session instead', () => setConversationStep('create_new'), 'add-circle', colors.success)}
+        {renderUserOption('Go back', () => setConversationStep('initial'), 'arrow-back', colors.textSecondary)}
       </View>
     </>
   );
@@ -274,7 +280,7 @@ const ConversationalSessionTools = ({ navigation }) => {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <MaterialIcons name="arrow-back" size={24} color="#1f2937" />
+          <MaterialIcons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.appName}>Session Tools</Text>
         <View style={{ width: 24 }} />
@@ -308,12 +314,12 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     backgroundColor: '#ffffff',
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   appName: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1f2937',
+    color: colors.text,
   },
   content: {
     flex: 1,
@@ -339,9 +345,9 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   huxleyAvatarSmall: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 54,
+    height: 54,
+    borderRadius: 27,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 10,
@@ -349,12 +355,12 @@ const styles = StyleSheet.create({
   huxleyName: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   huxleyText: {
     fontSize: 16,
     lineHeight: 24,
-    color: '#374151',
+    color: colors.text,
   },
   optionsContainer: {
     marginBottom: 24,
@@ -362,7 +368,7 @@ const styles = StyleSheet.create({
   optionsLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 12,
     marginLeft: 4,
   },
@@ -405,17 +411,17 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.text,
     marginBottom: 8,
   },
   textInput: {
     backgroundColor: '#f9fafb',
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
     borderRadius: 12,
     padding: 14,
     fontSize: 16,
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 16,
   },
   loadingContainer: {
@@ -431,7 +437,7 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -447,17 +453,27 @@ const styles = StyleSheet.create({
   sessionBubbleTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     flex: 1,
   },
   sessionBubbleStatus: {
     fontSize: 12,
-    color: '#6b7280',
+    color: colors.textSecondary,
+    marginLeft: 4,
+  },
+  sessionBubbleStatusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginLeft: 8,
+  },
+  sessionBubbleStatusIcon: {
+    width: 32,
+    height: 32,
+    resizeMode: 'contain',
   },
   sessionBubbleDate: {
     fontSize: 13,
-    color: '#9ca3af',
+    color: colors.textLight,
   },
 });
 

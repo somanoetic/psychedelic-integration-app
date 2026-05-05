@@ -682,7 +682,7 @@ What themes or insights from your experience would you like to explore in relati
         {isLoading && (
           <View style={styles.typingIndicator}>
             <Text style={styles.typingText}>Claude is thinking...</Text>
-            <ActivityIndicator size="small" color="#3b82f6" />
+            <ActivityIndicator size="small" color={colors.primary} />
           </View>
         )}
       </ScrollView>
@@ -797,7 +797,7 @@ const styles = {
     paddingVertical: 12,
     backgroundColor: '#ffffff',
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   nervousSystemIndicator: {
     flexDirection: 'row',
@@ -810,31 +810,31 @@ const styles = {
   stateLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
   },
   sessionInfo: {
     alignItems: 'flex-end',
   },
   sessionPhaseText: {
     fontSize: 12,
-    color: '#6b7280',
+    color: colors.textSecondary,
     fontWeight: '500',
   },
   practiceCount: {
     fontSize: 11,
-    color: '#9ca3af',
+    color: colors.textLight,
   },
   johnsonProgressContainer: {
     backgroundColor: '#ffffff',
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   johnsonTitle: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.text,
     marginBottom: 8,
   },
   stepIndicators: {
@@ -857,24 +857,24 @@ const styles = {
     marginBottom: 4,
   },
   stepCircleComplete: {
-    backgroundColor: '#10b981',
-    borderColor: '#10b981',
+    backgroundColor: colors.success,
+    borderColor: colors.success,
   },
   stepCircleCurrent: {
-    backgroundColor: '#3b82f6',
-    borderColor: '#3b82f6',
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   stepNumber: {
     fontSize: 12,
     fontWeight: 'bold',
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   stepNumberComplete: {
     color: '#ffffff',
   },
   stepName: {
     fontSize: 10,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
   },
   messagesContainer: {
@@ -920,7 +920,7 @@ const styles = {
   },
   johnsonStepText: {
     fontSize: 11,
-    color: '#10b981',
+    color: colors.success,
     fontWeight: '600',
   },
   entitiesContainer: {
@@ -948,7 +948,7 @@ const styles = {
   modeSelectionButton: {
     paddingVertical: 12,
     paddingHorizontal: 16,
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.primary,
     borderRadius: 8,
   },
   modeSelectionButtonText: {
@@ -966,7 +966,7 @@ const styles = {
   },
   practiceText: {
     fontSize: 12,
-    color: '#3b82f6',
+    color: colors.primary,
     fontWeight: '500',
   },
   typingIndicator: {
@@ -982,7 +982,7 @@ const styles = {
   },
   typingText: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     fontStyle: 'italic',
   },
   inputContainer: {
@@ -1032,7 +1032,7 @@ const styles = {
   },
   practiceIndicatorText: {
     fontSize: 14,
-    color: '#3b82f6',
+    color: colors.primary,
     fontWeight: '500',
   },
 };

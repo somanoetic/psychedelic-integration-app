@@ -592,8 +592,8 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   huxleyAvatar: {
-    width: 64,
-    height: 64,
+    width: 96,
+    height: 96,
     marginRight: 12,
     marginTop: 4,
   },
@@ -602,7 +602,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   messageBubble: {
-    maxWidth: SCREEN_WIDTH * 0.75,
+    flex: 1,
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
     paddingHorizontal: 18,
     paddingVertical: 14,
@@ -615,6 +615,8 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   userBubble: {
+    flex: 0,
+    maxWidth: SCREEN_WIDTH * 0.75,
     backgroundColor: colors.primary,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 4,

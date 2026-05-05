@@ -15,13 +15,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AVATAR_OPTIONS } from './AvatarSelector';
 import conversationalRoutingService from '../lib/conversationalRoutingService';
 import { colors } from '../theme/colors';
 
 const ConversationalHomeScreen = ({ navigation, user }) => {
-  const [selectedAvatar, setSelectedAvatar] = useState('brain');
   const [userName, setUserName] = useState('friend');
   const [fadeAnim] = useState(new Animated.Value(0));
   const [messages, setMessages] = useState([]);
@@ -51,16 +48,8 @@ const ConversationalHomeScreen = ({ navigation, user }) => {
   }, []);
 
   const loadPreferences = async () => {
-    try {
-      const avatar = await AsyncStorage.getItem('huxley_avatar');
-      if (avatar) setSelectedAvatar(avatar);
-
-      // Get user name from profile if available
-      if (user?.user_metadata?.name) {
-        setUserName(user.user_metadata.name.split(' ')[0]);
-      }
-    } catch (error) {
-      console.error('Error loading preferences:', error);
+    if (user?.user_metadata?.name) {
+      setUserName(user.user_metadata.name.split(' ')[0]);
     }
   };
 
@@ -75,19 +64,13 @@ const ConversationalHomeScreen = ({ navigation, user }) => {
     setMessages([greeting]);
   };
 
-  const getAvatar = () => {
-    return AVATAR_OPTIONS.find(a => a.id === selectedAvatar) || AVATAR_OPTIONS[0];
-  };
-
-  const avatar = getAvatar();
-
   // Quick action buttons (shown as suggestions)
   const quickActions = [
-    { text: "I'm triggered", icon: 'sos', color: '#ef4444' },
+    { text: "I'm triggered", icon: 'sos', color: colors.error },
     { text: "I want to journal", icon: 'edit-note', color: '#06b6d4' },
     { text: "Process an experience", icon: 'auto-awesome', color: colors.primary },
-    { text: "Explore my parts", icon: 'psychology', color: '#3b82f6' },
-    { text: "Learn something", icon: 'school', color: '#10b981' },
+    { text: "Explore my parts", icon: 'psychology', color: colors.primary },
+    { text: "Learn something", icon: 'school', color: colors.success },
   ];
 
   const handleSendMessage = async () => {
@@ -152,7 +135,7 @@ const ConversationalHomeScreen = ({ navigation, user }) => {
     // Map AI route codes to actual navigation routes
     const routeMap = {
       triggered_support: 'TriggeredSupport',
-      daily_journal: 'DailyJournal',
+      daily_journal: 'Journal',
       post_session_journal: 'SessionTools', // Will create integration journal
       ifs_chat: 'IFSChat',
       nervous_system_mapping: 'NervousSystemMapping',
@@ -172,7 +155,7 @@ const ConversationalHomeScreen = ({ navigation, user }) => {
 
     // Tab screens: Education, AllSessions
     // Stack screens: Everything else
-    if (actualRoute === 'Education' || actualRoute === 'AllSessions') {
+    if (actualRoute === 'Education' || actualRoute === 'AllSessions' || actualRoute === 'Journal') {
       navigation.navigate(actualRoute);
     } else {
       // Stack screens - need parent navigator
@@ -198,16 +181,11 @@ const ConversationalHomeScreen = ({ navigation, user }) => {
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.appName}>Huxley</Text>
-          <TouchableOpacity
-            style={styles.avatarButton}
-            onPress={() => {
-              /* TODO: Open avatar selector */
-            }}
-          >
-            <View style={[styles.avatarIcon, { backgroundColor: avatar.color }]}>
-              <MaterialIcons name={avatar.icon} size={24} color="#ffffff" />
-            </View>
-          </TouchableOpacity>
+          <Image
+            source={require('../assets/images/huxley-avatar.png')}
+            style={styles.headerAvatar}
+            resizeMode="contain"
+          />
         </View>
 
         {/* Conversation Messages */}
@@ -291,7 +269,7 @@ const ConversationalHomeScreen = ({ navigation, user }) => {
           <TextInput
             style={styles.input}
             placeholder="Type your message..."
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor={colors.textLight}
             value={userInput}
             onChangeText={setUserInput}
             multiline
@@ -309,7 +287,7 @@ const ConversationalHomeScreen = ({ navigation, user }) => {
             <MaterialIcons
               name="send"
               size={24}
-              color={!userInput.trim() || isSending ? '#9ca3af' : '#ffffff'}
+              color={!userInput.trim() || isSending ? colors.textLight : '#ffffff'}
             />
           </TouchableOpacity>
         </View>
@@ -331,22 +309,16 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     backgroundColor: '#ffffff',
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   appName: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#1f2937',
+    color: colors.text,
   },
-  avatarButton: {
-    padding: 4,
-  },
-  avatarIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+  headerAvatar: {
+    width: 48,
+    height: 48,
   },
   messagesContainer: {
     flex: 1,
@@ -370,13 +342,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row-reverse',
   },
   huxleyAvatar: {
-    width: 40,
-    height: 40,
+    width: 60,
+    height: 60,
     marginRight: 8,
   },
   typingText: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     fontStyle: 'italic',
     marginTop: 4,
   },
@@ -400,7 +372,7 @@ const styles = StyleSheet.create({
   aiText: {
     fontSize: 16,
     lineHeight: 24,
-    color: '#374151',
+    color: colors.text,
   },
   userText: {
     fontSize: 16,
@@ -410,7 +382,7 @@ const styles = StyleSheet.create({
   quickActionsContainer: {
     paddingVertical: 12,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: colors.lightGray,
     backgroundColor: '#ffffff',
   },
   quickActionsContent: {
@@ -439,7 +411,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     backgroundColor: '#ffffff',
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: colors.lightGray,
     gap: 12,
   },
   input: {
@@ -451,7 +423,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 10,
     fontSize: 16,
-    color: '#1f2937',
+    color: colors.text,
   },
   sendButton: {
     width: 40,
@@ -462,7 +434,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   sendButtonDisabled: {
-    backgroundColor: '#e5e7eb',
+    backgroundColor: colors.lightGray,
   },
 });
 

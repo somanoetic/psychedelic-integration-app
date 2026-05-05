@@ -20,20 +20,22 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
+import { icons } from '../lib/uiIcons';
+import { colors } from '../theme/colors';
 
 const GLIMMER_TYPES = [
-  { id: 'sensory', label: 'Sensory', icon: 'visibility', color: '#3b82f6', description: 'Sight, sound, smell, taste, touch' },
-  { id: 'relational', label: 'Connection', icon: 'people', color: '#ec4899', description: 'People, pets, memories' },
-  { id: 'activity', label: 'Activity', icon: 'directions-run', color: '#10b981', description: 'Movement, hobbies, rituals' },
-  { id: 'nature', label: 'Nature', icon: 'park', color: '#22c55e', description: 'Outdoors, weather, animals' },
-  { id: 'general', label: 'Other', icon: 'auto-awesome', color: '#f59e0b', description: 'Something else' },
+  { id: 'sensory', label: 'Sensory', icon: icons.sensation, color: colors.primary, description: 'Sight, sound, smell, taste, touch' },
+  { id: 'relational', label: 'Connection', icon: icons.community, color: '#ec4899', description: 'People, pets, memories' },
+  { id: 'activity', label: 'Activity', icon: icons.movement, color: colors.success, description: 'Movement, hobbies, rituals' },
+  { id: 'nature', label: 'Nature', icon: icons.nature, color: '#22c55e', description: 'Outdoors, weather, animals' },
+  { id: 'general', label: 'Other', icon: icons.glimmerCaptured, color: colors.warning, description: 'Something else' },
 ];
 
 const SHIFT_LEVELS = [
   { value: 1, label: 'Subtle', color: '#bfdbfe', description: 'Small shift' },
   { value: 2, label: 'Noticeable', color: '#93c5fd', description: 'Clear shift' },
   { value: 3, label: 'Significant', color: '#60a5fa', description: 'Big shift' },
-  { value: 4, label: 'Powerful', color: '#3b82f6', description: 'Very strong' },
+  { value: 4, label: 'Powerful', color: colors.primary, description: 'Very strong' },
   { value: 5, label: 'Transformative', color: '#2563eb', description: 'Profound' },
 ];
 
@@ -87,10 +89,6 @@ const GlimmerTracker = ({ navigation }) => {
       Alert.alert('Select Type', 'Please select a glimmer type');
       return;
     }
-    if (!description.trim()) {
-      Alert.alert('Add Description', 'Please describe your glimmer moment');
-      return;
-    }
 
     setSaving(true);
     try {
@@ -105,7 +103,7 @@ const GlimmerTracker = ({ navigation }) => {
         .insert({
           user_id: user.id,
           glimmer_type: glimmerType,
-          description: description.trim(),
+          description: description.trim() || null,
           body_sensation: bodySensation.trim() || null,
           context: context.trim() || null,
           what_made_it_special: whatMadeItSpecial.trim() || null,
@@ -158,15 +156,15 @@ const GlimmerTracker = ({ navigation }) => {
           style={[styles.sectionHeader, hasValue && styles.sectionHeaderComplete]}
           onPress={() => setExpandedSection(isExpanded ? null : id)}
         >
-          <MaterialIcons name={icon} size={20} color={hasValue ? '#10b981' : '#6b7280'} />
+          <MaterialIcons name={icon} size={20} color={hasValue ? colors.success : colors.textSecondary} />
           <Text style={[styles.sectionHeaderText, hasValue && styles.sectionHeaderTextComplete]}>
             {title} {isRequired && <Text style={styles.required}>*</Text>}
           </Text>
-          {hasValue && <MaterialIcons name="check-circle" size={18} color="#10b981" />}
+          {hasValue && <MaterialIcons name="check-circle" size={18} color={colors.success} />}
           <MaterialIcons
             name={isExpanded ? 'expand-less' : 'expand-more'}
             size={24}
-            color="#6b7280"
+            color={colors.textSecondary}
           />
         </TouchableOpacity>
         {isExpanded && (
@@ -175,7 +173,7 @@ const GlimmerTracker = ({ navigation }) => {
             value={value}
             onChangeText={setValue}
             placeholder={placeholder}
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor={colors.textLight}
             multiline
             maxLength={500}
           />
@@ -191,7 +189,7 @@ const GlimmerTracker = ({ navigation }) => {
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <MaterialIcons name="arrow-back" size={24} color="#1f2937" />
+          <MaterialIcons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Capture a Glimmer ✨</Text>
         <View style={{ width: 24 }} />
@@ -230,7 +228,7 @@ const GlimmerTracker = ({ navigation }) => {
                 onPress={() => setGlimmerType(type.id)}
               >
                 <View style={[styles.typeIcon, { backgroundColor: `${type.color}20` }]}>
-                  <MaterialIcons name={type.icon} size={24} color={type.color} />
+                  <Image source={type.icon} style={styles.typeIconImage} />
                 </View>
                 <Text style={styles.typeLabel}>{type.label}</Text>
                 <Text style={styles.typeDescription}>{type.description}</Text>
@@ -247,7 +245,7 @@ const GlimmerTracker = ({ navigation }) => {
               key={level.value}
               style={[
                 styles.shiftButton,
-                { backgroundColor: feltShift >= level.value ? level.color : '#e5e7eb' }
+                { backgroundColor: feltShift >= level.value ? level.color : colors.lightGray }
               ]}
               onPress={() => setFeltShift(level.value)}
             >
@@ -270,8 +268,7 @@ const GlimmerTracker = ({ navigation }) => {
           'auto-awesome',
           description,
           setDescription,
-          'The warmth of sunlight, my cat purring, a kind word from a stranger...',
-          true
+          'The warmth of sunlight, my cat purring, a kind word from a stranger...'
         )}
 
         {renderCollapsibleSection(
@@ -303,9 +300,9 @@ const GlimmerTracker = ({ navigation }) => {
 
         {/* Save Button */}
         <TouchableOpacity
-          style={[styles.saveButton, (!glimmerType || !description.trim()) && styles.saveButtonDisabled]}
+          style={[styles.saveButton, !glimmerType && styles.saveButtonDisabled]}
           onPress={saveGlimmer}
-          disabled={!glimmerType || !description.trim() || saving}
+          disabled={!glimmerType || saving}
         >
           {saving ? (
             <ActivityIndicator color="#fff" />
@@ -329,14 +326,16 @@ const GlimmerTracker = ({ navigation }) => {
                     <MaterialIcons
                       name={type?.icon || 'auto-awesome'}
                       size={20}
-                      color={type?.color || '#f59e0b'}
+                      color={type?.color || colors.warning}
                     />
                     <Text style={styles.recentType}>{type?.label || 'Glimmer'}</Text>
                     <Text style={styles.recentTime}>{formatTime(glimmer.created_at)}</Text>
                   </View>
-                  <Text style={styles.recentDescription} numberOfLines={2}>
-                    {glimmer.description}
-                  </Text>
+                  {glimmer.description && (
+                    <Text style={styles.recentDescription} numberOfLines={2}>
+                      {glimmer.description}
+                    </Text>
+                  )}
                   {glimmer.felt_shift && (
                     <View style={styles.recentShift}>
                       {[1, 2, 3, 4, 5].map((i) => (
@@ -344,7 +343,7 @@ const GlimmerTracker = ({ navigation }) => {
                           key={i}
                           style={[
                             styles.shiftDot,
-                            { backgroundColor: i <= glimmer.felt_shift ? SHIFT_LEVELS[glimmer.felt_shift - 1].color : '#e5e7eb' }
+                            { backgroundColor: i <= glimmer.felt_shift ? SHIFT_LEVELS[glimmer.felt_shift - 1].color : colors.lightGray }
                           ]}
                         />
                       ))}
@@ -390,7 +389,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1f2937',
+    color: colors.text,
   },
   content: {
     flex: 1,
@@ -404,8 +403,8 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   huxleyAvatar: {
-    width: 48,
-    height: 48,
+    width: 72,
+    height: 72,
     marginRight: 12,
   },
   huxleyBubble: {
@@ -423,17 +422,17 @@ const styles = StyleSheet.create({
   huxleyText: {
     fontSize: 15,
     lineHeight: 22,
-    color: '#374151',
+    color: colors.text,
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 12,
     marginTop: 8,
   },
   required: {
-    color: '#3b82f6',
+    color: colors.primary,
   },
   typeScroll: {
     marginBottom: 20,
@@ -451,7 +450,7 @@ const styles = StyleSheet.create({
     padding: 14,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -459,22 +458,27 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   typeIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 88,
+    height: 88,
+    borderRadius: 44,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 8,
   },
+  typeIconImage: {
+    width: 72,
+    height: 72,
+    resizeMode: 'contain',
+  },
   typeLabel: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 2,
   },
   typeDescription: {
     fontSize: 10,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
   },
   shiftContainer: {
@@ -492,7 +496,7 @@ const styles = StyleSheet.create({
   shiftText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   shiftTextActive: {
     color: '#1e3a8a',
@@ -502,7 +506,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
     overflow: 'hidden',
   },
   sectionHeader: {
@@ -518,7 +522,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     fontWeight: '500',
-    color: '#374151',
+    color: colors.text,
   },
   sectionHeaderTextComplete: {
     color: '#166534',
@@ -527,7 +531,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingBottom: 14,
     fontSize: 15,
-    color: '#1f2937',
+    color: colors.text,
     minHeight: 80,
     textAlignVertical: 'top',
   },
@@ -535,14 +539,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingBottom: 10,
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     fontStyle: 'italic',
   },
   saveButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.primary,
     padding: 16,
     borderRadius: 16,
     gap: 8,
@@ -562,7 +566,7 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
   },
   recentHeader: {
     flexDirection: 'row',
@@ -574,15 +578,15 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
   },
   recentTime: {
     fontSize: 12,
-    color: '#9ca3af',
+    color: colors.textLight,
   },
   recentDescription: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 8,
   },
   recentShift: {
@@ -606,7 +610,7 @@ const styles = StyleSheet.create({
   discoveryLinkText: {
     flex: 1,
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     lineHeight: 20,
   },
 });

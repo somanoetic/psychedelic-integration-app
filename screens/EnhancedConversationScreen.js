@@ -567,7 +567,7 @@ How is your body feeling in this moment?`,
         {isLoading && (
           <View style={styles.typingIndicator}>
             <Text style={styles.typingText}>Claude is thinking...</Text>
-            <ActivityIndicator size="small" color="#3b82f6" />
+            <ActivityIndicator size="small" color={colors.primary} />
           </View>
         )}
       </ScrollView>

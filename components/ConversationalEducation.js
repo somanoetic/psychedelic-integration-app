@@ -11,36 +11,44 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AVATAR_OPTIONS } from './AvatarSelector';
+import { icons } from '../lib/uiIcons';
+
+const TOPIC_ICONS = {
+  nervous_system: icons.dna,
+  ifs_basics: icons.group,
+  grounding_practices: icons.sprout,
+  ifs_chat: icons.chat,
+  polyvagal_mapping: icons.foldedMap,
+  core_beliefs: icons.thoughtCloud,
+  triggers_glimmers: icons.trigger,
+  regulating_resources: icons.tools,
+  integration_basics: icons.sprout,
+  somatic_awareness: icons.lungs,
+  brain_and_healing: icons.dna,
+  building_habits: icons.integrationCycle,
+  cognitive_patterns: icons.thoughtCloud,
+  trauma_understanding: icons.repairedHeart,
+  attachment_styles: icons.community,
+  harm_reduction: icons.guidance,
+  contemplative_practices: icons.meditate,
+  psychedelic_preparation: icons.newBeginning,
+  acceptance_commitment: icons.goals,
+};
 import { colors } from '../theme/colors';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics }) => {
-  const [selectedAvatar, setSelectedAvatar] = useState('brain');
   const [conversationStep, setConversationStep] = useState('greeting'); // greeting, categories, topic_selection
-
-  useEffect(() => {
-    loadPreferences();
-  }, []);
-
-  const loadPreferences = async () => {
-    try {
-      const avatar = await AsyncStorage.getItem('huxley_avatar');
-      if (avatar) setSelectedAvatar(avatar);
-    } catch (error) {
-      console.error('Error loading preferences:', error);
-    }
-  };
 
   const educationCategories = [
     {
       id: 'basics',
       title: 'Teach me the basics',
       icon: 'auto-stories',
-      color: '#3b82f6',
+      color: colors.primary,
       emoji: '📖',
+      iconImg: icons.educationProgress,
       description: 'Foundation knowledge on integration, your nervous system, and how healing works',
       topics: ['nervous_system', 'integration_basics', 'ifs_basics', 'grounding_practices']
     },
@@ -50,6 +58,7 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
       icon: 'psychology',
       color: '#8b5cf6',
       emoji: '🧠',
+      iconImg: icons.dna,
       description: 'Interactive tools to explore your inner world and patterns',
       topics: ['ifs_chat', 'polyvagal_mapping', 'triggers_glimmers', 'regulating_resources', 'core_beliefs']
     },
@@ -57,8 +66,9 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
       id: 'body_and_brain',
       title: 'Body, brain & healing',
       icon: 'healing',
-      color: '#ef4444',
+      color: colors.error,
       emoji: '🫁',
+      iconImg: icons.lungs,
       description: 'How your body and brain process experiences and support healing',
       topics: ['somatic_awareness', 'brain_and_healing', 'trauma_understanding', 'attachment_styles']
     },
@@ -66,8 +76,9 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
       id: 'tools_and_practices',
       title: 'Tools & daily practices',
       icon: 'build',
-      color: '#f59e0b',
+      color: colors.warning,
       emoji: '🔧',
+      iconImg: icons.tools,
       description: 'Practical skills for building lasting change',
       topics: ['building_habits', 'cognitive_patterns', 'contemplative_practices', 'acceptance_commitment']
     },
@@ -75,8 +86,9 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
       id: 'therapies',
       title: 'Preparation & safety',
       icon: 'shield',
-      color: '#10b981',
+      color: colors.success,
       emoji: '🛟',
+      iconImg: icons.guidance,
       description: 'Set & setting, harm reduction, and the full integration arc',
       topics: ['psychedelic_preparation', 'harm_reduction']
     },
@@ -86,6 +98,7 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
       icon: 'school',
       color: '#6366f1',
       emoji: '🎓',
+      iconImg: icons.educationProgress,
       description: 'Browse the complete library of integration education',
       topics: ['all_topics']
     }
@@ -98,21 +111,21 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
       emoji: '🧠',
       description: 'Understanding your three states of activation and safety',
       time: '5 minutes',
-      color: '#3b82f6'
+      color: colors.primary
     },
     ifs_basics: {
       title: 'Parts of You (IFS)',
       emoji: '👥',
       description: 'Meet your inner protectors and wounded parts',
       time: '7 minutes',
-      color: '#3b82f6'
+      color: colors.primary
     },
     grounding_practices: {
       title: 'Grounding & Somatic Practices',
       emoji: '🌱',
       description: 'Learn self-regulation techniques for any moment',
       time: '8 minutes',
-      color: '#3b82f6'
+      color: colors.primary
     },
     // About Myself category
     ifs_chat: {
@@ -156,77 +169,77 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
       emoji: '🌱',
       description: 'What integration is and why it matters',
       time: '7 minutes',
-      color: '#3b82f6'
+      color: colors.primary
     },
     somatic_awareness: {
       title: 'Somatic Awareness & the Body',
       emoji: '🫁',
       description: 'Learn to read your body\'s signals and use body-based tools',
       time: '10 minutes',
-      color: '#ef4444'
+      color: colors.error
     },
     brain_and_healing: {
       title: 'Your Brain on Healing',
       emoji: '🧬',
       description: 'How neuroscience explains why integration works',
       time: '10 minutes',
-      color: '#ef4444'
+      color: colors.error
     },
     building_habits: {
       title: 'Building Integration Habits',
       emoji: '🔄',
       description: 'Use habit science to make your practices stick',
       time: '8 minutes',
-      color: '#f59e0b'
+      color: colors.warning
     },
     cognitive_patterns: {
       title: 'Cognitive Patterns & Distortions',
       emoji: '💭',
       description: 'Recognize thinking traps and learn to reframe them',
       time: '9 minutes',
-      color: '#f59e0b'
+      color: colors.warning
     },
     trauma_understanding: {
       title: 'Understanding Trauma',
       emoji: '🌿',
       description: 'What trauma is and how integration supports healing',
       time: '10 minutes',
-      color: '#ef4444'
+      color: colors.error
     },
     attachment_styles: {
       title: 'Attachment & Relationships',
       emoji: '🤝',
       description: 'How your attachment patterns shape your inner world',
       time: '9 minutes',
-      color: '#ef4444'
+      color: colors.error
     },
     harm_reduction: {
       title: 'Harm Reduction & Safety',
       emoji: '🛟',
       description: 'Practical safety knowledge for responsible use',
       time: '8 minutes',
-      color: '#10b981'
+      color: colors.success
     },
     contemplative_practices: {
       title: 'Contemplative & Mindfulness',
       emoji: '🧘',
       description: 'Meditation and mindfulness approaches to integration',
       time: '9 minutes',
-      color: '#f59e0b'
+      color: colors.warning
     },
     psychedelic_preparation: {
       title: 'Preparation & The Integration Arc',
       emoji: '🌅',
       description: 'The full arc from preparation to long-term integration',
       time: '12 minutes',
-      color: '#10b981'
+      color: colors.success
     },
     acceptance_commitment: {
       title: 'Acceptance & Commitment (ACT)',
       emoji: '🎯',
       description: 'Psychological flexibility through acceptance and values',
       time: '9 minutes',
-      color: '#f59e0b'
+      color: colors.warning
     }
   };
 
@@ -263,6 +276,7 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
   const renderTopicCard = (topicId) => {
     const topic = topicDetails[topicId];
     if (!topic) return null;
+    const topicIcon = TOPIC_ICONS[topicId];
 
     return (
       <TouchableOpacity
@@ -277,13 +291,17 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
         }}
         activeOpacity={0.7}
       >
-        <Text style={styles.topicEmoji}>{topic.emoji}</Text>
+        {topicIcon ? (
+          <Image source={topicIcon} style={styles.topicIconImage} />
+        ) : (
+          <Text style={styles.topicEmoji}>{topic.emoji}</Text>
+        )}
         <View style={styles.topicContent}>
           <Text style={styles.topicTitle}>{topic.title}</Text>
           <Text style={styles.topicDescription}>{topic.description}</Text>
           <Text style={styles.topicTime}>⏱️ {topic.time}</Text>
         </View>
-        <MaterialIcons name="chevron-right" size={24} color="#9ca3af" />
+        <MaterialIcons name="chevron-right" size={24} color={colors.textLight} />
       </TouchableOpacity>
     );
   };
@@ -304,7 +322,11 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
             activeOpacity={0.7}
           >
             <View style={styles.categoryIconContainer}>
-              <Text style={styles.categoryEmoji}>{category.emoji}</Text>
+              {category.iconImg ? (
+                <Image source={category.iconImg} style={styles.categoryIconImage} />
+              ) : (
+                <Text style={styles.categoryEmoji}>{category.emoji}</Text>
+              )}
             </View>
             <View style={styles.categoryContent}>
               <Text style={[styles.categoryTitle, { color: category.color }]}>
@@ -338,7 +360,7 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
           'Back to main menu',
           () => setConversationStep('greeting'),
           'arrow-back',
-          '#6b7280'
+          colors.textSecondary
         )}
       </View>
     </>
@@ -364,7 +386,7 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
           'Back to main menu',
           () => setConversationStep('greeting'),
           'arrow-back',
-          '#6b7280'
+          colors.textSecondary
         )}
       </View>
     </>
@@ -389,7 +411,7 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
           'Back to main menu',
           () => setConversationStep('greeting'),
           'arrow-back',
-          '#6b7280'
+          colors.textSecondary
         )}
       </View>
     </>
@@ -414,7 +436,7 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
           'Back to main menu',
           () => setConversationStep('greeting'),
           'arrow-back',
-          '#6b7280'
+          colors.textSecondary
         )}
       </View>
     </>
@@ -437,7 +459,7 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
           'Back to main menu',
           () => setConversationStep('greeting'),
           'arrow-back',
-          '#6b7280'
+          colors.textSecondary
         )}
       </View>
     </>
@@ -483,7 +505,7 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
           'Back to main menu',
           () => setConversationStep('greeting'),
           'arrow-back',
-          '#6b7280'
+          colors.textSecondary
         )}
       </View>
     </>
@@ -492,7 +514,7 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
   const renderProTip = () => (
     <View style={styles.proTipContainer}>
       <View style={styles.proTipHeader}>
-        <MaterialIcons name="lightbulb" size={20} color="#f59e0b" />
+        <MaterialIcons name="lightbulb" size={20} color={colors.warning} />
         <Text style={styles.proTipLabel}>Pro Tip</Text>
       </View>
       <Text style={styles.proTipText}>
@@ -509,7 +531,7 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
           onPress={() => navigation?.goBack()}
           style={styles.backButton}
         >
-          <MaterialIcons name="arrow-back" size={24} color="#6b7280" />
+          <MaterialIcons name="arrow-back" size={24} color={colors.textSecondary} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Learning Hub</Text>
         <View style={styles.headerSpacer} />
@@ -550,7 +572,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     backgroundColor: '#ffffff',
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   backButton: {
     padding: 8,
@@ -558,7 +580,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#1f2937',
+    color: colors.text,
   },
   headerSpacer: {
     width: 40,
@@ -581,9 +603,9 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   huxleyAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     marginRight: 8,
   },
   avatarContainer: {
@@ -618,12 +640,12 @@ const styles = StyleSheet.create({
   huxleyName: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 4,
   },
   messageText: {
     fontSize: 15,
-    color: '#1f2937',
+    color: colors.text,
     lineHeight: 22,
   },
   optionsContainer: {
@@ -633,7 +655,7 @@ const styles = StyleSheet.create({
   optionsLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 4,
   },
   categoryCard: {
@@ -652,6 +674,11 @@ const styles = StyleSheet.create({
   categoryIconContainer: {
     marginRight: 12,
   },
+  categoryIconImage: {
+    width: 96,
+    height: 96,
+    resizeMode: 'contain',
+  },
   categoryEmoji: {
     fontSize: 32,
   },
@@ -665,7 +692,7 @@ const styles = StyleSheet.create({
   },
   categoryDescription: {
     fontSize: 13,
-    color: '#6b7280',
+    color: colors.textSecondary,
     lineHeight: 18,
   },
   topicsContainer: {
@@ -675,7 +702,7 @@ const styles = StyleSheet.create({
   topicsLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 4,
   },
   topicCard: {
@@ -691,6 +718,12 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
+  topicIconImage: {
+    width: 80,
+    height: 80,
+    resizeMode: 'contain',
+    marginRight: 12,
+  },
   topicEmoji: {
     fontSize: 28,
     marginRight: 12,
@@ -701,18 +734,18 @@ const styles = StyleSheet.create({
   topicTitle: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 4,
   },
   topicDescription: {
     fontSize: 13,
-    color: '#6b7280',
+    color: colors.textSecondary,
     lineHeight: 18,
     marginBottom: 4,
   },
   topicTime: {
     fontSize: 11,
-    color: '#9ca3af',
+    color: colors.textLight,
   },
   userOption: {
     flexDirection: 'row',
@@ -762,7 +795,7 @@ const styles = StyleSheet.create({
   popularLabel: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginTop: 8,
     marginBottom: 4,
   },

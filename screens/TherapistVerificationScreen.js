@@ -102,7 +102,7 @@ const TherapistVerificationScreen = ({ navigation }) => {
         style={{ flex: 1 }}
       >
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#3b82f6" />
+          <ActivityIndicator size="large" color={colors.primary} />
           <Text style={styles.loadingText}>Checking verification status...</Text>
         </View>
       </LinearGradient>
@@ -401,7 +401,7 @@ const styles = {
   },
   reviewNotes: {
     fontSize: 14,
-    color: '#ef4444',
+    color: colors.error,
     textAlign: 'center',
     fontStyle: 'italic',
     backgroundColor: '#fef2f2',
@@ -447,7 +447,7 @@ const styles = {
   disclaimerTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.text,
     marginBottom: 8,
   },
   disclaimerText: {

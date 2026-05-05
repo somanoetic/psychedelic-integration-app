@@ -14,20 +14,22 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   RefreshControl,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../lib/supabase';
 import polyvagalContextService from '../lib/polyvagalContextService';
-import { colors, gradients, shadows, spacing, borderRadius } from '../theme/colors';
+import { colors, gradients, shadows, spacing, borderRadius, typography } from '../theme/colors';
 import ShareWithTherapistButton from '../components/ShareWithTherapistButton';
 import { shareNervousSystem } from '../lib/therapistShareService';
+import { icons } from '../lib/uiIcons';
 
 const STATES = [
-  { key: 'ventral', emoji: '💚', label: 'Safe & Connected', subtitle: 'Ventral vagal' },
-  { key: 'sympathetic', emoji: '⚡', label: 'Fight / Flight', subtitle: 'Sympathetic' },
-  { key: 'dorsal', emoji: '🫥', label: 'Shutdown / Freeze', subtitle: 'Dorsal vagal' },
+  { key: 'ventral', emoji: '💚', icon: icons.droplet, label: 'Safe & Connected', subtitle: 'Ventral vagal' },
+  { key: 'sympathetic', emoji: '⚡', icon: icons.steam, label: 'Fight / Flight', subtitle: 'Sympathetic' },
+  { key: 'dorsal', emoji: '🫥', icon: icons.iceberg, label: 'Shutdown / Freeze', subtitle: 'Dorsal vagal' },
 ];
 
 const PATTERN_FIELDS = [
@@ -77,7 +79,7 @@ const NervousSystemSummaryScreen = ({ navigation }) => {
     </View>
   );
 
-  const renderStateCard = ({ key, emoji, label, subtitle }) => {
+  const renderStateCard = ({ key, emoji, icon, label, subtitle }) => {
     const statePatterns = patterns?.[`${key}_patterns`] || {};
     const fields = PATTERN_FIELDS.filter(f => statePatterns[f.key]?.length > 0);
     const totalItems = fields.reduce((sum, f) => sum + statePatterns[f.key].length, 0);
@@ -85,7 +87,11 @@ const NervousSystemSummaryScreen = ({ navigation }) => {
     return (
       <View key={key} style={styles.card}>
         <View style={styles.cardHeader}>
-          <Text style={styles.cardEmoji}>{emoji}</Text>
+          {icon ? (
+            <Image source={icon} style={styles.cardIconImage} />
+          ) : (
+            <Text style={styles.cardEmoji}>{emoji}</Text>
+          )}
           <View style={styles.cardHeaderText}>
             <Text style={styles.cardTitle}>{label}</Text>
             <Text style={styles.cardSubtitle}>
@@ -158,7 +164,7 @@ const NervousSystemSummaryScreen = ({ navigation }) => {
             </View>
 
             <View style={styles.hero}>
-              <Text style={styles.heroEmoji}>💚</Text>
+              <Image source={icons.nsMap} style={styles.heroIcon} />
               <Text style={styles.heroTitle}>Nervous System</Text>
               <Text style={styles.heroSubtitle}>
                 {hasMapped
@@ -229,8 +235,8 @@ const styles = StyleSheet.create({
   backButton: { padding: spacing.sm, borderRadius: borderRadius.sm, minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
 
   hero: { alignItems: 'center', marginBottom: spacing.xl },
-  heroEmoji: { fontSize: 56, marginBottom: spacing.md },
-  heroTitle: { fontSize: 28, fontWeight: '700', color: colors.text, marginBottom: spacing.sm, textAlign: 'center' },
+  heroIcon: { width: 192, height: 192, marginBottom: spacing.md, resizeMode: 'contain' },
+  heroTitle: { fontSize: 28, fontFamily: typography.serif, color: colors.text, marginBottom: spacing.sm, textAlign: 'center' },
   heroSubtitle: { fontSize: 16, color: colors.textSecondary, textAlign: 'center', lineHeight: 24, paddingHorizontal: spacing.md },
 
   // Meta card
@@ -255,6 +261,7 @@ const styles = StyleSheet.create({
   },
   cardHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.sm },
   cardEmoji: { fontSize: 36, marginRight: spacing.md },
+  cardIconImage: { width: 96, height: 96, resizeMode: 'contain', marginRight: spacing.md },
   cardHeaderText: { flex: 1 },
   cardTitle: { fontSize: 17, fontWeight: '600', color: colors.text, marginBottom: 2 },
   cardSubtitle: { fontSize: 14, color: colors.textSecondary, lineHeight: 20 },

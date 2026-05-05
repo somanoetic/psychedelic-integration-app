@@ -162,14 +162,13 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   huxleyAvatar: {
-    width: 48,
-    height: 48,
+    width: 72,
+    height: 72,
     marginRight: spacing.sm,
     marginTop: 4,
   },
   aiContent: {
     flex: 1,
-    maxWidth: '80%',
   },
   bubble: {
     borderRadius: borderRadius.md,

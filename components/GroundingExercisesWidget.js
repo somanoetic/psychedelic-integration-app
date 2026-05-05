@@ -6,9 +6,12 @@ import {
   TouchableOpacity,
   StyleSheet,
   Vibration,
-  Platform
+  Platform,
+  Image,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import { icons } from '../lib/uiIcons';
+import { colors } from '../theme/colors';
 
 const GroundingExercisesWidget = ({ onComplete, onSkip }) => {
   const [currentExercise, setCurrentExercise] = useState(null);
@@ -21,9 +24,10 @@ const GroundingExercisesWidget = ({ onComplete, onSkip }) => {
       id: '5-4-3-2-1',
       title: '5-4-3-2-1 Grounding',
       emoji: '👁️',
+      icon: icons.observation,
       duration: '3-5 minutes',
       description: 'Use your senses to anchor yourself in the present moment',
-      color: '#10b981',
+      color: colors.success,
       steps: [
         {
           sense: 'See',
@@ -61,9 +65,10 @@ const GroundingExercisesWidget = ({ onComplete, onSkip }) => {
       id: 'breath-counting',
       title: 'Breath Counting',
       emoji: '💨',
+      icon: icons.breath,
       duration: '5 minutes',
       description: 'Calm your nervous system with mindful breathing',
-      color: '#3b82f6',
+      color: colors.primary,
       instructions: [
         'Sit comfortably and close your eyes if it feels safe',
         'Take a natural breath in and count "1" on the exhale',
@@ -149,15 +154,19 @@ const GroundingExercisesWidget = ({ onComplete, onSkip }) => {
               onPress={() => startExercise(exercise.id)}
             >
               <View style={styles.exerciseHeader}>
-                <Text style={styles.exerciseEmoji}>{exercise.emoji}</Text>
+                {exercise.icon ? (
+                  <Image source={exercise.icon} style={styles.exerciseIconImage} />
+                ) : (
+                  <Text style={styles.exerciseEmoji}>{exercise.emoji}</Text>
+                )}
                 <View style={styles.exerciseInfo}>
                   <Text style={styles.exerciseTitle}>{exercise.title}</Text>
                   <Text style={styles.exerciseDuration}>{exercise.duration}</Text>
                 </View>
                 {completedExercises.includes(exercise.id) ? (
-                  <MaterialIcons name="check-circle" size={24} color="#10b981" />
+                  <MaterialIcons name="check-circle" size={24} color={colors.success} />
                 ) : (
-                  <MaterialIcons name="arrow-forward-ios" size={16} color="#9ca3af" />
+                  <MaterialIcons name="arrow-forward-ios" size={16} color={colors.textLight} />
                 )}
               </View>
               <Text style={styles.exerciseDescription}>{exercise.description}</Text>
@@ -196,7 +205,7 @@ const GroundingExercisesWidget = ({ onComplete, onSkip }) => {
             onPress={() => setCurrentExercise(null)}
             style={styles.backButton}
           >
-            <MaterialIcons name="arrow-back" size={24} color="#6b7280" />
+            <MaterialIcons name="arrow-back" size={24} color={colors.textSecondary} />
             <Text style={styles.backButtonText}>Back</Text>
           </TouchableOpacity>
           
@@ -206,7 +215,11 @@ const GroundingExercisesWidget = ({ onComplete, onSkip }) => {
         </View>
 
         <ScrollView style={styles.exerciseContent}>
-          <Text style={styles.currentExerciseEmoji}>{exercise.emoji}</Text>
+          {exercise.icon ? (
+            <Image source={exercise.icon} style={styles.currentExerciseIconImage} />
+          ) : (
+            <Text style={styles.currentExerciseEmoji}>{exercise.emoji}</Text>
+          )}
           <Text style={styles.currentExerciseTitle}>{exercise.title}</Text>
           <Text style={styles.currentExerciseDescription}>{exercise.description}</Text>
 
@@ -285,19 +298,19 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   skipButton: {
     padding: 8,
   },
   skipText: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
   },
   placeholder: {
     width: 60,
@@ -308,12 +321,12 @@ const styles = StyleSheet.create({
   introTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 12,
   },
   introText: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
     lineHeight: 24,
     marginBottom: 32,
   },
@@ -326,11 +339,11 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
   },
   completedCard: {
     backgroundColor: '#f0fdf4',
-    borderColor: '#10b981',
+    borderColor: colors.success,
   },
   exerciseHeader: {
     flexDirection: 'row',
@@ -341,22 +354,28 @@ const styles = StyleSheet.create({
     fontSize: 24,
     marginRight: 12,
   },
+  exerciseIconImage: {
+    width: 72,
+    height: 72,
+    resizeMode: 'contain',
+    marginRight: 12,
+  },
   exerciseInfo: {
     flex: 1,
   },
   exerciseTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 2,
   },
   exerciseDuration: {
     fontSize: 12,
-    color: '#9ca3af',
+    color: colors.textLight,
   },
   exerciseDescription: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     lineHeight: 20,
   },
   tipBox: {
@@ -378,7 +397,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   continueButton: {
-    backgroundColor: '#10b981',
+    backgroundColor: colors.success,
     paddingVertical: 16,
     paddingHorizontal: 24,
     borderRadius: 12,
@@ -397,7 +416,7 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   backButton: {
     flexDirection: 'row',
@@ -405,7 +424,7 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginLeft: 4,
   },
   timerContainer: {
@@ -417,7 +436,7 @@ const styles = StyleSheet.create({
   timerText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.text,
   },
   exerciseContent: {
     flex: 1,
@@ -428,16 +447,23 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 16,
   },
+  currentExerciseIconImage: {
+    width: 160,
+    height: 160,
+    resizeMode: 'contain',
+    alignSelf: 'center',
+    marginBottom: 16,
+  },
   currentExerciseTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1f2937',
+    color: colors.text,
     textAlign: 'center',
     marginBottom: 8,
   },
   currentExerciseDescription: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 24,
     marginBottom: 32,
@@ -450,7 +476,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     borderLeftWidth: 4,
-    borderLeftColor: '#10b981',
+    borderLeftColor: colors.success,
   },
   stepHeader: {
     flexDirection: 'row',
@@ -464,12 +490,12 @@ const styles = StyleSheet.create({
   stepTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     flex: 1,
   },
   stepDetail: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     lineHeight: 20,
   },
   exerciseGuide: {
@@ -513,7 +539,7 @@ const styles = StyleSheet.create({
   variationsTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.text,
     marginBottom: 12,
   },
   variationCard: {
@@ -521,27 +547,27 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
   },
   variationName: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 4,
   },
   variationPattern: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     fontStyle: 'italic',
   },
   exerciseFooter: {
     paddingHorizontal: 24,
     paddingVertical: 16,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: colors.lightGray,
   },
   completeExerciseButton: {
-    backgroundColor: '#10b981',
+    backgroundColor: colors.success,
     paddingVertical: 16,
     paddingHorizontal: 24,
     borderRadius: 12,

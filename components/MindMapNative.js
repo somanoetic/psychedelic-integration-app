@@ -29,13 +29,13 @@ const CONFIG = {
     spacing: 100,
     colors: {
       archetypal: '#8B5CF6', // Purple
-      emotional: '#EF4444',  // Red
-      somatic: '#10B981',    // Green
-      spiritual: '#3B82F6',  // Blue
-      colors: '#F59E0B',     // Amber
+      emotional: colors.error,  // Red
+      somatic: colors.success,    // Green
+      spiritual: colors.primary,  // Blue
+      colors: colors.warning,     // Amber
       beings: '#EC4899',     // Pink
       parts: '#8B5A2B',      // Brown
-      unknown: '#6B7280'     // Gray
+      unknown: colors.textSecondary     // Gray
     }
   },
   connection: {
@@ -43,7 +43,7 @@ const CONFIG = {
     colors: {
       strong: '#059669',
       medium: '#D97706', 
-      weak: '#9CA3AF'
+      weak: colors.textLight
     }
   },
   canvas: {
@@ -248,7 +248,7 @@ function MindMapNative({
             cx={position.x + 22}
             cy={position.y - 22}
             r={5}
-            fill={entity.confidence > 0.8 ? '#10B981' : entity.confidence > 0.5 ? '#F59E0B' : '#EF4444'}
+            fill={entity.confidence > 0.8 ? colors.success : entity.confidence > 0.5 ? colors.warning : colors.error}
             stroke="white"
             strokeWidth={1}
             opacity={0.9}
@@ -545,7 +545,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   instructionBanner: {
-    backgroundColor: '#fed7d7',
+    backgroundColor: colors.bubbleParts,
     padding: 12,
     borderTopWidth: 1,
     borderTopColor: '#feb2b2',

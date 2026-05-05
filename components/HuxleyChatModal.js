@@ -23,6 +23,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
+import { icons } from '../lib/uiIcons';
 import conversationalRoutingService from '../lib/conversationalRoutingService';
 import FormattedText from './FormattedText';
 
@@ -122,9 +123,9 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
   };
 
   const quickActions = [
-    { label: "I'm triggered", route: 'TriggeredSupport', emoji: '🆘' },
-    { label: 'Journal', route: 'DailyJournal', emoji: '📝' },
-    { label: 'Full Chat', route: 'HuxleyChat', emoji: '💬' },
+    { label: "I'm triggered", route: 'TriggeredSupport', emoji: '🆘', icon: icons.trigger2 },
+    { label: 'Journal', route: 'Journal', emoji: '📝', icon: icons.journal },
+    { label: 'Full Chat', route: 'HuxleyChat', emoji: '💬', icon: icons.chat },
   ];
 
   return (
@@ -245,7 +246,11 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
                 style={styles.quickActionButton}
                 onPress={() => handleRoutePress(action.route)}
               >
-                <Text style={styles.quickActionEmoji}>{action.emoji}</Text>
+                {action.icon ? (
+                  <Image source={action.icon} style={styles.quickActionIconImage} />
+                ) : (
+                  <Text style={styles.quickActionEmoji}>{action.emoji}</Text>
+                )}
                 <Text style={styles.quickActionText}>{action.label}</Text>
               </TouchableOpacity>
             ))}
@@ -315,9 +320,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   huxleyAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     marginRight: 12,
   },
   headerTitle: {
@@ -359,16 +364,16 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   messageBubble: {
-    maxWidth: '75%',
     padding: 12,
     borderRadius: 16,
-    flex: 1,
   },
   userBubble: {
+    maxWidth: '75%',
     alignSelf: 'flex-end',
     backgroundColor: colors.primary,
   },
   assistantBubble: {
+    flex: 1,
     alignSelf: 'flex-start',
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
   },
@@ -409,6 +414,12 @@ const styles = StyleSheet.create({
   },
   quickActionEmoji: {
     fontSize: 24,
+    marginBottom: 4,
+  },
+  quickActionIconImage: {
+    width: 72,
+    height: 72,
+    resizeMode: 'contain',
     marginBottom: 4,
   },
   quickActionText: {

@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=414, initial-scale=1.0">
+<title>Huxley - Home Screen Mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --primary: #5d86d6;
+    --primary-dark: #4a6fb8;
+    --primary-light: #7a9ee0;
+    --text: #3A3A3A;
+    --text-secondary: #6B7280;
+    --text-light: #9CA3AF;
+    --background: #F5F5F5;
+    --surface: #FFFFFF;
+    --error: #E57373;
+    --success: #7B9D6F;
+    --gradient-start: #fbffdf;
+    --gradient-end: #7794b6;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    display: flex;
+    justify-content: center;
+    background: #e0e0e0;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .phone-frame {
+    width: 414px;
+    min-height: 896px;
+    background: linear-gradient(to bottom left, var(--gradient-start), var(--gradient-end));
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+    position: relative;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 60px 16px 8px;
+  }
+
+  .header-btn {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--text);
+    font-size: 24px;
+    transition: background 0.2s;
+  }
+  .header-btn:hover { background: rgba(255,255,255,0.4); }
+
+  .sos-btn {
+    background: var(--error);
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    font-family: inherit;
+    border-radius: 12px;
+    padding: 8px 16px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .sos-btn:hover { background: #d45f5f; }
+
+  /* Content area */
+  .content {
+    padding: 8px 24px 24px;
+  }
+
+  /* Greeting */
+  .greeting { margin-bottom: 20px; }
+  .greeting h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .greeting .context {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+  .greeting .subtext {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+
+  /* Dashboard Widgets */
+  .dashboard-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .widget-card {
+    flex: 1;
+    min-height: 100px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: linear-gradient(135deg, rgba(255,255,255,0.75), rgba(255,255,255,0.45));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .widget-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  }
+
+  .ns-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-bottom: 6px;
+  }
+
+  .widget-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    text-align: center;
+  }
+  .widget-value-large {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .widget-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    text-align: center;
+  }
+  .widget-empty {
+    font-size: 12px;
+    color: var(--primary);
+    font-weight: 600;
+    margin-top: 4px;
+  }
+
+  /* Progress Ring (SVG) */
+  .progress-ring {
+    width: 44px;
+    height: 44px;
+  }
+  .progress-ring .bg {
+    stroke: rgba(93, 134, 214, 0.19);
+    fill: none;
+    stroke-width: 3;
+  }
+  .progress-ring .fg {
+    stroke: var(--primary);
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+    transform: rotate(-90deg);
+    transform-origin: center;
+    transition: stroke-dashoffset 0.5s ease;
+  }
+  .progress-ring text {
+    font-size: 12px;
+    font-weight: 700;
+    fill: var(--text);
+    dominant-baseline: central;
+    text-anchor: middle;
+  }
+
+  /* Navigation Tiles */
+  .tiles-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .tile {
+    background: var(--primary);
+    border-radius: 20px;
+    min-height: 110px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.15s, box-shadow 0.2s;
+    text-decoration: none;
+  }
+  .tile:hover {
+    transform: scale(0.97);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  }
+  .tile:active {
+    transform: scale(0.95);
+  }
+
+  .tile-emoji {
+    font-size: 36px;
+    margin-bottom: 8px;
+  }
+  .tile-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    text-align: center;
+  }
+
+  /* Floating Huxley Button */
+  .floating-huxley {
+    position: absolute;
+    bottom: 30px;
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 28px;
+    background: var(--primary);
+    box-shadow: 0 4px 16px rgba(93, 134, 214, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-size: 24px;
+  }
+  .floating-huxley:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(93, 134, 214, 0.5);
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+  <!-- Header -->
+  <div class="header">
+    <button class="header-btn">
+      <span class="material-icons">chat_bubble</span>
+    </button>
+    <button class="header-btn">
+      <span class="material-icons">settings</span>
+    </button>
+    <button class="sos-btn">SOS</button>
+  </div>
+
+  <div class="content">
+    <!-- Greeting -->
+    <div class="greeting">
+      <h1>Good afternoon</h1>
+      <div class="context">You were feeling safe & social 2h ago</div>
+      <div class="subtext">You have 3 habits left today</div>
+    </div>
+
+    <!-- Dashboard Widgets -->
+    <div class="dashboard-row">
+      <!-- NS Widget -->
+      <div class="widget-card">
+        <div class="ns-dot" style="background: #10b981;"></div>
+        <div class="widget-value">Safe & Social</div>
+        <div class="widget-label">2h ago</div>
+      </div>
+
+      <!-- Habits Widget -->
+      <div class="widget-card">
+        <svg class="progress-ring" viewBox="0 0 44 44">
+          <circle class="bg" cx="22" cy="22" r="19" />
+          <circle class="fg" cx="22" cy="22" r="19"
+            stroke-dasharray="119.38"
+            stroke-dashoffset="59.69" />
+          <text x="22" y="22">2/4</text>
+        </svg>
+        <div class="widget-label">habits today</div>
+      </div>
+
+      <!-- Glimmers Widget -->
+      <div class="widget-card">
+        <div class="widget-value-large">3 &#10024;</div>
+        <div class="widget-label">this week</div>
+      </div>
+    </div>
+
+    <!-- Navigation Tiles -->
+    <div class="tiles-grid">
+      <div class="tile">
+        <span class="tile-emoji">&#x1F4AD;</span>
+        <span class="tile-title">Track</span>
+      </div>
+      <div class="tile">
+        <span class="tile-emoji">&#x1F9ED;</span>
+        <span class="tile-title">Prepare for a Journey</span>
+      </div>
+      <div class="tile">
+        <span class="tile-emoji">&#x1F9E9;</span>
+        <span class="tile-title">Process & Integrate</span>
+      </div>
+      <div class="tile">
+        <span class="tile-emoji">&#x1F50D;</span>
+        <span class="tile-title">Inner Work</span>
+      </div>
+      <div class="tile">
+        <span class="tile-emoji">&#x1F3AE;</span>
+        <span class="tile-title">Practice</span>
+      </div>
+      <div class="tile">
+        <span class="tile-emoji">&#x1F52E;</span>
+        <span class="tile-title">Philosophical Talkthroughs</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Huxley Button -->
+  <div class="floating-huxley">&#x1F9D0;</div>
+</div>
+
+</body>
+</html>

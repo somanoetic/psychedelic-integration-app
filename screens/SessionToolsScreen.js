@@ -9,13 +9,15 @@ import {
   Platform,
   TextInput,
   Modal,
-  ActivityIndicator
+  ActivityIndicator,
+  Image,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 import { supabase } from '../lib/supabase';
+import { icons } from '../lib/uiIcons';
 
 const SessionToolsScreen = ({ navigation }) => {
   const insets = useSafeAreaInsets();
@@ -138,10 +140,10 @@ const SessionToolsScreen = ({ navigation }) => {
     const experience = session.session_data?.experienceProcessing;
     const integration = session.session_data?.integration;
 
-    if (integration?.completed) return { text: 'Integrated', color: '#10b981', emoji: '✅' };
-    if (experience?.completed) return { text: 'Processed', color: '#3b82f6', emoji: '📝' };
-    if (prep?.completedSections?.length > 0) return { text: 'In Progress', color: '#f59e0b', emoji: '⏳' };
-    return { text: 'New', color: '#6b7280', emoji: '✨' };
+    if (integration?.completed) return { text: 'Integrated', color: colors.success, emoji: '✅', icon: icons.integration };
+    if (experience?.completed) return { text: 'Processed', color: colors.primary, emoji: '📝', icon: icons.journal };
+    if (prep?.completedSections?.length > 0) return { text: 'In Progress', color: colors.warning, emoji: '⏳', icon: icons.trailProgress };
+    return { text: 'New', color: colors.textSecondary, emoji: '✨', icon: icons.newBeginning };
   };
 
   const formatDate = (dateString) => {
@@ -196,7 +198,7 @@ const SessionToolsScreen = ({ navigation }) => {
 
           {loading ? (
             <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#3b82f6" />
+              <ActivityIndicator size="large" color={colors.primary} />
               <Text style={styles.loadingText}>Loading your sessions...</Text>
             </View>
           ) : sessions.length === 0 ? (
@@ -231,7 +233,11 @@ const SessionToolsScreen = ({ navigation }) => {
                       </View>
                     </View>
                     <View style={[styles.statusBadge, { backgroundColor: status.color }]}>
-                      <Text style={styles.statusEmoji}>{status.emoji}</Text>
+                      {status.icon ? (
+                        <Image source={status.icon} style={styles.statusIconImage} />
+                      ) : (
+                        <Text style={styles.statusEmoji}>{status.emoji}</Text>
+                      )}
                       <Text style={styles.statusText}>{status.text}</Text>
                     </View>
                   </View>
@@ -242,7 +248,7 @@ const SessionToolsScreen = ({ navigation }) => {
                       <MaterialIcons
                         name={session.session_data?.preparation?.completedSections?.length > 0 ? 'check-circle' : 'radio-button-unchecked'}
                         size={20}
-                        color={session.session_data?.preparation?.completedSections?.length > 0 ? '#10b981' : '#d1d5db'}
+                        color={session.session_data?.preparation?.completedSections?.length > 0 ? colors.success : '#d1d5db'}
                       />
                       <Text style={styles.progressLabel}>Preparation</Text>
                     </View>
@@ -250,7 +256,7 @@ const SessionToolsScreen = ({ navigation }) => {
                       <MaterialIcons
                         name={session.session_data?.experienceProcessing?.completed ? 'check-circle' : 'radio-button-unchecked'}
                         size={20}
-                        color={session.session_data?.experienceProcessing?.completed ? '#10b981' : '#d1d5db'}
+                        color={session.session_data?.experienceProcessing?.completed ? colors.success : '#d1d5db'}
                       />
                       <Text style={styles.progressLabel}>Experience</Text>
                     </View>
@@ -258,7 +264,7 @@ const SessionToolsScreen = ({ navigation }) => {
                       <MaterialIcons
                         name={session.session_data?.integration?.completed ? 'check-circle' : 'radio-button-unchecked'}
                         size={20}
-                        color={session.session_data?.integration?.completed ? '#10b981' : '#d1d5db'}
+                        color={session.session_data?.integration?.completed ? colors.success : '#d1d5db'}
                       />
                       <Text style={styles.progressLabel}>Integration</Text>
                     </View>
@@ -286,7 +292,7 @@ const SessionToolsScreen = ({ navigation }) => {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Create New Session</Text>
               <TouchableOpacity onPress={() => setShowCreateModal(false)}>
-                <MaterialIcons name="close" size={24} color="#6b7280" />
+                <MaterialIcons name="close" size={24} color={colors.textSecondary} />
               </TouchableOpacity>
             </View>
 
@@ -296,7 +302,7 @@ const SessionToolsScreen = ({ navigation }) => {
               value={sessionTitle}
               onChangeText={setSessionTitle}
               placeholder="e.g., Healing Session - December 2024"
-              placeholderTextColor="#9ca3af"
+              placeholderTextColor={colors.textLight}
             />
 
             <Text style={styles.modalLabel}>Journey Date</Text>
@@ -305,7 +311,7 @@ const SessionToolsScreen = ({ navigation }) => {
               value={sessionDate}
               onChangeText={setSessionDate}
               placeholder="YYYY-MM-DD"
-              placeholderTextColor="#9ca3af"
+              placeholderTextColor={colors.textLight}
             />
 
             {/* Optional Details Section */}
@@ -327,7 +333,7 @@ const SessionToolsScreen = ({ navigation }) => {
                   value={medicine}
                   onChangeText={setMedicine}
                   placeholder="e.g., Psilocybin, LSD, MDMA"
-                  placeholderTextColor="#9ca3af"
+                  placeholderTextColor={colors.textLight}
                 />
 
                 <Text style={styles.modalLabel}>Dosage</Text>
@@ -336,7 +342,7 @@ const SessionToolsScreen = ({ navigation }) => {
                   value={dosage}
                   onChangeText={setDosage}
                   placeholder="e.g., 3.5g dried mushrooms"
-                  placeholderTextColor="#9ca3af"
+                  placeholderTextColor={colors.textLight}
                 />
 
                 <Text style={styles.modalLabel}>Setting/Location</Text>
@@ -345,7 +351,7 @@ const SessionToolsScreen = ({ navigation }) => {
                   value={setting}
                   onChangeText={setSetting}
                   placeholder="e.g., Home, Retreat center"
-                  placeholderTextColor="#9ca3af"
+                  placeholderTextColor={colors.textLight}
                 />
 
                 <Text style={styles.modalLabel}>Facilitator/Guide</Text>
@@ -354,7 +360,7 @@ const SessionToolsScreen = ({ navigation }) => {
                   value={facilitator}
                   onChangeText={setFacilitator}
                   placeholder="e.g., Name or 'Solo journey'"
-                  placeholderTextColor="#9ca3af"
+                  placeholderTextColor={colors.textLight}
                 />
 
                 <Text style={styles.modalLabel}>Other Participants</Text>
@@ -363,7 +369,7 @@ const SessionToolsScreen = ({ navigation }) => {
                   value={participants}
                   onChangeText={setParticipants}
                   placeholder="e.g., Partner, Solo"
-                  placeholderTextColor="#9ca3af"
+                  placeholderTextColor={colors.textLight}
                 />
 
                 <Text style={styles.modalLabel}>Additional Context</Text>
@@ -372,7 +378,7 @@ const SessionToolsScreen = ({ navigation }) => {
                   value={context}
                   onChangeText={setContext}
                   placeholder="What's happening in your life?"
-                  placeholderTextColor="#9ca3af"
+                  placeholderTextColor={colors.textLight}
                   multiline
                   numberOfLines={3}
                 />
@@ -443,7 +449,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#10b981',
+    backgroundColor: colors.success,
     paddingVertical: 16,
     borderRadius: 12,
     shadowColor: '#000',
@@ -515,7 +521,7 @@ const styles = StyleSheet.create({
     padding: 20,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
@@ -553,7 +559,7 @@ const styles = StyleSheet.create({
   },
   sessionCreated: {
     fontSize: 13,
-    color: '#9ca3af',
+    color: colors.textLight,
   },
   statusBadge: {
     flexDirection: 'row',
@@ -561,6 +567,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 12,
+  },
+  statusIconImage: {
+    width: 36,
+    height: 36,
+    resizeMode: 'contain',
+    marginRight: 4,
   },
   statusEmoji: {
     fontSize: 14,
@@ -623,13 +635,13 @@ const styles = StyleSheet.create({
   modalLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.text,
     marginBottom: 8,
   },
   modalInput: {
     backgroundColor: colors.background,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
@@ -648,7 +660,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   modalCreateButton: {
-    backgroundColor: '#10b981',
+    backgroundColor: colors.success,
     paddingVertical: 14,
     borderRadius: 8,
     alignItems: 'center',

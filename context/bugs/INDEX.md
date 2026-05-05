@@ -1,6 +1,6 @@
 # Bug Tracker Index
 
-**Last Updated:** 2026-03-08
+**Last Updated:** 2026-05-05
 
 ---
 
@@ -14,10 +14,10 @@ Bugs are organized by priority across three files to keep each manageable.
 |------|----------|-------------|-------|
 | [critical.md](critical.md) | P0 | Show-stoppers, crashes, security issues | 0 active |
 | [high.md](high.md) | P1 | Major issues affecting key features | 0 active (17 resolved) |
-| [medium-low.md](medium-low.md) | P2-P3 | Minor issues, polish, edge cases | 3 active (18 resolved) |
+| [medium-low.md](medium-low.md) | P2-P3 | Minor issues, polish, edge cases | 6 active (18 resolved) |
 | [resolved.md](resolved.md) | -- | Archived resolved bugs | 28 resolved |
 
-**Total Active Bugs:** 3 (40 resolved)
+**Total Active Bugs:** 6 (40 resolved)
 
 ---
 
@@ -54,7 +54,7 @@ Bugs are organized by priority across three files to keep each manageable.
 ## Quick Stats
 
 **By Status:**
-- Open: 3
+- Open: 6
 - In Progress: 0
 - Blocked: 0
 - Resolved (last 30 days): 40
@@ -62,12 +62,18 @@ Bugs are organized by priority across three files to keep each manageable.
 **By Category:**
 - UI/UX: 1 open (BUG-213)
 - Platform/Build: 1 open (BUG-306 — iOS beta stale)
+- Production-readiness: 2 open (BUG-307 Sentry env, BUG-308 legal review)
 - Performance: 1 open (BUG-301)
 - Documentation: 1 open (BUG-303, in progress)
 
 ---
 
 ## Recent Activity
+
+**Week of 2026-05-05:**
+- Added: BUG-307 (Sentry DSN hardcoded — move to env)
+- Added: BUG-308 (Privacy Policy + Terms need legal review)
+- Production Readiness phase planned (see context/roadmap/production-readiness.md)
 
 **Week of 2026-04-02:**
 - Added: BUG-221 (No crash reporting — Sentry removed, need replacement)

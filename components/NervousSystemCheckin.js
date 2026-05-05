@@ -21,12 +21,14 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
 import polyvagalContextService from '../lib/polyvagalContextService';
+import { icons } from '../lib/uiIcons';
+import { colors } from '../theme/colors';
 
 const NS_STATES = [
-  { id: 'ventral', label: 'Safe & Social', icon: 'favorite', color: '#10b981', description: 'Calm, connected, present, open' },
-  { id: 'sympathetic', label: 'Fight / Flight', icon: 'flash-on', color: '#ef4444', description: 'Activated, anxious, restless, on edge' },
-  { id: 'dorsal', label: 'Shutdown', icon: 'remove-circle', color: '#6b7280', description: 'Numb, heavy, withdrawn, collapsed' },
-  { id: 'mixed', label: 'Mixed / Blended', icon: 'swap-vert', color: '#f59e0b', description: 'Between states or shifting' },
+  { id: 'ventral', label: 'Safe & Social', icon: icons.droplet, color: colors.success, description: 'Calm, connected, present, open' },
+  { id: 'sympathetic', label: 'Fight / Flight', icon: icons.steam, color: colors.error, description: 'Activated, anxious, restless, on edge' },
+  { id: 'dorsal', label: 'Shutdown', icon: icons.iceberg, color: colors.textSecondary, description: 'Numb, heavy, withdrawn, collapsed' },
+  { id: 'mixed', label: 'Mixed / Blended', icon: icons.blended, color: colors.warning, description: 'Between states or shifting' },
 ];
 
 const INTENSITY_LEVELS = [
@@ -37,7 +39,8 @@ const INTENSITY_LEVELS = [
   { value: 5, label: 'Intense', color: '#f87171' },
 ];
 
-const NervousSystemCheckin = ({ navigation }) => {
+const NervousSystemCheckin = ({ navigation, route }) => {
+  const returnTo = route?.params?.returnTo;
   const [nsState, setNsState] = useState(null);
   const [intensity, setIntensity] = useState(3);
 
@@ -121,6 +124,10 @@ const NervousSystemCheckin = ({ navigation }) => {
         'Checked In',
         'Your nervous system state has been logged. Tracking your states builds self-awareness and helps you notice patterns over time.',
         [{ text: 'OK', onPress: () => {
+          if (returnTo) {
+            navigation.goBack();
+            return;
+          }
           setNsState(null);
           setIntensity(3);
           setBodyFeeling('');
@@ -160,15 +167,15 @@ const NervousSystemCheckin = ({ navigation }) => {
           style={[styles.sectionHeader, hasValue && styles.sectionHeaderComplete]}
           onPress={() => setExpandedSection(isExpanded ? null : id)}
         >
-          <MaterialIcons name={icon} size={20} color={hasValue ? '#10b981' : '#6b7280'} />
+          <MaterialIcons name={icon} size={20} color={hasValue ? colors.success : colors.textSecondary} />
           <Text style={[styles.sectionHeaderText, hasValue && styles.sectionHeaderTextComplete]}>
             {title}
           </Text>
-          {hasValue && <MaterialIcons name="check-circle" size={18} color="#10b981" />}
+          {hasValue && <MaterialIcons name="check-circle" size={18} color={colors.success} />}
           <MaterialIcons
             name={isExpanded ? 'expand-less' : 'expand-more'}
             size={24}
-            color="#6b7280"
+            color={colors.textSecondary}
           />
         </TouchableOpacity>
         {isExpanded && (
@@ -177,7 +184,7 @@ const NervousSystemCheckin = ({ navigation }) => {
             value={value}
             onChangeText={setValue}
             placeholder={placeholder}
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor={colors.textLight}
             multiline
             maxLength={500}
           />
@@ -193,7 +200,7 @@ const NervousSystemCheckin = ({ navigation }) => {
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <MaterialIcons name="arrow-back" size={24} color="#1f2937" />
+          <MaterialIcons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Nervous System Check-in</Text>
         <View style={{ width: 24 }} />
@@ -230,9 +237,7 @@ const NervousSystemCheckin = ({ navigation }) => {
               ]}
               onPress={() => setNsState(state.id)}
             >
-              <View style={[styles.stateIcon, { backgroundColor: `${state.color}20` }]}>
-                <MaterialIcons name={state.icon} size={28} color={state.color} />
-              </View>
+              <Image source={state.icon} style={styles.stateIconImage} />
               <Text style={styles.stateLabel}>{state.label}</Text>
               <Text style={styles.stateDescription}>{state.description}</Text>
             </TouchableOpacity>
@@ -247,7 +252,7 @@ const NervousSystemCheckin = ({ navigation }) => {
               key={level.value}
               style={[
                 styles.intensityButton,
-                { backgroundColor: intensity >= level.value ? level.color : '#e5e7eb' }
+                { backgroundColor: intensity >= level.value ? level.color : colors.lightGray }
               ]}
               onPress={() => setIntensity(level.value)}
             >
@@ -328,7 +333,7 @@ const NervousSystemCheckin = ({ navigation }) => {
                     <MaterialIcons
                       name={state?.icon || 'help'}
                       size={20}
-                      color={state?.color || '#6b7280'}
+                      color={state?.color || colors.textSecondary}
                     />
                     <Text style={styles.recentType}>{state?.label || 'Unknown'}</Text>
                     <Text style={styles.recentTime}>{formatTime(checkin.created_at)}</Text>
@@ -344,7 +349,7 @@ const NervousSystemCheckin = ({ navigation }) => {
                         key={i}
                         style={[
                           styles.intensityDot,
-                          { backgroundColor: i <= checkin.intensity ? INTENSITY_LEVELS[checkin.intensity - 1].color : '#e5e7eb' }
+                          { backgroundColor: i <= checkin.intensity ? INTENSITY_LEVELS[checkin.intensity - 1].color : colors.lightGray }
                         ]}
                       />
                     ))}
@@ -360,11 +365,11 @@ const NervousSystemCheckin = ({ navigation }) => {
           style={styles.deepDiveLink}
           onPress={() => navigation.navigate('NervousSystemMapping')}
         >
-          <MaterialIcons name="explore" size={20} color="#10b981" />
+          <MaterialIcons name="explore" size={20} color={colors.success} />
           <Text style={styles.deepDiveLinkText}>
             Want to explore your nervous system more deeply? Try the full Nervous System Mapping
           </Text>
-          <MaterialIcons name="chevron-right" size={20} color="#10b981" />
+          <MaterialIcons name="chevron-right" size={20} color={colors.success} />
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -389,7 +394,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1f2937',
+    color: colors.text,
   },
   content: {
     flex: 1,
@@ -403,8 +408,8 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   huxleyAvatar: {
-    width: 48,
-    height: 48,
+    width: 72,
+    height: 72,
     marginRight: 12,
   },
   huxleyBubble: {
@@ -422,17 +427,17 @@ const styles = StyleSheet.create({
   huxleyText: {
     fontSize: 15,
     lineHeight: 22,
-    color: '#374151',
+    color: colors.text,
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 12,
     marginTop: 8,
   },
   required: {
-    color: '#10b981',
+    color: colors.success,
   },
   stateContainer: {
     flexDirection: 'row',
@@ -447,7 +452,7 @@ const styles = StyleSheet.create({
     padding: 14,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -455,23 +460,29 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   stateIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 96,
+    height: 96,
+    borderRadius: 48,
     justifyContent: 'center',
     alignItems: 'center',
+    marginBottom: 8,
+  },
+  stateIconImage: {
+    width: 96,
+    height: 96,
+    resizeMode: 'contain',
     marginBottom: 8,
   },
   stateLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 4,
     textAlign: 'center',
   },
   stateDescription: {
     fontSize: 11,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
   },
   intensityContainer: {
@@ -489,17 +500,17 @@ const styles = StyleSheet.create({
   intensityText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   intensityTextActive: {
-    color: '#1f2937',
+    color: colors.text,
   },
   collapsibleSection: {
     backgroundColor: '#fff',
     borderRadius: 12,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
     overflow: 'hidden',
   },
   sectionHeader: {
@@ -515,7 +526,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     fontWeight: '500',
-    color: '#374151',
+    color: colors.text,
   },
   sectionHeaderTextComplete: {
     color: '#166534',
@@ -524,7 +535,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingBottom: 14,
     fontSize: 15,
-    color: '#1f2937',
+    color: colors.text,
     minHeight: 80,
     textAlignVertical: 'top',
   },
@@ -532,14 +543,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingBottom: 10,
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     fontStyle: 'italic',
   },
   saveButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#10b981',
+    backgroundColor: colors.success,
     padding: 16,
     borderRadius: 16,
     gap: 8,
@@ -559,7 +570,7 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
   },
   recentHeader: {
     flexDirection: 'row',
@@ -571,15 +582,15 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
   },
   recentTime: {
     fontSize: 12,
-    color: '#9ca3af',
+    color: colors.textLight,
   },
   recentDescription: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 8,
   },
   recentIntensity: {
@@ -603,7 +614,7 @@ const styles = StyleSheet.create({
   deepDiveLinkText: {
     flex: 1,
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     lineHeight: 20,
   },
 });

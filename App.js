@@ -7,11 +7,17 @@ import { ActivityIndicator, Platform, StatusBar, StyleSheet, Text, View, Touchab
 import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFonts, Fraunces_700Bold } from '@expo-google-fonts/fraunces';
 
 import { supabase } from './lib/supabase';
 import metricsService from './lib/metricsService';
 import huxleyService from './lib/huxleyService';
 import { colors } from './theme/colors';
+import { ThemedAlertHost, installThemedAlert } from './components/ThemedAlert';
+
+// Patch React Native's Alert.alert at module load so every existing call site
+// renders through the themed UI. Safe to call multiple times.
+installThemedAlert();
 
 const paperTheme = {
   ...DefaultTheme,
@@ -34,7 +40,6 @@ import ConversationScreen from './screens/ConversationScreen';
 import SimpleEnhancedConversationScreen from './screens/SimpleEnhancedConversationScreen';
 import EnhancedConversationScreen from './screens/EnhancedConversationScreen';
 import EducationScreen from './screens/EducationScreen';
-import OrganizedHomeScreen from './screens/OrganizedHomeScreen';
 import ConversationalHomeScreen from './components/ConversationalHomeScreen';
 import GridHomeScreen from './components/GridHomeScreen';
 import HuxleyChatScreen from './components/HuxleyChatScreen';
@@ -96,25 +101,20 @@ import PartsCheckin from './components/PartsCheckin';
 import CurriculumTracker from './components/CurriculumTracker';
 import HabitTracker from './components/HabitTracker';
 import * as Sentry from '@sentry/react-native';
+import config from './lib/config';
 
-Sentry.init({
-  dsn: 'https://e4b5a82b7cb64a9f6cf264dae95ac4d3@o4511152769138688.ingest.us.sentry.io/4511152824713216',
-
-  // Adds more context data to events (IP address, cookies, user, etc.)
-  // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
-  sendDefaultPii: true,
-
-  // Enable Logs
-  enableLogs: true,
-
-  // Configure Session Replay
-  replaysSessionSampleRate: 0.1,
-  replaysOnErrorSampleRate: 1,
-  integrations: [Sentry.mobileReplayIntegration()],
-
-  // uncomment the line below to enable Spotlight (https://spotlightjs.com)
-  // spotlight: __DEV__,
-});
+if (config.sentryDsn) {
+  Sentry.init({
+    dsn: config.sentryDsn,
+    sendDefaultPii: true,
+    enableLogs: true,
+    replaysSessionSampleRate: 0.1,
+    replaysOnErrorSampleRate: 1,
+    integrations: [Sentry.mobileReplayIntegration()],
+  });
+} else if (!__DEV__) {
+  console.warn('[Sentry] SENTRY_DSN missing in production build — crashes will not be reported');
+}
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -195,6 +195,7 @@ const MainTabs = () => {
 
 // Main App Component with debug logging
 function App() {
+  const [fontsLoaded] = useFonts({ Fraunces_700Bold });
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const [debugInfo, setDebugInfo] = useState('Starting app...');
@@ -314,7 +315,7 @@ function App() {
 
   // Splash animation removed - skip straight to app
 
-  if (loading || checkingOnboarding) {
+  if (loading || checkingOnboarding || !fontsLoaded) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
@@ -344,6 +345,7 @@ function App() {
   return (
     <SafeAreaProvider>
       <PaperProvider theme={paperTheme}>
+        <ThemedAlertHost />
         <NavigationContainer>
           <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={(session && session.user) || bypassAuth ? (bypassAuth ? 'MainTabs' : 'HuxleyChat') : 'Auth'}>
             {(session && session.user) || bypassAuth ? (

@@ -161,14 +161,14 @@ const EmbeddedPracticeWidget = ({ practice, nervousSystemState, onComplete, onSk
         id: 'ventral',
         name: 'Safe & Social',
         description: 'Calm, connected, curious',
-        color: '#10b981',
+        color: colors.success,
         emoji: '💚'
       },
       {
         id: 'sympathetic', 
         name: 'Activated',
         description: 'Energized, anxious, or overwhelmed',
-        color: '#ef4444',
+        color: colors.error,
         emoji: '⚡'
       },
       {
@@ -182,7 +182,7 @@ const EmbeddedPracticeWidget = ({ practice, nervousSystemState, onComplete, onSk
         id: 'unsure',
         name: "I'm not sure",
         description: 'Help me figure out my state',
-        color: '#6b7280',
+        color: colors.textSecondary,
         emoji: '🤔'
       }
     ];
@@ -843,7 +843,7 @@ const styles = {
     lineHeight: 20,
   },
   identificationHint: {
-    backgroundColor: '#fef3c7',
+    backgroundColor: colors.bubbleArchetypal,
     borderRadius: 8,
     padding: 12,
   },

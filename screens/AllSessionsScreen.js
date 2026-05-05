@@ -351,7 +351,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
     gap: 8,
   },
   filterButton: {
@@ -370,7 +370,7 @@ const styles = StyleSheet.create({
   filterButtonText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
   },
   filterButtonTextActive: {
@@ -411,7 +411,7 @@ const styles = StyleSheet.create({
   },
   sessionType: {
     fontSize: 12,
-    color: '#6b7280',
+    color: colors.textSecondary,
     backgroundColor: '#f3f4f6',
     paddingHorizontal: 8,
     paddingVertical: 2,
@@ -429,7 +429,7 @@ const styles = StyleSheet.create({
   },
   sessionExtra: {
     fontSize: 11,
-    color: '#10b981',
+    color: colors.success,
   },
   emptyContainer: {
     flex: 1,
@@ -462,7 +462,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   experienceButton: {
-    backgroundColor: '#10b981',
+    backgroundColor: colors.success,
   },
   integrationButton: {
     backgroundColor: colors.primary,
@@ -482,7 +482,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
   },
   experienceFab: {
-    backgroundColor: '#10b981',
+    backgroundColor: colors.success,
   },
   integrationFab: {
     backgroundColor: colors.primary,

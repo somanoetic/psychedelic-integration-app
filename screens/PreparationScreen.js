@@ -41,7 +41,7 @@ const PreparationScreen = ({ navigation, route }) => {
       emoji: '🎯',
       description: 'Prepare for this specific session',
       subtitle: 'Intention • Assessments • Thought Experiments • Check-ins',
-      color: '#10b981',
+      color: colors.success,
       estimatedTime: '15-20 minutes per session',
       buttonText: 'Prepare for Session',
       requiresSession: true
@@ -163,7 +163,7 @@ const PreparationScreen = ({ navigation, route }) => {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Create New Session</Text>
               <TouchableOpacity onPress={() => setShowCreateModal(false)}>
-                <MaterialIcons name="close" size={24} color="#6b7280" />
+                <MaterialIcons name="close" size={24} color={colors.textSecondary} />
               </TouchableOpacity>
             </View>
 
@@ -173,7 +173,7 @@ const PreparationScreen = ({ navigation, route }) => {
               value={sessionTitle}
               onChangeText={setSessionTitle}
               placeholder="e.g., Healing Session - December"
-              placeholderTextColor="#9ca3af"
+              placeholderTextColor={colors.textLight}
             />
 
             <Text style={styles.modalLabel}>Session Date</Text>
@@ -182,7 +182,7 @@ const PreparationScreen = ({ navigation, route }) => {
               value={sessionDate}
               onChangeText={setSessionDate}
               placeholder="YYYY-MM-DD"
-              placeholderTextColor="#9ca3af"
+              placeholderTextColor={colors.textLight}
             />
 
             <TouchableOpacity
@@ -351,12 +351,12 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   recommendationBox: {
-    backgroundColor: '#fef3c7',
+    backgroundColor: colors.bubbleArchetypal,
     padding: 20,
     borderRadius: 12,
     marginBottom: 24,
     borderLeftWidth: 4,
-    borderLeftColor: '#f59e0b',
+    borderLeftColor: colors.warning,
   },
   recommendationTitle: {
     fontSize: 18,
@@ -396,7 +396,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 12,
     borderLeftWidth: 4,
-    borderLeftColor: '#10b981',
+    borderLeftColor: colors.success,
   },
   sessionInfoTitle: {
     fontSize: 18,

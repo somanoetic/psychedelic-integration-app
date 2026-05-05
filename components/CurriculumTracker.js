@@ -247,7 +247,7 @@ const CurriculumTracker = ({ navigation }) => {
             />
           </View>
         </View>
-        <MaterialIcons name="chevron-right" size={24} color="#9ca3af" />
+        <MaterialIcons name="chevron-right" size={24} color={colors.textLight} />
       </TouchableOpacity>
     );
   };
@@ -386,7 +386,7 @@ const CurriculumTracker = ({ navigation }) => {
                       setSelectedExercise(exercise);
                     }}
                   >
-                    <View style={[styles.exerciseStatus, { backgroundColor: isComplete ? selectedCategory.color : '#e5e7eb' }]}>
+                    <View style={[styles.exerciseStatus, { backgroundColor: isComplete ? selectedCategory.color : colors.lightGray }]}>
                       {isComplete ? (
                         <MaterialIcons name="check" size={16} color={colors.textInverse} />
                       ) : (
@@ -405,7 +405,7 @@ const CurriculumTracker = ({ navigation }) => {
                         <Text style={styles.completedBadgeText}>{exerciseProgress.times_completed}x</Text>
                       </View>
                     )}
-                    <MaterialIcons name="chevron-right" size={20} color="#9ca3af" />
+                    <MaterialIcons name="chevron-right" size={20} color={colors.textLight} />
                   </TouchableOpacity>
                 );
               })}
@@ -501,7 +501,7 @@ const CurriculumTracker = ({ navigation }) => {
                       {new Date(exercise.progress.last_completed_at).toLocaleDateString()}
                     </Text>
                   </View>
-                  <MaterialIcons name="chevron-right" size={20} color="#9ca3af" />
+                  <MaterialIcons name="chevron-right" size={20} color={colors.textLight} />
                 </TouchableOpacity>
               );
             })}
@@ -569,8 +569,8 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   huxleyAvatar: {
-    width: 60,
-    height: 60,
+    width: 90,
+    height: 90,
   },
   content: {
     flex: 1,
@@ -598,7 +598,7 @@ const styles = StyleSheet.create({
   overallTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 4,
   },
   overallCount: {
@@ -608,11 +608,11 @@ const styles = StyleSheet.create({
   },
   overallLabel: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   progressRingBackground: {
     position: 'absolute',
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
   },
   progressRingFill: {
     position: 'absolute',
@@ -623,11 +623,11 @@ const styles = StyleSheet.create({
   progressRingPercentage: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#1f2937',
+    color: colors.text,
   },
   progressRingLabel: {
     fontSize: 12,
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   section: {
     padding: 20,
@@ -636,7 +636,7 @@ const styles = StyleSheet.create({
   sectionHeader: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 16,
   },
   favoritesScroll: {
@@ -659,13 +659,13 @@ const styles = StyleSheet.create({
   favoriteTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginTop: 8,
     marginBottom: 4,
   },
   favoriteDuration: {
     fontSize: 12,
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   recentItem: {
     flexDirection: 'row',
@@ -694,11 +694,11 @@ const styles = StyleSheet.create({
   recentTitle: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
   },
   recentDate: {
     fontSize: 13,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginTop: 2,
   },
   categoryCard: {
@@ -728,17 +728,17 @@ const styles = StyleSheet.create({
   categoryName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 4,
   },
   categoryStats: {
     fontSize: 13,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 8,
   },
   progressBar: {
     height: 6,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: colors.lightGray,
     borderRadius: 3,
     overflow: 'hidden',
   },
@@ -830,7 +830,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 12,
   },
   instructionsText: {
@@ -863,14 +863,14 @@ const styles = StyleSheet.create({
   stepText: {
     flex: 1,
     fontSize: 15,
-    color: '#374151',
+    color: colors.text,
     lineHeight: 22,
   },
   modalFooter: {
     padding: 24,
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: colors.lightGray,
   },
   completeButton: {
     flexDirection: 'row',
@@ -906,7 +906,7 @@ const styles = StyleSheet.create({
   exerciseNumber: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   exerciseInfo: {
     flex: 1,
@@ -914,15 +914,15 @@ const styles = StyleSheet.create({
   exerciseTitle: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
   },
   exerciseDuration: {
     fontSize: 13,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginTop: 2,
   },
   completedBadge: {
-    backgroundColor: '#dcfce7',
+    backgroundColor: colors.bubbleSomatic,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,

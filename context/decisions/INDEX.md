@@ -1,6 +1,6 @@
 # Architecture Decision Records (ADRs)
 
-**Last Updated:** 2026-02-25
+**Last Updated:** 2026-05-05
 
 ---
 
@@ -142,6 +142,12 @@ Key points about implementing this decision.
 - 477 tests passing; E2E strategy (Detox/Maestro) still TBD
 - Formal ADR still pending
 
+**ADR-009: HIPAA Posture**
+- Status: Proposed (must be Accepted before launch)
+- Decision: TBD — likely "non-HIPAA wellness app" given current scope, but needs explicit documented call given clinical/therapeutic framing and journal data sensitivity
+- Owner: Project Lead, Production Readiness Week 1
+- Implications: drives Supabase BAA need, marketing language, Privacy Policy claims
+
 ---
 
 ## ADR Naming Convention
@@ -217,6 +223,9 @@ Key points about implementing this decision.
 
 **Testing:**
 - ADR-006: Testing Strategy (Informally resolved)
+
+**Compliance & Legal:**
+- ADR-009: HIPAA Posture (Proposed)
 
 **UI/UX:**
 - TBD

@@ -884,7 +884,7 @@ const styles = {
   focusChip: {
     paddingHorizontal: 6,
     paddingVertical: 2,
-    backgroundColor: '#fef3c7',
+    backgroundColor: colors.bubbleArchetypal,
     borderRadius: 8,
   },
   focusChipText: {
@@ -947,7 +947,7 @@ const styles = {
   therapeuticThemeChip: {
     paddingHorizontal: 6,
     paddingVertical: 3,
-    backgroundColor: '#dcfce7',
+    backgroundColor: colors.bubbleSomatic,
     borderRadius: 8,
   },
   therapeuticThemeText: {

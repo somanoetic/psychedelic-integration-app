@@ -725,7 +725,7 @@ Choose your entry point:`;
               value={userInput}
               onChangeText={setUserInput}
               placeholder="Describe what you see, feel, or hear..."
-              placeholderTextColor="#9ca3af"
+              placeholderTextColor={colors.textLight}
               multiline
               maxLength={1000}
               onSubmitEditing={() => {
@@ -818,8 +818,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   huxleyAvatar: {
-    width: 36,
-    height: 36,
+    width: 54,
+    height: 54,
     marginRight: 8,
     marginTop: 4,
   },

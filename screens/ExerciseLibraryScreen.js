@@ -7,12 +7,13 @@ import {
   StyleSheet,
   Modal,
   TextInput,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { getAllExercises, exerciseCategories } from '../content/exercises-comprehensive';
-import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
+import { colors, gradients, spacing, borderRadius, shadows, typography } from '../theme/colors';
 
 const ExerciseLibraryScreen = ({ navigation }) => {
   const [selectedExercise, setSelectedExercise] = useState(null);
@@ -95,7 +96,7 @@ const ExerciseLibraryScreen = ({ navigation }) => {
               </View>
 
               <View style={styles.tipBox}>
-                <MaterialIcons name="lightbulb" size={20} color="#f59e0b" />
+                <MaterialIcons name="lightbulb" size={20} color={colors.warning} />
                 <Text style={styles.tipText}>
                   Take your time with each step. There's no rush. This is your practice.
                 </Text>
@@ -177,11 +178,21 @@ const ExerciseLibraryScreen = ({ navigation }) => {
             ]}
             onPress={() => setSelectedCategory(category.id)}
           >
-            <MaterialIcons
-              name={category.icon}
-              size={18}
-              color={selectedCategory === category.id ? colors.textInverse : colors.textSecondary}
-            />
+            {category.iconImage ? (
+              <Image
+                source={category.iconImage}
+                style={[
+                  styles.categoryChipIcon,
+                  selectedCategory !== category.id && { opacity: 0.6 },
+                ]}
+              />
+            ) : (
+              <MaterialIcons
+                name={category.icon}
+                size={18}
+                color={selectedCategory === category.id ? colors.textInverse : colors.textSecondary}
+              />
+            )}
             <Text style={[
               styles.categoryChipText,
               selectedCategory === category.id && styles.categoryChipTextActive
@@ -215,7 +226,11 @@ const ExerciseLibraryScreen = ({ navigation }) => {
                 onPress={() => setSelectedExercise(exercise)}
               >
                 <View style={[styles.exerciseIcon, { backgroundColor: categoryInfo.color }]}>
-                  <MaterialIcons name={categoryInfo.icon} size={24} color={colors.textInverse} />
+                  {categoryInfo.iconImage ? (
+                    <Image source={categoryInfo.iconImage} style={styles.exerciseIconImage} />
+                  ) : (
+                    <MaterialIcons name={categoryInfo.icon} size={24} color={colors.textInverse} />
+                  )}
                 </View>
 
                 <View style={styles.exerciseContent}>
@@ -234,7 +249,7 @@ const ExerciseLibraryScreen = ({ navigation }) => {
                   </View>
                 </View>
 
-                <MaterialIcons name="chevron-right" size={24} color="#9ca3af" />
+                <MaterialIcons name="chevron-right" size={24} color={colors.textLight} />
               </TouchableOpacity>
             );
           })}
@@ -265,7 +280,7 @@ const styles = StyleSheet.create({
   },
   heroTitle: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontFamily: typography.serif,
     color: colors.textInverse,
     marginTop: 20,
   },
@@ -282,7 +297,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     gap: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   searchInput: {
     flex: 1,
@@ -293,8 +308,8 @@ const styles = StyleSheet.create({
   categoryScroll: {
     backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
-    maxHeight: 56,
+    borderBottomColor: colors.lightGray,
+    maxHeight: 84,
   },
   categoryScrollContent: {
     paddingHorizontal: 16,
@@ -304,13 +319,13 @@ const styles = StyleSheet.create({
   categoryChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 20,
     backgroundColor: '#f3f4f6',
     marginRight: 8,
     gap: 6,
-    height: 32,
+    height: 48,
   },
   categoryChipText: {
     fontSize: 14,
@@ -345,12 +360,22 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   exerciseIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 132,
+    height: 132,
+    borderRadius: 66,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
+  },
+  exerciseIconImage: {
+    width: 108,
+    height: 108,
+    resizeMode: 'contain',
+  },
+  categoryChipIcon: {
+    width: 66,
+    height: 66,
+    resizeMode: 'contain',
   },
   exerciseContent: {
     flex: 1,
@@ -471,7 +496,7 @@ const styles = StyleSheet.create({
   stepText: {
     flex: 1,
     fontSize: 15,
-    color: '#374151',
+    color: colors.text,
     lineHeight: 22,
   },
   tipBox: {
@@ -495,7 +520,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: colors.lightGray,
   },
   sourceText: {
     flex: 1,
@@ -521,7 +546,7 @@ const styles = StyleSheet.create({
     padding: 24,
     paddingTop: 16,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: colors.lightGray,
   },
   startButton: {
     flexDirection: 'row',

@@ -6,10 +6,20 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
-  ActivityIndicator
+  ActivityIndicator,
+  Image,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import educationProgressService from '../lib/educationProgressService';
+import { icons } from '../lib/uiIcons';
+import { colors } from '../theme/colors';
+
+const SlideEmoji = ({ slide, style, imageStyle }) =>
+  slide.icon ? (
+    <Image source={slide.icon} style={imageStyle} />
+  ) : (
+    <Text style={style}>{slide.emoji}</Text>
+  );
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -64,6 +74,7 @@ const NervousSystemEducationWidget = ({ onComplete, onSkip }) => {
       id: 'intro',
       title: 'Your Nervous System',
       emoji: '🧠',
+      icon: icons.dna,
       content: `Your nervous system is constantly scanning for safety and threat. Understanding these states helps you navigate your psychedelic experience with greater awareness and self-compassion.`,
       type: 'info'
     },
@@ -71,7 +82,8 @@ const NervousSystemEducationWidget = ({ onComplete, onSkip }) => {
       id: 'ventral_vagal',
       title: 'Safe & Social State',
       emoji: '🌱',
-      color: '#10b981',
+      icon: icons.droplet,
+      color: colors.success,
       content: `In this state, you feel calm, connected, and curious. Your heart rate is steady, breathing is easy, and you're able to learn and connect with others.`,
       characteristics: [
         'Feeling curious and open',
@@ -92,7 +104,8 @@ const NervousSystemEducationWidget = ({ onComplete, onSkip }) => {
       id: 'sympathetic',
       title: 'Fight or Flight State',
       emoji: '⚡',
-      color: '#f59e0b',
+      icon: icons.steam,
+      color: colors.warning,
       content: `This is your mobilized protection state. Energy is high, but so is anxiety. Your system is ready for action to protect you from perceived threats.`,
       characteristics: [
         'Heart racing or pounding',
@@ -113,7 +126,8 @@ const NervousSystemEducationWidget = ({ onComplete, onSkip }) => {
       id: 'dorsal_vagal',
       title: 'Shutdown State',
       emoji: '🛡️',
-      color: '#6b7280',
+      icon: icons.iceberg,
+      color: colors.textSecondary,
       content: `When fight or flight doesn't work, your system shuts down for protection. You might feel numb, disconnected, or like you're watching life from the outside.`,
       characteristics: [
         'Feeling numb or empty',
@@ -134,6 +148,7 @@ const NervousSystemEducationWidget = ({ onComplete, onSkip }) => {
       id: 'state_check',
       title: 'Check Your Current State',
       emoji: '🌡️',
+      icon: icons.intensity,
       content: `Let's practice identifying your current nervous system state. There's no right or wrong answer - just notice what's true for you right now.`,
       type: 'assessment',
       question: 'Which state feels most true for you right now?',
@@ -159,6 +174,7 @@ const NervousSystemEducationWidget = ({ onComplete, onSkip }) => {
       id: 'regulation_intro',
       title: 'Regulation During Sessions',
       emoji: '🌊',
+      icon: icons.flow,
       content: `During your psychedelic session, you might move between these states. Knowing simple regulation techniques can help you navigate these transitions with greater ease.`,
       type: 'info'
     },
@@ -166,7 +182,8 @@ const NervousSystemEducationWidget = ({ onComplete, onSkip }) => {
       id: 'ventral_practices',
       title: 'Staying in Safety',
       emoji: '🌱',
-      color: '#10b981',
+      icon: icons.droplet,
+      color: colors.success,
       content: `When you're feeling safe and connected, these practices help you stay grounded:`,
       practices: [
         {
@@ -191,7 +208,8 @@ const NervousSystemEducationWidget = ({ onComplete, onSkip }) => {
       id: 'sympathetic_practices',
       title: 'Calming Activation',
       emoji: '⚡',
-      color: '#f59e0b',
+      icon: icons.steam,
+      color: colors.warning,
       content: `When feeling anxious or activated, these practices help calm your system:`,
       practices: [
         {
@@ -216,7 +234,8 @@ const NervousSystemEducationWidget = ({ onComplete, onSkip }) => {
       id: 'dorsal_practices',
       title: 'Gentle Reconnection',
       emoji: '🛡️',
-      color: '#6b7280',
+      icon: icons.iceberg,
+      color: colors.textSecondary,
       content: `When feeling shut down or numb, these practices help gentle reconnection:`,
       practices: [
         {
@@ -241,6 +260,7 @@ const NervousSystemEducationWidget = ({ onComplete, onSkip }) => {
       id: 'session_guidance',
       title: 'During Your Session',
       emoji: '🧭',
+      icon: icons.guidance,
       content: `Remember these key points during your psychedelic experience:`,
       guidance: [
         {
@@ -312,7 +332,7 @@ const NervousSystemEducationWidget = ({ onComplete, onSkip }) => {
       case 'info':
         return (
           <View style={styles.slideContent}>
-            <Text style={styles.slideEmoji}>{slide.emoji}</Text>
+            <SlideEmoji slide={slide} style={styles.slideEmoji} imageStyle={styles.slideIconImage} />
             <Text style={styles.slideTitle}>{slide.title}</Text>
             <Text style={styles.slideText}>{slide.content}</Text>
           </View>
@@ -321,7 +341,7 @@ const NervousSystemEducationWidget = ({ onComplete, onSkip }) => {
       case 'state_info':
         return (
           <View style={styles.slideContent}>
-            <Text style={styles.slideEmoji}>{slide.emoji}</Text>
+            <SlideEmoji slide={slide} style={styles.slideEmoji} imageStyle={styles.slideIconImage} />
             <Text style={[styles.slideTitle, { color: slide.color }]}>{slide.title}</Text>
             <Text style={styles.slideText}>{slide.content}</Text>
             
@@ -350,7 +370,7 @@ const NervousSystemEducationWidget = ({ onComplete, onSkip }) => {
       case 'assessment':
         return (
           <View style={styles.slideContent}>
-            <Text style={styles.slideEmoji}>{slide.emoji}</Text>
+            <SlideEmoji slide={slide} style={styles.slideEmoji} imageStyle={styles.slideIconImage} />
             <Text style={styles.slideTitle}>{slide.title}</Text>
             <Text style={styles.slideText}>{slide.content}</Text>
             
@@ -377,7 +397,7 @@ const NervousSystemEducationWidget = ({ onComplete, onSkip }) => {
       case 'practices':
         return (
           <View style={styles.slideContent}>
-            <Text style={styles.slideEmoji}>{slide.emoji}</Text>
+            <SlideEmoji slide={slide} style={styles.slideEmoji} imageStyle={styles.slideIconImage} />
             <Text style={[styles.slideTitle, { color: slide.color }]}>{slide.title}</Text>
             <Text style={styles.slideText}>{slide.content}</Text>
             
@@ -398,7 +418,7 @@ const NervousSystemEducationWidget = ({ onComplete, onSkip }) => {
       case 'guidance':
         return (
           <View style={styles.slideContent}>
-            <Text style={styles.slideEmoji}>{slide.emoji}</Text>
+            <SlideEmoji slide={slide} style={styles.slideEmoji} imageStyle={styles.slideIconImage} />
             <Text style={styles.slideTitle}>{slide.title}</Text>
             <Text style={styles.slideText}>{slide.content}</Text>
             
@@ -416,7 +436,7 @@ const NervousSystemEducationWidget = ({ onComplete, onSkip }) => {
       case 'completion':
         return (
           <View style={styles.slideContent}>
-            <Text style={styles.slideEmoji}>{slide.emoji}</Text>
+            <SlideEmoji slide={slide} style={styles.slideEmoji} imageStyle={styles.slideIconImage} />
             <Text style={styles.slideTitle}>{slide.title}</Text>
             <Text style={styles.slideText}>{slide.content}</Text>
             
@@ -466,7 +486,7 @@ const NervousSystemEducationWidget = ({ onComplete, onSkip }) => {
           onPress={prevSlide}
           disabled={currentSlide === 0}
         >
-          <MaterialIcons name="arrow-back" size={20} color={currentSlide === 0 ? '#9ca3af' : '#6b7280'} />
+          <MaterialIcons name="arrow-back" size={20} color={currentSlide === 0 ? colors.textLight : colors.textSecondary} />
           <Text style={[styles.navButtonText, currentSlide === 0 && styles.disabledText]}>
             Previous
           </Text>
@@ -503,32 +523,32 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   skipButton: {
     padding: 8,
   },
   skipText: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   progressContainer: {
     alignItems: 'flex-end',
   },
   progressText: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 4,
   },
   progressBar: {
     width: 100,
     height: 4,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: colors.lightGray,
     borderRadius: 2,
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.primary,
     borderRadius: 2,
   },
   content: {
@@ -542,16 +562,22 @@ const styles = StyleSheet.create({
     fontSize: 48,
     marginBottom: 16,
   },
+  slideIconImage: {
+    width: 160,
+    height: 160,
+    resizeMode: 'contain',
+    marginBottom: 16,
+  },
   slideTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1f2937',
+    color: colors.text,
     textAlign: 'center',
     marginBottom: 16,
   },
   slideText: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 24,
     marginBottom: 24,
@@ -566,7 +592,7 @@ const styles = StyleSheet.create({
   subsectionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.text,
     marginBottom: 12,
   },
   characteristicItem: {
@@ -581,19 +607,19 @@ const styles = StyleSheet.create({
   },
   bullet: {
     fontSize: 16,
-    color: '#9ca3af',
+    color: colors.textLight,
     marginRight: 8,
     marginTop: 2,
   },
   characteristicText: {
     fontSize: 14,
-    color: '#374151',
+    color: colors.text,
     lineHeight: 20,
     flex: 1,
   },
   exampleText: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     lineHeight: 20,
     flex: 1,
     fontStyle: 'italic',
@@ -601,7 +627,7 @@ const styles = StyleSheet.create({
   questionText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     textAlign: 'center',
     marginBottom: 20,
   },
@@ -614,21 +640,21 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
   },
   selectedOption: {
     backgroundColor: '#dbeafe',
-    borderColor: '#3b82f6',
+    borderColor: colors.primary,
   },
   optionLabel: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 4,
   },
   optionDescription: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   practicesContainer: {
     width: '100%',
@@ -639,17 +665,17 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
   },
   practiceName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 8,
   },
   practiceDescription: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 12,
     lineHeight: 20,
   },
@@ -658,11 +684,11 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     borderLeftWidth: 3,
-    borderLeftColor: '#3b82f6',
+    borderLeftColor: colors.primary,
   },
   instructionText: {
     fontSize: 14,
-    color: '#1f2937',
+    color: colors.text,
     fontWeight: '500',
   },
   guidanceContainer: {
@@ -712,7 +738,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 16,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: colors.lightGray,
     backgroundColor: '#ffffff',
   },
   navButton: {
@@ -725,16 +751,16 @@ const styles = StyleSheet.create({
   },
   navButtonText: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginLeft: 4,
   },
   disabledText: {
-    color: '#9ca3af',
+    color: colors.textLight,
   },
   nextButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.primary,
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 8,

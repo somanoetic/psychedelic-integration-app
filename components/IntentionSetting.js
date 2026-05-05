@@ -7,10 +7,20 @@ import {
   StyleSheet,
   TextInput,
   Alert,
-  ActivityIndicator
+  ActivityIndicator,
+  Image,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
+import { icons } from '../lib/uiIcons';
+import { colors } from '../theme/colors';
+
+const StepEmoji = ({ step, style, imageStyle }) =>
+  step.icon ? (
+    <Image source={step.icon} style={imageStyle} />
+  ) : (
+    <Text style={style}>{step.emoji}</Text>
+  );
 
 /**
  * Intention Setting Component
@@ -33,18 +43,20 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
       type: 'intro',
       title: 'Setting Your Intention',
       emoji: '🎯',
+      icon: icons.intention,
       content: 'Before your session, let\'s clarify what you\'re bringing to this experience. We\'ll explore the difference between goals (what you want to achieve) and intentions (how you want to be).'
     },
     {
       type: 'education',
       title: 'Goals vs Intentions',
       emoji: '🤔',
+      icon: icons.uncertainState,
       content: 'Understanding the difference helps you approach your session with the right mindset.',
       comparison: [
         {
           concept: 'Goals',
           icon: '🎯',
-          color: '#3b82f6',
+          color: colors.primary,
           description: 'Outcome-focused, specific results you want',
           examples: [
             '"I want to resolve my trauma"',
@@ -57,7 +69,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
         {
           concept: 'Intentions',
           icon: '🌊',
-          color: '#10b981',
+          color: colors.success,
           description: 'Process-focused, qualities of being and relating',
           examples: [
             '"I intend to be open to whatever arises"',
@@ -73,6 +85,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
       type: 'goals_check',
       title: 'What Are Your Goals?',
       emoji: '📝',
+      icon: icons.journal,
       prompt: 'It\'s okay to have goals! Let\'s name them first so we can work with them wisely.',
       placeholder: 'What are you hoping will happen or change?'
     },
@@ -80,6 +93,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
       type: 'goals_to_intentions',
       title: 'From Goals to Intentions',
       emoji: '🔄',
+      icon: icons.integrationCycle,
       content: 'Now let\'s transform those goals into intentions - shifting from outcomes to qualities of being.',
       guidance: [
         'Instead of "I want to feel less anxious" → "I intend to be curious about my anxiety"',
@@ -92,6 +106,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
       type: 'intentions_input',
       title: 'Your Intentions',
       emoji: '✨',
+      icon: icons.intention,
       prompt: 'How do you want to BE during this session? What qualities do you want to bring?',
       placeholder: 'e.g., Open, curious, compassionate, trusting, willing, brave...'
     },
@@ -99,6 +114,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
       type: 'openness',
       title: 'Openness to Experience',
       emoji: '🌸',
+      icon: icons.softness,
       prompt: 'Are you willing to experience whatever arises - even if it\'s not what you expected?',
       subtext: 'Sometimes the medicine gives us what we need rather than what we want.',
       field: {
@@ -110,6 +126,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
       type: 'surrender',
       title: 'Surrender & Trust',
       emoji: '🙏',
+      icon: icons.gratitude,
       prompt: 'Can you practice letting go of control and trusting the process?',
       subtext: 'The most profound healing often happens when we stop trying to make it happen.',
       field: {
@@ -121,6 +138,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
       type: 'summary',
       title: 'Your Intention',
       emoji: '🌟',
+      icon: icons.transcendence,
       content: 'You\'ve set a clear intention for your session. Return to these whenever you feel lost or resistant during your journey.'
     }
   ];
@@ -188,7 +206,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
     const step = steps[currentStep];
     return (
       <View style={styles.stepContent}>
-        <Text style={styles.stepEmoji}>{step.emoji}</Text>
+        <StepEmoji step={step} style={styles.stepEmoji} imageStyle={styles.stepIconImage} />
         <Text style={styles.stepTitle}>{step.title}</Text>
         <Text style={styles.stepText}>{step.content}</Text>
 
@@ -206,7 +224,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
     const step = steps[currentStep];
     return (
       <View style={styles.stepContent}>
-        <Text style={styles.stepEmoji}>{step.emoji}</Text>
+        <StepEmoji step={step} style={styles.stepEmoji} imageStyle={styles.stepIconImage} />
         <Text style={styles.stepTitle}>{step.title}</Text>
         <Text style={styles.stepText}>{step.content}</Text>
 
@@ -241,7 +259,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
     const step = steps[currentStep];
     return (
       <View style={styles.stepContent}>
-        <Text style={styles.stepEmoji}>{step.emoji}</Text>
+        <StepEmoji step={step} style={styles.stepEmoji} imageStyle={styles.stepIconImage} />
         <Text style={styles.stepTitle}>{step.title}</Text>
         <Text style={styles.stepText}>{step.prompt}</Text>
 
@@ -251,7 +269,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
             value={currentInput}
             onChangeText={setCurrentInput}
             placeholder={step.placeholder}
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor={colors.textLight}
             multiline
             numberOfLines={3}
             textAlignVertical="top"
@@ -262,7 +280,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
             onPress={() => handleAddToList('goals')}
             disabled={!currentInput.trim()}
           >
-            <MaterialIcons name="add-circle" size={24} color="#3b82f6" />
+            <MaterialIcons name="add-circle" size={24} color={colors.primary} />
             <Text style={styles.addButtonText}>Add Goal</Text>
           </TouchableOpacity>
         </View>
@@ -291,7 +309,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
     const step = steps[currentStep];
     return (
       <View style={styles.stepContent}>
-        <Text style={styles.stepEmoji}>{step.emoji}</Text>
+        <StepEmoji step={step} style={styles.stepEmoji} imageStyle={styles.stepIconImage} />
         <Text style={styles.stepTitle}>{step.title}</Text>
         <Text style={styles.stepText}>{step.content}</Text>
 
@@ -307,7 +325,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
             {responses.goals.map((goal, index) => (
               <View key={index} style={styles.transformItem}>
                 <Text style={styles.transformGoal}>🎯 {goal}</Text>
-                <MaterialIcons name="arrow-downward" size={16} color="#6b7280" />
+                <MaterialIcons name="arrow-downward" size={16} color={colors.textSecondary} />
                 <Text style={styles.transformPrompt}>How can you be with this? →</Text>
               </View>
             ))}
@@ -321,7 +339,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
     const step = steps[currentStep];
     return (
       <View style={styles.stepContent}>
-        <Text style={styles.stepEmoji}>{step.emoji}</Text>
+        <StepEmoji step={step} style={styles.stepEmoji} imageStyle={styles.stepIconImage} />
         <Text style={styles.stepTitle}>{step.title}</Text>
         <Text style={styles.stepText}>{step.prompt}</Text>
 
@@ -331,7 +349,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
             value={currentInput}
             onChangeText={setCurrentInput}
             placeholder={step.placeholder}
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor={colors.textLight}
             multiline
             numberOfLines={3}
             textAlignVertical="top"
@@ -341,8 +359,8 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
             onPress={() => handleAddToList('intentions')}
             disabled={!currentInput.trim()}
           >
-            <MaterialIcons name="add-circle" size={24} color="#10b981" />
-            <Text style={[styles.addButtonText, { color: '#10b981' }]}>Add Intention</Text>
+            <MaterialIcons name="add-circle" size={24} color={colors.success} />
+            <Text style={[styles.addButtonText, { color: colors.success }]}>Add Intention</Text>
           </TouchableOpacity>
         </View>
 
@@ -350,7 +368,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
           <View style={[styles.listContainer, { backgroundColor: '#f0fdf4' }]}>
             <Text style={[styles.listTitle, { color: '#065f46' }]}>Your Intentions:</Text>
             {responses.intentions.map((intention, index) => (
-              <View key={index} style={[styles.listItem, { borderLeftColor: '#10b981' }]}>
+              <View key={index} style={[styles.listItem, { borderLeftColor: colors.success }]}>
                 <Text style={styles.listItemText}>✨ {intention}</Text>
                 <TouchableOpacity
                   onPress={() => handleRemoveFromList('intentions', index)}
@@ -370,7 +388,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
     const step = steps[currentStep];
     return (
       <View style={styles.stepContent}>
-        <Text style={styles.stepEmoji}>{step.emoji}</Text>
+        <StepEmoji step={step} style={styles.stepEmoji} imageStyle={styles.stepIconImage} />
         <Text style={styles.stepTitle}>{step.title}</Text>
         <Text style={styles.stepText}>{step.prompt}</Text>
         {step.subtext && (
@@ -383,7 +401,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
             value={responses[step.field.key] || ''}
             onChangeText={(value) => updateField(step.field.key, value)}
             placeholder={step.field.placeholder}
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor={colors.textLight}
             multiline
             numberOfLines={5}
             textAlignVertical="top"
@@ -397,7 +415,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
     const step = steps[currentStep];
     return (
       <View style={styles.stepContent}>
-        <Text style={styles.stepEmoji}>{step.emoji}</Text>
+        <StepEmoji step={step} style={styles.stepEmoji} imageStyle={styles.stepIconImage} />
         <Text style={styles.stepTitle}>{step.title}</Text>
         <Text style={styles.stepText}>{step.content}</Text>
 
@@ -464,7 +482,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={onSkip} style={styles.closeButton}>
-          <MaterialIcons name="close" size={24} color="#6b7280" />
+          <MaterialIcons name="close" size={24} color={colors.textSecondary} />
         </TouchableOpacity>
         <View style={styles.headerInfo}>
           <Text style={styles.headerTitle}>Intention Setting</Text>
@@ -499,7 +517,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
           <MaterialIcons
             name="arrow-back"
             size={20}
-            color={currentStep === 0 ? '#9ca3af' : '#6b7280'}
+            color={currentStep === 0 ? colors.textLight : colors.textSecondary}
           />
           <Text
             style={[
@@ -554,7 +572,7 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   closeButton: {
     padding: 8,
@@ -566,16 +584,16 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
   },
   headerSubtitle: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginTop: 2,
   },
   progressBarContainer: {
     height: 4,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: colors.lightGray,
     marginHorizontal: 20,
     marginTop: 16,
     borderRadius: 2,
@@ -594,6 +612,13 @@ const styles = StyleSheet.create({
   stepContent: {
     gap: 20,
   },
+  stepIconImage: {
+    width: 160,
+    height: 160,
+    resizeMode: 'contain',
+    alignSelf: 'center',
+    marginBottom: 16,
+  },
   stepEmoji: {
     fontSize: 48,
     textAlign: 'center',
@@ -602,17 +627,17 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '600',
     textAlign: 'center',
-    color: '#1f2937',
+    color: colors.text,
   },
   stepText: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 24,
   },
   subtextStyle: {
     fontSize: 14,
-    color: '#9ca3af',
+    color: colors.textLight,
     textAlign: 'center',
     fontStyle: 'italic',
     marginTop: -12,
@@ -657,19 +682,19 @@ const styles = StyleSheet.create({
   },
   comparisonDescription: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 12,
     lineHeight: 20,
   },
   examplesTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.text,
     marginBottom: 8,
   },
   exampleText: {
     fontSize: 13,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 6,
     lineHeight: 18,
   },
@@ -689,12 +714,12 @@ const styles = StyleSheet.create({
   },
   textInput: {
     borderWidth: 2,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 12,
     fontSize: 15,
-    color: '#1f2937',
+    color: colors.text,
     backgroundColor: '#f9fafb',
     minHeight: 80,
   },
@@ -713,7 +738,7 @@ const styles = StyleSheet.create({
   addButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#3b82f6',
+    color: colors.primary,
   },
   listContainer: {
     backgroundColor: '#eff6ff',
@@ -735,12 +760,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 8,
     borderLeftWidth: 3,
-    borderLeftColor: '#3b82f6',
+    borderLeftColor: colors.primary,
   },
   listItemText: {
     flex: 1,
     fontSize: 14,
-    color: '#374151',
+    color: colors.text,
     lineHeight: 20,
   },
   removeButton: {
@@ -774,7 +799,7 @@ const styles = StyleSheet.create({
   },
   transformGoal: {
     fontSize: 14,
-    color: '#374151',
+    color: colors.text,
   },
   transformPrompt: {
     fontSize: 13,
@@ -789,18 +814,18 @@ const styles = StyleSheet.create({
   summaryTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.text,
     marginBottom: 12,
   },
   summaryItem: {
     fontSize: 15,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 8,
     lineHeight: 22,
   },
   summaryText: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     lineHeight: 22,
   },
   blessingBox: {
@@ -824,7 +849,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 16,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: colors.lightGray,
     backgroundColor: '#ffffff',
   },
   navButton: {
@@ -843,15 +868,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#a855f7',
   },
   navButtonDisabled: {
-    backgroundColor: '#e5e7eb',
+    backgroundColor: colors.lightGray,
   },
   navButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.text,
   },
   navButtonTextDisabled: {
-    color: '#9ca3af',
+    color: colors.textLight,
   },
   nextButtonText: {
     fontSize: 16,

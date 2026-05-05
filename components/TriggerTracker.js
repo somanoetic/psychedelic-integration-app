@@ -20,11 +20,13 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
+import { icons } from '../lib/uiIcons';
+import { colors } from '../theme/colors';
 
 const TRIGGER_TYPES = [
-  { id: 'sympathetic', label: 'Fight/Flight', icon: 'flash-on', color: '#ef4444', description: 'Racing heart, anxiety, anger, panic' },
-  { id: 'dorsal', label: 'Shutdown', icon: 'remove-circle', color: '#6b7280', description: 'Numbness, fatigue, disconnection, collapse' },
-  { id: 'general', label: 'Other', icon: 'help', color: '#f59e0b', description: 'Not sure which category' },
+  { id: 'sympathetic', label: 'Fight/Flight', icon: icons.steam, color: colors.error, description: 'Racing heart, anxiety, anger, panic' },
+  { id: 'dorsal', label: 'Shutdown', icon: icons.iceberg, color: colors.textSecondary, description: 'Numbness, fatigue, disconnection, collapse' },
+  { id: 'general', label: 'Other', icon: icons.uncertainState, color: colors.warning, description: 'Not sure which category' },
 ];
 
 const INTENSITY_LEVELS = [
@@ -162,15 +164,15 @@ const TriggerTracker = ({ navigation }) => {
           style={[styles.sectionHeader, hasValue && styles.sectionHeaderComplete]}
           onPress={() => setExpandedSection(isExpanded ? null : id)}
         >
-          <MaterialIcons name={icon} size={20} color={hasValue ? '#10b981' : '#6b7280'} />
+          <MaterialIcons name={icon} size={20} color={hasValue ? colors.success : colors.textSecondary} />
           <Text style={[styles.sectionHeaderText, hasValue && styles.sectionHeaderTextComplete]}>
             {title} {isRequired && <Text style={styles.required}>*</Text>}
           </Text>
-          {hasValue && <MaterialIcons name="check-circle" size={18} color="#10b981" />}
+          {hasValue && <MaterialIcons name="check-circle" size={18} color={colors.success} />}
           <MaterialIcons
             name={isExpanded ? 'expand-less' : 'expand-more'}
             size={24}
-            color="#6b7280"
+            color={colors.textSecondary}
           />
         </TouchableOpacity>
         {isExpanded && (
@@ -179,7 +181,7 @@ const TriggerTracker = ({ navigation }) => {
             value={value}
             onChangeText={setValue}
             placeholder={placeholder}
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor={colors.textLight}
             multiline
             maxLength={500}
           />
@@ -195,7 +197,7 @@ const TriggerTracker = ({ navigation }) => {
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <MaterialIcons name="arrow-back" size={24} color="#1f2937" />
+          <MaterialIcons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Log a Trigger</Text>
         <View style={{ width: 24 }} />
@@ -220,6 +222,22 @@ const TriggerTracker = ({ navigation }) => {
           </View>
         </View>
 
+        {/* SOS - immediate support if still activated */}
+        <TouchableOpacity
+          style={styles.sosBanner}
+          onPress={() => navigation.navigate('TriggeredSupport')}
+          activeOpacity={0.85}
+        >
+          <View style={styles.sosIconWrap}>
+            <MaterialIcons name="sos" size={22} color="#fff" />
+          </View>
+          <View style={styles.sosTextWrap}>
+            <Text style={styles.sosTitle}>Still activated? Get support now</Text>
+            <Text style={styles.sosSubtitle}>Grounding exercises and crisis resources</Text>
+          </View>
+          <MaterialIcons name="chevron-right" size={22} color={colors.error} />
+        </TouchableOpacity>
+
         {/* Trigger Type Selection */}
         <Text style={styles.sectionTitle}>What type of activation? <Text style={styles.required}>*</Text></Text>
         <View style={styles.typeContainer}>
@@ -233,7 +251,7 @@ const TriggerTracker = ({ navigation }) => {
               onPress={() => setTriggerType(type.id)}
             >
               <View style={[styles.typeIcon, { backgroundColor: `${type.color}20` }]}>
-                <MaterialIcons name={type.icon} size={28} color={type.color} />
+                <Image source={type.icon} style={styles.typeIconImage} />
               </View>
               <Text style={styles.typeLabel}>{type.label}</Text>
               <Text style={styles.typeDescription}>{type.description}</Text>
@@ -249,7 +267,7 @@ const TriggerTracker = ({ navigation }) => {
               key={level.value}
               style={[
                 styles.intensityButton,
-                { backgroundColor: intensity >= level.value ? level.color : '#e5e7eb' }
+                { backgroundColor: intensity >= level.value ? level.color : colors.lightGray }
               ]}
               onPress={() => setIntensity(level.value)}
             >
@@ -349,7 +367,7 @@ const TriggerTracker = ({ navigation }) => {
                     <MaterialIcons
                       name={type?.icon || 'help'}
                       size={20}
-                      color={type?.color || '#6b7280'}
+                      color={type?.color || colors.textSecondary}
                     />
                     <Text style={styles.recentType}>{type?.label || 'Unknown'}</Text>
                     <Text style={styles.recentTime}>{formatTime(trigger.created_at)}</Text>
@@ -365,7 +383,7 @@ const TriggerTracker = ({ navigation }) => {
                         key={i}
                         style={[
                           styles.intensityDot,
-                          { backgroundColor: i <= trigger.intensity ? INTENSITY_LEVELS[trigger.intensity - 1].color : '#e5e7eb' }
+                          { backgroundColor: i <= trigger.intensity ? INTENSITY_LEVELS[trigger.intensity - 1].color : colors.lightGray }
                         ]}
                       />
                     ))}
@@ -410,7 +428,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1f2937',
+    color: colors.text,
   },
   content: {
     flex: 1,
@@ -424,8 +442,8 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   huxleyAvatar: {
-    width: 48,
-    height: 48,
+    width: 72,
+    height: 72,
     marginRight: 12,
   },
   huxleyBubble: {
@@ -443,17 +461,17 @@ const styles = StyleSheet.create({
   huxleyText: {
     fontSize: 15,
     lineHeight: 22,
-    color: '#374151',
+    color: colors.text,
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 12,
     marginTop: 8,
   },
   required: {
-    color: '#ef4444',
+    color: colors.error,
   },
   typeContainer: {
     flexDirection: 'row',
@@ -467,7 +485,7 @@ const styles = StyleSheet.create({
     padding: 14,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -475,22 +493,27 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   typeIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 96,
+    height: 96,
+    borderRadius: 48,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 8,
   },
+  typeIconImage: {
+    width: 80,
+    height: 80,
+    resizeMode: 'contain',
+  },
   typeLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 4,
   },
   typeDescription: {
     fontSize: 11,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
   },
   intensityContainer: {
@@ -508,17 +531,17 @@ const styles = StyleSheet.create({
   intensityText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   intensityTextActive: {
-    color: '#1f2937',
+    color: colors.text,
   },
   collapsibleSection: {
     backgroundColor: '#fff',
     borderRadius: 12,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
     overflow: 'hidden',
   },
   sectionHeader: {
@@ -534,7 +557,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     fontWeight: '500',
-    color: '#374151',
+    color: colors.text,
   },
   sectionHeaderTextComplete: {
     color: '#166534',
@@ -543,7 +566,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingBottom: 14,
     fontSize: 15,
-    color: '#1f2937',
+    color: colors.text,
     minHeight: 80,
     textAlignVertical: 'top',
   },
@@ -551,14 +574,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingBottom: 10,
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     fontStyle: 'italic',
   },
   saveButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#ef4444',
+    backgroundColor: colors.error,
     padding: 16,
     borderRadius: 16,
     gap: 8,
@@ -578,7 +601,7 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
   },
   recentHeader: {
     flexDirection: 'row',
@@ -590,15 +613,15 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
   },
   recentTime: {
     fontSize: 12,
-    color: '#9ca3af',
+    color: colors.textLight,
   },
   recentDescription: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 8,
   },
   recentIntensity: {
@@ -619,10 +642,42 @@ const styles = StyleSheet.create({
     marginTop: 24,
     gap: 10,
   },
+  sosBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#fecaca',
+    gap: 12,
+  },
+  sosIconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.error,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  sosTextWrap: {
+    flex: 1,
+  },
+  sosTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#991b1b',
+  },
+  sosSubtitle: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    marginTop: 2,
+  },
   discoveryLinkText: {
     flex: 1,
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     lineHeight: 20,
   },
 });

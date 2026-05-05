@@ -12,17 +12,20 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
-import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
+import { colors, gradients, spacing, borderRadius, shadows, typography } from '../theme/colors';
+import { icons } from '../lib/uiIcons';
 
 const options = [
   {
     id: 'ifs',
     title: 'IFS Parts Work',
     emoji: '🎭',
+    icon: icons.roles,
     description: 'Explore and heal your inner parts through guided conversation',
     estimatedTime: '15-30 min',
     route: 'IFSChat',
@@ -31,6 +34,7 @@ const options = [
     id: 'triggers',
     title: 'Triggers & Glimmers',
     emoji: '⚡',
+    icon: icons.triggerGlimmerMap,
     description: 'Map your nervous system patterns — what activates and what soothes you',
     estimatedTime: '10-20 min',
     route: 'TriggersGlimmers',
@@ -39,6 +43,7 @@ const options = [
     id: 'beliefs',
     title: 'Core Beliefs',
     emoji: '💭',
+    icon: icons.coreBeliefs,
     description: 'Explore and transform limiting beliefs that shape your experience',
     estimatedTime: '15-25 min',
     route: 'CoreBeliefs',
@@ -47,6 +52,7 @@ const options = [
     id: 'resources',
     title: 'Regulating Resources',
     emoji: '🧘',
+    icon: icons.regulatingResources,
     description: 'Build your personal toolkit for nervous system regulation',
     estimatedTime: '10-15 min',
     route: 'RegulatingResources',
@@ -55,6 +61,7 @@ const options = [
     id: 'nervous',
     title: 'Nervous System Map',
     emoji: '💚',
+    icon: icons.nsMap,
     description: 'Deep dive into understanding your nervous system states and patterns',
     estimatedTime: '15-20 min',
     route: 'NervousSystemMapping',
@@ -63,6 +70,7 @@ const options = [
     id: 'active-imagination',
     title: 'Active Imagination',
     emoji: '🌊',
+    icon: icons.activeImagination,
     description: 'Dialogue with inner figures from your experiences',
     estimatedTime: '20-45 min',
     route: 'ActiveImagination',
@@ -95,7 +103,7 @@ const InnerWorkScreen = ({ navigation }) => {
 
           {/* Hero */}
           <View style={styles.hero}>
-            <Text style={styles.heroEmoji}>🔍</Text>
+            <Image source={icons.innerWork} style={styles.heroIcon} />
             <Text style={styles.heroTitle}>Inner Work</Text>
             <Text style={styles.heroSubtitle}>
               Explore your inner landscape. Understand your patterns, heal your parts, and build resilience.
@@ -112,7 +120,11 @@ const InnerWorkScreen = ({ navigation }) => {
                 activeOpacity={0.7}
               >
                 <View style={styles.optionLeft}>
-                  <Text style={styles.optionEmoji}>{option.emoji}</Text>
+                  {option.icon ? (
+                    <Image source={option.icon} style={styles.optionIconImage} />
+                  ) : (
+                    <Text style={styles.optionEmoji}>{option.emoji}</Text>
+                  )}
                   <View style={styles.optionText}>
                     <Text style={styles.optionTitle}>{option.title}</Text>
                     <Text style={styles.optionDescription}>{option.description}</Text>
@@ -168,13 +180,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.xl,
   },
-  heroEmoji: {
-    fontSize: 56,
+  heroIcon: {
+    width: 192,
+    height: 192,
     marginBottom: spacing.md,
+    resizeMode: 'contain',
   },
   heroTitle: {
     fontSize: 28,
-    fontWeight: '700',
+    fontFamily: typography.serif,
     color: colors.text,
     marginBottom: spacing.sm,
     textAlign: 'center',
@@ -205,6 +219,12 @@ const styles = StyleSheet.create({
   },
   optionEmoji: {
     fontSize: 36,
+    marginRight: spacing.md,
+  },
+  optionIconImage: {
+    width: 112,
+    height: 112,
+    resizeMode: 'contain',
     marginRight: spacing.md,
   },
   optionText: {

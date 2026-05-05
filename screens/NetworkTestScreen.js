@@ -106,11 +106,11 @@ const NetworkTestScreen = ({ navigation }) => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'success': return '#10b981';
-      case 'failed': return '#ef4444';
-      case 'partial': return '#f59e0b';
-      case 'testing': return '#3b82f6';
-      default: return '#6b7280';
+      case 'success': return colors.success;
+      case 'failed': return colors.error;
+      case 'partial': return colors.warning;
+      case 'testing': return colors.primary;
+      default: return colors.textSecondary;
     }
   };
 
@@ -321,12 +321,12 @@ const styles = {
     fontWeight: '600',
   },
   diagnosisSection: {
-    backgroundColor: '#fef3c7',
+    backgroundColor: colors.bubbleArchetypal,
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: '#f59e0b',
+    borderColor: colors.warning,
   },
   diagnosisTitle: {
     fontSize: 16,

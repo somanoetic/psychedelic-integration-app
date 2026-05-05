@@ -55,7 +55,7 @@ const SessionDetailScreen = ({ navigation, route }) => {
         'Phase 4: Outcomes & Integration Planning'
       ],
       estimatedTime: '45-90 min',
-      color: '#3b82f6',
+      color: colors.primary,
       status: currentSession?.session_data?.experienceProcessing?.completed ? 'Completed' : 'Not Started',
       onPress: () => navigation.navigate('ExperienceMapping', { session: currentSession })
     },
@@ -71,7 +71,7 @@ const SessionDetailScreen = ({ navigation, route }) => {
         'Create actionable integration plans'
       ],
       estimatedTime: '30-60 min',
-      color: '#10b981',
+      color: colors.success,
       status: currentSession?.session_data?.integration?.completed ? 'Completed' : 'Not Started',
       onPress: () => navigation.navigate('TherapeuticIntegration', { session: currentSession })
     }
@@ -251,7 +251,7 @@ const styles = StyleSheet.create({
     padding: 24,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
@@ -292,10 +292,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.textSecondary,
   },
   statusCompleted: {
-    backgroundColor: '#10b981',
+    backgroundColor: colors.success,
   },
   statusInProgress: {
-    backgroundColor: '#f59e0b',
+    backgroundColor: colors.warning,
   },
   statusText: {
     fontSize: 11,
@@ -326,7 +326,7 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontSize: 14,
-    color: '#374151',
+    color: colors.text,
     lineHeight: 20,
     flex: 1,
   },
@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
   },
   estimatedTime: {
     fontSize: 13,
-    color: '#9ca3af',
+    color: colors.textLight,
   },
   optionButton: {
     flexDirection: 'row',
@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginTop: 24,
     borderLeftWidth: 4,
-    borderLeftColor: '#10b981',
+    borderLeftColor: colors.success,
   },
   tipTitle: {
     fontSize: 16,

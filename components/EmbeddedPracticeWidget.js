@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { colors } from '../theme/colors';
 import { 
   View, 
   Text, 
@@ -160,15 +161,15 @@ const EmbeddedPracticeWidget = ({ practice, nervousSystemState, onComplete, onSk
         id: 'ventral',
         name: 'Safe & Social',
         description: 'Calm, connected, curious',
-        color: '#10b981',
-        icon: <Heart size={20} color="#10b981" />
+        color: colors.success,
+        icon: <Heart size={20} color={colors.success} />
       },
       {
         id: 'sympathetic', 
         name: 'Activated',
         description: 'Energized, anxious, or overwhelmed',
-        color: '#ef4444',
-        icon: <Zap size={20} color="#ef4444" />
+        color: colors.error,
+        icon: <Zap size={20} color={colors.error} />
       },
       {
         id: 'dorsal',
@@ -449,11 +450,11 @@ const EmbeddedPracticeWidget = ({ practice, nervousSystemState, onComplete, onSk
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.headerLeft}>
-              <Activity size={20} color="#3b82f6" />
+              <Activity size={20} color={colors.primary} />
               <Text style={styles.headerTitle}>Practice</Text>
             </View>
             <TouchableOpacity onPress={handleSkip} style={styles.skipButton}>
-              <X size={20} color="#6b7280" />
+              <X size={20} color={colors.textSecondary} />
             </TouchableOpacity>
           </View>
 
@@ -512,7 +513,7 @@ const styles = {
     alignItems: 'center',
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   headerLeft: {
     flexDirection: 'row',
@@ -522,7 +523,7 @@ const styles = {
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
   },
   skipButton: {
     padding: 4,
@@ -538,13 +539,13 @@ const styles = {
   practiceTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     textAlign: 'center',
     marginBottom: 8,
   },
   practiceDescription: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: 16,
   },
@@ -565,13 +566,13 @@ const styles = {
   stepTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     textAlign: 'center',
     marginBottom: 8,
   },
   stepSubtitle: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: 24,
   },
@@ -596,7 +597,7 @@ const styles = {
   },
   stateOptionDescription: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   intensityContainer: {
     alignItems: 'center',
@@ -620,13 +621,13 @@ const styles = {
     marginBottom: 8,
   },
   intensityButtonSelected: {
-    backgroundColor: '#3b82f6',
-    borderColor: '#3b82f6',
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   intensityButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   intensityButtonTextSelected: {
     color: '#ffffff',
@@ -634,7 +635,7 @@ const styles = {
   intensityLabel: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#1f2937',
+    color: colors.text,
   },
   notesInput: {
     borderWidth: 1,
@@ -661,14 +662,14 @@ const styles = {
   breathingPhase: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#3b82f6',
+    color: colors.primary,
   },
   stepContainer: {
     paddingHorizontal: 20,
   },
   currentStepText: {
     fontSize: 16,
-    color: '#1f2937',
+    color: colors.text,
     textAlign: 'center',
     lineHeight: 24,
   },
@@ -678,7 +679,7 @@ const styles = {
   partsPrompt: {
     fontSize: 18,
     fontWeight: '500',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -699,18 +700,18 @@ const styles = {
   },
   progressText: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: 8,
   },
   progressBar: {
     height: 4,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: colors.lightGray,
     borderRadius: 2,
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.primary,
     borderRadius: 2,
   },
   effectivenessContainer: {
@@ -722,7 +723,7 @@ const styles = {
   effectivenessTitle: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#1f2937',
+    color: colors.text,
     textAlign: 'center',
     marginBottom: 12,
   },
@@ -734,14 +735,14 @@ const styles = {
   footer: {
     padding: 20,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: colors.lightGray,
   },
   startButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.primary,
     padding: 16,
     borderRadius: 12,
   },
@@ -755,12 +756,12 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.primary,
     padding: 16,
     borderRadius: 12,
   },
   nextButtonDisabled: {
-    backgroundColor: '#9ca3af',
+    backgroundColor: colors.textLight,
   },
   nextButtonText: {
     fontSize: 16,

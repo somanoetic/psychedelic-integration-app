@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { Heart, Zap, Shield, Brain } from 'react-native-vector-icons/Feather';
+import { colors } from '../theme/colors';
 
 const NervousSystemIndicator = ({ state, confidence = 1, size = 'medium' }) => {
   const getStateConfig = () => {
@@ -9,7 +10,7 @@ const NervousSystemIndicator = ({ state, confidence = 1, size = 'medium' }) => {
         return {
           name: 'Safe & Social',
           description: 'Calm, connected, curious',
-          color: '#10b981',
+          color: colors.success,
           icon: Heart,
           backgroundColor: '#d1fae5'
         };
@@ -17,7 +18,7 @@ const NervousSystemIndicator = ({ state, confidence = 1, size = 'medium' }) => {
         return {
           name: 'Activated',
           description: 'Energized, alert, mobilized',
-          color: '#ef4444',
+          color: colors.error,
           icon: Zap,
           backgroundColor: '#fee2e2'
         };
@@ -33,7 +34,7 @@ const NervousSystemIndicator = ({ state, confidence = 1, size = 'medium' }) => {
         return {
           name: 'Checking in...',
           description: 'Assessing nervous system state',
-          color: '#6b7280',
+          color: colors.textSecondary,
           icon: Brain,
           backgroundColor: '#f3f4f6'
         };
@@ -115,11 +116,11 @@ const styles = {
     marginBottom: 2,
   },
   stateDescription: {
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 2,
   },
   confidence: {
-    color: '#9ca3af',
+    color: colors.textLight,
     fontStyle: 'italic',
   },
 };

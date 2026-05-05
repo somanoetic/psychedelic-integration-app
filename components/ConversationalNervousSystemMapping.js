@@ -373,7 +373,7 @@ Take your time with this. When you're done, the app will show you a digital vers
             onPress={() => navigation?.goBack()}
             style={styles.backButton}
           >
-            <MaterialIcons name="arrow-back" size={24} color="#374151" />
+            <MaterialIcons name="arrow-back" size={24} color={colors.text} />
           </TouchableOpacity>
           <MaterialIcons name="psychology" size={24} color={colors.primary} />
           <Text style={styles.headerTitle}>Nervous System Mapping</Text>
@@ -417,7 +417,7 @@ Take your time with this. When you're done, the app will show you a digital vers
           value={inputText}
           onChangeText={setInputText}
           placeholder="Share your thoughts..."
-          placeholderTextColor="#9ca3af"
+          placeholderTextColor={colors.textLight}
           multiline
           maxLength={2000}
           editable={!loading && !saving}
@@ -457,7 +457,7 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingTop: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb'
+    borderBottomColor: colors.lightGray
   },
   backButton: {
     padding: 4,
@@ -471,12 +471,12 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1f2937',
+    color: colors.text,
     marginLeft: 12
   },
   headerSubtitle: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginLeft: 36
   },
   messagesContainer: {
@@ -492,8 +492,8 @@ const styles = StyleSheet.create({
     marginBottom: 12
   },
   huxleyAvatar: {
-    width: 40,
-    height: 40,
+    width: 60,
+    height: 60,
     marginRight: 8,
     marginTop: 4
   },
@@ -513,7 +513,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderBottomLeftRadius: 4,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
     marginBottom: 0,
     flex: 1
   },
@@ -526,22 +526,22 @@ const styles = StyleSheet.create({
     color: '#fff'
   },
   aiMessageText: {
-    color: '#1f2937'
+    color: colors.text
   },
   timestamp: {
     fontSize: 11,
-    color: '#9ca3af',
+    color: colors.textLight,
     alignSelf: 'flex-end'
   },
   stateProgress: {
     padding: 16,
     backgroundColor: '#fff',
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb'
+    borderTopColor: colors.lightGray
   },
   stateProgressText: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 8
   },
   stateIndicators: {
@@ -559,7 +559,7 @@ const styles = StyleSheet.create({
   },
   stateCompleted: {
     backgroundColor: '#d1fae5',
-    borderColor: '#10b981'
+    borderColor: colors.success
   },
   stateIndicatorText: {
     fontSize: 12,
@@ -572,7 +572,7 @@ const styles = StyleSheet.create({
     gap: 12,
     backgroundColor: '#fff',
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb'
+    borderTopColor: colors.lightGray
   },
   actionButton: {
     flex: 1,
@@ -587,7 +587,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary
   },
   successButton: {
-    backgroundColor: '#10b981'
+    backgroundColor: colors.success
   },
   primaryButtonText: {
     color: '#fff',
@@ -600,7 +600,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     backgroundColor: '#fff',
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: colors.lightGray,
     alignItems: 'flex-end'
   },
   input: {
@@ -610,7 +610,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     fontSize: 16,
-    color: '#1f2937',
+    color: colors.text,
     maxHeight: 80,
     marginRight: 12
   },

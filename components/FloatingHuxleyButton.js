@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
     height: 70,
     borderRadius: 35,
     backgroundColor: colors.surface,
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -80,9 +80,9 @@ const styles = StyleSheet.create({
     overflow: 'visible',
   },
   huxleyImage: {
-    width: 85,
-    height: 85,
-    marginBottom: -8,
+    width: 110,
+    height: 110,
+    marginBottom: 12,
   },
 });
 

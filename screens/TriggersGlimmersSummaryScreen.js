@@ -13,26 +13,28 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   RefreshControl,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../lib/supabase';
-import { colors, gradients, shadows, spacing, borderRadius } from '../theme/colors';
+import { colors, gradients, shadows, spacing, borderRadius, typography } from '../theme/colors';
 import ShareWithTherapistButton from '../components/ShareWithTherapistButton';
 import { shareTriggersGlimmers } from '../lib/therapistShareService';
+import { icons } from '../lib/uiIcons';
 
 const TRIGGER_GROUPS = [
-  { key: 'sympathetic_triggers', emoji: '⚡', label: 'Fight / Flight Triggers' },
-  { key: 'dorsal_triggers', emoji: '🫥', label: 'Shutdown Triggers' },
-  { key: 'general_triggers', emoji: '🔴', label: 'General Triggers' },
+  { key: 'sympathetic_triggers', emoji: '⚡', icon: icons.steam, label: 'Fight / Flight Triggers' },
+  { key: 'dorsal_triggers', emoji: '🫥', icon: icons.iceberg, label: 'Shutdown Triggers' },
+  { key: 'general_triggers', emoji: '🔴', icon: icons.trigger, label: 'General Triggers' },
 ];
 
 const GLIMMER_GROUPS = [
-  { key: 'sensory_glimmers', emoji: '✨', label: 'Sensory' },
-  { key: 'relational_glimmers', emoji: '🤝', label: 'Relational' },
-  { key: 'activity_glimmers', emoji: '🎨', label: 'Activities' },
-  { key: 'nature_glimmers', emoji: '🌿', label: 'Nature' },
+  { key: 'sensory_glimmers', emoji: '✨', icon: icons.observation, label: 'Sensory' },
+  { key: 'relational_glimmers', emoji: '🤝', icon: icons.community, label: 'Relational' },
+  { key: 'activity_glimmers', emoji: '🎨', icon: icons.creativity, label: 'Activities' },
+  { key: 'nature_glimmers', emoji: '🌿', icon: icons.sprout, label: 'Nature' },
 ];
 
 const TriggersGlimmersSummaryScreen = ({ navigation }) => {
@@ -104,7 +106,11 @@ const TriggersGlimmersSummaryScreen = ({ navigation }) => {
         {nonEmpty.map(g => (
           <View key={g.key} style={styles.fieldGroup}>
             <View style={styles.fieldHeader}>
-              <Text style={styles.fieldEmoji}>{g.emoji}</Text>
+              {g.icon ? (
+                <Image source={g.icon} style={styles.fieldIconImage} />
+              ) : (
+                <Text style={styles.fieldEmoji}>{g.emoji}</Text>
+              )}
               <Text style={styles.fieldLabel}>{g.label}</Text>
               <Text style={styles.fieldCount}>{data[g.key].length}</Text>
             </View>
@@ -141,7 +147,7 @@ const TriggersGlimmersSummaryScreen = ({ navigation }) => {
             </View>
 
             <View style={styles.hero}>
-              <Text style={styles.heroEmoji}>⚡</Text>
+              <Image source={icons.triggerGlimmerMap} style={styles.heroIcon} />
               <Text style={styles.heroTitle}>Triggers & Glimmers</Text>
               <Text style={styles.heroSubtitle}>
                 {data
@@ -171,8 +177,8 @@ const TriggersGlimmersSummaryScreen = ({ navigation }) => {
                       <Text style={styles.balanceLabelRight}>Glimmers ({totalGlimmers})</Text>
                     </View>
                     <View style={styles.balanceBar}>
-                      <View style={[styles.balanceSegment, { flex: totalTriggers || 1, backgroundColor: '#ef4444', borderTopLeftRadius: 4, borderBottomLeftRadius: 4 }]} />
-                      <View style={[styles.balanceSegment, { flex: totalGlimmers || 1, backgroundColor: '#10b981', borderTopRightRadius: 4, borderBottomRightRadius: 4 }]} />
+                      <View style={[styles.balanceSegment, { flex: totalTriggers || 1, backgroundColor: colors.error, borderTopLeftRadius: 4, borderBottomLeftRadius: 4 }]} />
+                      <View style={[styles.balanceSegment, { flex: totalGlimmers || 1, backgroundColor: colors.success, borderTopRightRadius: 4, borderBottomRightRadius: 4 }]} />
                     </View>
                   </View>
                 )}
@@ -217,8 +223,8 @@ const styles = StyleSheet.create({
   backButton: { padding: spacing.sm, borderRadius: borderRadius.sm, minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
 
   hero: { alignItems: 'center', marginBottom: spacing.xl },
-  heroEmoji: { fontSize: 56, marginBottom: spacing.md },
-  heroTitle: { fontSize: 28, fontWeight: '700', color: colors.text, marginBottom: spacing.sm, textAlign: 'center' },
+  heroIcon: { width: 192, height: 192, marginBottom: spacing.md, resizeMode: 'contain' },
+  heroTitle: { fontSize: 28, fontFamily: typography.serif, color: colors.text, marginBottom: spacing.sm, textAlign: 'center' },
   heroSubtitle: { fontSize: 16, color: colors.textSecondary, textAlign: 'center', lineHeight: 24, paddingHorizontal: spacing.md },
 
   // Balance
@@ -229,8 +235,8 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   balanceLabels: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.xs },
-  balanceLabelLeft: { fontSize: 13, color: '#ef4444', fontWeight: '600' },
-  balanceLabelRight: { fontSize: 13, color: '#10b981', fontWeight: '600' },
+  balanceLabelLeft: { fontSize: 13, color: colors.error, fontWeight: '600' },
+  balanceLabelRight: { fontSize: 13, color: colors.success, fontWeight: '600' },
   balanceBar: { flexDirection: 'row', height: 8, borderRadius: 4, overflow: 'hidden' },
   balanceSegment: { height: '100%' },
 
@@ -252,6 +258,7 @@ const styles = StyleSheet.create({
   fieldGroup: { marginBottom: spacing.sm },
   fieldHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
   fieldEmoji: { fontSize: 16 },
+  fieldIconImage: { width: 48, height: 48, resizeMode: 'contain', marginRight: 8 },
   fieldLabel: { fontSize: 13, color: colors.textSecondary, flex: 1 },
   fieldCount: { fontSize: 13, color: colors.textLight },
 

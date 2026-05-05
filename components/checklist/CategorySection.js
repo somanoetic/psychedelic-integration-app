@@ -9,7 +9,7 @@ import ChecklistItem from './ChecklistItem';
  *
  * Groups items by category (Physical, Safety, Mental, Practical) with collapse/expand.
  */
-const CategorySection = ({ category, items, onToggleItem, onDeleteItem, disabled }) => {
+const CategorySection = ({ category, items, onToggleItem, onToggleItemNA, onDeleteItem, disabled }) => {
   const [collapsed, setCollapsed] = useState(false);
 
   const categoryInfo = {
@@ -36,7 +36,9 @@ const CategorySection = ({ category, items, onToggleItem, onDeleteItem, disabled
   };
 
   const info = categoryInfo[category] || categoryInfo.practical;
-  const completedCount = items.filter(item => item.isChecked).length;
+  // N/A items count toward "done" so the section header reflects items
+  // the user has resolved one way or another.
+  const completedCount = items.filter(item => item.isChecked || item.isNa).length;
   const totalCount = items.length;
 
   return (
@@ -73,6 +75,7 @@ const CategorySection = ({ category, items, onToggleItem, onDeleteItem, disabled
               key={item.id}
               item={item}
               onToggle={onToggleItem}
+              onToggleNA={onToggleItemNA}
               onDelete={onDeleteItem}
               disabled={disabled}
             />

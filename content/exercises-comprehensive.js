@@ -2712,11 +2712,14 @@ export const exercises = {
  * EXERCISE CATEGORIES
  * Extended from original with new categories
  */
+import { icons } from '../lib/uiIcons';
+
 export const exerciseCategories = [
   {
     id: 'all',
     name: 'All Exercises',
     icon: 'apps',
+    iconImage: icons.tools,
     color: '#8b5cf6',
     description: 'Browse all available exercises'
   },
@@ -2724,6 +2727,7 @@ export const exerciseCategories = [
     id: 'breathing',
     name: 'Breathing',
     icon: 'air',
+    iconImage: icons.breath,
     color: '#3b82f6',
     description: 'Regulate your nervous system through breath'
   },
@@ -2731,6 +2735,7 @@ export const exerciseCategories = [
     id: 'grounding',
     name: 'Grounding',
     icon: 'landscape',
+    iconImage: icons.grounding,
     color: '#10b981',
     description: 'Connect to the present moment and your body'
   },
@@ -2738,6 +2743,7 @@ export const exerciseCategories = [
     id: 'somatic',
     name: 'Somatic',
     icon: 'accessibility',
+    iconImage: icons.bodyScanAlt,
     color: '#f59e0b',
     description: 'Body-based awareness and release practices'
   },
@@ -2745,6 +2751,7 @@ export const exerciseCategories = [
     id: 'polyvagal',
     name: 'Nervous System',
     icon: 'favorite',
+    iconImage: icons.nsMap,
     color: '#ef4444',
     description: 'Map, track, and shape your autonomic state'
   },
@@ -2752,6 +2759,7 @@ export const exerciseCategories = [
     id: 'partsWork',
     name: 'Parts Work (IFS)',
     icon: 'groups',
+    iconImage: icons.roles,
     color: '#ec4899',
     description: 'Internal Family Systems dialogue with your parts'
   },
@@ -2759,6 +2767,7 @@ export const exerciseCategories = [
     id: 'selfCompassion',
     name: 'Self-Compassion',
     icon: 'self-improvement',
+    iconImage: icons.compassion,
     color: '#14b8a6',
     description: 'Practices for kindness toward yourself'
   },
@@ -2766,6 +2775,7 @@ export const exerciseCategories = [
     id: 'meditation',
     name: 'Meditation',
     icon: 'spa',
+    iconImage: icons.meditate,
     color: '#6366f1',
     description: 'Formal contemplative and mindfulness practices'
   },
@@ -2773,6 +2783,7 @@ export const exerciseCategories = [
     id: 'jungian',
     name: 'Depth Psychology',
     icon: 'psychology',
+    iconImage: icons.activeImagination,
     color: '#f97316',
     description: 'Visualization tools for shadow work, archetypes, and inner transformation'
   },
@@ -2780,6 +2791,7 @@ export const exerciseCategories = [
     id: 'cbt',
     name: 'Cognitive Work',
     icon: 'lightbulb',
+    iconImage: icons.coreBeliefs,
     color: '#eab308',
     description: 'Restructure unhelpful thoughts and core beliefs'
   },
@@ -2787,6 +2799,7 @@ export const exerciseCategories = [
     id: 'habits',
     name: 'Habits',
     icon: 'repeat',
+    iconImage: icons.trailProgress,
     color: '#84cc16',
     description: 'Build lasting behavioral change with small steps'
   },
@@ -2794,6 +2807,7 @@ export const exerciseCategories = [
     id: 'psychedelicIntegration',
     name: 'Integration',
     icon: 'auto-awesome',
+    iconImage: icons.integration,
     color: '#a855f7',
     description: 'Practices specifically for psychedelic integration'
   },
@@ -2801,6 +2815,7 @@ export const exerciseCategories = [
     id: 'yoga',
     name: 'Movement',
     icon: 'fitness-center',
+    iconImage: icons.movement,
     color: '#06b6d4',
     description: 'Trauma-informed yoga and movement practices'
   },
@@ -2808,6 +2823,7 @@ export const exerciseCategories = [
     id: 'stoic',
     name: 'Stoic Philosophy',
     icon: 'school',
+    iconImage: icons.selfReflect,
     color: '#78716c',
     description: 'Ancient wisdom practices for resilience and perspective'
   },
@@ -2815,6 +2831,7 @@ export const exerciseCategories = [
     id: 'trauma',
     name: 'Trauma Recovery',
     icon: 'healing',
+    iconImage: icons.repairedHeart,
     color: '#be185d',
     description: 'Evidence-based practices for trauma processing and recovery'
   }

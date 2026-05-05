@@ -11,13 +11,11 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AVATAR_OPTIONS } from './AvatarSelector';
 import { colors } from '../theme/colors';
+import { icons } from '../lib/uiIcons';
 import { exerciseCategories as realCategories, getExercisesByCategory, getAllExercises } from '../content/exercises-comprehensive';
 
 const ConversationalExerciseLibrary = ({ navigation, route }) => {
-  const [selectedAvatar, setSelectedAvatar] = useState('brain');
   const [conversationStep, setConversationStep] = useState('initial'); // initial, search, browse, selected, searchResults
   const [userInput, setUserInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -25,7 +23,6 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
   const [fadeAnim] = useState(new Animated.Value(0));
 
   useEffect(() => {
-    loadPreferences();
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 600,
@@ -45,21 +42,6 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
     }
   }, [route?.params?.category]);
 
-  const loadPreferences = async () => {
-    try {
-      const avatar = await AsyncStorage.getItem('huxley_avatar');
-      if (avatar) setSelectedAvatar(avatar);
-    } catch (error) {
-      console.error('Error loading preferences:', error);
-    }
-  };
-
-  const getAvatar = () => {
-    return AVATAR_OPTIONS.find(a => a.id === selectedAvatar) || AVATAR_OPTIONS[0];
-  };
-
-  const avatar = getAvatar();
-
   const exerciseCategories = [
     ...realCategories
       .filter(c => c.id !== 'all')
@@ -71,6 +53,7 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
       id: 'games',
       name: 'Therapeutic Games',
       icon: 'sports-esports',
+      iconImage: icons.play,
       color: '#06b6d4',
       description: 'Interactive games for integration and healing',
       exercises: [{ title: 'Glimmer Swiper', isGame: true }],
@@ -111,9 +94,9 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
       )}
       <View style={styles.optionsContainer}>
         <Text style={styles.optionsLabel}>You:</Text>
-        {renderUserOption('Help me find something', () => setConversationStep('search'), 'search', '#10b981')}
-        {renderUserOption('Show me all exercises', () => setConversationStep('browse'), 'view-list', '#3b82f6')}
-        {renderUserOption('Go back', () => navigation.goBack(), 'arrow-back', '#6b7280')}
+        {renderUserOption('Help me find something', () => setConversationStep('search'), 'search', colors.success)}
+        {renderUserOption('Show me all exercises', () => setConversationStep('browse'), 'view-list', colors.primary)}
+        {renderUserOption('Go back', () => navigation.goBack(), 'arrow-back', colors.textSecondary)}
       </View>
     </>
   );
@@ -131,7 +114,7 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
           value={userInput}
           onChangeText={setUserInput}
           placeholder="I'm feeling..."
-          placeholderTextColor="#9ca3af"
+          placeholderTextColor={colors.textLight}
           multiline
         />
       </View>
@@ -146,8 +129,8 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
 
       <View style={styles.optionsContainer}>
         <Text style={styles.optionsLabel}>You:</Text>
-        {renderUserOption('Browse instead', () => setConversationStep('browse'), 'view-list', '#3b82f6')}
-        {renderUserOption('Go back', () => setConversationStep('initial'), 'arrow-back', '#6b7280')}
+        {renderUserOption('Browse instead', () => setConversationStep('browse'), 'view-list', colors.primary)}
+        {renderUserOption('Go back', () => setConversationStep('initial'), 'arrow-back', colors.textSecondary)}
       </View>
     </>
   );
@@ -189,7 +172,11 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
             }}
           >
             <View style={[styles.categoryIcon, { backgroundColor: `${category.color}20` }]}>
-              <MaterialIcons name={category.icon} size={32} color={category.color} />
+              {category.iconImage ? (
+                <Image source={category.iconImage} style={styles.categoryIconImage} />
+              ) : (
+                <MaterialIcons name={category.icon} size={32} color={category.color} />
+              )}
             </View>
             <View style={styles.categoryContent}>
               <Text style={styles.categoryName}>{category.name}</Text>
@@ -202,8 +189,8 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
 
       <View style={styles.optionsContainer}>
         <Text style={styles.optionsLabel}>You:</Text>
-        {renderUserOption('Help me choose', () => setConversationStep('search'), 'search', '#10b981')}
-        {renderUserOption('Go back', () => setConversationStep('initial'), 'arrow-back', '#6b7280')}
+        {renderUserOption('Help me choose', () => setConversationStep('search'), 'search', colors.success)}
+        {renderUserOption('Go back', () => setConversationStep('initial'), 'arrow-back', colors.textSecondary)}
       </View>
     </>
   );
@@ -249,15 +236,15 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
                   </Text>
                 )}
               </View>
-              <MaterialIcons name="chevron-right" size={20} color="#9ca3af" />
+              <MaterialIcons name="chevron-right" size={20} color={colors.textLight} />
             </TouchableOpacity>
           ))}
         </View>
 
         <View style={styles.optionsContainer}>
           <Text style={styles.optionsLabel}>You:</Text>
-          {renderUserOption('Browse other categories', () => setConversationStep('browse'), 'view-list', '#3b82f6')}
-          {renderUserOption('Go back to start', () => setConversationStep('initial'), 'home', '#6b7280')}
+          {renderUserOption('Browse other categories', () => setConversationStep('browse'), 'view-list', colors.primary)}
+          {renderUserOption('Go back to start', () => setConversationStep('initial'), 'home', colors.textSecondary)}
         </View>
       </>
     );
@@ -287,7 +274,7 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
         <View style={styles.exercisesListContainer}>
           {searchResults.map((exercise, index) => {
             const catInfo = exerciseCategories.find(c => c.id === exercise.category);
-            const catColor = catInfo?.color || '#6b7280';
+            const catColor = catInfo?.color || colors.textSecondary;
             return (
               <TouchableOpacity
                 key={exercise.id || index}
@@ -313,7 +300,7 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
                     </Text>
                   )}
                 </View>
-                <MaterialIcons name="chevron-right" size={20} color="#9ca3af" />
+                <MaterialIcons name="chevron-right" size={20} color={colors.textLight} />
               </TouchableOpacity>
             );
           })}
@@ -322,8 +309,8 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
 
       <View style={styles.optionsContainer}>
         <Text style={styles.optionsLabel}>You:</Text>
-        {renderUserOption('Browse categories', () => setConversationStep('browse'), 'view-list', '#3b82f6')}
-        {renderUserOption('Go back to start', () => { setSearchQuery(''); setConversationStep('initial'); }, 'home', '#6b7280')}
+        {renderUserOption('Browse categories', () => setConversationStep('browse'), 'view-list', colors.primary)}
+        {renderUserOption('Go back to start', () => { setSearchQuery(''); setConversationStep('initial'); }, 'home', colors.textSecondary)}
       </View>
     </>
   );
@@ -333,14 +320,14 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <MaterialIcons name="arrow-back" size={24} color="#1f2937" />
+          <MaterialIcons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.appName}>Exercise Library</Text>
         <TouchableOpacity onPress={() => {
           setSearchQuery('');
           setConversationStep(conversationStep === 'searchResults' ? 'initial' : 'searchResults');
         }}>
-          <MaterialIcons name="search" size={24} color="#1f2937" />
+          <MaterialIcons name="search" size={24} color={colors.text} />
         </TouchableOpacity>
       </View>
 
@@ -350,7 +337,7 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
           <TextInput
             style={styles.searchBarInput}
             placeholder="Search exercises..."
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor={colors.textLight}
             value={searchQuery}
             onChangeText={setSearchQuery}
             returnKeyType="search"
@@ -394,12 +381,12 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     backgroundColor: '#ffffff',
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   appName: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1f2937',
+    color: colors.text,
   },
   searchBarContainer: {
     flexDirection: 'row',
@@ -409,12 +396,12 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     gap: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   searchBarInput: {
     flex: 1,
     fontSize: 16,
-    color: '#1f2937',
+    color: colors.text,
     paddingVertical: 4,
   },
   content: {
@@ -441,19 +428,19 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   huxleyAvatar: {
-    width: 40,
-    height: 40,
+    width: 60,
+    height: 60,
     marginRight: 10,
   },
   huxleyName: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   huxleyText: {
     fontSize: 16,
     lineHeight: 24,
-    color: '#374151',
+    color: colors.text,
   },
   optionsContainer: {
     marginBottom: 24,
@@ -461,7 +448,7 @@ const styles = StyleSheet.create({
   optionsLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 12,
     marginLeft: 4,
   },
@@ -504,17 +491,17 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.text,
     marginBottom: 8,
   },
   textInput: {
     backgroundColor: '#f9fafb',
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
     borderRadius: 12,
     padding: 14,
     fontSize: 16,
-    color: '#1f2937',
+    color: colors.text,
     minHeight: 80,
     textAlignVertical: 'top',
   },
@@ -539,12 +526,17 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   categoryIcon: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 90,
+    height: 90,
+    borderRadius: 45,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 14,
+  },
+  categoryIconImage: {
+    width: 72,
+    height: 72,
+    resizeMode: 'contain',
   },
   categoryContent: {
     flex: 1,
@@ -553,18 +545,18 @@ const styles = StyleSheet.create({
   categoryName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 4,
   },
   categoryDescription: {
     fontSize: 13,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 4,
     lineHeight: 18,
   },
   categoryCount: {
     fontSize: 12,
-    color: '#9ca3af',
+    color: colors.textLight,
     fontStyle: 'italic',
   },
   exercisesListContainer: {
@@ -599,16 +591,16 @@ const styles = StyleSheet.create({
   exerciseName: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
   },
   exerciseMeta: {
     fontSize: 12,
-    color: '#9ca3af',
+    color: colors.textLight,
     marginTop: 2,
   },
   exercisePreview: {
     fontSize: 13,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginTop: 4,
     lineHeight: 18,
   },

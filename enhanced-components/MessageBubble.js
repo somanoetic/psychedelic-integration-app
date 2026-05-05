@@ -63,11 +63,11 @@ const MessageBubble = ({ message, entities = [], nervousSystemState, onEntityPre
 
   const getEntityColor = (category) => {
     switch (category) {
-      case 'archetypal': return '#fef3c7';
-      case 'emotional': return '#fce7f3';
-      case 'somatic': return '#dcfce7';
+      case 'archetypal': return colors.bubbleArchetypal;
+      case 'emotional': return colors.bubbleEmotional;
+      case 'somatic': return colors.bubbleSomatic;
       case 'spiritual': return `${colors.primary}1A`;
-      case 'parts': return '#fed7d7';
+      case 'parts': return colors.bubbleParts;
       default: return colors.offWhite;
     }
   };

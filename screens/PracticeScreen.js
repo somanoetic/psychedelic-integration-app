@@ -11,17 +11,20 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
-import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
+import { colors, gradients, spacing, borderRadius, shadows, typography } from '../theme/colors';
+import { icons } from '../lib/uiIcons';
 
 const options = [
   {
     id: 'progress',
     title: 'Your Progress',
     emoji: '📈',
+    icon: icons.trailProgress,
     description: 'Track your exercise curriculum and see how far you\'ve come',
     estimatedTime: '2 min',
     route: 'CurriculumTracker',
@@ -30,6 +33,7 @@ const options = [
     id: 'exercises',
     title: 'Exercise Library',
     emoji: '🏃',
+    icon: icons.movement,
     description: 'Breathing, grounding, somatic — 160+ guided exercises',
     estimatedTime: '5-15 min',
     route: 'ExerciseLibrary',
@@ -38,6 +42,7 @@ const options = [
     id: 'swiper',
     title: 'Glimmer Swiper',
     emoji: '🎮',
+    icon: icons.glimmerCaptured,
     description: 'Therapeutic swipe game to train your nervous system to notice glimmers',
     estimatedTime: '5 min',
     route: 'GlimmerSwiper',
@@ -46,6 +51,7 @@ const options = [
     id: 'grounding',
     title: 'Quick Grounding',
     emoji: '🌍',
+    icon: icons.grounding,
     description: '5-4-3-2-1 sensory grounding and other quick regulation exercises',
     estimatedTime: '3-5 min',
     route: 'ExerciseLibrary',
@@ -79,7 +85,7 @@ const PracticeScreen = ({ navigation }) => {
 
           {/* Hero */}
           <View style={styles.hero}>
-            <Text style={styles.heroEmoji}>🎮</Text>
+            <Image source={icons.practice} style={styles.heroIcon} />
             <Text style={styles.heroTitle}>Practice</Text>
             <Text style={styles.heroSubtitle}>
               Build your skills through guided exercises and engaging practice tools.
@@ -96,7 +102,11 @@ const PracticeScreen = ({ navigation }) => {
                 activeOpacity={0.7}
               >
                 <View style={styles.optionLeft}>
-                  <Text style={styles.optionEmoji}>{option.emoji}</Text>
+                  {option.icon ? (
+                    <Image source={option.icon} style={styles.optionIconImage} />
+                  ) : (
+                    <Text style={styles.optionEmoji}>{option.emoji}</Text>
+                  )}
                   <View style={styles.optionText}>
                     <Text style={styles.optionTitle}>{option.title}</Text>
                     <Text style={styles.optionDescription}>{option.description}</Text>
@@ -152,13 +162,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.xl,
   },
-  heroEmoji: {
-    fontSize: 56,
+  heroIcon: {
+    width: 192,
+    height: 192,
     marginBottom: spacing.md,
+    resizeMode: 'contain',
   },
   heroTitle: {
     fontSize: 28,
-    fontWeight: '700',
+    fontFamily: typography.serif,
     color: colors.text,
     marginBottom: spacing.sm,
     textAlign: 'center',
@@ -186,6 +198,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
+  },
+  optionIconImage: {
+    width: 112,
+    height: 112,
+    resizeMode: 'contain',
+    marginRight: spacing.md,
   },
   optionEmoji: {
     fontSize: 36,

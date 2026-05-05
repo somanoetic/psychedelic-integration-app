@@ -802,7 +802,7 @@ This is a beginning. Parts work is about ongoing relationship. You can return to
               value={userInput}
               onChangeText={setUserInput}
               placeholder="Share your experience..."
-              placeholderTextColor="#9ca3af"
+              placeholderTextColor={colors.textLight}
               multiline
               maxLength={500}
               onSubmitEditing={() => {
@@ -871,7 +871,7 @@ const styles = StyleSheet.create({
   },
   offlineIndicator: {
     fontSize: 11,
-    color: '#f59e0b',
+    color: colors.warning,
     marginTop: 2,
   },
   currentPartIndicator: {
@@ -905,8 +905,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   huxleyAvatar: {
-    width: 36,
-    height: 36,
+    width: 54,
+    height: 54,
     marginRight: 8,
     marginTop: 4,
   },

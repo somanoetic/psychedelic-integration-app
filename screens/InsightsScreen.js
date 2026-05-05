@@ -19,17 +19,17 @@ import PatternCard from '../components/insights/PatternCard';
 import { colors, shadows, borderRadius, spacing } from '../theme/colors';
 
 const STATE_COLORS = {
-  ventral: '#10b981',
-  sympathetic: '#ef4444',
-  dorsal: '#6b7280',
-  mixed: '#f59e0b',
+  ventral: colors.success,
+  sympathetic: colors.error,
+  dorsal: colors.textSecondary,
+  mixed: colors.warning,
 };
 
 const PART_COLORS = {
-  protector: '#3b82f6',
-  firefighter: '#ef4444',
+  protector: colors.primary,
+  firefighter: colors.error,
   exile: '#8b5cf6',
-  self: '#10b981',
+  self: colors.success,
 };
 
 const PART_LABELS = {
@@ -230,13 +230,13 @@ const InsightsScreen = () => {
 
                 {/* Side-by-side count cards */}
                 <View style={styles.twoCol}>
-                  <View style={[styles.countCard, { borderTopColor: '#ef4444' }]}>
-                    <MaterialIcons name="flash-on" size={24} color="#ef4444" />
+                  <View style={[styles.countCard, { borderTopColor: colors.error }]}>
+                    <MaterialIcons name="flash-on" size={24} color={colors.error} />
                     <Text style={styles.countValue}>{data.triggerGlimmerBalance.triggers}</Text>
                     <Text style={styles.countLabel}>Triggers</Text>
                   </View>
-                  <View style={[styles.countCard, { borderTopColor: '#10b981' }]}>
-                    <MaterialIcons name="auto-awesome" size={24} color="#10b981" />
+                  <View style={[styles.countCard, { borderTopColor: colors.success }]}>
+                    <MaterialIcons name="auto-awesome" size={24} color={colors.success} />
                     <Text style={styles.countValue}>{data.triggerGlimmerBalance.glimmers}</Text>
                     <Text style={styles.countLabel}>Glimmers</Text>
                   </View>
@@ -248,7 +248,7 @@ const InsightsScreen = () => {
                     <Text style={styles.listTitle}>Top trigger types</Text>
                     {data.topTriggers.map(t => (
                       <View key={t.type} style={styles.listItem}>
-                        <View style={[styles.listDot, { backgroundColor: '#ef4444' }]} />
+                        <View style={[styles.listDot, { backgroundColor: colors.error }]} />
                         <Text style={styles.listItemText}>{t.type}</Text>
                         <Text style={styles.listItemCount}>{t.count}</Text>
                       </View>
@@ -261,7 +261,7 @@ const InsightsScreen = () => {
                     <Text style={styles.listTitle}>Top glimmer types</Text>
                     {data.topGlimmers.map(g => (
                       <View key={g.type} style={styles.listItem}>
-                        <View style={[styles.listDot, { backgroundColor: '#10b981' }]} />
+                        <View style={[styles.listDot, { backgroundColor: colors.success }]} />
                         <Text style={styles.listItemText}>{g.type}</Text>
                         <Text style={styles.listItemCount}>{g.count}</Text>
                       </View>
@@ -282,7 +282,7 @@ const InsightsScreen = () => {
                       <Text style={styles.habitName}>{habit.name}</Text>
                       {habit.currentStreak > 0 && (
                         <View style={styles.streakBadge}>
-                          <MaterialIcons name="local-fire-department" size={14} color="#f59e0b" />
+                          <MaterialIcons name="local-fire-department" size={14} color={colors.warning} />
                           <Text style={styles.streakText}>{habit.currentStreak}d</Text>
                         </View>
                       )}
@@ -590,7 +590,7 @@ const styles = StyleSheet.create({
   streakBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fef3c7',
+    backgroundColor: colors.bubbleArchetypal,
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 12,

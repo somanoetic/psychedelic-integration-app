@@ -8,6 +8,7 @@ import {
   Alert,
 } from 'react-native';
 import config from '../lib/config';
+import { colors } from '../theme/colors';
 
 const ANTHROPIC_API_KEY = config.anthropicApiKey;
 
@@ -87,11 +88,11 @@ const QuickNetworkTest = ({ navigation }) => {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'success': return '#10b981';
-      case 'failed': return '#ef4444';
-      case 'partial': return '#f59e0b';
-      case 'testing': return '#3b82f6';
-      default: return '#6b7280';
+      case 'success': return colors.success;
+      case 'failed': return colors.error;
+      case 'partial': return colors.warning;
+      case 'testing': return colors.primary;
+      default: return colors.textSecondary;
     }
   };
 
@@ -299,16 +300,16 @@ const styles = {
     padding: 16,
     backgroundColor: '#ffffff',
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   backText: {
     fontSize: 16,
-    color: '#3b82f6',
+    color: colors.primary,
   },
   title: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
   },
   content: {
     flex: 1,
@@ -323,24 +324,24 @@ const styles = {
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 8,
   },
   description: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 16,
     lineHeight: 20,
   },
   testButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.primary,
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
     alignItems: 'center',
   },
   testButtonDisabled: {
-    backgroundColor: '#9ca3af',
+    backgroundColor: colors.textLight,
   },
   testButtonText: {
     color: '#ffffff',
@@ -355,15 +356,15 @@ const styles = {
   },
   successDiagnosis: {
     backgroundColor: '#ecfdf5',
-    borderColor: '#10b981',
+    borderColor: colors.success,
   },
   errorDiagnosis: {
     backgroundColor: '#fef2f2',
-    borderColor: '#ef4444',
+    borderColor: colors.error,
   },
   blockedDiagnosis: {
-    backgroundColor: '#fef3c7',
-    borderColor: '#f59e0b',
+    backgroundColor: colors.bubbleArchetypal,
+    borderColor: colors.warning,
   },
   diagnosisTitle: {
     fontSize: 16,
@@ -409,7 +410,7 @@ const styles = {
     flex: 1,
     fontSize: 14,
     fontWeight: '500',
-    color: '#1f2937',
+    color: colors.text,
   },
   resultStatus: {
     fontSize: 12,
@@ -417,7 +418,7 @@ const styles = {
   },
   resultDetails: {
     fontSize: 12,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginLeft: 24,
   },
   quickActionsSection: {
@@ -433,12 +434,12 @@ const styles = {
     borderRadius: 8,
     marginBottom: 8,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
   },
   actionButtonText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#374151',
+    color: colors.text,
   },
 };
 

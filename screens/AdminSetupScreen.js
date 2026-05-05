@@ -207,7 +207,7 @@ const AdminSetupScreen = ({ navigation }) => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Current Role Status</Text>
         {isLoading ? (
-          <ActivityIndicator size="small" color="#3b82f6" />
+          <ActivityIndicator size="small" color={colors.primary} />
         ) : (
           <View style={styles.roleInfo}>
             <Text style={styles.roleText}>
@@ -352,7 +352,7 @@ const styles = {
   },
   roleText: {
     fontSize: 14,
-    color: '#374151',
+    color: colors.text,
     marginBottom: 4,
   },
   button: {
@@ -385,7 +385,7 @@ const styles = {
   infoSection: {
     margin: 16,
     padding: 16,
-    backgroundColor: '#fef3c7',
+    backgroundColor: colors.bubbleArchetypal,
     borderRadius: 8,
   },
   manualSection: {
@@ -395,7 +395,7 @@ const styles = {
     borderRadius: 8,
   },
   codeBlock: {
-    backgroundColor: '#1f2937',
+    backgroundColor: colors.text,
     padding: 12,
     borderRadius: 6,
     marginTop: 8,
@@ -410,8 +410,8 @@ const styles = {
   codeText: {
     fontSize: 12,
     fontFamily: 'monospace',
-    color: '#10b981',
-    backgroundColor: '#1f2937',
+    color: colors.success,
+    backgroundColor: colors.text,
     padding: 8,
     borderRadius: 4,
     marginBottom: 8,

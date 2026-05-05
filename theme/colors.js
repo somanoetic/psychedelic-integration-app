@@ -45,6 +45,12 @@ export const colors = {
   surface: '#FFFFFF',
   surfaceAlt: 'rgba(255, 255, 255, 0.9)',
 
+  // Message bubble tints (categorical message types)
+  bubbleArchetypal: '#fef3c7',  // pale yellow
+  bubbleEmotional: '#fce7f3',   // pale pink
+  bubbleSomatic: '#dcfce7',     // pale green
+  bubbleParts: '#fed7d7',       // pale red
+
   // Text Colors
   text: '#3A3A3A',           // Charcoal
   textSecondary: '#6B7280',  // Medium gray
@@ -121,9 +127,9 @@ export const borderRadius = {
 };
 
 export const typography = {
-  // Font families (to be implemented with custom fonts)
-  serif: 'System',  // Will be Merriweather or Lora
-  sans: 'System',   // Will be Inter or Plus Jakarta Sans
+  // Font families
+  serif: 'Fraunces_700Bold',  // Hero titles only
+  sans: 'System',
 
   // Font sizes
   xs: 12,

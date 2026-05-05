@@ -46,21 +46,21 @@ const ConversationalJournalEntry = ({ navigation }) => {
       id: 'gratitude',
       title: 'What am I grateful for?',
       icon: 'favorite',
-      color: '#10b981',
+      color: colors.success,
       prompt: "What am I grateful for today? Even small things count.",
     },
     {
       id: 'insight',
       title: 'What did I learn?',
       icon: 'lightbulb',
-      color: '#f59e0b',
+      color: colors.warning,
       prompt: "What insight or realization came to me recently?",
     },
     {
       id: 'challenge',
       title: 'What\'s challenging me?',
       icon: 'trending-up',
-      color: '#3b82f6',
+      color: colors.primary,
       prompt: "What's feeling difficult right now? What support do I need?",
     },
     {
@@ -160,9 +160,9 @@ const ConversationalJournalEntry = ({ navigation }) => {
       )}
       <View style={styles.optionsContainer}>
         <Text style={styles.optionsLabel}>You:</Text>
-        {renderUserOption('Give me a prompt', () => setConversationStep('prompt_choice'), 'help', '#10b981')}
-        {renderUserOption('I\'ll free-write', () => setConversationStep('free_write'), 'edit', '#3b82f6')}
-        {renderUserOption('Go back', () => navigation.goBack(), 'arrow-back', '#6b7280')}
+        {renderUserOption('Give me a prompt', () => setConversationStep('prompt_choice'), 'help', colors.success)}
+        {renderUserOption('I\'ll free-write', () => setConversationStep('free_write'), 'edit', colors.primary)}
+        {renderUserOption('Go back', () => navigation.goBack(), 'arrow-back', colors.textSecondary)}
       </View>
     </>
   );
@@ -190,15 +190,15 @@ const ConversationalJournalEntry = ({ navigation }) => {
               <Text style={styles.promptTitle}>{prompt.title}</Text>
               <Text style={styles.promptPreview}>{prompt.prompt}</Text>
             </View>
-            <MaterialIcons name="chevron-right" size={24} color="#9ca3af" />
+            <MaterialIcons name="chevron-right" size={24} color={colors.textLight} />
           </TouchableOpacity>
         ))}
       </View>
 
       <View style={styles.optionsContainer}>
         <Text style={styles.optionsLabel}>You:</Text>
-        {renderUserOption('Free-write instead', () => setConversationStep('free_write'), 'edit', '#3b82f6')}
-        {renderUserOption('Go back', () => setConversationStep('initial'), 'arrow-back', '#6b7280')}
+        {renderUserOption('Free-write instead', () => setConversationStep('free_write'), 'edit', colors.primary)}
+        {renderUserOption('Go back', () => setConversationStep('initial'), 'arrow-back', colors.textSecondary)}
       </View>
     </>
   );
@@ -215,7 +215,7 @@ const ConversationalJournalEntry = ({ navigation }) => {
           value={journalText}
           onChangeText={setJournalText}
           placeholder="Start writing..."
-          placeholderTextColor="#9ca3af"
+          placeholderTextColor={colors.textLight}
           multiline
           textAlignVertical="top"
         />
@@ -228,13 +228,13 @@ const ConversationalJournalEntry = ({ navigation }) => {
           isSaving ? 'Saving...' : 'Save this entry',
           saveJournal,
           'save',
-          '#10b981'
+          colors.success
         )}
-        {renderUserOption('Use a prompt instead', () => setConversationStep('prompt_choice'), 'help', '#f59e0b')}
+        {renderUserOption('Use a prompt instead', () => setConversationStep('prompt_choice'), 'help', colors.warning)}
         {renderUserOption('Discard and go back', () => {
           setJournalText('');
           setConversationStep('initial');
-        }, 'delete', '#6b7280')}
+        }, 'delete', colors.textSecondary)}
       </View>
     </>
   );
@@ -259,7 +259,7 @@ const ConversationalJournalEntry = ({ navigation }) => {
             value={journalText}
             onChangeText={setJournalText}
             placeholder="Write your thoughts..."
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor={colors.textLight}
             multiline
             textAlignVertical="top"
           />
@@ -272,17 +272,17 @@ const ConversationalJournalEntry = ({ navigation }) => {
             isSaving ? 'Saving...' : 'Save this entry',
             saveJournal,
             'save',
-            '#10b981'
+            colors.success
           )}
           {renderUserOption('Choose different prompt', () => {
             setSelectedPrompt(null);
             setConversationStep('prompt_choice');
-          }, 'refresh', '#3b82f6')}
+          }, 'refresh', colors.primary)}
           {renderUserOption('Discard and go back', () => {
             setJournalText('');
             setSelectedPrompt(null);
             setConversationStep('initial');
-          }, 'delete', '#6b7280')}
+          }, 'delete', colors.textSecondary)}
         </View>
       </>
     );
@@ -295,7 +295,7 @@ const ConversationalJournalEntry = ({ navigation }) => {
       )}
 
       <View style={styles.confirmCard}>
-        <MaterialIcons name="check-circle" size={48} color="#10b981" />
+        <MaterialIcons name="check-circle" size={48} color={colors.success} />
         <Text style={styles.confirmText}>Entry saved successfully</Text>
         <Text style={styles.confirmSubtext}>
           You can review your entries anytime from your profile
@@ -308,8 +308,8 @@ const ConversationalJournalEntry = ({ navigation }) => {
           setJournalText('');
           setSelectedPrompt(null);
           setConversationStep('initial');
-        }, 'add', '#10b981')}
-        {renderUserOption('Go back home', () => navigation.goBack(), 'home', '#6b7280')}
+        }, 'add', colors.success)}
+        {renderUserOption('Go back home', () => navigation.goBack(), 'home', colors.textSecondary)}
       </View>
     </>
   );
@@ -319,10 +319,10 @@ const ConversationalJournalEntry = ({ navigation }) => {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <MaterialIcons name="arrow-back" size={24} color="#1f2937" />
+          <MaterialIcons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         <Text style={styles.appName}>Journal</Text>
-        <MaterialIcons name="edit-note" size={24} color="#1f2937" />
+        <MaterialIcons name="edit-note" size={24} color={colors.text} />
       </View>
 
       <KeyboardAvoidingView
@@ -362,12 +362,12 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     backgroundColor: '#ffffff',
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   appName: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1f2937',
+    color: colors.text,
   },
   content: {
     flex: 1,
@@ -393,9 +393,9 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   huxleyAvatarSmall: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 54,
+    height: 54,
+    borderRadius: 27,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 10,
@@ -403,12 +403,12 @@ const styles = StyleSheet.create({
   huxleyName: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   huxleyText: {
     fontSize: 16,
     lineHeight: 24,
-    color: '#374151',
+    color: colors.text,
   },
   optionsContainer: {
     marginBottom: 24,
@@ -416,7 +416,7 @@ const styles = StyleSheet.create({
   optionsLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 12,
     marginLeft: 4,
   },
@@ -476,12 +476,12 @@ const styles = StyleSheet.create({
   promptTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 4,
   },
   promptPreview: {
     fontSize: 13,
-    color: '#6b7280',
+    color: colors.textSecondary,
     lineHeight: 18,
   },
   writeContainer: {
@@ -511,14 +511,14 @@ const styles = StyleSheet.create({
   },
   journalInput: {
     fontSize: 16,
-    color: '#1f2937',
+    color: colors.text,
     lineHeight: 24,
     minHeight: 200,
     textAlignVertical: 'top',
   },
   wordCount: {
     fontSize: 12,
-    color: '#9ca3af',
+    color: colors.textLight,
     textAlign: 'right',
     marginTop: 8,
     fontStyle: 'italic',
@@ -538,13 +538,13 @@ const styles = StyleSheet.create({
   confirmText: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginTop: 16,
     marginBottom: 8,
   },
   confirmSubtext: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 20,
   },

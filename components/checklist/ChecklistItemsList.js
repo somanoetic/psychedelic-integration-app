@@ -8,7 +8,7 @@ import CategorySection from './CategorySection';
  *
  * Organizes items into Physical, Safety, Mental, and Practical sections.
  */
-const ChecklistItemsList = ({ items, onToggleItem, onDeleteItem, disabled }) => {
+const ChecklistItemsList = ({ items, onToggleItem, onToggleItemNA, onDeleteItem, disabled }) => {
   // Group items by category
   const categorizedItems = items.reduce((acc, item) => {
     const category = item.category || 'practical';
@@ -34,6 +34,7 @@ const ChecklistItemsList = ({ items, onToggleItem, onDeleteItem, disabled }) => 
             category={category}
             items={categoryItems}
             onToggleItem={onToggleItem}
+            onToggleItemNA={onToggleItemNA}
             onDeleteItem={onDeleteItem}
             disabled={disabled}
           />

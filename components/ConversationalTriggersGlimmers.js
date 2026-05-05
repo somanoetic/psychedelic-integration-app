@@ -18,6 +18,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
 import huxleyService from '../lib/huxleyService';
 import polyvagalContextService from '../lib/polyvagalContextService';
+import { colors } from '../theme/colors';
 
 /**
  * Conversational Triggers & Glimmers Exploration
@@ -234,7 +235,7 @@ const ConversationalTriggersGlimmers = ({ onComplete, navigation }) => {
             onPress={() => navigation?.goBack()}
             style={styles.backButton}
           >
-            <MaterialIcons name="arrow-back" size={24} color="#374151" />
+            <MaterialIcons name="arrow-back" size={24} color={colors.text} />
           </TouchableOpacity>
           <MaterialIcons name="waves" size={24} color="#ec4899" />
           <Text style={styles.headerTitle}>Triggers & Glimmers</Text>
@@ -260,7 +261,7 @@ const ConversationalTriggersGlimmers = ({ onComplete, navigation }) => {
       </ScrollView>
 
       <TouchableOpacity style={styles.doneButton} onPress={handleComplete}>
-        <MaterialIcons name="check-circle" size={20} color="#10b981" />
+        <MaterialIcons name="check-circle" size={20} color={colors.success} />
         <Text style={styles.doneButtonText}>Save My Mapping</Text>
       </TouchableOpacity>
 
@@ -270,7 +271,7 @@ const ConversationalTriggersGlimmers = ({ onComplete, navigation }) => {
           value={inputText}
           onChangeText={setInputText}
           placeholder="Share your thoughts..."
-          placeholderTextColor="#9ca3af"
+          placeholderTextColor={colors.textLight}
           multiline
           maxLength={2000}
           editable={!loading && !saving}
@@ -296,26 +297,26 @@ const ConversationalTriggersGlimmers = ({ onComplete, navigation }) => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F5F1E8' },
-  header: { backgroundColor: '#fff', padding: 20, paddingTop: 60, borderBottomWidth: 1, borderBottomColor: '#e5e7eb' },
+  header: { backgroundColor: '#fff', padding: 20, paddingTop: 60, borderBottomWidth: 1, borderBottomColor: colors.lightGray },
   backButton: { padding: 4, marginRight: 8 },
   headerContent: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
-  headerTitle: { fontSize: 24, fontWeight: 'bold', color: '#1f2937', marginLeft: 12 },
-  headerSubtitle: { fontSize: 14, color: '#6b7280', marginLeft: 36 },
+  headerTitle: { fontSize: 24, fontWeight: 'bold', color: colors.text, marginLeft: 12 },
+  headerSubtitle: { fontSize: 14, color: colors.textSecondary, marginLeft: 36 },
   messagesContainer: { flex: 1 },
   messagesContent: { padding: 16, paddingBottom: 80 },
   aiMessageRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 12 },
-  huxleyAvatar: { width: 36, height: 36, marginRight: 8, marginTop: 4 },
+  huxleyAvatar: { width: 54, height: 54, marginRight: 8, marginTop: 4 },
   messageBubble: { maxWidth: '75%', padding: 12, borderRadius: 16, marginBottom: 12 },
   userMessage: { alignSelf: 'flex-end', backgroundColor: '#ec4899', borderBottomRightRadius: 4 },
-  aiMessage: { alignSelf: 'flex-start', backgroundColor: '#fff', borderBottomLeftRadius: 4, borderWidth: 1, borderColor: '#e5e7eb', flex: 1, marginBottom: 0 },
+  aiMessage: { alignSelf: 'flex-start', backgroundColor: '#fff', borderBottomLeftRadius: 4, borderWidth: 1, borderColor: colors.lightGray, flex: 1, marginBottom: 0 },
   messageText: { fontSize: 16, lineHeight: 22, marginBottom: 4 },
   userMessageText: { color: '#fff' },
-  aiMessageText: { color: '#1f2937' },
-  timestamp: { fontSize: 11, color: '#9ca3af', alignSelf: 'flex-end' },
+  aiMessageText: { color: colors.text },
+  timestamp: { fontSize: 11, color: colors.textLight, alignSelf: 'flex-end' },
   doneButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: 16, marginHorizontal: 16, marginBottom: 8, backgroundColor: '#f0fdf4', borderRadius: 12, borderWidth: 1, borderColor: '#86efac' },
-  doneButtonText: { color: '#10b981', fontSize: 16, fontWeight: '600', marginLeft: 8 },
-  inputContainer: { flexDirection: 'row', padding: 16, backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: '#e5e7eb', alignItems: 'flex-end' },
-  input: { flex: 1, backgroundColor: '#f9fafb', borderRadius: 24, paddingHorizontal: 16, paddingVertical: 12, fontSize: 16, color: '#1f2937', maxHeight: 120, marginRight: 12 },
+  doneButtonText: { color: colors.success, fontSize: 16, fontWeight: '600', marginLeft: 8 },
+  inputContainer: { flexDirection: 'row', padding: 16, backgroundColor: '#fff', borderTopWidth: 1, borderTopColor: colors.lightGray, alignItems: 'flex-end' },
+  input: { flex: 1, backgroundColor: '#f9fafb', borderRadius: 24, paddingHorizontal: 16, paddingVertical: 12, fontSize: 16, color: colors.text, maxHeight: 120, marginRight: 12 },
   sendButton: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#ec4899', alignItems: 'center', justifyContent: 'center' },
   sendButtonDisabled: { backgroundColor: '#f3f4f6' },
   savingOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', alignItems: 'center', justifyContent: 'center' },

@@ -721,7 +721,7 @@ Before we dive in, let's check in with your nervous system. How is your body fee
         {isLoading && (
           <View style={styles.typingIndicator}>
             <Text style={styles.typingText}>Considering therapeutic connections...</Text>
-            <ActivityIndicator size="small" color="#3b82f6" />
+            <ActivityIndicator size="small" color={colors.primary} />
           </View>
         )}
       </ScrollView>
@@ -791,7 +791,7 @@ const styles = {
     padding: 16,
     backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   backText: {
     fontSize: 16,
@@ -804,7 +804,7 @@ const styles = {
   },
   switchText: {
     fontSize: 12,
-    color: '#10b981',
+    color: colors.success,
   },
   nervousSystemHeader: {
     flexDirection: 'row',
@@ -814,7 +814,7 @@ const styles = {
     paddingVertical: 12,
     backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   nervousSystemIndicator: {
     flexDirection: 'row',
@@ -839,19 +839,19 @@ const styles = {
   },
   practiceCount: {
     fontSize: 11,
-    color: '#9ca3af',
+    color: colors.textLight,
   },
   therapeuticFocusContainer: {
     backgroundColor: colors.surface,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   focusTitle: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.text,
     marginBottom: 6,
   },
   focusChips: {
@@ -862,7 +862,7 @@ const styles = {
   focusChip: {
     paddingHorizontal: 6,
     paddingVertical: 2,
-    backgroundColor: '#fef3c7',
+    backgroundColor: colors.bubbleArchetypal,
     borderRadius: 8,
   },
   focusChipText: {
@@ -892,7 +892,7 @@ const styles = {
     backgroundColor: colors.surface,
     alignSelf: 'flex-start',
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
   },
   messageText: {
     fontSize: 16,
@@ -913,7 +913,7 @@ const styles = {
   therapeuticThemeChip: {
     paddingHorizontal: 6,
     paddingVertical: 3,
-    backgroundColor: '#dcfce7',
+    backgroundColor: colors.bubbleSomatic,
     borderRadius: 8,
   },
   therapeuticThemeText: {
@@ -982,7 +982,7 @@ const styles = {
     padding: 16,
     backgroundColor: colors.surface,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: colors.lightGray,
     alignItems: 'flex-end',
     gap: 12,
   },
@@ -1006,7 +1006,7 @@ const styles = {
     alignItems: 'center',
   },
   sendButtonDisabled: {
-    backgroundColor: '#9ca3af',
+    backgroundColor: colors.textLight,
   },
   sendButtonText: {
     fontSize: 20,

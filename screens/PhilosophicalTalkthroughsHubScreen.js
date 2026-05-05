@@ -12,11 +12,13 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
-import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
+import { colors, gradients, spacing, borderRadius, shadows, typography } from '../theme/colors';
+import { icons } from '../lib/uiIcons';
 import { talkthroughTopics } from '../content/philosophicalTalkthroughs';
 
 const PhilosophicalTalkthroughsHubScreen = ({ navigation }) => {
@@ -45,7 +47,7 @@ const PhilosophicalTalkthroughsHubScreen = ({ navigation }) => {
 
           {/* Hero */}
           <View style={styles.hero}>
-            <Text style={styles.heroEmoji}>{'\u{1F52E}'}</Text>
+            <Image source={icons.philosophical} style={styles.heroIcon} />
             <Text style={styles.heroTitle}>Philosophical Talkthroughs</Text>
             <Text style={styles.heroSubtitle}>
               Guided contemplative explorations of the big questions. No right answers — just honest attention.
@@ -62,7 +64,11 @@ const PhilosophicalTalkthroughsHubScreen = ({ navigation }) => {
                 activeOpacity={0.7}
               >
                 <View style={styles.optionLeft}>
-                  <Text style={styles.optionEmoji}>{topic.emoji}</Text>
+                  {topic.icon ? (
+                    <Image source={topic.icon} style={styles.optionIconImage} />
+                  ) : (
+                    <Text style={styles.optionEmoji}>{topic.emoji}</Text>
+                  )}
                   <View style={styles.optionText}>
                     <Text style={styles.optionTitle}>{topic.title}</Text>
                     <Text style={styles.optionDescription}>{topic.description}</Text>
@@ -118,13 +124,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.xl,
   },
-  heroEmoji: {
-    fontSize: 56,
+  heroIcon: {
+    width: 192,
+    height: 192,
     marginBottom: spacing.md,
+    resizeMode: 'contain',
   },
   heroTitle: {
     fontSize: 28,
-    fontWeight: '700',
+    fontFamily: typography.serif,
     color: colors.text,
     marginBottom: spacing.sm,
     textAlign: 'center',
@@ -155,6 +163,12 @@ const styles = StyleSheet.create({
   },
   optionEmoji: {
     fontSize: 36,
+    marginRight: spacing.md,
+  },
+  optionIconImage: {
+    width: 112,
+    height: 112,
+    resizeMode: 'contain',
     marginRight: spacing.md,
   },
   optionText: {

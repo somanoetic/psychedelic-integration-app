@@ -4,10 +4,10 @@ import Svg, { Circle, G, Text as SvgText } from 'react-native-svg';
 import { colors, shadows, borderRadius, spacing } from '../../theme/colors';
 
 const STATE_COLORS = {
-  ventral: '#10b981',
-  sympathetic: '#ef4444',
-  dorsal: '#6b7280',
-  mixed: '#f59e0b',
+  ventral: colors.success,
+  sympathetic: colors.error,
+  dorsal: colors.textSecondary,
+  mixed: colors.warning,
 };
 
 const STATE_LABELS = {

@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -15,9 +16,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../lib/supabase';
 import polyvagalContextService from '../lib/polyvagalContextService';
 import ifsContextService from '../lib/ifsContextService';
-import { colors, gradients, shadows, spacing, borderRadius } from '../theme/colors';
+import { colors, gradients, shadows, spacing, borderRadius, typography } from '../theme/colors';
 import ShareWithTherapistButton from '../components/ShareWithTherapistButton';
 import { shareAll } from '../lib/therapistShareService';
+import { icons } from '../lib/uiIcons';
 
 // ---------------------------------------------------------------------------
 // Domain config
@@ -206,11 +208,11 @@ const InnerAtlasScreen = ({ navigation }) => {
   };
 
   const DOMAINS = [
-    { key: 'nervousSystem', emoji: '💚', title: 'Nervous System', route: 'NervousSystemSummary', actionRoute: 'NervousSystemMapping', description: 'Your polyvagal map — states, patterns, and awareness' },
-    { key: 'resources', emoji: '🛠️', title: 'Regulation Toolkit', route: 'RegulationToolkit', actionRoute: 'RegulatingResources', description: 'What actually helps you regulate in each state' },
-    { key: 'triggersGlimmers', emoji: '⚡', title: 'Triggers & Glimmers', route: 'TriggersGlimmersSummary', actionRoute: 'TriggersGlimmers', description: 'What activates you and what brings you back' },
-    { key: 'coreBeliefs', emoji: '💭', title: 'Core Beliefs', route: 'CoreBeliefsSummary', actionRoute: 'CoreBeliefs', description: 'The deep beliefs that shape your experience' },
-    { key: 'parts', emoji: '🔮', title: 'Parts', route: 'PartsSummary', actionRoute: 'IFSChat', description: 'Your inner family — protectors, exiles, and Self' },
+    { key: 'nervousSystem', emoji: '💚', icon: icons.nsMap, title: 'Nervous System', route: 'NervousSystemSummary', actionRoute: 'NervousSystemMapping', description: 'Your polyvagal map — states, patterns, and awareness' },
+    { key: 'resources', emoji: '🛠️', icon: icons.regulatingResources, title: 'Regulation Toolkit', route: 'RegulationToolkit', actionRoute: 'RegulatingResources', description: 'What actually helps you regulate in each state' },
+    { key: 'triggersGlimmers', emoji: '⚡', icon: icons.triggerGlimmerMap, title: 'Triggers & Glimmers', route: 'TriggersGlimmersSummary', actionRoute: 'TriggersGlimmers', description: 'What activates you and what brings you back' },
+    { key: 'coreBeliefs', emoji: '💭', icon: icons.coreBeliefs, title: 'Core Beliefs', route: 'CoreBeliefsSummary', actionRoute: 'CoreBeliefs', description: 'The deep beliefs that shape your experience' },
+    { key: 'parts', emoji: '🔮', icon: icons.roles, title: 'Parts', route: 'PartsSummary', actionRoute: 'IFSChat', description: 'Your inner family — protectors, exiles, and Self' },
   ];
 
   const renderCard = (domain) => {
@@ -227,7 +229,11 @@ const InnerAtlasScreen = ({ navigation }) => {
         activeOpacity={0.7}
       >
         <View style={styles.optionLeft}>
-          <Text style={styles.optionEmoji}>{domain.emoji}</Text>
+          {domain.icon ? (
+            <Image source={domain.icon} style={styles.optionIconImage} />
+          ) : (
+            <Text style={styles.optionEmoji}>{domain.emoji}</Text>
+          )}
           <View style={styles.optionText}>
             <Text style={styles.optionTitle}>{domain.title}</Text>
             {isMapped ? (
@@ -272,7 +278,7 @@ const InnerAtlasScreen = ({ navigation }) => {
           >
             {/* Hero */}
             <View style={styles.hero}>
-              <Text style={styles.heroEmoji}>🗺️</Text>
+              <Image source={icons.foldedMap} style={styles.heroIcon} />
               <Text style={styles.heroTitle}>Inner Atlas</Text>
               <Text style={styles.heroSubtitle}>
                 {mappedCount === 0
@@ -356,13 +362,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.xl,
   },
-  heroEmoji: {
-    fontSize: 56,
+  heroIcon: {
+    width: 192,
+    height: 192,
     marginBottom: spacing.md,
+    resizeMode: 'contain',
   },
   heroTitle: {
     fontSize: 28,
-    fontWeight: '700',
+    fontFamily: typography.serif,
     color: colors.text,
     marginBottom: spacing.sm,
     textAlign: 'center',
@@ -395,6 +403,12 @@ const styles = StyleSheet.create({
   },
   optionEmoji: {
     fontSize: 36,
+    marginRight: spacing.md,
+  },
+  optionIconImage: {
+    width: 112,
+    height: 112,
+    resizeMode: 'contain',
     marginRight: spacing.md,
   },
   optionText: {

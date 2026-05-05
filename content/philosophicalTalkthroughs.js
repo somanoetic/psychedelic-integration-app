@@ -5,11 +5,14 @@
  * AI-guided conversations through the Huxley service.
  */
 
+import { icons } from '../lib/uiIcons';
+
 export const talkthroughTopics = [
   {
     id: 'who_am_i',
     title: 'Who Am I?',
     emoji: '\u{1FA9E}',
+    icon: icons.selfReflect,
     subtitle: 'Identity and self-inquiry',
     description: 'Explore the layers of identity — roles, stories, sensations — and discover what remains when they fall away.',
     estimatedTime: '15-25 min',
@@ -33,6 +36,7 @@ export const talkthroughTopics = [
     id: 'nature_of_consciousness',
     title: 'The Nature of Consciousness',
     emoji: '\u{2728}',
+    icon: icons.consciousness,
     subtitle: 'Awareness exploring itself',
     description: 'What is this awareness that is reading these words right now? Turn attention toward attention itself.',
     estimatedTime: '15-25 min',
@@ -56,6 +60,7 @@ export const talkthroughTopics = [
     id: 'unity_and_separation',
     title: 'Unity and Separation',
     emoji: '\u{267E}\uFE0F',
+    icon: icons.wholenessInfinity,
     subtitle: 'Non-dual awareness',
     description: 'The experience of oneness is common in expanded states — but what does it mean for daily life? Explore the dance between unity and individuality.',
     estimatedTime: '15-25 min',
@@ -79,6 +84,7 @@ export const talkthroughTopics = [
     id: 'healing_and_wholeness',
     title: 'Healing and Wholeness',
     emoji: '\u{1F331}',
+    icon: icons.sprout,
     subtitle: 'Integration and becoming whole',
     description: 'What does it actually mean to heal? Explore whether healing is about fixing what is broken or remembering what was never lost.',
     estimatedTime: '15-25 min',
@@ -102,6 +108,7 @@ export const talkthroughTopics = [
     id: 'mystery_and_not_knowing',
     title: 'Mystery and Not-Knowing',
     emoji: '\u{1F30C}',
+    icon: icons.mystery,
     subtitle: 'Embracing uncertainty',
     description: 'The mind craves answers. But some of the most profound experiences resist explanation. What opens up when you stop needing to know?',
     estimatedTime: '15-25 min',

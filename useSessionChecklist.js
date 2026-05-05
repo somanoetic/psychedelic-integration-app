@@ -25,6 +25,7 @@ export const useSessionChecklist = (sessionId, context) => {
   const [error, setError] = useState(null);
   const [syncing, setSyncing] = useState(false);
   const [offline, setOffline] = useState(false);
+  const [naItemIds, setNaItemIds] = useState(() => new Set());
 
   const checklistRef = useRef(null);
   const cacheKey = `checklist_${sessionId}`;
@@ -84,6 +85,32 @@ export const useSessionChecklist = (sessionId, context) => {
     } catch (err) {
       console.error('Error loading from cache:', err);
       return null;
+    }
+  };
+
+  // Load N/A markers from AsyncStorage when checklist becomes available
+  useEffect(() => {
+    if (!checklist?.id) return;
+    const key = `na_${checklist.id}`;
+    AsyncStorage.getItem(key)
+      .then((raw) => {
+        if (!raw) return;
+        try {
+          const ids = JSON.parse(raw);
+          if (Array.isArray(ids)) setNaItemIds(new Set(ids));
+        } catch {
+          // ignore parse errors
+        }
+      })
+      .catch((err) => console.error('Error loading N/A markers:', err));
+  }, [checklist?.id]);
+
+  const persistNaItems = async (newSet, checklistId) => {
+    if (!checklistId) return;
+    try {
+      await AsyncStorage.setItem(`na_${checklistId}`, JSON.stringify([...newSet]));
+    } catch (err) {
+      console.error('Error saving N/A markers:', err);
     }
   };
 
@@ -392,13 +419,65 @@ export const useSessionChecklist = (sessionId, context) => {
     loadChecklist();
   }, [sessionId]);
 
+  /**
+   * Toggle an item's "Not Applicable" status.
+   *
+   * Safety items cannot be marked N/A. When marking N/A, if the item is
+   * currently checked, it is unchecked first so the two states stay
+   * mutually exclusive. N/A markers are persisted locally per checklist.
+   */
+  const toggleItemNA = useCallback(async (itemId) => {
+    if (!checklist) return;
+    const item = checklist.items.find((i) => i.id === itemId);
+    if (!item || item.category === 'safety') return;
+
+    const newSet = new Set(naItemIds);
+    const wasNa = newSet.has(itemId);
+
+    if (wasNa) {
+      newSet.delete(itemId);
+    } else {
+      newSet.add(itemId);
+      if (item.isChecked) {
+        // Uncheck so checked + N/A aren't simultaneously true
+        await toggleItem(itemId);
+      }
+    }
+
+    setNaItemIds(newSet);
+    await persistNaItems(newSet, checklist.id);
+  }, [checklist, naItemIds, toggleItem]);
+
+  // Augment the checklist with N/A markers and recomputed progress so the UI
+  // treats N/A items as "done" for completion purposes.
+  const enhancedChecklist = checklist
+    ? (() => {
+        const items = checklist.items.map((i) => ({
+          ...i,
+          isNa: naItemIds.has(i.id),
+        }));
+        const naCount = items.filter((i) => i.isNa).length;
+        const effectiveCompleted = checklist.completedItems + naCount;
+        const total = checklist.totalItems || items.length;
+        const pct = total > 0 ? Math.round((effectiveCompleted / total) * 100) : 0;
+        return {
+          ...checklist,
+          items,
+          completedItems: effectiveCompleted,
+          completionPercentage: pct,
+          isComplete: total > 0 && effectiveCompleted >= total,
+        };
+      })()
+    : null;
+
   return {
-    checklist,
+    checklist: enhancedChecklist,
     loading,
     error,
     syncing,
     offline,
     toggleItem,
+    toggleItemNA,
     addItem,
     updateItem,
     deleteItem,

@@ -6,10 +6,13 @@ import {
   TouchableOpacity,
   StyleSheet,
   TextInput,
-  ActivityIndicator
+  ActivityIndicator,
+  Image,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
+import { icons } from '../lib/uiIcons';
+import { colors } from '../theme/colors';
 
 /**
  * IFS Parts Inventory - Enhanced Parts Identification
@@ -79,7 +82,8 @@ const IFSPartsInventory = ({ onComplete, onSkip }) => {
     managers: {
       title: 'Manager Parts',
       emoji: '👔',
-      color: '#3b82f6',
+      icon: icons.manager,
+      color: colors.primary,
       description: 'Proactive protectors that try to control your environment and prevent bad things from happening.',
       parts: [
         {
@@ -122,6 +126,7 @@ const IFSPartsInventory = ({ onComplete, onSkip }) => {
     firefighters: {
       title: 'Firefighter Parts',
       emoji: '🚒',
+      icon: icons.firefighter,
       color: '#dc2626',
       description: 'Reactive protectors that distract from pain or numb difficult feelings when you\'re already hurt.',
       parts: [
@@ -155,6 +160,7 @@ const IFSPartsInventory = ({ onComplete, onSkip }) => {
     exiles: {
       title: 'Exile Parts',
       emoji: '🧸',
+      icon: icons.softness,
       color: '#a855f7',
       description: 'Vulnerable parts carrying wounds, but also creativity, spontaneity, and capacity for joy.',
       parts: [
@@ -212,6 +218,7 @@ const IFSPartsInventory = ({ onComplete, onSkip }) => {
       type: 'intro',
       title: 'IFS Parts Inventory',
       emoji: '👥',
+      icon: icons.group,
       content: 'Let\'s identify your protective and vulnerable parts. This deeper understanding helps you work with your parts during psychedelic sessions and integration.'
     },
     { type: 'parts', category: 'managers' },
@@ -221,12 +228,14 @@ const IFSPartsInventory = ({ onComplete, onSkip }) => {
       type: 'self',
       title: 'Your Core Self',
       emoji: '🌟',
+      icon: icons.transcendence,
       content: 'At your center is Self - the wise, compassionate observer. Self can lead your parts with the 8 C\'s: Curious, Compassionate, Calm, Connected, Courageous, Creative, Clarity, Confidence.'
     },
     {
       type: 'summary',
       title: 'Your Parts Family',
       emoji: '✨',
+      icon: icons.glimmerCaptured,
       content: 'Here are the parts you\'ve identified:'
     }
   ];
@@ -254,12 +263,16 @@ const IFSPartsInventory = ({ onComplete, onSkip }) => {
 
   const renderIntro = () => (
     <View style={styles.stepContent}>
-      <Text style={styles.stepEmoji}>{steps[currentStep].emoji}</Text>
+      {steps[currentStep].icon ? (
+        <Image source={steps[currentStep].icon} style={styles.stepIconImage} />
+      ) : (
+        <Text style={styles.stepEmoji}>{steps[currentStep].emoji}</Text>
+      )}
       <Text style={styles.stepTitle}>{steps[currentStep].title}</Text>
       <Text style={styles.stepText}>{steps[currentStep].content}</Text>
 
       <View style={styles.infoBox}>
-        <MaterialIcons name="info" size={20} color="#3b82f6" />
+        <MaterialIcons name="info" size={20} color={colors.primary} />
         <Text style={styles.infoText}>
           All parts are welcome. All parts have good intentions. Your job is simply to notice them with curiosity.
         </Text>
@@ -273,7 +286,11 @@ const IFSPartsInventory = ({ onComplete, onSkip }) => {
 
     return (
       <View style={styles.stepContent}>
-        <Text style={styles.stepEmoji}>{category.emoji}</Text>
+        {category.icon ? (
+          <Image source={category.icon} style={styles.stepIconImage} />
+        ) : (
+          <Text style={styles.stepEmoji}>{category.emoji}</Text>
+        )}
         <Text style={[styles.stepTitle, { color: category.color }]}>{category.title}</Text>
         <Text style={styles.stepText}>{category.description}</Text>
 
@@ -319,7 +336,7 @@ const IFSPartsInventory = ({ onComplete, onSkip }) => {
                       onPress={() => togglePart(step.category, part.name)}
                       hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                     >
-                      <MaterialIcons name="close" size={20} color="#ef4444" />
+                      <MaterialIcons name="close" size={20} color={colors.error} />
                     </TouchableOpacity>
                   )}
                 </TouchableOpacity>
@@ -336,7 +353,7 @@ const IFSPartsInventory = ({ onComplete, onSkip }) => {
                   <TextInput
                     style={styles.noteInput}
                     placeholder="Add notes about this part (optional)..."
-                    placeholderTextColor="#9ca3af"
+                    placeholderTextColor={colors.textLight}
                     value={customNotes[noteKey] || ''}
                     onChangeText={(text) => updateCustomNote(step.category, part.name, text)}
                     multiline
@@ -352,7 +369,11 @@ const IFSPartsInventory = ({ onComplete, onSkip }) => {
 
   const renderSelf = () => (
     <View style={styles.stepContent}>
-      <Text style={styles.stepEmoji}>{steps[currentStep].emoji}</Text>
+      {steps[currentStep].icon ? (
+        <Image source={steps[currentStep].icon} style={styles.stepIconImage} />
+      ) : (
+        <Text style={styles.stepEmoji}>{steps[currentStep].emoji}</Text>
+      )}
       <Text style={styles.stepTitle}>{steps[currentStep].title}</Text>
       <Text style={styles.stepText}>{steps[currentStep].content}</Text>
 
@@ -378,7 +399,11 @@ const IFSPartsInventory = ({ onComplete, onSkip }) => {
 
     return (
       <View style={styles.stepContent}>
+        {steps[currentStep].icon ? (
+        <Image source={steps[currentStep].icon} style={styles.stepIconImage} />
+      ) : (
         <Text style={styles.stepEmoji}>{steps[currentStep].emoji}</Text>
+      )}
         <Text style={styles.stepTitle}>{steps[currentStep].title}</Text>
         <Text style={styles.summaryCount}>You've identified {totalParts} parts</Text>
 
@@ -453,7 +478,7 @@ const IFSPartsInventory = ({ onComplete, onSkip }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={onSkip} style={styles.skipButton}>
-          <MaterialIcons name="close" size={24} color="#6b7280" />
+          <MaterialIcons name="close" size={24} color={colors.textSecondary} />
         </TouchableOpacity>
         <View style={styles.progressContainer}>
           <Text style={styles.progressText}>
@@ -483,7 +508,7 @@ const IFSPartsInventory = ({ onComplete, onSkip }) => {
           <MaterialIcons
             name="arrow-back"
             size={20}
-            color={currentStep === 0 ? '#9ca3af' : '#6b7280'}
+            color={currentStep === 0 ? colors.textLight : colors.textSecondary}
           />
           <Text style={[styles.navButtonText, currentStep === 0 && styles.navButtonDisabledText]}>
             Back
@@ -520,7 +545,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 16,
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   header: {
     flexDirection: 'row',
@@ -530,7 +555,7 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   skipButton: {
     padding: 8,
@@ -540,13 +565,13 @@ const styles = StyleSheet.create({
   },
   progressText: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 4,
   },
   progressBar: {
     width: 100,
     height: 4,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: colors.lightGray,
     borderRadius: 2,
   },
   progressFill: {
@@ -565,16 +590,23 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 16,
   },
+  stepIconImage: {
+    width: 160,
+    height: 160,
+    resizeMode: 'contain',
+    alignSelf: 'center',
+    marginBottom: 16,
+  },
   stepTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1f2937',
+    color: colors.text,
     textAlign: 'center',
     marginBottom: 16,
   },
   stepText: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 24,
     marginBottom: 24,
@@ -633,7 +665,7 @@ const styles = StyleSheet.create({
   partName: {
     fontSize: 18,
     fontWeight: '500',
-    color: '#1f2937',
+    color: colors.text,
     flex: 1,
   },
   selectedBadge: {
@@ -654,7 +686,7 @@ const styles = StyleSheet.create({
   },
   partDescription: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     paddingHorizontal: 16,
     paddingBottom: 12,
     lineHeight: 20,
@@ -665,16 +697,16 @@ const styles = StyleSheet.create({
   },
   questionText: {
     fontSize: 13,
-    color: '#374151',
+    color: colors.text,
     marginBottom: 6,
     lineHeight: 18,
   },
   noteInput: {
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: colors.lightGray,
     padding: 16,
     fontSize: 14,
-    color: '#1f2937',
+    color: colors.text,
     minHeight: 80,
     textAlignVertical: 'top',
   },
@@ -715,7 +747,7 @@ const styles = StyleSheet.create({
   },
   summaryCount: {
     fontSize: 18,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: 24,
   },
@@ -729,12 +761,12 @@ const styles = StyleSheet.create({
   summaryCategoryTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 12,
   },
   summaryPartName: {
     fontSize: 15,
-    color: '#374151',
+    color: colors.text,
     marginBottom: 6,
   },
   completionBox: {
@@ -755,7 +787,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 16,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: colors.lightGray,
   },
   navButton: {
     flexDirection: 'row',
@@ -767,11 +799,11 @@ const styles = StyleSheet.create({
   },
   navButtonText: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginLeft: 4,
   },
   navButtonDisabledText: {
-    color: '#9ca3af',
+    color: colors.textLight,
   },
   nextButton: {
     flexDirection: 'row',

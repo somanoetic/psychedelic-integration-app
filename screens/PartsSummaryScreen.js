@@ -14,27 +14,29 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   RefreshControl,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../lib/supabase';
 import ifsContextService from '../lib/ifsContextService';
-import { colors, gradients, shadows, spacing, borderRadius } from '../theme/colors';
+import { colors, gradients, shadows, spacing, borderRadius, typography } from '../theme/colors';
 import ShareWithTherapistButton from '../components/ShareWithTherapistButton';
 import { shareIFSParts } from '../lib/therapistShareService';
+import { icons } from '../lib/uiIcons';
 
 const PHASE_CONFIG = {
-  discovery: { label: 'Discovery', color: '#f59e0b' },
-  accessing: { label: 'Accessing', color: '#3b82f6' },
+  discovery: { label: 'Discovery', color: colors.warning },
+  accessing: { label: 'Accessing', color: colors.primary },
   unburdening: { label: 'Unburdening', color: '#8b5cf6' },
-  integrated: { label: 'Integrated', color: '#10b981' },
+  integrated: { label: 'Integrated', color: colors.success },
 };
 
 const ROLE_CONFIG = {
-  manager: { emoji: '🛡️', label: 'Manager' },
-  firefighter: { emoji: '🔥', label: 'Firefighter' },
-  exile: { emoji: '💔', label: 'Exile' },
+  manager: { emoji: '🛡️', icon: icons.manager, label: 'Manager' },
+  firefighter: { emoji: '🔥', icon: icons.firefighter, label: 'Firefighter' },
+  exile: { emoji: '💔', icon: icons.brokenHeart, label: 'Exile' },
 };
 
 const PartsSummaryScreen = ({ navigation }) => {
@@ -76,7 +78,11 @@ const PartsSummaryScreen = ({ navigation }) => {
     return (
       <View key={part.id} style={styles.card}>
         <View style={styles.cardHeader}>
-          <Text style={styles.cardEmoji}>{roleConfig.emoji}</Text>
+          {roleConfig.icon ? (
+            <Image source={roleConfig.icon} style={styles.cardIconImage} />
+          ) : (
+            <Text style={styles.cardEmoji}>{roleConfig.emoji}</Text>
+          )}
           <View style={styles.cardHeaderText}>
             <Text style={styles.cardTitle}>{part.part_name || 'Unnamed Part'}</Text>
             <Text style={styles.cardSubtitle}>
@@ -102,7 +108,7 @@ const PartsSummaryScreen = ({ navigation }) => {
 
         {part.unburdened && (
           <View style={styles.unburdenedBadge}>
-            <MaterialIcons name="check-circle" size={14} color="#10b981" />
+            <MaterialIcons name="check-circle" size={14} color={colors.success} />
             <Text style={styles.unburdenedText}>Unburdened</Text>
             {part.new_role ? <Text style={styles.newRoleText}>New role: {part.new_role}</Text> : null}
           </View>
@@ -125,7 +131,7 @@ const PartsSummaryScreen = ({ navigation }) => {
             <Text style={styles.overviewLabel}>Total</Text>
           </View>
           <View style={styles.overviewItem}>
-            <Text style={[styles.overviewNumber, { color: '#3b82f6' }]}>{protectors}</Text>
+            <Text style={[styles.overviewNumber, { color: colors.primary }]}>{protectors}</Text>
             <Text style={styles.overviewLabel}>Protectors</Text>
           </View>
           <View style={styles.overviewItem}>
@@ -133,7 +139,7 @@ const PartsSummaryScreen = ({ navigation }) => {
             <Text style={styles.overviewLabel}>Exiles</Text>
           </View>
           <View style={styles.overviewItem}>
-            <Text style={[styles.overviewNumber, { color: '#10b981' }]}>{unburdened}</Text>
+            <Text style={[styles.overviewNumber, { color: colors.success }]}>{unburdened}</Text>
             <Text style={styles.overviewLabel}>Unburdened</Text>
           </View>
         </View>
@@ -167,7 +173,7 @@ const PartsSummaryScreen = ({ navigation }) => {
             </View>
 
             <View style={styles.hero}>
-              <Text style={styles.heroEmoji}>🔮</Text>
+              <Image source={icons.selfEnergy} style={styles.heroIcon} />
               <Text style={styles.heroTitle}>Parts</Text>
               <Text style={styles.heroSubtitle}>
                 {hasParts
@@ -230,8 +236,8 @@ const styles = StyleSheet.create({
   backButton: { padding: spacing.sm, borderRadius: borderRadius.sm, minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
 
   hero: { alignItems: 'center', marginBottom: spacing.xl },
-  heroEmoji: { fontSize: 56, marginBottom: spacing.md },
-  heroTitle: { fontSize: 28, fontWeight: '700', color: colors.text, marginBottom: spacing.sm, textAlign: 'center' },
+  heroIcon: { width: 192, height: 192, marginBottom: spacing.md, resizeMode: 'contain' },
+  heroTitle: { fontSize: 28, fontFamily: typography.serif, color: colors.text, marginBottom: spacing.sm, textAlign: 'center' },
   heroSubtitle: { fontSize: 16, color: colors.textSecondary, textAlign: 'center', lineHeight: 24, paddingHorizontal: spacing.md },
 
   // Overview
@@ -257,6 +263,7 @@ const styles = StyleSheet.create({
   },
   cardHeader: { flexDirection: 'row', alignItems: 'center' },
   cardEmoji: { fontSize: 36, marginRight: spacing.md },
+  cardIconImage: { width: 96, height: 96, resizeMode: 'contain', marginRight: spacing.md },
   cardHeaderText: { flex: 1 },
   cardTitle: { fontSize: 17, fontWeight: '600', color: colors.text, marginBottom: 2 },
   cardSubtitle: { fontSize: 14, color: colors.textSecondary },
@@ -270,7 +277,7 @@ const styles = StyleSheet.create({
 
   // Unburdened
   unburdenedBadge: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: spacing.sm, paddingTop: spacing.sm, borderTopWidth: 1, borderTopColor: colors.offWhite },
-  unburdenedText: { fontSize: 13, fontWeight: '600', color: '#10b981' },
+  unburdenedText: { fontSize: 13, fontWeight: '600', color: colors.success },
   newRoleText: { fontSize: 13, color: colors.textSecondary, marginLeft: 'auto' },
 
   // Empty

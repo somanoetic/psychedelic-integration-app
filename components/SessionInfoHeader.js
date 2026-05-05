@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, ScrollView, Alert, Platform } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
+import { colors } from '../theme/colors';
 
 const SessionInfoHeader = ({ session, onUpdate }) => {
   const [showEditModal, setShowEditModal] = useState(false);
@@ -105,7 +106,7 @@ const SessionInfoHeader = ({ session, onUpdate }) => {
             <Text style={styles.date}>📅 {formatDate(session.journey_date)}</Text>
           </View>
           <TouchableOpacity style={styles.editButton} onPress={openEditModal}>
-            <MaterialIcons name={hasSessionInfo ? "edit" : "add-circle"} size={20} color="#3b82f6" />
+            <MaterialIcons name={hasSessionInfo ? "edit" : "add-circle"} size={20} color={colors.primary} />
             <Text style={styles.editButtonText}>{hasSessionInfo ? 'Edit' : 'Add Details'}</Text>
           </TouchableOpacity>
         </View>
@@ -165,7 +166,7 @@ const SessionInfoHeader = ({ session, onUpdate }) => {
               <View style={styles.modalHeader}>
                 <Text style={styles.modalTitle}>Session Details</Text>
                 <TouchableOpacity onPress={() => setShowEditModal(false)}>
-                  <MaterialIcons name="close" size={24} color="#6b7280" />
+                  <MaterialIcons name="close" size={24} color={colors.textSecondary} />
                 </TouchableOpacity>
               </View>
 
@@ -175,7 +176,7 @@ const SessionInfoHeader = ({ session, onUpdate }) => {
                 value={medicine}
                 onChangeText={setMedicine}
                 placeholder="e.g., Psilocybin, LSD, MDMA"
-                placeholderTextColor="#9ca3af"
+                placeholderTextColor={colors.textLight}
               />
 
               <Text style={styles.modalLabel}>Dosage</Text>
@@ -184,7 +185,7 @@ const SessionInfoHeader = ({ session, onUpdate }) => {
                 value={dosage}
                 onChangeText={setDosage}
                 placeholder="e.g., 3.5g dried mushrooms"
-                placeholderTextColor="#9ca3af"
+                placeholderTextColor={colors.textLight}
               />
 
               <Text style={styles.modalLabel}>Setting/Location</Text>
@@ -193,7 +194,7 @@ const SessionInfoHeader = ({ session, onUpdate }) => {
                 value={setting}
                 onChangeText={setSetting}
                 placeholder="e.g., Home, Retreat center"
-                placeholderTextColor="#9ca3af"
+                placeholderTextColor={colors.textLight}
               />
 
               <Text style={styles.modalLabel}>Facilitator/Guide</Text>
@@ -202,7 +203,7 @@ const SessionInfoHeader = ({ session, onUpdate }) => {
                 value={facilitator}
                 onChangeText={setFacilitator}
                 placeholder="e.g., Name or 'Solo journey'"
-                placeholderTextColor="#9ca3af"
+                placeholderTextColor={colors.textLight}
               />
 
               <Text style={styles.modalLabel}>Other Participants</Text>
@@ -211,7 +212,7 @@ const SessionInfoHeader = ({ session, onUpdate }) => {
                 value={participants}
                 onChangeText={setParticipants}
                 placeholder="e.g., Partner, Solo"
-                placeholderTextColor="#9ca3af"
+                placeholderTextColor={colors.textLight}
               />
 
               <Text style={styles.modalLabel}>Additional Context</Text>
@@ -220,7 +221,7 @@ const SessionInfoHeader = ({ session, onUpdate }) => {
                 value={context}
                 onChangeText={setContext}
                 placeholder="What's happening in your life?"
-                placeholderTextColor="#9ca3af"
+                placeholderTextColor={colors.textLight}
                 multiline
                 numberOfLines={4}
               />
@@ -253,7 +254,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#ffffff',
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
     paddingHorizontal: 20,
     paddingVertical: 16,
   },
@@ -268,12 +269,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 4,
   },
   date: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   editButton: {
     flexDirection: 'row',
@@ -283,7 +284,7 @@ const styles = StyleSheet.create({
   editButtonText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#3b82f6',
+    color: colors.primary,
     marginLeft: 4,
   },
   sessionDetails: {
@@ -299,12 +300,12 @@ const styles = StyleSheet.create({
   detailLabel: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#6b7280',
+    color: colors.textSecondary,
     width: 110,
   },
   detailValue: {
     fontSize: 13,
-    color: '#374151',
+    color: colors.text,
     flex: 1,
   },
   modalOverlay: {
@@ -330,23 +331,23 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#1f2937',
+    color: colors.text,
   },
   modalLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.text,
     marginBottom: 8,
     marginTop: 12,
   },
   modalInput: {
     backgroundColor: '#f9fafb',
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 8,
   },
   modalTextArea: {
@@ -354,7 +355,7 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   modalSaveButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.primary,
     paddingVertical: 14,
     borderRadius: 8,
     alignItems: 'center',
@@ -374,7 +375,7 @@ const styles = StyleSheet.create({
   modalCancelButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
 });
 

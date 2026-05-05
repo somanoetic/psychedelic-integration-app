@@ -19,6 +19,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
 import huxleyService from '../lib/huxleyService';
 import { shareJournal } from '../lib/therapistShareService';
+import { colors } from '../theme/colors';
 
 /**
  * Daily Journal - Conversational AI-Guided Journaling
@@ -442,7 +443,7 @@ Only include fields with clear evidence.`);
           style={styles.doneButton}
           onPress={handleJournalingDone}
         >
-          <MaterialIcons name="check-circle" size={20} color="#10b981" />
+          <MaterialIcons name="check-circle" size={20} color={colors.success} />
           <Text style={styles.doneButtonText}>I'm done journaling</Text>
         </TouchableOpacity>
       );
@@ -454,7 +455,7 @@ Only include fields with clear evidence.`);
           style={styles.doneButton}
           onPress={handleDiscussionDone}
         >
-          <MaterialIcons name="check-circle" size={20} color="#10b981" />
+          <MaterialIcons name="check-circle" size={20} color={colors.success} />
           <Text style={styles.doneButtonText}>Finish discussion</Text>
         </TouchableOpacity>
       );
@@ -627,7 +628,7 @@ Only include fields with clear evidence.`);
               value={inputText}
               onChangeText={setInputText}
               placeholder="Type your thoughts..."
-              placeholderTextColor="#9ca3af"
+              placeholderTextColor={colors.textLight}
               multiline
               maxLength={2000}
               editable={!loading && !saving && phase !== 'discussion_prompt' && phase !== 'suggestions_prompt'}
@@ -668,7 +669,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb'
+    borderBottomColor: colors.lightGray
   },
   headerContent: {
     flexDirection: 'row',
@@ -682,12 +683,12 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1f2937',
+    color: colors.text,
     marginLeft: 12
   },
   headerSubtitle: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginLeft: 36
   },
   messagesContainer: {
@@ -703,8 +704,8 @@ const styles = StyleSheet.create({
     marginBottom: 12
   },
   huxleyAvatar: {
-    width: 40,
-    height: 40,
+    width: 60,
+    height: 60,
     marginRight: 8,
     marginTop: 4
   },
@@ -724,7 +725,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderBottomLeftRadius: 4,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
     marginBottom: 0,
     flex: 1
   },
@@ -737,11 +738,11 @@ const styles = StyleSheet.create({
     color: '#fff'
   },
   aiMessageText: {
-    color: '#1f2937'
+    color: colors.text
   },
   timestamp: {
     fontSize: 11,
-    color: '#9ca3af',
+    color: colors.textLight,
     alignSelf: 'flex-end'
   },
   actionButtons: {
@@ -750,7 +751,7 @@ const styles = StyleSheet.create({
     gap: 12,
     backgroundColor: '#fff',
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb'
+    borderTopColor: colors.lightGray
   },
   actionButton: {
     flex: 1,
@@ -772,7 +773,7 @@ const styles = StyleSheet.create({
     fontWeight: '600'
   },
   secondaryButtonText: {
-    color: '#6b7280',
+    color: colors.textSecondary,
     fontSize: 16,
     fontWeight: '600'
   },
@@ -789,7 +790,7 @@ const styles = StyleSheet.create({
     borderColor: '#86efac'
   },
   doneButtonText: {
-    color: '#10b981',
+    color: colors.success,
     fontSize: 16,
     fontWeight: '600',
     marginLeft: 8
@@ -801,7 +802,7 @@ const styles = StyleSheet.create({
     paddingBottom: 4,
     backgroundColor: '#fff',
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: colors.lightGray,
     alignItems: 'flex-end'
   },
   input: {
@@ -811,7 +812,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
     fontSize: 16,
-    color: '#1f2937',
+    color: colors.text,
     maxHeight: 120,
     marginRight: 12
   },
@@ -841,7 +842,7 @@ const styles = StyleSheet.create({
   choosingGreeting: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     textAlign: 'center',
     marginBottom: 24
   },
@@ -854,7 +855,7 @@ const styles = StyleSheet.create({
     padding: 18,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#e5e7eb'
+    borderColor: colors.lightGray
   },
   modeCardContent: {
     marginLeft: 14,
@@ -863,12 +864,12 @@ const styles = StyleSheet.create({
   modeCardTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 2
   },
   modeCardDescription: {
     fontSize: 13,
-    color: '#6b7280'
+    color: colors.textSecondary
   },
   pastEntriesButton: {
     flexDirection: 'row',
@@ -885,7 +886,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     textAlign: 'center',
-    color: '#6b7280',
+    color: colors.textSecondary,
     fontSize: 16,
     marginTop: 40,
   },
@@ -895,7 +896,7 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
   },
   entryCardHeader: {
     flexDirection: 'row',
@@ -906,7 +907,7 @@ const styles = StyleSheet.create({
   entryCardTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     flex: 1,
     marginRight: 8,
   },
@@ -917,7 +918,7 @@ const styles = StyleSheet.create({
   },
   entryCardDate: {
     fontSize: 13,
-    color: '#9ca3af',
+    color: colors.textLight,
     marginBottom: 6,
   },
   entryCardTags: {

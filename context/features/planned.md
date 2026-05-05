@@ -1,213 +1,178 @@
 # Planned Features
 
 **File Size Limit:** 300 lines
-**Last Updated:** 2026-02-24
+**Last Updated:** 2026-05-05
 
 ---
 
-## High Priority - Next Phase (Weeks 1-4)
+## High Priority — Production Readiness Phase (May 5 – Jun 2)
 
-### FEAT-101: Complete Session Day Checklist ✅
+### FEAT-401: Production Environment Separation
 **Priority:** High
-**Status:** Complete
-**Completed:** 2026-02-24
+**Status:** Planned
+**Target:** Production Readiness, Week 1
+**Estimated Effort:** 2-3 days
 
-Implemented: SessionChecklistScreen, sessionChecklistService, useSessionChecklist hook.
-See `context/features/in-progress.md` for details.
+**User Story:**
+As a developer, I need separate prod/dev environments so that beta and prod traffic don't share a Supabase project, Anthropic key, or Sentry stream.
+
+**Requirements:**
+- [ ] Create separate Supabase project (`huxley-prod`) and run all migrations
+- [ ] Provision a dedicated prod Anthropic API key with budget alerts (50/80/100%)
+- [x] Move hardcoded Sentry DSN out of App.js into `app.config.js` extra → `lib/config.js` (done 2026-05-05; see BUG-307)
+- [ ] Add `production` profile to `eas.json` with prod env vars
+- [ ] Update `lib/supabase.js` and `lib/config.js` to read from env, document switching
+
+**Dependencies:** None
+**Blocks:** Beta launch (FEAT-402), Play Store submission (FEAT-403)
 
 ---
 
-### FEAT-102: AI Guidance in Set Your Intention Screen ✅
+### FEAT-402: Closed Beta Program
 **Priority:** High
-**Status:** Complete
-**Completed:** 2026-02-24
+**Status:** Planned
+**Target:** Production Readiness, Week 2
+**Estimated Effort:** 3-4 days (setup) + ongoing
 
-Implemented: SetIntentionScreen, intentionGuidanceAIService, intentionGuidanceService, IntentionConversation, IntentionMessageBubble.
-See `context/features/in-progress.md` for details.
-See ADR-007 for design decision (brevity over depth).
+**User Story:**
+As a product owner, I want 5–15 real users testing prod builds with a feedback channel so I learn what actually breaks before launch.
+
+**Requirements:**
+- [ ] Set up Play Console internal testing track
+- [ ] Set up TestFlight internal testers group (resolves BUG-306)
+- [ ] Recruit testers (target: 2-3 therapists, 2-3 psychedelic-experienced users, 2-3 general)
+- [ ] Pick a feedback channel (form / Slack / Discord — lower friction wins)
+- [ ] Triage cadence: daily during week 3, weekly thereafter
+
+**Dependencies:** FEAT-401 (need prod env first)
 
 ---
 
-### FEAT-103: AI Nervous System & Parts Check-In ✅
+### FEAT-403: Play Store Listing Assets
 **Priority:** High
-**Status:** Complete
-**Completed:** 2026-03-15 (approx)
+**Status:** Planned
+**Target:** Production Readiness, Week 3
+**Estimated Effort:** 3-4 days
 
-Implemented: NervousSystemCheckin, PartsCheckin, NervousSystemSummaryScreen, PartsSummaryScreen, ConversationalNervousSystemMapping, education widgets, state indicators. 4 database tables with RLS. All navigation routes registered.
+**User Story:**
+As a product owner, I need a complete Play Store listing so the app can be submitted for review.
 
-**Remaining polish (optional):** Interactive in-app body map (currently prompts pen/paper), polyvagal ladder visual component (currently text-based).
+**Requirements:**
+- [ ] App icon export at all required Play sizes
+- [ ] Feature graphic (1024×500)
+- [ ] 4-8 phone screenshots (home, Huxley conversation, intention, journal, settings/export)
+- [ ] Short description (80 chars) + full description (4000 chars)
+- [ ] Content rating questionnaire
+- [ ] **Data Safety form** — every category collected, every third-party SDK (Supabase, Anthropic, Sentry), encryption-in-transit, deletion mechanism
+- [ ] Verify account deletion flow works end-to-end (Play requirement)
+
+**Dependencies:** FEAT-401 (need prod build), legal review of Privacy/Terms (BUG-308)
 
 ---
 
-### FEAT-104: Integrate Polyvagal Mapping AI ✅
+### FEAT-404: DB Backup + Migration Rollback Playbook
 **Priority:** High
-**Status:** Complete
-**Completed:** 2026-03-15 (approx)
+**Status:** Planned
+**Target:** Production Readiness, Week 3
+**Estimated Effort:** 1-2 days
 
-Implemented: polyvagalAIService, nervousSystemMappingAIService, polyvagalContextService. Three mode handlers: NervousSystemMappingModeHandler (full Deb Dana protocol), NervousSystemExplorationModeHandler (freeform), PolyvagalCheckinModeHandler (quick). Versioned pattern tracking with triggers, glimmers, resources, interventions.
+**User Story:**
+As an on-call developer, I need a tested rollback procedure so a bad migration doesn't take down user data.
+
+**Requirements:**
+- [ ] Confirm Supabase prod has point-in-time recovery enabled (Pro plan) or document gap
+- [ ] Write 1-page rollback playbook in `docs/`
+- [ ] Test the playbook against a throwaway branch DB before launch
+
+**Dependencies:** FEAT-401
+
+---
+
+### FEAT-405: Crisis Safety Audit
+**Priority:** High
+**Status:** Planned
+**Target:** Production Readiness, Week 2
+**Estimated Effort:** 1-2 days
+
+**User Story:**
+As a user in distress, I need crisis resources reachable within 2 taps from anywhere in the app.
+
+**Requirements:**
+- [ ] Audit every crisis resource referenced in app (988, Crisis Text Line, SAMHSA) — verify current
+- [ ] Add a persistent "In crisis?" entry point (Settings + footer link minimum)
+- [ ] Document crisis-response philosophy (we are not a crisis service; we route)
+- [ ] Verify across all conversation modes that Huxley's safety prompts route to resources
+
+**Dependencies:** None
 
 ---
 
-## Medium Priority - Next Phase (Weeks 5-8)
-
-### FEAT-201 (planned): Testing Infrastructure ✅
-**Priority:** Medium
-**Status:** Complete (delivered as FEAT-204 in AI System Improvements)
-**Completed:** 2026-02-24
-
-477 tests passing across 13 suites. Jest configured with shared fixtures.
-See `context/features/ai-system-improvements.md` FEAT-204 for details.
-Note: E2E tests (Detox/Maestro) still future work.
-
----
+## Medium Priority — Deferred from Earlier Phases
 
 ### FEAT-202: Enhanced UX Layouts
 **Priority:** Medium
-**Status:** Planned
-**Target Phase:** Phase 2 (Week 7-8)
+**Status:** Planned (deferred)
 **Estimated Effort:** 5-7 days
 
-**User Story:**
-As a user, I want polished, intuitive layouts so that the app feels professional and easy to use.
-
-**Requirements:**
-- [ ] Complete Figma designs for all screens
-- [ ] User testing with mockups
-- [ ] Improve Home screen hierarchy
-- [ ] Better Journal Entry form flow
-- [ ] Enhanced navigation patterns
-- [ ] Accessibility improvements
-
-**Screens to Improve:**
-- Home (featured actions)
-- Journal Entry (multi-step vs. long form)
-- Session Prep (visual checklist)
-- Practice (immersive layout)
-- Education (better organization)
-
-**Dependencies:**
-- Figma design system (FEAT-206)
-
-**Estimated Effort:** 5-7 days
+Polished layouts for Home, Journal Entry, Session Prep, Practice, Education. Requires Figma design system (FEAT-206 in ideas.md).
 
 ---
 
 ### FEAT-203: Improved Artwork & Visual Design
 **Priority:** Medium
-**Status:** Planned
-**Target Phase:** Phase 2 (Week 7-8)
-**Estimated Effort:** 5-7 days (ongoing)
+**Status:** Planned (deferred)
+**Estimated Effort:** 5-7 days + ongoing
 
-**User Story:**
-As a user, I want beautiful, meaningful visuals so that the app feels inspiring and professional.
-
-**Requirements:**
-- [ ] Custom icon set (replace generic icons)
-- [ ] Empty state illustrations
-- [ ] Practice exercise artwork (breathwork guides)
-- [ ] Polyvagal state infographics
-- [ ] IFS parts wheel visualization
-- [ ] Breathing animations (expanding circle)
-
-**Resources:**
-- Illustration tools (Midjourney/DALL-E)
-- Stock photos (Unsplash, Pexels)
-- Animation libraries (Lottie)
-- Budget: $500-2000 for custom work
-
-**Dependencies:**
-- Figma designs as reference
-
-**Estimated Effort:** 5-7 days (design), ongoing implementation
+Custom icons, empty-state illustrations, exercise artwork, polyvagal infographics, breathing animations. Budget: $500-2000 for custom work.
 
 ---
 
 ### FEAT-204: Philosophical "Talkthroughs"
 **Priority:** Medium
-**Status:** Planned
-**Target Phase:** Phase 3 (Week 9-10)
+**Status:** Planned (deferred)
 **Estimated Effort:** 7-10 days
 
-**User Story:**
-As a user, I want guided philosophical explorations so that I can deepen my understanding of psychedelic insights.
-
-**Requirements:**
-- [ ] Choose 5 initial topics
-- [ ] Write/source content for each
-- [ ] Decide format (audio/text/hybrid)
-- [ ] Create interactive versions
-- [ ] Add to app navigation
-
-**Initial Topics:**
-1. "Who Am I?" - Identity and self-inquiry
-2. "The Nature of Consciousness"
-3. "Unity and Separation" - Non-dual awareness
-4. "Healing Trauma" - Integration and wholeness
-5. "Mystery and Not-Knowing" - Embracing uncertainty
-
-**Format Options:**
-- Audio guided inquiry (10-20 min)
-- Interactive text journey
-- Hybrid: text + audio + journal prompts
-
-**Dependencies:**
-- Content creation resources
-- Audio recording (if needed)
-
-**Estimated Effort:** 7-10 days
+5 guided philosophical explorations (Identity, Consciousness, Unity, Healing Trauma, Mystery). Format: text + audio + journal prompts.
 
 ---
 
 ### FEAT-205: Living Regulation Toolkit (Progress View)
 **Priority:** Medium
 **Status:** Planned
-**Target Phase:** Phase 2-3
 **Estimated Effort:** 3-5 days
 
-**User Story:**
-As a user, I want to see my regulation toolkit as a living document in the Progress/Insights area so I can track how my resources evolve over time.
+Dedicated screen showing toolkit organized by NS state (sympathetic/dorsal/ventral), with version history and diff view across sessions. Data already exists in `regulating_resources` and `polyvagal_patterns` tables.
 
-**Requirements:**
-- [ ] Dedicated screen showing current toolkit organized by NS state (sympathetic/dorsal/ventral)
-- [ ] Resources ordered passive → active within each state
-- [ ] Version history: see how toolkit changed across sessions
-- [ ] Diff view: what was added, removed, or flagged between versions
-- [ ] Visual indicators for resources flagged during review (dual-purpose, gaps)
-- [ ] Quick-access from home screen or progress area
+---
 
-**Technical Notes:**
-- Data already exists: `regulating_resources` table stores versioned snapshots (each session = new row)
-- `session_type` field distinguishes 'initial' vs 'update' sessions
-- `state_based_resources` JSON column has the state-organized data
-- `polyvagal_patterns` table has the merged/current view
-- Need: new screen component, navigation entry, version comparison logic
+## Recently Completed (Archive Pending)
 
-**Dependencies:**
-- Regulating resources conversation flow (done)
-- Versioned saving (done)
+- **FEAT-101** Session Day Checklist ✅ (2026-02-24)
+- **FEAT-102** AI Intention Guidance ✅ (2026-02-24)
+- **FEAT-103** AI Nervous System & Parts Check-In ✅ (2026-03-15)
+- **FEAT-104** Polyvagal Mapping AI ✅ (2026-03-15)
+- **FEAT-201** Testing Infrastructure ✅ (2026-02-24, delivered as FEAT-204 in AI track)
+
+These can be removed after 30-day archive window.
 
 ---
 
 ## Notes
 
-**Lower Priority Features:**
-See [ideas.md](ideas.md) for:
-- FEAT-205: Offline Mode Support
-- FEAT-206: Figma Design System
-- Additional future features
+**Lower Priority:** See [ideas.md](ideas.md) (Offline Mode, Figma Design System, etc.).
+
+**Numbering Convention:**
+- 1XX = core app features
+- 2XX = AI / UX / content (overlap exists with `ai-system-improvements.md` — known)
+- 3XX = future/long-term
+- 4XX = production readiness (new — this phase)
 
 **Planning Guidelines:**
-- Keep this file to high/medium priority only
-- Move low priority to ideas.md
-- Target 6-8 features planned at a time
-- Review and reprioritize monthly
-
-**Movement:**
-- Move to in-progress.md when starting
-- Move to ideas.md if deferred
-- Remove when complete (add to changelog)
+- Move to `in-progress.md` when starting
+- Move to `ideas.md` if deferred indefinitely
+- Remove when complete (after 30 days)
 
 ---
 
-**Current Count:** 4 features still planned (FEAT-202, 203, 204, 205), 5 completed
-**File Status:** Under limit (300 max)
+**Current Count:** 9 features planned (5 production-readiness, 4 deferred), 5 recently completed
+**File Status:** Under 300-line limit

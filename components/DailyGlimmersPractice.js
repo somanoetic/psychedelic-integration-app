@@ -7,10 +7,20 @@ import {
   StyleSheet,
   TextInput,
   Alert,
-  ActivityIndicator
+  ActivityIndicator,
+  Image,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
+import { icons } from '../lib/uiIcons';
+import { colors } from '../theme/colors';
+
+const StepEmoji = ({ step, style, imageStyle }) =>
+  step.icon ? (
+    <Image source={step.icon} style={imageStyle} />
+  ) : (
+    <Text style={style}>{step.emoji}</Text>
+  );
 
 /**
  * Daily Glimmers Practice
@@ -87,6 +97,7 @@ const DailyGlimmersPractice = ({ onComplete, onSkip }) => {
       type: 'intro',
       title: 'Daily Glimmers Practice',
       emoji: '✨',
+      icon: icons.glimmerCaptured,
       content: 'Glimmers are micro-moments of safety, joy, or connection that help rewire your nervous system toward regulation. Noticing them trains your brain to find safety.',
       info: [
         'Glimmers are the opposite of triggers',
@@ -99,6 +110,7 @@ const DailyGlimmersPractice = ({ onComplete, onSkip }) => {
       type: 'education',
       title: 'Why Glimmers Matter',
       emoji: '🧠',
+      icon: icons.dna,
       content: 'Your nervous system learns through repetition. Each time you notice a glimmer, you\'re teaching your brain: "This is safe. This is good."',
       details: [
         {
@@ -127,6 +139,7 @@ const DailyGlimmersPractice = ({ onComplete, onSkip }) => {
       type: 'examples',
       title: 'What Are Glimmers?',
       emoji: '🌟',
+      icon: icons.glimmerHigh,
       categories: [
         {
           name: 'Sensory Glimmers',
@@ -223,7 +236,7 @@ const DailyGlimmersPractice = ({ onComplete, onSkip }) => {
     const step = steps[currentStep];
     return (
       <View style={styles.stepContent}>
-        <Text style={styles.stepEmoji}>{step.emoji}</Text>
+        <StepEmoji step={step} style={styles.stepEmoji} imageStyle={styles.stepIconImage} />
         <Text style={styles.stepTitle}>{step.title}</Text>
         <Text style={styles.stepText}>{step.content}</Text>
 
@@ -250,7 +263,7 @@ const DailyGlimmersPractice = ({ onComplete, onSkip }) => {
     const step = steps[currentStep];
     return (
       <View style={styles.stepContent}>
-        <Text style={styles.stepEmoji}>{step.emoji}</Text>
+        <StepEmoji step={step} style={styles.stepEmoji} imageStyle={styles.stepIconImage} />
         <Text style={styles.stepTitle}>{step.title}</Text>
         <Text style={styles.stepText}>{step.content}</Text>
 
@@ -273,7 +286,7 @@ const DailyGlimmersPractice = ({ onComplete, onSkip }) => {
     const step = steps[currentStep];
     return (
       <View style={styles.stepContent}>
-        <Text style={styles.stepEmoji}>{step.emoji}</Text>
+        <StepEmoji step={step} style={styles.stepEmoji} imageStyle={styles.stepIconImage} />
         <Text style={styles.stepTitle}>{step.title}</Text>
 
         {step.categories.map((category, index) => (
@@ -302,7 +315,7 @@ const DailyGlimmersPractice = ({ onComplete, onSkip }) => {
     const step = steps[currentStep];
     return (
       <View style={styles.stepContent}>
-        <Text style={styles.stepEmoji}>{step.emoji}</Text>
+        <StepEmoji step={step} style={styles.stepEmoji} imageStyle={styles.stepIconImage} />
         <Text style={styles.stepTitle}>{step.title}</Text>
         <Text style={styles.capturePrompt}>{step.prompt}</Text>
 
@@ -313,7 +326,7 @@ const DailyGlimmersPractice = ({ onComplete, onSkip }) => {
             value={currentGlimmer}
             onChangeText={setCurrentGlimmer}
             placeholder={step.placeholder}
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor={colors.textLight}
             multiline
             numberOfLines={3}
             textAlignVertical="top"
@@ -325,7 +338,7 @@ const DailyGlimmersPractice = ({ onComplete, onSkip }) => {
             value={currentContext}
             onChangeText={setCurrentContext}
             placeholder="e.g., During morning walk, at breakfast, in the garden..."
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor={colors.textLight}
             multiline
             numberOfLines={2}
             textAlignVertical="top"
@@ -348,7 +361,7 @@ const DailyGlimmersPractice = ({ onComplete, onSkip }) => {
               onPress={handleAddAnother}
               disabled={!currentGlimmer.trim()}
             >
-              <MaterialIcons name="add-circle-outline" size={20} color="#10b981" />
+              <MaterialIcons name="add-circle-outline" size={20} color={colors.success} />
               <Text style={styles.addAnotherText}>Add another</Text>
             </TouchableOpacity>
           </View>
@@ -361,7 +374,7 @@ const DailyGlimmersPractice = ({ onComplete, onSkip }) => {
     const step = steps[currentStep];
     return (
       <View style={styles.stepContent}>
-        <Text style={styles.stepEmoji}>{step.emoji}</Text>
+        <StepEmoji step={step} style={styles.stepEmoji} imageStyle={styles.stepIconImage} />
         <Text style={styles.stepTitle}>{step.title}</Text>
         <Text style={styles.stepText}>{step.content}</Text>
 
@@ -416,7 +429,7 @@ const DailyGlimmersPractice = ({ onComplete, onSkip }) => {
         )}
 
         <View style={styles.completionMessage}>
-          <MaterialIcons name="celebration" size={24} color="#10b981" />
+          <MaterialIcons name="celebration" size={24} color={colors.success} />
           <Text style={styles.completionText}>
             You're training your nervous system to notice safety. Keep practicing daily, especially during your integration window.
           </Text>
@@ -449,7 +462,7 @@ const DailyGlimmersPractice = ({ onComplete, onSkip }) => {
   if (loading) {
     return (
       <View style={[styles.container, styles.centerContent]}>
-        <ActivityIndicator size="large" color="#10b981" />
+        <ActivityIndicator size="large" color={colors.success} />
         <Text style={styles.loadingText}>Loading your glimmers...</Text>
       </View>
     );
@@ -459,7 +472,7 @@ const DailyGlimmersPractice = ({ onComplete, onSkip }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={onSkip} style={styles.skipButton}>
-          <MaterialIcons name="close" size={24} color="#6b7280" />
+          <MaterialIcons name="close" size={24} color={colors.textSecondary} />
         </TouchableOpacity>
         <View style={styles.progressContainer}>
           <Text style={styles.progressText}>
@@ -489,7 +502,7 @@ const DailyGlimmersPractice = ({ onComplete, onSkip }) => {
           <MaterialIcons
             name="arrow-back"
             size={20}
-            color={currentStep === 0 ? '#9ca3af' : '#6b7280'}
+            color={currentStep === 0 ? colors.textLight : colors.textSecondary}
           />
           <Text style={[styles.navButtonText, currentStep === 0 && styles.navButtonDisabledText]}>
             Back
@@ -523,7 +536,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 16,
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   header: {
     flexDirection: 'row',
@@ -533,7 +546,7 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   skipButton: {
     padding: 8,
@@ -543,18 +556,18 @@ const styles = StyleSheet.create({
   },
   progressText: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 4,
   },
   progressBar: {
     width: 100,
     height: 4,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: colors.lightGray,
     borderRadius: 2,
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#10b981',
+    backgroundColor: colors.success,
     borderRadius: 2,
   },
   content: {
@@ -562,6 +575,13 @@ const styles = StyleSheet.create({
   },
   stepContent: {
     padding: 24,
+  },
+  stepIconImage: {
+    width: 160,
+    height: 160,
+    resizeMode: 'contain',
+    alignSelf: 'center',
+    marginBottom: 16,
   },
   stepEmoji: {
     fontSize: 48,
@@ -571,13 +591,13 @@ const styles = StyleSheet.create({
   stepTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1f2937',
+    color: colors.text,
     textAlign: 'center',
     marginBottom: 16,
   },
   stepText: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 24,
     marginBottom: 24,
@@ -598,7 +618,7 @@ const styles = StyleSheet.create({
   infoItemText: {
     flex: 1,
     fontSize: 15,
-    color: '#374151',
+    color: colors.text,
     lineHeight: 22,
   },
   highlightBox: {
@@ -652,7 +672,7 @@ const styles = StyleSheet.create({
   categoryName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 12,
   },
   examplesGrid: {
@@ -666,11 +686,11 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 16,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
   },
   exampleText: {
     fontSize: 13,
-    color: '#374151',
+    color: colors.text,
   },
   reminderBox: {
     backgroundColor: '#eff6ff',
@@ -684,7 +704,7 @@ const styles = StyleSheet.create({
   },
   capturePrompt: {
     fontSize: 16,
-    color: '#374151',
+    color: colors.text,
     textAlign: 'center',
     marginBottom: 24,
   },
@@ -694,16 +714,16 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.text,
     marginBottom: 8,
   },
   textInput: {
     borderWidth: 2,
-    borderColor: '#10b981',
+    borderColor: colors.success,
     borderRadius: 12,
     padding: 16,
     fontSize: 15,
-    color: '#1f2937',
+    color: colors.text,
     backgroundColor: '#f9fafb',
     minHeight: 80,
   },
@@ -742,7 +762,7 @@ const styles = StyleSheet.create({
   addAnotherText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#10b981',
+    color: colors.success,
     marginLeft: 8,
   },
   instructionsContainer: {
@@ -766,12 +786,12 @@ const styles = StyleSheet.create({
   instructionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 4,
   },
   instructionDescription: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     lineHeight: 20,
   },
   commitmentBox: {
@@ -792,7 +812,7 @@ const styles = StyleSheet.create({
   },
   summaryCount: {
     fontSize: 18,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: 24,
   },
@@ -824,7 +844,7 @@ const styles = StyleSheet.create({
   },
   emptyStateText: {
     fontSize: 15,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 22,
   },
@@ -849,7 +869,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 16,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: colors.lightGray,
   },
   navButton: {
     flexDirection: 'row',
@@ -861,16 +881,16 @@ const styles = StyleSheet.create({
   },
   navButtonText: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginLeft: 4,
   },
   navButtonDisabledText: {
-    color: '#9ca3af',
+    color: colors.textLight,
   },
   nextButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#10b981',
+    backgroundColor: colors.success,
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 8,

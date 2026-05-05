@@ -10,39 +10,20 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AVATAR_OPTIONS } from './AvatarSelector';
 import { colors } from '../theme/colors';
 
 const ConversationalTriggeredSupport = ({ navigation }) => {
-  const [selectedAvatar, setSelectedAvatar] = useState('brain');
   const [conversationStep, setConversationStep] = useState('initial'); // initial, safety_check, grounding, support_options, exercise
   const [selectedExercise, setSelectedExercise] = useState(null);
   const [fadeAnim] = useState(new Animated.Value(0));
 
   useEffect(() => {
-    loadPreferences();
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 600,
       useNativeDriver: true,
     }).start();
   }, []);
-
-  const loadPreferences = async () => {
-    try {
-      const avatar = await AsyncStorage.getItem('huxley_avatar');
-      if (avatar) setSelectedAvatar(avatar);
-    } catch (error) {
-      console.error('Error loading preferences:', error);
-    }
-  };
-
-  const getAvatar = () => {
-    return AVATAR_OPTIONS.find(a => a.id === selectedAvatar) || AVATAR_OPTIONS[0];
-  };
-
-  const avatar = getAvatar();
 
   const crisisResources = [
     { name: 'National Suicide Prevention Lifeline', number: '988', description: '24/7 crisis support' },
@@ -55,7 +36,7 @@ const ConversationalTriggeredSupport = ({ navigation }) => {
       id: '54321',
       name: '5-4-3-2-1 Grounding',
       icon: 'visibility',
-      color: '#10b981',
+      color: colors.success,
       description: 'Use your senses to anchor to the present',
       steps: [
         'Name 5 things you can see around you',
@@ -69,7 +50,7 @@ const ConversationalTriggeredSupport = ({ navigation }) => {
       id: 'breathing',
       name: 'Box Breathing',
       icon: 'air',
-      color: '#3b82f6',
+      color: colors.primary,
       description: 'Calm your nervous system with breath',
       steps: [
         'Breathe in slowly for 4 counts',
@@ -83,7 +64,7 @@ const ConversationalTriggeredSupport = ({ navigation }) => {
       id: 'body_scan',
       name: 'Quick Body Scan',
       icon: 'accessibility',
-      color: '#f59e0b',
+      color: colors.warning,
       description: 'Connect with your body',
       steps: [
         'Notice your feet on the ground',
@@ -128,9 +109,9 @@ const ConversationalTriggeredSupport = ({ navigation }) => {
       )}
       <View style={styles.optionsContainer}>
         <Text style={styles.optionsLabel}>You:</Text>
-        {renderUserOption('Yes, I need crisis help', () => setConversationStep('safety_check'), 'emergency', '#ef4444')}
-        {renderUserOption('No, I just need to calm down', () => setConversationStep('grounding'), 'self-improvement', '#10b981')}
-        {renderUserOption('I need other support', () => setConversationStep('support_options'), 'help', '#3b82f6')}
+        {renderUserOption('Yes, I need crisis help', () => setConversationStep('safety_check'), 'emergency', colors.error)}
+        {renderUserOption('No, I just need to calm down', () => setConversationStep('grounding'), 'self-improvement', colors.success)}
+        {renderUserOption('I need other support', () => setConversationStep('support_options'), 'help', colors.primary)}
       </View>
     </>
   );
@@ -145,7 +126,7 @@ const ConversationalTriggeredSupport = ({ navigation }) => {
         {crisisResources.map((resource, index) => (
           <View key={index} style={styles.crisisCard}>
             <View style={styles.crisisHeader}>
-              <MaterialIcons name="phone" size={24} color="#ef4444" />
+              <MaterialIcons name="phone" size={24} color={colors.error} />
               <Text style={styles.crisisName}>{resource.name}</Text>
             </View>
             <Text style={styles.crisisNumber}>{resource.number}</Text>
@@ -160,8 +141,8 @@ const ConversationalTriggeredSupport = ({ navigation }) => {
 
       <View style={styles.optionsContainer}>
         <Text style={styles.optionsLabel}>You:</Text>
-        {renderUserOption('I\'m safe now, help me ground', () => setConversationStep('grounding'), 'self-improvement', '#10b981')}
-        {renderUserOption('Go back home', () => navigation.goBack(), 'home', '#6b7280')}
+        {renderUserOption('I\'m safe now, help me ground', () => setConversationStep('grounding'), 'self-improvement', colors.success)}
+        {renderUserOption('Go back home', () => navigation.goBack(), 'home', colors.textSecondary)}
       </View>
     </>
   );
@@ -189,15 +170,15 @@ const ConversationalTriggeredSupport = ({ navigation }) => {
               <Text style={styles.exerciseName}>{exercise.name}</Text>
               <Text style={styles.exerciseDescription}>{exercise.description}</Text>
             </View>
-            <MaterialIcons name="chevron-right" size={24} color="#9ca3af" />
+            <MaterialIcons name="chevron-right" size={24} color={colors.textLight} />
           </TouchableOpacity>
         ))}
       </View>
 
       <View style={styles.optionsContainer}>
         <Text style={styles.optionsLabel}>You:</Text>
-        {renderUserOption('I need other support', () => setConversationStep('support_options'), 'help', '#3b82f6')}
-        {renderUserOption('Go back', () => setConversationStep('initial'), 'arrow-back', '#6b7280')}
+        {renderUserOption('I need other support', () => setConversationStep('support_options'), 'help', colors.primary)}
+        {renderUserOption('Go back', () => setConversationStep('initial'), 'arrow-back', colors.textSecondary)}
       </View>
     </>
   );
@@ -210,7 +191,10 @@ const ConversationalTriggeredSupport = ({ navigation }) => {
 
       <View style={styles.optionsContainer}>
         <Text style={styles.optionsLabel}>You:</Text>
-        {renderUserOption('Try grounding exercises', () => setConversationStep('grounding'), 'self-improvement', '#10b981')}
+        {renderUserOption('Try grounding exercises', () => setConversationStep('grounding'), 'self-improvement', colors.success)}
+        {renderUserOption('Log what happened', () => {
+          navigation.navigate('TriggerTracker');
+        }, 'edit-note', colors.error)}
         {renderUserOption('Talk to my parts', () => {
           // TODO: Navigate to IFS parts dialogue
           navigation.navigate('IFSChat');
@@ -220,11 +204,11 @@ const ConversationalTriggeredSupport = ({ navigation }) => {
         }, 'edit-note', '#06b6d4')}
         {renderUserOption('Browse exercises', () => {
           navigation.navigate('ExerciseLibrary');
-        }, 'fitness-center', '#f59e0b')}
+        }, 'fitness-center', colors.warning)}
         {renderUserOption('Find a therapist', () => {
           navigation.navigate('FindSupport');
         }, 'support-agent', '#8b5cf6')}
-        {renderUserOption('Go back home', () => navigation.goBack(), 'home', '#6b7280')}
+        {renderUserOption('Go back home', () => navigation.goBack(), 'home', colors.textSecondary)}
       </View>
     </>
   );
@@ -255,10 +239,11 @@ const ConversationalTriggeredSupport = ({ navigation }) => {
 
         <View style={styles.optionsContainer}>
           <Text style={styles.optionsLabel}>You:</Text>
-          {renderUserOption('I feel better', () => setConversationStep('initial'), 'check-circle', '#10b981')}
-          {renderUserOption('Try another exercise', () => setConversationStep('grounding'), 'replay', '#3b82f6')}
-          {renderUserOption('I need more support', () => setConversationStep('support_options'), 'help', '#f59e0b')}
-          {renderUserOption('Go back home', () => navigation.goBack(), 'home', '#6b7280')}
+          {renderUserOption('I feel better', () => setConversationStep('initial'), 'check-circle', colors.success)}
+          {renderUserOption('Log what happened', () => navigation.navigate('TriggerTracker'), 'edit-note', colors.error)}
+          {renderUserOption('Try another exercise', () => setConversationStep('grounding'), 'replay', colors.primary)}
+          {renderUserOption('I need more support', () => setConversationStep('support_options'), 'help', colors.warning)}
+          {renderUserOption('Go back home', () => navigation.goBack(), 'home', colors.textSecondary)}
         </View>
       </>
     );
@@ -305,16 +290,16 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     backgroundColor: '#ffffff',
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   urgentHeader: {
-    backgroundColor: '#ef4444',
+    backgroundColor: colors.error,
     borderBottomColor: '#dc2626',
   },
   appName: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1f2937',
+    color: colors.text,
   },
   appNameUrgent: {
     fontSize: 20,
@@ -345,19 +330,19 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   huxleyAvatar: {
-    width: 40,
-    height: 40,
+    width: 60,
+    height: 60,
     marginRight: 10,
   },
   huxleyName: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   huxleyText: {
     fontSize: 16,
     lineHeight: 24,
-    color: '#374151',
+    color: colors.text,
   },
   optionsContainer: {
     marginBottom: 24,
@@ -365,7 +350,7 @@ const styles = StyleSheet.create({
   optionsLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 12,
     marginLeft: 4,
   },
@@ -403,7 +388,7 @@ const styles = StyleSheet.create({
     padding: 20,
     marginBottom: 14,
     borderLeftWidth: 4,
-    borderLeftColor: '#ef4444',
+    borderLeftColor: colors.error,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
@@ -418,19 +403,19 @@ const styles = StyleSheet.create({
   crisisName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginLeft: 10,
     flex: 1,
   },
   crisisNumber: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#ef4444',
+    color: colors.error,
     marginBottom: 6,
   },
   crisisDescription: {
     fontSize: 13,
-    color: '#6b7280',
+    color: colors.textSecondary,
   },
   exercisesContainer: {
     marginBottom: 24,
@@ -463,12 +448,12 @@ const styles = StyleSheet.create({
   exerciseName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 4,
   },
   exerciseDescription: {
     fontSize: 13,
-    color: '#6b7280',
+    color: colors.textSecondary,
     lineHeight: 18,
   },
   stepsContainer: {
@@ -503,7 +488,7 @@ const styles = StyleSheet.create({
   stepText: {
     flex: 1,
     fontSize: 15,
-    color: '#1f2937',
+    color: colors.text,
     lineHeight: 22,
   },
 });

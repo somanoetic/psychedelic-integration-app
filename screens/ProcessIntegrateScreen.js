@@ -12,17 +12,20 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
-import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
+import { colors, gradients, spacing, borderRadius, shadows, typography } from '../theme/colors';
+import { icons } from '../lib/uiIcons';
 
 const options = [
   {
     id: 'experience',
     title: 'Process an Experience',
     emoji: '🌀',
+    icon: icons.integrationCycle,
     description: 'Walk through your experience with AI guidance to uncover insights and meaning',
     estimatedTime: '20-40 min',
     route: 'ExperienceMapping',
@@ -31,6 +34,7 @@ const options = [
     id: 'therapeutic',
     title: 'Therapeutic Integration',
     emoji: '💚',
+    icon: icons.repairedHeart,
     description: 'Deeper therapeutic processing using IFS and somatic frameworks',
     estimatedTime: '30-45 min',
     route: 'TherapeuticIntegration',
@@ -39,6 +43,7 @@ const options = [
     id: 'journal',
     title: 'Integration Journal',
     emoji: '📝',
+    icon: icons.journal,
     description: 'Free-form journaling to capture thoughts, feelings, and realizations',
     estimatedTime: '10-20 min',
     route: 'JournalEntry',
@@ -47,6 +52,7 @@ const options = [
     id: 'session_tools',
     title: 'Session Tools',
     emoji: '🛠️',
+    icon: icons.tools,
     description: 'Tools for during or right after a session — grounding, anchoring, support',
     estimatedTime: '5-15 min',
     route: 'SessionTools',
@@ -79,7 +85,7 @@ const ProcessIntegrateScreen = ({ navigation }) => {
 
           {/* Hero */}
           <View style={styles.hero}>
-            <Text style={styles.heroEmoji}>🧩</Text>
+            <Image source={icons.puzzle} style={styles.heroIcon} />
             <Text style={styles.heroTitle}>Process & Integrate</Text>
             <Text style={styles.heroSubtitle}>
               Make meaning from your experiences. Integration is where the real transformation happens.
@@ -96,7 +102,11 @@ const ProcessIntegrateScreen = ({ navigation }) => {
                 activeOpacity={0.7}
               >
                 <View style={styles.optionLeft}>
-                  <Text style={styles.optionEmoji}>{option.emoji}</Text>
+                  {option.icon ? (
+                    <Image source={option.icon} style={styles.optionIconImage} />
+                  ) : (
+                    <Text style={styles.optionEmoji}>{option.emoji}</Text>
+                  )}
                   <View style={styles.optionText}>
                     <Text style={styles.optionTitle}>{option.title}</Text>
                     <Text style={styles.optionDescription}>{option.description}</Text>
@@ -152,13 +162,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.xl,
   },
-  heroEmoji: {
-    fontSize: 56,
+  heroIcon: {
+    width: 192,
+    height: 192,
     marginBottom: spacing.md,
+    resizeMode: 'contain',
   },
   heroTitle: {
     fontSize: 28,
-    fontWeight: '700',
+    fontFamily: typography.serif,
     color: colors.text,
     marginBottom: spacing.sm,
     textAlign: 'center',
@@ -189,6 +201,12 @@ const styles = StyleSheet.create({
   },
   optionEmoji: {
     fontSize: 36,
+    marginRight: spacing.md,
+  },
+  optionIconImage: {
+    width: 112,
+    height: 112,
+    resizeMode: 'contain',
     marginRight: spacing.md,
   },
   optionText: {

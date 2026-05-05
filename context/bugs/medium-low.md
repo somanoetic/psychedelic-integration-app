@@ -350,5 +350,54 @@ An earlier iOS build was distributed for beta testing, but significant changes h
 
 ---
 
-**Current Count:** 2 P2 active (BUG-213, BUG-306), 2 P3 active (BUG-301, BUG-303)
+### BUG-307: Sentry DSN Hardcoded in App.js — Move to Env Var
+**Priority:** P2 - Medium (Pre-Production Required)
+**Status:** Code change merged 2026-05-05, awaiting `.env` value + verification
+**Reported:** 2026-05-05
+**Related:** BUG-221 (Sentry reinstall), FEAT-401 (env separation)
+
+**Description:**
+Sentry was initialized in `App.js` with a hardcoded DSN string, blocking env separation.
+
+**Resolution (code side, 2026-05-05):**
+1. ✅ DSN added to `app.config.js` extra block as `sentryDsn: process.env.SENTRY_DSN || ''`
+2. ✅ Exposed via `lib/config.js` as `config.sentryDsn`
+3. ✅ App.js now reads `config.sentryDsn` and guards `Sentry.init` (skips silently in dev if missing, warns in prod)
+4. ✅ Validation warning added in dev mode if `SENTRY_DSN` is missing from `.env`
+
+**Remaining (user action):**
+- [ ] Add `SENTRY_DSN=https://...@...ingest.us.sentry.io/...` to local `.env` (use the existing project DSN: `o4511152769138688/4511152824713216` — see git history)
+- [ ] Configure prod EAS profile with prod-specific `SENTRY_DSN` (likely a separate Sentry project for prod traffic)
+- [ ] Verify by triggering `Sentry.captureException(new Error('test'))` from a prod build, confirm event lands in dashboard
+- [ ] Set up Sentry alerts → email or Slack
+- [ ] Decide: one Sentry project or split dev/prod (recommended: split)
+
+**Estimated Effort Remaining:** 1-2 hours
+
+---
+
+### BUG-308: Privacy Policy + Terms Not Legally Reviewed
+**Priority:** P2 - Medium (Pre-Production Required)
+**Status:** Open
+**Reported:** 2026-05-05
+**Related:** BUG-304 (privacy/terms creation — resolved)
+
+**Description:**
+`screens/PrivacyPolicyScreen.js` and `screens/TermsOfServiceScreen.js` were drafted in-house (BUG-304 resolution). The resolution note flagged that legal review is recommended before production. For a therapeutic app handling sensitive journal data, this is not optional.
+
+**Also Pending:**
+- `privacy@alleviationtherapeutics.com` and `legal@alleviationtherapeutics.com` mailboxes need to exist and be monitored — currently referenced in the policies but not verified.
+
+**Proposed Fix:**
+1. Engage external counsel OR a templated review service (Iubenda, TermsFeed) — counsel preferred for therapeutic context
+2. Specifically validate: clinical disclaimer language, AI/LLM data handling clauses, jurisdiction (US default), age of consent (currently 18+)
+3. Confirm GDPR posture — even if US-only initially, the policy should not make claims it can't honor
+4. Configure both mailboxes; route to a monitored inbox
+5. Publish privacy policy at a publicly accessible URL (Play Store requires a URL, not just in-app)
+
+**Estimated Effort:** 1 day internal + external review turnaround (1-2 weeks)
+
+---
+
+**Current Count:** 4 P2 active (BUG-213, BUG-306, BUG-307, BUG-308), 2 P3 active (BUG-301, BUG-303)
 **Resolved bugs archived in:** [resolved.md](resolved.md)

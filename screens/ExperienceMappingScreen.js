@@ -580,7 +580,7 @@ const styles = {
     paddingVertical: 10,
     backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   backText: {
     fontSize: 18,
@@ -589,7 +589,7 @@ const styles = {
   },
   switchText: {
     fontSize: 12,
-    color: '#10b981',
+    color: colors.success,
   },
   inlineProgress: {
     flexDirection: 'row',
@@ -607,8 +607,8 @@ const styles = {
     alignItems: 'center',
   },
   progressDotComplete: {
-    backgroundColor: '#10b981',
-    borderColor: '#10b981',
+    backgroundColor: colors.success,
+    borderColor: colors.success,
   },
   progressDotCurrent: {
     backgroundColor: colors.primary,
@@ -617,7 +617,7 @@ const styles = {
   progressDotText: {
     fontSize: 11,
     fontWeight: 'bold',
-    color: '#9ca3af',
+    color: colors.textLight,
   },
   progressDotTextActive: {
     color: '#fff',
@@ -628,7 +628,7 @@ const styles = {
     backgroundColor: '#d1d5db',
   },
   progressLineComplete: {
-    backgroundColor: '#10b981',
+    backgroundColor: colors.success,
   },
   progressLabel: {
     fontSize: 12,
@@ -644,12 +644,12 @@ const styles = {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#fef3c7',
+    backgroundColor: colors.bubbleArchetypal,
     paddingHorizontal: 14,
     paddingVertical: 10,
     borderRadius: 10,
     borderLeftWidth: 3,
-    borderLeftColor: '#f59e0b',
+    borderLeftColor: colors.warning,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.15,
@@ -687,9 +687,9 @@ const styles = {
     justifyContent: 'flex-start',
   },
   huxleyAvatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     marginRight: 8,
     marginBottom: 2,
   },
@@ -697,15 +697,16 @@ const styles = {
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 16,
-    maxWidth: '80%',
   },
   userBubble: {
+    maxWidth: '80%',
     backgroundColor: colors.primary,
   },
   assistantBubble: {
+    flex: 1,
     backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
   },
   messageText: {
     fontSize: 16,
@@ -738,7 +739,7 @@ const styles = {
     padding: 16,
     backgroundColor: colors.surface,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: colors.lightGray,
     alignItems: 'flex-end',
     gap: 12,
   },
@@ -762,7 +763,7 @@ const styles = {
     alignItems: 'center',
   },
   sendButtonDisabled: {
-    backgroundColor: '#9ca3af',
+    backgroundColor: colors.textLight,
   },
   sendButtonText: {
     fontSize: 20,

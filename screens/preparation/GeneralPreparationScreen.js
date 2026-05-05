@@ -126,9 +126,9 @@ const GeneralPreparationScreen = ({ navigation }) => {
               </View>
               <View style={styles.flowItemRight}>
                 {completedSections.includes(section.id) ? (
-                  <MaterialIcons name="check-circle" size={24} color="#10b981" />
+                  <MaterialIcons name="check-circle" size={24} color={colors.success} />
                 ) : (
-                  <MaterialIcons name="arrow-forward-ios" size={16} color="#9ca3af" />
+                  <MaterialIcons name="arrow-forward-ios" size={16} color={colors.textLight} />
                 )}
               </View>
             </TouchableOpacity>
@@ -186,7 +186,7 @@ const GeneralPreparationScreen = ({ navigation }) => {
           style={styles.backButton}
           onPress={() => setCurrentSection('overview')}
         >
-          <MaterialIcons name="arrow-back" size={24} color="#6b7280" />
+          <MaterialIcons name="arrow-back" size={24} color={colors.textSecondary} />
           <Text style={styles.backButtonText}>Back</Text>
         </TouchableOpacity>
         <Text style={styles.sectionTitle}>🧠 Nervous System Basics</Text>
@@ -211,7 +211,7 @@ const GeneralPreparationScreen = ({ navigation }) => {
           style={styles.backButton}
           onPress={() => setCurrentSection('overview')}
         >
-          <MaterialIcons name="arrow-back" size={24} color="#6b7280" />
+          <MaterialIcons name="arrow-back" size={24} color={colors.textSecondary} />
           <Text style={styles.backButtonText}>Back</Text>
         </TouchableOpacity>
         <Text style={styles.sectionTitle}>👥 Parts of You (IFS)</Text>
@@ -236,7 +236,7 @@ const GeneralPreparationScreen = ({ navigation }) => {
           style={styles.backButton}
           onPress={() => setCurrentSection('overview')}
         >
-          <MaterialIcons name="arrow-back" size={24} color="#6b7280" />
+          <MaterialIcons name="arrow-back" size={24} color={colors.textSecondary} />
           <Text style={styles.backButtonText}>Back</Text>
         </TouchableOpacity>
         <Text style={styles.sectionTitle}>🌱 Grounding & Somatic Practices</Text>
@@ -317,7 +317,7 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
     backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   backButton: {
     flexDirection: 'row',
@@ -350,7 +350,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 24,
     borderLeftWidth: 4,
-    borderLeftColor: '#10b981',
+    borderLeftColor: colors.success,
   },
   keyBenefitsTitle: {
     fontSize: 18,
@@ -380,7 +380,7 @@ const styles = StyleSheet.create({
   flowTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 16,
   },
   flowItem: {
@@ -392,11 +392,11 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
   },
   completedFlowItem: {
     backgroundColor: '#f0f9ff',
-    borderColor: '#10b981',
+    borderColor: colors.success,
   },
   flowItemLeft: {
     flexDirection: 'row',
@@ -423,7 +423,7 @@ const styles = StyleSheet.create({
   },
   flowItemTime: {
     fontSize: 12,
-    color: '#9ca3af',
+    color: colors.textLight,
   },
   flowItemRight: {
     marginLeft: 12,
@@ -434,7 +434,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 24,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
   },
   progressTitle: {
     fontSize: 16,
@@ -445,13 +445,13 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: 8,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: colors.lightGray,
     borderRadius: 4,
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-    backgroundColor: '#10b981',
+    backgroundColor: colors.success,
     borderRadius: 4,
   },
   startButton: {
@@ -468,7 +468,7 @@ const styles = StyleSheet.create({
     color: colors.textInverse,
   },
   completeButton: {
-    backgroundColor: '#10b981',
+    backgroundColor: colors.success,
     paddingVertical: 16,
     paddingHorizontal: 24,
     borderRadius: 12,

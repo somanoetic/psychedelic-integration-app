@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   Animated,
   ScrollView,
+  Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -90,7 +91,11 @@ const SubMenuModal = ({ visible, onClose, title, options, onSelect }) => {
               onPress={() => handleOptionPress(option)}
               activeOpacity={0.7}
             >
-              <Text style={styles.optionEmoji}>{option.emoji}</Text>
+              {option.icon ? (
+                <Image source={option.icon} style={styles.optionIcon} />
+              ) : (
+                <Text style={styles.optionEmoji}>{option.emoji}</Text>
+              )}
               <View style={styles.optionTextContainer}>
                 <Text style={styles.optionTitle}>{option.title}</Text>
                 {option.description && (
@@ -155,6 +160,12 @@ const styles = StyleSheet.create({
   },
   optionEmoji: {
     fontSize: 32,
+    marginRight: 16,
+  },
+  optionIcon: {
+    width: 88,
+    height: 88,
+    resizeMode: 'contain',
     marginRight: 16,
   },
   optionTextContainer: {

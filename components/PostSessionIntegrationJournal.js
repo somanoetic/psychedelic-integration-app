@@ -31,7 +31,7 @@ const PostSessionIntegrationJournal = ({ sessionId, onComplete, onSkip }) => {
       id: 'session_info',
       title: 'Session Information',
       emoji: '📋',
-      color: '#3b82f6',
+      color: colors.primary,
       description: 'Basic information about your session',
       fields: [
         {
@@ -126,7 +126,7 @@ const PostSessionIntegrationJournal = ({ sessionId, onComplete, onSkip }) => {
       id: 'emotions',
       title: 'Emotions',
       emoji: '❤️',
-      color: '#f59e0b',
+      color: colors.warning,
       description: 'Primary emotions, complex feelings, waves and shifts',
       prompts: [
         'What emotions were present?',
@@ -167,7 +167,7 @@ const PostSessionIntegrationJournal = ({ sessionId, onComplete, onSkip }) => {
       id: 'nature_elements',
       title: 'Nature Elements',
       emoji: '🌿',
-      color: '#10b981',
+      color: colors.success,
       description: 'Water, earth, fire, air, plants, animals',
       prompts: [
         'Did nature elements appear?',
@@ -247,7 +247,7 @@ const PostSessionIntegrationJournal = ({ sessionId, onComplete, onSkip }) => {
       id: 'darkness_void',
       title: 'Darkness / Void / Nothing',
       emoji: '🌑',
-      color: '#1f2937',
+      color: colors.text,
       description: 'Experiences of emptiness, void, or "nothing happening"',
       prompts: [
         'Did you experience darkness or void?',
@@ -375,7 +375,7 @@ const PostSessionIntegrationJournal = ({ sessionId, onComplete, onSkip }) => {
                 value={responses[category.id]?.[field.key] || ''}
                 onChangeText={(value) => updateResponse(category.id, field.key, value)}
                 placeholder={field.placeholder}
-                placeholderTextColor="#9ca3af"
+                placeholderTextColor={colors.textLight}
                 multiline={field.type === 'textarea'}
                 numberOfLines={field.type === 'textarea' ? 4 : 1}
                 textAlignVertical={field.type === 'textarea' ? 'top' : 'center'}
@@ -409,7 +409,7 @@ const PostSessionIntegrationJournal = ({ sessionId, onComplete, onSkip }) => {
             value={responses[category.id]?.[category.field.key] || ''}
             onChangeText={(value) => updateResponse(category.id, category.field.key, value)}
             placeholder={category.field.placeholder}
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor={colors.textLight}
             multiline
             numberOfLines={8}
             textAlignVertical="top"
@@ -417,7 +417,7 @@ const PostSessionIntegrationJournal = ({ sessionId, onComplete, onSkip }) => {
         </View>
 
         <View style={styles.hintBox}>
-          <MaterialIcons name="lightbulb-outline" size={16} color="#f59e0b" />
+          <MaterialIcons name="lightbulb-outline" size={16} color={colors.warning} />
           <Text style={styles.hintText}>
             Even if nothing happened in this category, that's worth noting. Absence of experience is also data.
           </Text>
@@ -446,7 +446,7 @@ const PostSessionIntegrationJournal = ({ sessionId, onComplete, onSkip }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={onSkip} style={styles.closeButton}>
-          <MaterialIcons name="close" size={24} color="#6b7280" />
+          <MaterialIcons name="close" size={24} color={colors.textSecondary} />
         </TouchableOpacity>
         <View style={styles.headerInfo}>
           <Text style={styles.headerTitle}>Integration Journal</Text>
@@ -481,7 +481,7 @@ const PostSessionIntegrationJournal = ({ sessionId, onComplete, onSkip }) => {
           <MaterialIcons
             name="arrow-back"
             size={20}
-            color={currentCategory === 0 ? '#9ca3af' : '#6b7280'}
+            color={currentCategory === 0 ? colors.textLight : colors.textSecondary}
           />
           <Text
             style={[
@@ -530,7 +530,7 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   closeButton: {
     padding: 8,
@@ -542,16 +542,16 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
   },
   headerSubtitle: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginTop: 2,
   },
   progressBarContainer: {
     height: 4,
-    backgroundColor: '#e5e7eb',
+    backgroundColor: colors.lightGray,
     marginHorizontal: 20,
     marginTop: 16,
     borderRadius: 2,
@@ -582,7 +582,7 @@ const styles = StyleSheet.create({
   },
   categoryDescription: {
     fontSize: 16,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 24,
   },
@@ -596,12 +596,12 @@ const styles = StyleSheet.create({
   promptsTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.text,
     marginBottom: 12,
   },
   promptText: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginBottom: 8,
     lineHeight: 20,
   },
@@ -611,16 +611,16 @@ const styles = StyleSheet.create({
   fieldLabel: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.text,
   },
   textInput: {
     borderWidth: 2,
-    borderColor: '#e5e7eb',
+    borderColor: colors.lightGray,
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 12,
     fontSize: 15,
-    color: '#1f2937',
+    color: colors.text,
     backgroundColor: '#f9fafb',
   },
   textareaInput: {
@@ -647,7 +647,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 16,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: colors.lightGray,
     backgroundColor: '#ffffff',
   },
   navButton: {
@@ -666,15 +666,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primaryLight,
   },
   navButtonDisabled: {
-    backgroundColor: '#e5e7eb',
+    backgroundColor: colors.lightGray,
   },
   navButtonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#374151',
+    color: colors.text,
   },
   navButtonTextDisabled: {
-    color: '#9ca3af',
+    color: colors.textLight,
   },
   nextButtonText: {
     fontSize: 16,

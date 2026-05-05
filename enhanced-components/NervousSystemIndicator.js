@@ -10,7 +10,7 @@ const NervousSystemIndicator = ({ state, confidence = 1, size = 'medium' }) => {
         return {
           name: 'Safe & Social',
           description: 'Calm, connected, curious',
-          color: '#10b981',
+          color: colors.success,
           icon: Heart,
           backgroundColor: '#d1fae5'
         };
@@ -18,7 +18,7 @@ const NervousSystemIndicator = ({ state, confidence = 1, size = 'medium' }) => {
         return {
           name: 'Activated',
           description: 'Energized, alert, mobilized',
-          color: '#ef4444',
+          color: colors.error,
           icon: Zap,
           backgroundColor: '#fee2e2'
         };

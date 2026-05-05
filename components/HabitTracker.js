@@ -1,3 +1,10 @@
+/**
+ * Habit Tracker
+ *
+ * Daily habit tracking screen - styled to match the Parts and Nervous System
+ * check-in screens for visual consistency across daily practice tools.
+ */
+
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -11,23 +18,22 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
-import { colors, gradients } from '../theme/colors';
+import { colors } from '../theme/colors';
 
 const HABIT_CATEGORIES = [
-  { id: 'morning', label: 'Morning', icon: 'wb-sunny', color: '#f59e0b' },
+  { id: 'morning', label: 'Morning', icon: 'wb-sunny', color: colors.warning },
   { id: 'evening', label: 'Evening', icon: 'nightlight-round', color: '#6366f1' },
-  { id: 'anytime', label: 'Anytime', icon: 'schedule', color: '#10b981' },
+  { id: 'anytime', label: 'Anytime', icon: 'schedule', color: colors.success },
   { id: 'weekly', label: 'Weekly', icon: 'date-range', color: '#ec4899' },
 ];
 
 const PRESET_HABITS = [
   { name: 'Morning Meditation', category: 'morning', icon: 'self-improvement', color: '#8b5cf6' },
-  { name: 'Gratitude Journal', category: 'morning', icon: 'auto-awesome', color: '#f59e0b' },
-  { name: 'Grounding Exercise', category: 'anytime', icon: 'landscape', color: '#10b981' },
-  { name: 'Breathing Practice', category: 'anytime', icon: 'air', color: '#3b82f6' },
+  { name: 'Gratitude Journal', category: 'morning', icon: 'auto-awesome', color: colors.warning },
+  { name: 'Grounding Exercise', category: 'anytime', icon: 'landscape', color: colors.success },
+  { name: 'Breathing Practice', category: 'anytime', icon: 'air', color: colors.primary },
   { name: 'Body Scan', category: 'evening', icon: 'accessibility', color: '#ec4899' },
   { name: 'Evening Reflection', category: 'evening', icon: 'psychology', color: '#6366f1' },
   { name: 'Parts Check-in', category: 'anytime', icon: 'groups', color: '#8b5cf6' },
@@ -93,7 +99,6 @@ const HabitTracker = ({ navigation }) => {
 
       if (error) throw error;
 
-      // Create a map of habit_id -> completion
       const completionMap = {};
       (data || []).forEach(item => {
         completionMap[item.habit_id] = item;
@@ -113,7 +118,6 @@ const HabitTracker = ({ navigation }) => {
       const existing = completions[habit.id];
 
       if (existing) {
-        // Remove completion
         const { error } = await supabase
           .from('habit_completions')
           .delete()
@@ -121,7 +125,6 @@ const HabitTracker = ({ navigation }) => {
 
         if (error) throw error;
       } else {
-        // Add completion
         const { error } = await supabase
           .from('habit_completions')
           .insert({
@@ -153,7 +156,7 @@ const HabitTracker = ({ navigation }) => {
           habit_name: newHabitName.trim(),
           habit_category: newHabitCategory,
           icon: 'check-circle',
-          color: HABIT_CATEGORIES.find(c => c.id === newHabitCategory)?.color || '#8b5cf6',
+          color: HABIT_CATEGORIES.find(c => c.id === newHabitCategory)?.color || '#5d86d6',
         });
 
       if (error) throw error;
@@ -172,7 +175,6 @@ const HabitTracker = ({ navigation }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Check if already exists
       const existingHabit = habits.find(h => h.habit_name === preset.name);
       if (existingHabit) {
         Alert.alert('Already Added', 'This habit is already in your tracker.');
@@ -247,7 +249,6 @@ const HabitTracker = ({ navigation }) => {
   const navigateDate = (direction) => {
     const newDate = new Date(selectedDate);
     newDate.setDate(newDate.getDate() + direction);
-    // Don't allow future dates
     if (newDate <= new Date()) {
       setSelectedDate(newDate);
     }
@@ -270,20 +271,19 @@ const HabitTracker = ({ navigation }) => {
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Add Habit</Text>
             <TouchableOpacity onPress={() => setShowAddModal(false)}>
-              <MaterialIcons name="close" size={28} color="#6b7280" />
+              <MaterialIcons name="close" size={28} color={colors.textSecondary} />
             </TouchableOpacity>
           </View>
 
           <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false}>
-            {/* Custom habit input */}
             <View style={styles.customHabitSection}>
-              <Text style={styles.sectionTitle}>Create Custom Habit</Text>
+              <Text style={styles.modalSectionTitle}>Create Custom Habit</Text>
               <TextInput
                 style={styles.habitInput}
                 value={newHabitName}
                 onChangeText={setNewHabitName}
                 placeholder="Enter habit name..."
-                placeholderTextColor="#9ca3af"
+                placeholderTextColor={colors.textLight}
               />
               <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.categoryScroll}>
                 {HABIT_CATEGORIES.map(cat => (
@@ -298,7 +298,7 @@ const HabitTracker = ({ navigation }) => {
                     <MaterialIcons
                       name={cat.icon}
                       size={16}
-                      color={newHabitCategory === cat.id ? '#fff' : '#6b7280'}
+                      color={newHabitCategory === cat.id ? '#fff' : colors.textSecondary}
                     />
                     <Text style={[
                       styles.categoryChipText,
@@ -317,9 +317,8 @@ const HabitTracker = ({ navigation }) => {
               </TouchableOpacity>
             </View>
 
-            {/* Preset habits */}
             <View style={styles.presetSection}>
-              <Text style={styles.sectionTitle}>Quick Add Presets</Text>
+              <Text style={styles.modalSectionTitle}>Quick Add Presets</Text>
               {PRESET_HABITS.map((preset, index) => {
                 const isAdded = habits.some(h => h.habit_name === preset.name);
                 return (
@@ -339,9 +338,9 @@ const HabitTracker = ({ navigation }) => {
                       </Text>
                     </View>
                     {isAdded ? (
-                      <MaterialIcons name="check-circle" size={24} color="#10b981" />
+                      <MaterialIcons name="check-circle" size={24} color={colors.success} />
                     ) : (
-                      <MaterialIcons name="add-circle-outline" size={24} color="#9ca3af" />
+                      <MaterialIcons name="add-circle-outline" size={24} color={colors.textLight} />
                     )}
                   </TouchableOpacity>
                 );
@@ -353,69 +352,72 @@ const HabitTracker = ({ navigation }) => {
     </Modal>
   );
 
+  const isToday = selectedDate.toDateString() === new Date().toDateString();
+
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <LinearGradient
-        colors={gradients.warm}
-        start={{ x: 1.0, y: 0.0 }}
-        end={{ x: 0.0, y: 1.0 }}
-        style={styles.headerGradient}
-      >
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <MaterialIcons name="arrow-back" size={24} color={colors.textInverse} />
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <MaterialIcons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
+        <Text style={styles.headerTitle}>Habit Tracker</Text>
+        <View style={{ width: 24 }} />
+      </View>
 
-        <View style={styles.headerContent}>
-          <View style={styles.headerText}>
-            <Text style={styles.heroTitle}>Habit Tracker</Text>
-            <Text style={styles.heroSubtitle}>
-              Build your daily practice
-            </Text>
-          </View>
+      <ScrollView
+        style={styles.content}
+        contentContainerStyle={[styles.contentContainer, { paddingBottom: insets.bottom + 20 }]}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Huxley intro */}
+        <View style={styles.huxleySection}>
           <Image
             source={require('../assets/images/huxley-avatar.png')}
             style={styles.huxleyAvatar}
             resizeMode="contain"
           />
+          <View style={styles.huxleyBubble}>
+            <Text style={styles.huxleyText}>
+              Small daily practices build the foundation of integration. Tracking habits helps you notice what's nourishing you - and where you might need extra care.
+            </Text>
+          </View>
         </View>
-      </LinearGradient>
 
-      {/* Date Navigator */}
-      <View style={styles.dateNavigator}>
-        <TouchableOpacity onPress={() => navigateDate(-1)} style={styles.dateArrow}>
-          <MaterialIcons name="chevron-left" size={28} color="#6b7280" />
-        </TouchableOpacity>
-        <Text style={styles.dateText}>{formatDate(selectedDate)}</Text>
-        <TouchableOpacity
-          onPress={() => navigateDate(1)}
-          style={styles.dateArrow}
-          disabled={selectedDate.toDateString() === new Date().toDateString()}
-        >
-          <MaterialIcons
-            name="chevron-right"
-            size={28}
-            color={selectedDate.toDateString() === new Date().toDateString() ? '#e5e7eb' : '#6b7280'}
-          />
-        </TouchableOpacity>
-      </View>
-
-      {/* Progress Summary */}
-      <View style={styles.progressSummary}>
-        <View style={styles.progressCircle}>
-          <Text style={styles.progressPercentage}>{getCompletionRate()}%</Text>
+        {/* Date Navigator */}
+        <View style={styles.dateNavigator}>
+          <TouchableOpacity onPress={() => navigateDate(-1)} style={styles.dateArrow}>
+            <MaterialIcons name="chevron-left" size={28} color={colors.textSecondary} />
+          </TouchableOpacity>
+          <Text style={styles.dateText}>{formatDate(selectedDate)}</Text>
+          <TouchableOpacity
+            onPress={() => navigateDate(1)}
+            style={styles.dateArrow}
+            disabled={isToday}
+          >
+            <MaterialIcons
+              name="chevron-right"
+              size={28}
+              color={isToday ? colors.lightGray : colors.textSecondary}
+            />
+          </TouchableOpacity>
         </View>
-        <View style={styles.progressText}>
-          <Text style={styles.progressCount}>
-            {Object.keys(completions).length} of {habits.length} completed
-          </Text>
-          <Text style={styles.progressLabel}>Keep up the good work!</Text>
-        </View>
-      </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Progress Summary */}
+        {habits.length > 0 && (
+          <View style={styles.progressCard}>
+            <View style={styles.progressCircle}>
+              <Text style={styles.progressPercentage}>{getCompletionRate()}%</Text>
+            </View>
+            <View style={styles.progressText}>
+              <Text style={styles.progressCount}>
+                {Object.keys(completions).length} of {habits.length} completed
+              </Text>
+              <Text style={styles.progressLabel}>Keep up the good work</Text>
+            </View>
+          </View>
+        )}
+
+        {/* Habits */}
         {habits.length === 0 ? (
           <View style={styles.emptyState}>
             <MaterialIcons name="track-changes" size={64} color="#d1d5db" />
@@ -464,21 +466,16 @@ const HabitTracker = ({ navigation }) => {
                 })}
               </View>
             ))}
+
+            <TouchableOpacity
+              style={styles.addHabitButton}
+              onPress={() => setShowAddModal(true)}
+            >
+              <MaterialIcons name="add" size={24} color="#5d86d6" />
+              <Text style={styles.addHabitButtonText}>Add New Habit</Text>
+            </TouchableOpacity>
           </>
         )}
-
-        {/* Add habit button */}
-        {habits.length > 0 && (
-          <TouchableOpacity
-            style={styles.addHabitButton}
-            onPress={() => setShowAddModal(true)}
-          >
-            <MaterialIcons name="add" size={24} color={colors.primary} />
-            <Text style={styles.addHabitButtonText}>Add New Habit</Text>
-          </TouchableOpacity>
-        )}
-
-        <View style={{ height: insets.bottom + 20 }} />
       </ScrollView>
 
       {renderAddModal()}
@@ -489,106 +486,114 @@ const HabitTracker = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb',
+    backgroundColor: '#f0f7ff',
   },
-  headerGradient: {
-    paddingHorizontal: 24,
-    paddingVertical: 24,
-    paddingTop: 50,
-  },
-  backButton: {
-    position: 'absolute',
-    top: 50,
-    left: 24,
-    zIndex: 10,
-  },
-  headerContent: {
+  header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#dbeafe',
   },
-  headerText: {
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.text,
+  },
+  content: {
     flex: 1,
   },
-  heroTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: colors.textInverse,
+  contentContainer: {
+    padding: 20,
   },
-  heroSubtitle: {
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.9)',
-    marginTop: 4,
+  huxleySection: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 20,
   },
   huxleyAvatar: {
-    width: 60,
-    height: 60,
+    width: 72,
+    height: 72,
+    marginRight: 12,
+  },
+  huxleyBubble: {
+    flex: 1,
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    borderTopLeftRadius: 4,
+    padding: 14,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  huxleyText: {
+    fontSize: 15,
+    lineHeight: 22,
+    color: colors.text,
   },
   dateNavigator: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 16,
+    paddingVertical: 12,
     backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderRadius: 12,
+    marginBottom: 12,
+    borderWidth: 1,
+    borderColor: colors.lightGray,
   },
   dateArrow: {
     padding: 8,
   },
   dateText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginHorizontal: 16,
   },
-  progressSummary: {
+  progressCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 20,
+    padding: 16,
     backgroundColor: '#fff',
-    marginHorizontal: 16,
-    marginTop: 16,
-    borderRadius: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    borderRadius: 12,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: colors.lightGray,
   },
   progressCircle: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: '#f0fdf4',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#eff6ff',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 3,
-    borderColor: '#22c55e',
+    borderColor: '#5d86d6',
   },
   progressPercentage: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
-    color: '#16a34a',
+    color: '#5d86d6',
   },
   progressText: {
     marginLeft: 16,
     flex: 1,
   },
   progressCount: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
   },
   progressLabel: {
-    fontSize: 14,
-    color: '#6b7280',
+    fontSize: 13,
+    color: colors.textSecondary,
     marginTop: 2,
-  },
-  content: {
-    flex: 1,
-    padding: 16,
   },
   emptyState: {
     alignItems: 'center',
@@ -597,12 +602,12 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginTop: 16,
   },
   emptyText: {
     fontSize: 14,
-    color: '#6b7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     marginTop: 8,
     marginHorizontal: 32,
@@ -610,7 +615,7 @@ const styles = StyleSheet.create({
   emptyAddButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.primary,
+    backgroundColor: '#5d86d6',
     paddingHorizontal: 24,
     paddingVertical: 14,
     borderRadius: 12,
@@ -623,16 +628,16 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   habitGroup: {
-    marginBottom: 24,
+    marginBottom: 20,
   },
   groupHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 10,
     paddingLeft: 4,
   },
   groupTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
     marginLeft: 8,
   },
@@ -640,17 +645,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fff',
-    padding: 16,
+    padding: 14,
     borderRadius: 12,
     marginBottom: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.03,
-    shadowRadius: 4,
-    elevation: 1,
+    borderWidth: 1,
+    borderColor: colors.lightGray,
   },
   habitItemCompleted: {
     backgroundColor: '#f0fdf4',
+    borderColor: '#bbf7d0',
   },
   checkbox: {
     width: 24,
@@ -664,29 +667,29 @@ const styles = StyleSheet.create({
   },
   habitName: {
     flex: 1,
-    fontSize: 16,
-    color: '#1f2937',
+    fontSize: 15,
+    color: colors.text,
   },
   habitNameCompleted: {
     textDecorationLine: 'line-through',
-    color: '#9ca3af',
+    color: colors.textLight,
   },
   addHabitButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 16,
+    padding: 14,
     backgroundColor: '#fff',
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: colors.primary,
+    borderColor: '#5d86d6',
     borderStyle: 'dashed',
     marginTop: 8,
   },
   addHabitButtonText: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
-    color: colors.primary,
+    color: '#5d86d6',
     marginLeft: 8,
   },
   // Modal styles
@@ -707,12 +710,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    borderBottomColor: colors.lightGray,
   },
   modalTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#1f2937',
+    color: colors.text,
   },
   modalBody: {
     padding: 20,
@@ -720,10 +723,10 @@ const styles = StyleSheet.create({
   customHabitSection: {
     marginBottom: 24,
   },
-  sectionTitle: {
+  modalSectionTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 12,
   },
   habitInput: {
@@ -731,7 +734,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     fontSize: 16,
-    color: '#1f2937',
+    color: colors.text,
     marginBottom: 12,
   },
   categoryScroll: {
@@ -749,14 +752,14 @@ const styles = StyleSheet.create({
   categoryChipText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginLeft: 6,
   },
   addButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: colors.primary,
+    backgroundColor: '#5d86d6',
     padding: 14,
     borderRadius: 12,
   },
@@ -797,11 +800,11 @@ const styles = StyleSheet.create({
   presetName: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#1f2937',
+    color: colors.text,
   },
   presetCategory: {
     fontSize: 13,
-    color: '#6b7280',
+    color: colors.textSecondary,
     marginTop: 2,
   },
 });

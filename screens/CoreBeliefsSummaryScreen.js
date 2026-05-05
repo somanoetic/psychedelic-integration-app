@@ -14,14 +14,16 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   RefreshControl,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../lib/supabase';
-import { colors, gradients, shadows, spacing, borderRadius } from '../theme/colors';
+import { colors, gradients, shadows, spacing, borderRadius, typography } from '../theme/colors';
 import ShareWithTherapistButton from '../components/ShareWithTherapistButton';
 import { shareCoreBeliefs } from '../lib/therapistShareService';
+import { icons } from '../lib/uiIcons';
 
 const DOMAINS = [
   { key: 'value_worthiness', label: 'Value & Worthiness', statement: 'I am worthy' },
@@ -37,9 +39,9 @@ const DOMAINS = [
 ];
 
 const getScoreColor = (score) => {
-  if (score <= 3) return '#ef4444';
-  if (score <= 5) return '#f59e0b';
-  if (score <= 7) return '#10b981';
+  if (score <= 3) return colors.error;
+  if (score <= 5) return colors.warning;
+  if (score <= 7) return colors.success;
   return colors.primary;
 };
 
@@ -145,7 +147,7 @@ const CoreBeliefsSummaryScreen = ({ navigation }) => {
             </View>
 
             <View style={styles.hero}>
-              <Text style={styles.heroEmoji}>💭</Text>
+              <Image source={icons.coreBeliefs} style={styles.heroIcon} />
               <Text style={styles.heroTitle}>Core Beliefs</Text>
               <Text style={styles.heroSubtitle}>
                 {assessment
@@ -237,8 +239,8 @@ const styles = StyleSheet.create({
   backButton: { padding: spacing.sm, borderRadius: borderRadius.sm, minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
 
   hero: { alignItems: 'center', marginBottom: spacing.xl },
-  heroEmoji: { fontSize: 56, marginBottom: spacing.md },
-  heroTitle: { fontSize: 28, fontWeight: '700', color: colors.text, marginBottom: spacing.sm, textAlign: 'center' },
+  heroIcon: { width: 192, height: 192, marginBottom: spacing.md, resizeMode: 'contain' },
+  heroTitle: { fontSize: 28, fontFamily: typography.serif, color: colors.text, marginBottom: spacing.sm, textAlign: 'center' },
   heroSubtitle: { fontSize: 16, color: colors.textSecondary, textAlign: 'center', lineHeight: 24, paddingHorizontal: spacing.md },
 
   // Average card
