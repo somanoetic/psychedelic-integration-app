@@ -175,12 +175,12 @@ const EducationScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Training Scenarios Section */}
+        {/* Contributor Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>🎓 Advanced Training</Text>
-          
+          <Text style={styles.sectionTitle}>✍️ Contribute to Huxley</Text>
+
           {canAccessTraining ? (
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.trainingCard}
               onPress={() => navigation.navigate('ScenarioUpload')}
             >
@@ -188,23 +188,23 @@ const EducationScreen = ({ navigation }) => {
                 <Text style={styles.trainingEmoji}>📚</Text>
                 <Text style={styles.trainingTitle}>Upload Training Scenarios</Text>
                 <Text style={styles.trainingDescription}>
-                  Train Claude with your own therapeutic examples to improve responses
+                  Submit examples to help Huxley respond more skillfully
                 </Text>
-                <Text style={styles.trainingNote}>✅ Verified Therapist Access</Text>
+                <Text style={styles.trainingNote}>✅ Approved Contributor</Text>
               </View>
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.restrictedCard}
-              onPress={() => navigation.navigate('TherapistVerification')}
+              onPress={() => navigation.navigate('ContributorApplication')}
             >
               <View style={styles.trainingContent}>
-                <Text style={styles.trainingEmoji}>🔒</Text>
-                <Text style={styles.trainingTitle}>Professional Training Access</Text>
+                <Text style={styles.trainingEmoji}>✍️</Text>
+                <Text style={styles.trainingTitle}>Become a Contributor</Text>
                 <Text style={styles.trainingDescription}>
-                  Upload training scenarios to improve Claude's therapeutic responses
+                  Practitioners and integration guides can apply to contribute training scenarios. All contributions are reviewed before going live.
                 </Text>
-                <Text style={styles.restrictedNote}>🩺 Requires therapist verification</Text>
+                <Text style={styles.restrictedNote}>Apply to contribute</Text>
               </View>
             </TouchableOpacity>
           )}

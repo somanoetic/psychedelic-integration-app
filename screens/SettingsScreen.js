@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,9 +14,15 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 import { supabase } from '../lib/supabase';
 import { exportAndShare } from '../lib/dataExportService';
+import userRoleService from '../lib/userRoleService';
 
 const SettingsScreen = ({ navigation }) => {
   const [exporting, setExporting] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    userRoleService.isAdmin().then(setIsAdmin).catch(() => setIsAdmin(false));
+  }, []);
 
   const handleExportData = async () => {
     setExporting(true);
@@ -109,14 +115,14 @@ const SettingsScreen = ({ navigation }) => {
             />
           </View>
 
-          {/* Professional */}
-          <Text style={styles.sectionHeader}>Professional</Text>
+          {/* Contribute */}
+          <Text style={styles.sectionHeader}>Contribute</Text>
           <View style={styles.card}>
             <SettingsRow
-              icon="medical-services"
-              title="Professional Tools"
-              subtitle="Therapist verification and training tools"
-              onPress={() => navigation.navigate('TherapistTools')}
+              icon="edit"
+              title="Contributor Tools"
+              subtitle="Apply to contribute, manage your training scenarios"
+              onPress={() => navigation.navigate('ContributorTools')}
             />
           </View>
 
@@ -131,6 +137,21 @@ const SettingsScreen = ({ navigation }) => {
               loading={exporting}
             />
           </View>
+
+          {/* Admin (admin-only) */}
+          {isAdmin && (
+            <>
+              <Text style={styles.sectionHeader}>Admin</Text>
+              <View style={styles.card}>
+                <SettingsRow
+                  icon="dashboard"
+                  title="AI Metrics Dashboard"
+                  subtitle="System-level AI service health and cost"
+                  onPress={() => navigation.navigate('AdminMetricsDashboard')}
+                />
+              </View>
+            </>
+          )}
 
           {/* Account */}
           <Text style={styles.sectionHeader}>Account</Text>

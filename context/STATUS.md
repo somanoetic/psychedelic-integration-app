@@ -49,7 +49,7 @@
 ### Top Priorities
 1. **Sentry DSN → env var** (BUG-307) + verify capture on prod build
 2. **Privacy Policy / Terms rewrite** for non-HIPAA framing (driven by ADR-009), then **legal review kickoff** (BUG-308)
-3. **Therapist-feature reframing** (driven by ADR-009 audit): rename `TherapistReportScreen` → `IntegrationSummaryScreen`, strip clinical badges/"patient" language; relabel `ShareWithTherapistButton`; restrict AI Metrics to admin-only; resolve broken license-verification promise in `TherapistVerificationScreen`
+3. **Therapist-feature reframing** (driven by ADR-009 audit) — Phase A complete (commits `44cf222` + Phase A): renamed `TherapistReportScreen` → `IntegrationSummaryScreen`, `TherapistVerificationScreen` → `ContributorApplicationScreen`, `TherapistToolsScreen` → `ContributorToolsScreen`; dropped license-board verification claim; AI Metrics now admin-only via Settings; EducationScreen card reframed. **Phase B pending DB-state confirmation** (admin review pipeline, attribution + disclaimer, role string rename).
 4. **Production env separation** (FEAT-401) — separate Supabase project, prod Anthropic key, EAS prod profile (standard tiers — no BAA needed per ADR-009)
 
 ### Goals for This Week

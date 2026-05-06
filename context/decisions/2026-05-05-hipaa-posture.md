@@ -132,13 +132,23 @@ If all three are present → Huxley is a Business Associate of that therapist's 
 
 ### Cleanup tasks driven by this audit
 
-1. Rename `TherapistReportScreen` → `IntegrationSummaryScreen`. Remove "Clinical Summary" badge text, `medical-services` icon, and the "patient" language in the file header comment. Update the navigation route (`TherapistReport` → `IntegrationSummary`) and all call sites (`screens/InnerAtlasScreen.js:300`, `App.js:82`, `App.js:573-576`).
-2. Relabel `ShareWithTherapistButton` default label from "Share with Therapist" → "Share Summary" (or similar). Update filename in `therapistShareService.shareAll` from `psycheteleos-complete-summary` → `huxley-integration-summary`.
-3. Decide and act on `TherapistVerificationScreen`'s state-board verification claim — either build the review pipeline or drop the claim. Don't ship a promise we don't fulfill.
-4. Restrict `AdminMetricsDashboard` access from `TherapistToolsScreen` to admin role only.
-5. Audit `EducationScreen` lines 192–208 — what's gated and why.
-6. Confirm `user_roles` / `therapist_verification_requests` table state in the live Supabase project (no migration found in repo).
-7. Add an in-app onboarding disclosure that Huxley is a self-directed wellness tool, not a clinical service, and not HIPAA-covered. Especially relevant for any user who self-identifies as a practitioner.
+1. ✅ **Done (commit `44cf222`, 2026-05-05):** Renamed `TherapistReportScreen` → `IntegrationSummaryScreen`. Removed "Clinical Summary" badge text, `medical-services` icon, and "patient" language. Updated navigation route and all call sites.
+2. ✅ **Done (commit `44cf222`, 2026-05-05):** Relabeled `ShareWithTherapistButton` default label to "Share Summary". Updated `therapistShareService` share-sheet `dialogTitle` to "Share Summary" and renamed `shareAll` filename from `psycheteleos-complete-summary` → `huxley-integration-summary`.
+3. ✅ **Done (Phase A, 2026-05-06):** Dropped `TherapistVerificationScreen`'s state-board verification claim. Renamed → `ContributorApplicationScreen`. Stripped license-board language and license-specific form fields (license_type, license_number, license_state, license_expiry, practice_name, practice_address). New form collects: full name, professional background, years of experience, areas of focus, what you'd like to contribute, additional info. Application now positioned as "we'll review and email you" — no false license-board claim. Underlying DB-facing method `userRoleService.requestTherapistVerification` left unrenamed pending DB schema confirmation (#6).
+4. ✅ **Done (Phase A, 2026-05-06):** Removed AI Metrics Dashboard card from `ContributorToolsScreen`. Added discreet admin-only entry from `SettingsScreen` (gated by `userRoleService.isAdmin()`). The dashboard itself already enforced admin access at the destination — this fixes the misleading UX of showing a button verified contributors couldn't actually use.
+5. ✅ **Done (Phase A, 2026-05-06):** Audited `EducationScreen` lines 178–211. It was a recruitment-funnel duplicate of the `ContributorTools` entry point, not gating educational content. Reframed as "Become a Contributor" with non-clinical language.
+6. ⏳ **Pending user check:** Confirm `user_roles` / `therapist_verification_requests` table state in the live Supabase project (no migration found in repo). When confirmed, drives Phase B (review pipeline + role string rename `'therapist'` → `'contributor'`).
+7. ⏳ **Open:** Add an in-app onboarding disclosure that Huxley is a self-directed wellness tool, not a clinical service, and not HIPAA-covered. Especially relevant for any user who self-identifies as a practitioner.
+
+### Phase B (pending DB confirmation)
+
+Once `user_roles` and `therapist_verification_requests` table state is confirmed, build:
+
+- **Admin review queue** for contributor applications (`therapist_verification_requests` rows, status field). Currently the screen accepts submissions but no review pipeline exists.
+- **Admin review queue** for *content* (training scenarios via `ScenarioUploadScreen`, future exercise contributions): pre-publish gate, approve/reject/request-changes states.
+- **Attribution metadata** on every published contribution: contributor name + optional credentials.
+- **Standard disclaimer** rendered alongside contributed content: "This content reflects the contributor's perspective and has been reviewed for safety. It does not represent medical advice or the views of Alleviation Therapeutics."
+- **Role string rename** in DB: `'therapist'` → `'contributor'` (with migration). Then rename `userRoleService` methods (`requestTherapistVerification` → `submitContributorApplication`, etc.) and call sites.
 
 ### Forward boundaries
 

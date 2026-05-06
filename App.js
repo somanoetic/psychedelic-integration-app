@@ -69,9 +69,9 @@ import PhilosophicalTalkthroughScreen from './screens/PhilosophicalTalkthroughSc
 import PrivacyPolicyScreen from './screens/PrivacyPolicyScreen';
 import TermsOfServiceScreen from './screens/TermsOfServiceScreen';
 import SettingsScreen from './screens/SettingsScreen';
-import TherapistToolsScreen from './screens/TherapistToolsScreen';
+import ContributorToolsScreen from './screens/ContributorToolsScreen';
 import FindSupportScreen from './screens/FindSupportScreen';
-import TherapistVerificationScreen from './screens/TherapistVerificationScreen';
+import ContributorApplicationScreen from './screens/ContributorApplicationScreen';
 import ScenarioUploadScreen from './screens/ScenarioUploadScreen';
 import RegulationToolkitScreen from './screens/RegulationToolkitScreen';
 import InnerAtlasScreen from './screens/InnerAtlasScreen';
@@ -715,19 +715,19 @@ function App() {
                 }}
               />
               <Stack.Screen
-                name="TherapistTools"
-                component={TherapistToolsScreen}
+                name="ContributorTools"
+                component={ContributorToolsScreen}
                 options={{
                   headerShown: false,
-                  title: 'Professional Tools'
+                  title: 'Contributor Tools'
                 }}
               />
               <Stack.Screen
-                name="TherapistVerification"
-                component={TherapistVerificationScreen}
+                name="ContributorApplication"
+                component={ContributorApplicationScreen}
                 options={{
                   headerShown: false,
-                  title: 'Therapist Verification'
+                  title: 'Contributor Application'
                 }}
               />
               <Stack.Screen

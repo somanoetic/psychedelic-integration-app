@@ -13,7 +13,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 import userRoleService from '../lib/userRoleService';
 
-const TherapistToolsScreen = ({ navigation }) => {
+const ContributorToolsScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [roleData, setRoleData] = useState(null);
   const [verificationStatus, setVerificationStatus] = useState(null);
@@ -28,7 +28,7 @@ const TherapistToolsScreen = ({ navigation }) => {
       setRoleData(role);
       setVerificationStatus(verification);
     } catch (error) {
-      console.error('Error loading therapist tools data:', error);
+      console.error('Error loading contributor tools data:', error);
     } finally {
       setLoading(false);
     }
@@ -114,7 +114,7 @@ const TherapistToolsScreen = ({ navigation }) => {
           >
             <MaterialIcons name="arrow-back" size={24} color={colors.text} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Professional Tools</Text>
+          <Text style={styles.headerTitle}>Contributor Tools</Text>
           <View style={styles.backButton} />
         </View>
 
@@ -138,63 +138,55 @@ const TherapistToolsScreen = ({ navigation }) => {
             )}
             {!hasAccess && !isPending && (
               <Text style={styles.statusSubtext}>
-                Verify your credentials to access professional tools and help
-                improve Huxley's therapeutic responses.
+                Apply to contribute training scenarios that help Huxley
+                respond more skillfully.
               </Text>
             )}
           </View>
 
-          {/* Verification */}
+          {/* Application */}
           {!hasAccess && (
             <>
-              <Text style={styles.sectionHeader}>Get Verified</Text>
+              <Text style={styles.sectionHeader}>Apply</Text>
               <View style={styles.card}>
                 <ToolCard
-                  icon="verified-user"
+                  icon="edit"
                   title={
                     isPending
-                      ? 'View Verification Status'
-                      : 'Request Verification'
+                      ? 'View Application Status'
+                      : 'Apply to Contribute'
                   }
                   subtitle={
                     isPending
                       ? 'Check the status of your application'
-                      : 'Submit your professional credentials'
+                      : 'Tell us about your background and what you’d like to contribute'
                   }
-                  onPress={() => navigation.navigate('TherapistVerification')}
+                  onPress={() => navigation.navigate('ContributorApplication')}
                 />
               </View>
             </>
           )}
 
-          {/* Professional Tools */}
+          {/* Contributor Tools */}
           <Text style={styles.sectionHeader}>
-            {hasAccess ? 'Your Tools' : 'Available After Verification'}
+            {hasAccess ? 'Your Tools' : 'Available After Approval'}
           </Text>
           <View style={styles.card}>
             <ToolCard
               icon="school"
               title="Upload Training Scenarios"
-              subtitle="Teach Huxley from your therapeutic expertise"
+              subtitle="Submit examples to help Huxley respond more skillfully"
               onPress={() => navigation.navigate('ScenarioUpload')}
-              disabled={!hasAccess}
-            />
-            <View style={styles.separator} />
-            <ToolCard
-              icon="dashboard"
-              title="AI Metrics Dashboard"
-              subtitle="Monitor AI service performance and usage"
-              onPress={() => navigation.navigate('AdminMetricsDashboard')}
               disabled={!hasAccess}
             />
             {hasAccess && (
               <>
                 <View style={styles.separator} />
                 <ToolCard
-                  icon="verified-user"
-                  title="Verification Details"
-                  subtitle="View your professional credentials"
-                  onPress={() => navigation.navigate('TherapistVerification')}
+                  icon="edit"
+                  title="Application Details"
+                  subtitle="View the details you submitted"
+                  onPress={() => navigation.navigate('ContributorApplication')}
                 />
               </>
             )}
@@ -208,9 +200,10 @@ const TherapistToolsScreen = ({ navigation }) => {
               color={colors.textSecondary}
             />
             <Text style={styles.infoText}>
-              Professional tools allow verified therapists and guides to
-              contribute training data that improves Huxley's integration
-              support. All uploads are reviewed for quality and safety.
+              Approved contributors can submit training scenarios that improve
+              Huxley’s integration support. Each submission is reviewed
+              before going live and is published with attribution to the
+              contributor.
             </Text>
           </View>
 
@@ -362,4 +355,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TherapistToolsScreen;
+export default ContributorToolsScreen;

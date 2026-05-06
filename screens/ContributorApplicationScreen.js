@@ -13,20 +13,16 @@ import { LinearGradient } from 'expo-linear-gradient';
 import userRoleService from '../lib/userRoleService';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 
-const TherapistVerificationScreen = ({ navigation }) => {
+const ContributorApplicationScreen = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [verificationStatus, setVerificationStatus] = useState(null);
   const [formData, setFormData] = useState({
     full_name: '',
-    license_type: '',
-    license_number: '',
-    license_state: '',
-    license_expiry: '',
-    practice_name: '',
-    practice_address: '',
+    professional_background: '',
     years_experience: '',
     specializations: '',
+    contribution_focus: '',
     additional_info: ''
   });
 
@@ -46,45 +42,39 @@ const TherapistVerificationScreen = ({ navigation }) => {
   };
 
   const handleSubmit = async () => {
-    // Validate required fields
-    const requiredFields = ['full_name', 'license_type', 'license_number', 'license_state'];
+    const requiredFields = ['full_name', 'professional_background', 'contribution_focus'];
     const missingFields = requiredFields.filter(field => !formData[field].trim());
-    
+
     if (missingFields.length > 0) {
       Alert.alert('Error', 'Please fill in all required fields.');
       return;
     }
 
     setIsSubmitting(true);
-    
+
     try {
-      const verificationData = {
+      const applicationData = {
         ...formData,
         years_experience: parseInt(formData.years_experience) || 0,
-        specializations: formData.specializations.split(',').map(s => s.trim()).filter(s => s),
-        // Only include license_expiry if it's not empty
-        ...(formData.license_expiry && formData.license_expiry.trim() ? { license_expiry: formData.license_expiry } : {})
+        specializations: formData.specializations.split(',').map((s) => s.trim()).filter((s) => s),
       };
 
-      // Remove empty string fields that might cause database issues
-      Object.keys(verificationData).forEach(key => {
-        if (verificationData[key] === '') {
-          delete verificationData[key];
+      Object.keys(applicationData).forEach((key) => {
+        if (applicationData[key] === '') {
+          delete applicationData[key];
         }
       });
 
-      console.log('Submitting verification data:', verificationData);
+      const result = await userRoleService.requestTherapistVerification(applicationData);
 
-      const result = await userRoleService.requestTherapistVerification(verificationData);
-      
       if (result.success) {
         Alert.alert(
-          'Success!',
-          'Your therapist verification request has been submitted. You will receive an email when your application is reviewed.',
+          'Application submitted',
+          "Thanks — your contributor application is in. We'll review it and email you once a decision is made.",
           [{ text: 'OK', onPress: () => navigation.goBack() }]
         );
       } else {
-        Alert.alert('Error', result.error || 'Failed to submit verification request.');
+        Alert.alert('Error', result.error || 'Failed to submit application.');
       }
     } catch (error) {
       Alert.alert('Error', 'An unexpected error occurred: ' + error.message);
@@ -124,16 +114,16 @@ const TherapistVerificationScreen = ({ navigation }) => {
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Text style={styles.backButton}>← Back</Text>
           </TouchableOpacity>
-          <Text style={styles.title}>Verification Status</Text>
+          <Text style={styles.title}>Application Status</Text>
         </View>
 
         <View style={styles.statusContainer}>
           {verificationStatus.status === 'pending' && (
             <>
               <Text style={styles.statusEmoji}>⏳</Text>
-              <Text style={styles.statusTitle}>Verification Pending</Text>
+              <Text style={styles.statusTitle}>Application Pending</Text>
               <Text style={styles.statusText}>
-                Your therapist verification request is being reviewed. You will receive an email when the review is complete.
+                Your contributor application is being reviewed. You will receive an email when a decision is made.
               </Text>
             </>
           )}
@@ -141,9 +131,9 @@ const TherapistVerificationScreen = ({ navigation }) => {
           {verificationStatus.status === 'approved' && (
             <>
               <Text style={styles.statusEmoji}>✅</Text>
-              <Text style={styles.statusTitle}>Verification Approved</Text>
+              <Text style={styles.statusTitle}>Application Approved</Text>
               <Text style={styles.statusText}>
-                Congratulations! Your therapist credentials have been verified. You now have access to upload training scenarios.
+                You're in. As an approved contributor you can upload training scenarios. All contributions are reviewed before they go live.
               </Text>
             </>
           )}
@@ -151,9 +141,9 @@ const TherapistVerificationScreen = ({ navigation }) => {
           {verificationStatus.status === 'rejected' && (
             <>
               <Text style={styles.statusEmoji}>❌</Text>
-              <Text style={styles.statusTitle}>Verification Rejected</Text>
+              <Text style={styles.statusTitle}>Application Not Approved</Text>
               <Text style={styles.statusText}>
-                Unfortunately, your verification request was not approved.
+                Unfortunately, your application was not approved.
               </Text>
               {verificationStatus.data?.review_notes && (
                 <Text style={styles.reviewNotes}>
@@ -197,66 +187,38 @@ const TherapistVerificationScreen = ({ navigation }) => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={styles.backButton}>← Back</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>Therapist Verification</Text>
+        <Text style={styles.title}>Contributor Application</Text>
       </View>
 
       <View style={styles.infoSection}>
-        <Text style={styles.infoTitle}>🩺 Professional Verification</Text>
+        <Text style={styles.infoTitle}>✍️ Contribute to Huxley</Text>
         <Text style={styles.infoText}>
-          To upload training scenarios and help improve Huxley's therapeutic responses, you need to be a verified mental health professional.
+          Practitioners and integration guides can apply to contribute training scenarios that help Huxley respond more skillfully. All contributions are reviewed before going live and are attributed to the contributor — they do not represent the views of Alleviation Therapeutics.
         </Text>
       </View>
 
       <View style={styles.formSection}>
-        <Text style={styles.sectionTitle}>Professional Information</Text>
-        
+        <Text style={styles.sectionTitle}>About You</Text>
+
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Full Name *</Text>
           <TextInput
             style={styles.input}
             value={formData.full_name}
-            onChangeText={(text) => setFormData({...formData, full_name: text})}
-            placeholder="Your full legal name"
+            onChangeText={(text) => setFormData({ ...formData, full_name: text })}
+            placeholder="Your name (will appear on attributed contributions)"
           />
         </View>
 
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>License Type *</Text>
+          <Text style={styles.label}>Professional Background *</Text>
           <TextInput
-            style={styles.input}
-            value={formData.license_type}
-            onChangeText={(text) => setFormData({...formData, license_type: text})}
-            placeholder="LMFT, LCSW, PhD, MD, etc."
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>License Number *</Text>
-          <TextInput
-            style={styles.input}
-            value={formData.license_number}
-            onChangeText={(text) => setFormData({...formData, license_number: text})}
-            placeholder="Your license number"
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>License State *</Text>
-          <TextInput
-            style={styles.input}
-            value={formData.license_state}
-            onChangeText={(text) => setFormData({...formData, license_state: text})}
-            placeholder="CA, NY, TX, etc."
-          />
-        </View>
-
-        <View style={styles.inputGroup}>
-          <Text style={styles.label}>Practice Name</Text>
-          <TextInput
-            style={styles.input}
-            value={formData.practice_name}
-            onChangeText={(text) => setFormData({...formData, practice_name: text})}
-            placeholder="Your practice or clinic name"
+            style={[styles.input, styles.textArea]}
+            value={formData.professional_background}
+            onChangeText={(text) => setFormData({ ...formData, professional_background: text })}
+            placeholder="Your relevant training, credentials, and experience (e.g. LMFT, somatic experiencing practitioner, integration coach, lived-experience guide)"
+            multiline
+            numberOfLines={4}
           />
         </View>
 
@@ -265,43 +227,55 @@ const TherapistVerificationScreen = ({ navigation }) => {
           <TextInput
             style={styles.input}
             value={formData.years_experience}
-            onChangeText={(text) => setFormData({...formData, years_experience: text})}
+            onChangeText={(text) => setFormData({ ...formData, years_experience: text })}
             placeholder="5"
             keyboardType="numeric"
           />
         </View>
 
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>Specializations</Text>
+          <Text style={styles.label}>Areas of Focus</Text>
           <TextInput
             style={styles.input}
             value={formData.specializations}
-            onChangeText={(text) => setFormData({...formData, specializations: text})}
-            placeholder="Trauma, EMDR, Psychedelic Therapy, etc. (comma-separated)"
+            onChangeText={(text) => setFormData({ ...formData, specializations: text })}
+            placeholder="Trauma, IFS, polyvagal, integration, etc. (comma-separated)"
             multiline
           />
         </View>
 
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>Additional Information</Text>
+          <Text style={styles.label}>What You'd Like to Contribute *</Text>
+          <TextInput
+            style={[styles.input, styles.textArea]}
+            value={formData.contribution_focus}
+            onChangeText={(text) => setFormData({ ...formData, contribution_focus: text })}
+            placeholder="Briefly describe what you'd like to contribute and why it would help Huxley users"
+            multiline
+            numberOfLines={4}
+          />
+        </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Anything Else</Text>
           <TextInput
             style={[styles.input, styles.textArea]}
             value={formData.additional_info}
-            onChangeText={(text) => setFormData({...formData, additional_info: text})}
-            placeholder="Any additional information about your background or training in psychedelic-assisted therapy"
+            onChangeText={(text) => setFormData({ ...formData, additional_info: text })}
+            placeholder="Optional. Links, references, or anything else you'd like us to know."
             multiline
-            numberOfLines={4}
+            numberOfLines={3}
           />
         </View>
       </View>
 
       <View style={styles.disclaimerSection}>
-        <Text style={styles.disclaimerTitle}>📋 Verification Process</Text>
+        <Text style={styles.disclaimerTitle}>📋 What Happens Next</Text>
         <Text style={styles.disclaimerText}>
-          • We will verify your license with your state licensing board{"\n"}
-          • Verification typically takes 2-3 business days{"\n"}
-          • You will receive an email with the verification result{"\n"}
-          • Once verified, you can upload training scenarios to improve Huxley's responses
+          • We'll review your application and email you with a decision{"\n"}
+          • If approved, you can submit training scenarios via Contributor Tools{"\n"}
+          • Each contribution is reviewed by us before going live{"\n"}
+          • Published content is attributed to you and carries a disclaimer that it reflects your perspective, not medical advice or the views of Alleviation Therapeutics
         </Text>
       </View>
 
@@ -311,7 +285,7 @@ const TherapistVerificationScreen = ({ navigation }) => {
         disabled={isSubmitting}
       >
         <Text style={styles.submitButtonText}>
-          {isSubmitting ? '⏳ Submitting...' : '🚀 Submit for Verification'}
+          {isSubmitting ? '⏳ Submitting...' : 'Submit Application'}
         </Text>
       </TouchableOpacity>
 
@@ -475,4 +449,4 @@ const styles = {
   },
 };
 
-export default TherapistVerificationScreen;
+export default ContributorApplicationScreen;
