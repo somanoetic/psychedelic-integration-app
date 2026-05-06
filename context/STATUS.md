@@ -48,16 +48,18 @@
 
 ### Top Priorities
 1. **Sentry DSN → env var** (BUG-307) + verify capture on prod build
-2. **Legal review kickoff** for Privacy/Terms (BUG-308)
-3. **Production env separation** (FEAT-401) — separate Supabase project, prod Anthropic key, EAS prod profile
-4. **HIPAA posture ADR** (ADR-009) — make and document the call
+2. **Privacy Policy / Terms rewrite** for non-HIPAA framing (driven by ADR-009), then **legal review kickoff** (BUG-308)
+3. **Therapist-feature reframing** (driven by ADR-009 audit): rename `TherapistReportScreen` → `IntegrationSummaryScreen`, strip clinical badges/"patient" language; relabel `ShareWithTherapistButton`; restrict AI Metrics to admin-only; resolve broken license-verification promise in `TherapistVerificationScreen`
+4. **Production env separation** (FEAT-401) — separate Supabase project, prod Anthropic key, EAS prod profile (standard tiers — no BAA needed per ADR-009)
 
 ### Goals for This Week
 - [ ] Sentry DSN moved to `EXPO_PUBLIC_SENTRY_DSN`
-- [ ] Engaged legal reviewer (external counsel or templated service)
+- [x] **ADR-009 written and Accepted** (2026-05-05 — non-HIPAA wellness tool)
+- [ ] Privacy Policy rewritten for non-HIPAA framing
+- [ ] Terms of Service updated with explicit non-HIPAA / non-clinical clause
+- [ ] Engaged legal reviewer (consumer-app scope, not HIPAA)
 - [ ] `huxley-prod` Supabase project created, schema migrated
 - [ ] Prod Anthropic key with budget alerts (50/80/100%)
-- [ ] ADR-009 written and Accepted
 
 ---
 

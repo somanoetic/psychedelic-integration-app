@@ -1,8 +1,8 @@
 /**
- * Therapist Report Screen
+ * Integration Summary Screen
  *
- * A stylized, comprehensive clinical-style summary of the patient's
- * Inner Atlas data — designed for sharing with a therapist in-app.
+ * A stylized summary of the user's own Inner Atlas data — designed for
+ * personal review and outbound sharing via the OS share sheet.
  */
 
 import React, { useState, useCallback } from 'react';
@@ -66,7 +66,7 @@ const getScoreColor = (score) => {
 // Component
 // ---------------------------------------------------------------------------
 
-const TherapistReportScreen = ({ navigation }) => {
+const IntegrationSummaryScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [userId, setUserId] = useState(null);
@@ -123,7 +123,7 @@ const TherapistReportScreen = ({ navigation }) => {
         journals: journalsRow?.data,
       });
     } catch (err) {
-      console.error('[TherapistReport] Load error:', err);
+      console.error('[IntegrationSummary] Load error:', err);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -447,10 +447,10 @@ const TherapistReportScreen = ({ navigation }) => {
             {/* Report header */}
             <View style={styles.reportHeader}>
               <View style={styles.reportBadge}>
-                <MaterialIcons name="medical-services" size={20} color={colors.primary} />
-                <Text style={styles.reportBadgeText}>Clinical Summary</Text>
+                <MaterialIcons name="auto-stories" size={20} color={colors.primary} />
+                <Text style={styles.reportBadgeText}>Personal</Text>
               </View>
-              <Text style={styles.reportTitle}>Integration Report</Text>
+              <Text style={styles.reportTitle}>Integration Summary</Text>
               <Text style={styles.reportSubtitle}>
                 Generated {formatDate(new Date().toISOString())}  ·  {sectionCount} domain{sectionCount !== 1 ? 's' : ''} mapped
               </Text>
@@ -460,14 +460,14 @@ const TherapistReportScreen = ({ navigation }) => {
             <View style={styles.disclaimer}>
               <MaterialIcons name="info-outline" size={16} color={colors.textSecondary} />
               <Text style={styles.disclaimerText}>
-                This report reflects the user's self-reported experience and AI-guided exploration. It is not a clinical assessment.
+                This summary reflects your self-reported experience and AI-guided exploration. It is not a clinical assessment.
               </Text>
             </View>
 
             {sectionCount === 0 ? (
               <View style={styles.emptyContainer}>
                 <Text style={styles.emptyText}>
-                  No atlas data to report yet. Begin exploring your Inner Atlas to generate a report.
+                  No atlas data yet. Begin exploring your Inner Atlas to generate a summary.
                 </Text>
                 <TouchableOpacity
                   style={styles.startButton}
@@ -489,7 +489,7 @@ const TherapistReportScreen = ({ navigation }) => {
 
                 {/* Share button */}
                 <ShareWithTherapistButton
-                  label="Share Full Report"
+                  label="Share Full Summary"
                   onShare={async () => {
                     if (userId) await shareAll(userId);
                   }}
@@ -715,4 +715,4 @@ const styles = StyleSheet.create({
   startButtonText: { color: colors.textInverse, fontSize: 16, fontWeight: '600' },
 });
 
-export default TherapistReportScreen;
+export default IntegrationSummaryScreen;

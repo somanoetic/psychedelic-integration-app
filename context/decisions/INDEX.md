@@ -142,11 +142,10 @@ Key points about implementing this decision.
 - 477 tests passing; E2E strategy (Detox/Maestro) still TBD
 - Formal ADR still pending
 
-**ADR-009: HIPAA Posture**
-- Status: Proposed (must be Accepted before launch)
-- Decision: TBD — likely "non-HIPAA wellness app" given current scope, but needs explicit documented call given clinical/therapeutic framing and journal data sensitivity
-- Owner: Project Lead, Production Readiness Week 1
-- Implications: drives Supabase BAA need, marketing language, Privacy Policy claims
+**ADR-009: HIPAA Posture — Non-HIPAA Wellness Tool** (2026-05-05)
+- Status: Accepted
+- Decision: Position Huxley as a non-HIPAA consumer wellness/educational tool. User data is sensitive personal data, not PHI. Standard vendor tiers (Supabase, Anthropic, OpenAI, Sentry) — no BAAs required.
+- [View ADR →](2026-05-05-hipaa-posture.md)
 
 ---
 
@@ -225,7 +224,7 @@ Key points about implementing this decision.
 - ADR-006: Testing Strategy (Informally resolved)
 
 **Compliance & Legal:**
-- ADR-009: HIPAA Posture (Proposed)
+- ADR-009: HIPAA Posture — Non-HIPAA Wellness Tool (Accepted)
 
 **UI/UX:**
 - TBD

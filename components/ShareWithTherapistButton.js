@@ -4,13 +4,16 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { colors, borderRadius } from '../theme/colors';
 
 /**
- * Reusable "Share with Therapist" button.
+ * Reusable share button. Triggers a user-initiated outbound share via the OS
+ * share sheet (email, Messages, AirDrop, etc.). The user chooses the recipient
+ * — Huxley does not deliver the data anywhere. Default label is generic;
+ * pass `label` to override per-screen.
  *
  * @param {function} onShare - async function that performs the share action
- * @param {string} [label='Share with Therapist'] - button label
+ * @param {string} [label='Share Summary'] - button label
  * @param {object} [style] - additional container style
  */
-const ShareWithTherapistButton = ({ onShare, label = 'Share with Therapist', style }) => {
+const ShareWithTherapistButton = ({ onShare, label = 'Share Summary', style }) => {
   const [sharing, setSharing] = useState(false);
 
   const handlePress = async () => {

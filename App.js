@@ -79,7 +79,7 @@ import NervousSystemSummaryScreen from './screens/NervousSystemSummaryScreen';
 import TriggersGlimmersSummaryScreen from './screens/TriggersGlimmersSummaryScreen';
 import CoreBeliefsSummaryScreen from './screens/CoreBeliefsSummaryScreen';
 import PartsSummaryScreen from './screens/PartsSummaryScreen';
-import TherapistReportScreen from './screens/TherapistReportScreen';
+import IntegrationSummaryScreen from './screens/IntegrationSummaryScreen';
 
 // Conversational Components
 import ConversationalSessionTools from './components/ConversationalSessionTools';
@@ -571,11 +571,11 @@ function App() {
                 }}
               />
               <Stack.Screen
-                name="TherapistReport"
-                component={TherapistReportScreen}
+                name="IntegrationSummary"
+                component={IntegrationSummaryScreen}
                 options={{
                   headerShown: false,
-                  title: 'Therapist Report'
+                  title: 'Integration Summary'
                 }}
               />
               <Stack.Screen

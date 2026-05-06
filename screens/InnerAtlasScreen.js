@@ -292,16 +292,16 @@ const InnerAtlasScreen = ({ navigation }) => {
               {DOMAINS.map(renderCard)}
             </View>
 
-            {/* Therapist Report + Share */}
+            {/* Integration Summary + Share */}
             {mappedCount > 0 && (
               <>
                 <TouchableOpacity
                   style={styles.reportButton}
-                  onPress={() => navigation.navigate('TherapistReport')}
+                  onPress={() => navigation.navigate('IntegrationSummary')}
                   activeOpacity={0.7}
                 >
-                  <MaterialIcons name="medical-services" size={18} color={colors.primary} />
-                  <Text style={styles.reportButtonText}>View Therapist Report</Text>
+                  <MaterialIcons name="auto-stories" size={18} color={colors.primary} />
+                  <Text style={styles.reportButtonText}>View Integration Summary</Text>
                   <MaterialIcons name="chevron-right" size={20} color={colors.primary} />
                 </TouchableOpacity>
 
