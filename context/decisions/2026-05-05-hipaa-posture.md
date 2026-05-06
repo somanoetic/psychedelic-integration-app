@@ -125,7 +125,7 @@ If all three are present → Huxley is a Business Associate of that therapist's 
 | `ShareWithTherapistButton` + `therapistShareService.shareAll` etc. | A | Safe | Mechanism is fine (`Sharing.shareAsync` → text file → OS share sheet). Consider relabeling button to "Share Summary" or "Export" to avoid implying in-app therapist delivery. Filename `psycheteleos-complete-summary` is also a leftover from pre-Huxley rebrand. |
 | `TherapistVerificationScreen` + `userRoleService.requestTherapistVerification` | (gates B contributors) | Safe in scope but **broken promise** | Collects license type/number/state/expiry/practice details. Says "We will verify your license with your state licensing board" but no admin review pipeline appears to exist, and no `user_roles` / `therapist_verification_requests` migration is in `supabase/migrations/`. Either build a minimal admin review flow for the contributor use case, OR drop license-board-verification claims and rebrand as a lighter "Contributor Application" — but don't ship a feature that promises something we don't do. |
 | `TherapistToolsScreen` | (gates B contributors) | Safe — content gate, not clinical workspace | Has no client list, no client-data viewing, no homework assignment. Currently exposes `ScenarioUpload` (Pattern B) and `AdminMetricsDashboard` (which should be admin-only — see below). Keep the gate, prune what's behind it. |
-| `ScenarioUploadScreen` + `ScenarioTrainingSystem` | B (training data contribution) | Safe | Verified contributors upload anonymized scenario examples to improve AI behavior. No client data. This is the practitioner-curated-library pattern in action. Keep. |
+| `ScenarioUploadScreen` + `ScenarioTrainingSystem` | B (training data contribution) | **Removed in B0 (2026-05-06)** | Initial audit considered this safe. Re-evaluation: contributors training the AI in a psychedelic-integration context carries real safety risk — a subtly off scenario propagates to every user invisibly, including users in fragile post-experience states. Admin review burden is heavy and trace-back is hard once a scenario shapes a response. Per the ADR boundaries, contributor work belongs in user-opt-in surfaces (Pattern B = public library), not behind-the-scenes AI training. Feature deleted; AI was never actually consuming the `training_scenarios` table, so removal had zero runtime impact. |
 | AI Metrics Dashboard accessible to verified therapists | — | **Misconfiguration** | Cross-user AI metrics are admin territory; verified-therapist tier shouldn't see them. Restrict to `role === 'admin'`. |
 | `EducationScreen` lines 192–208 | (gates B-style content) | Needs review | Some education content card is gated behind therapist verification. Audit what's gated and whether the gate has a clear reason. |
 | `userRoleService` schema (`user`, `therapist`, `admin`) | — | Keep | Three-tier role model is fine for contributor gating. No client-relationship modeling exists in it; do not add such modeling under this ADR. |
@@ -139,16 +139,30 @@ If all three are present → Huxley is a Business Associate of that therapist's 
 5. ✅ **Done (Phase A, 2026-05-06):** Audited `EducationScreen` lines 178–211. It was a recruitment-funnel duplicate of the `ContributorTools` entry point, not gating educational content. Reframed as "Become a Contributor" with non-clinical language.
 6. ⏳ **Pending user check:** Confirm `user_roles` / `therapist_verification_requests` table state in the live Supabase project (no migration found in repo). When confirmed, drives Phase B (review pipeline + role string rename `'therapist'` → `'contributor'`).
 7. ⏳ **Open:** Add an in-app onboarding disclosure that Huxley is a self-directed wellness tool, not a clinical service, and not HIPAA-covered. Especially relevant for any user who self-identifies as a practitioner.
+8. ✅ **Done (B0, 2026-05-06):** Ripped out `ScenarioUploadScreen` and `ScenarioTrainingSystem`. Removed `App.js` route, `EducationScreen` recruitment card, `ContributorToolsScreen` upload action, and `userRoleService.canAccessTrainingScenarios()`. AI was never consuming `training_scenarios` — zero runtime impact. Decision reversal documented in audit table above. The `training_scenarios` Supabase table is left in place for now and can be dropped later (no readers/writers).
 
-### Phase B (pending DB confirmation)
+### Phase B — sub-batches (DB tables confirmed 2026-05-06)
 
-Once `user_roles` and `therapist_verification_requests` table state is confirmed, build:
+User confirmed `user_roles` and `therapist_verification_requests` exist with the columns referenced by `userRoleService`. Phase B refactored into sub-batches:
 
-- **Admin review queue** for contributor applications (`therapist_verification_requests` rows, status field). Currently the screen accepts submissions but no review pipeline exists.
-- **Admin review queue** for *content* (training scenarios via `ScenarioUploadScreen`, future exercise contributions): pre-publish gate, approve/reject/request-changes states.
-- **Attribution metadata** on every published contribution: contributor name + optional credentials.
-- **Standard disclaimer** rendered alongside contributed content: "This content reflects the contributor's perspective and has been reviewed for safety. It does not represent medical advice or the views of Alleviation Therapeutics."
-- **Role string rename** in DB: `'therapist'` → `'contributor'` (with migration). Then rename `userRoleService` methods (`requestTherapistVerification` → `submitContributorApplication`, etc.) and call sites.
+**B1 — Application review pipeline** (next up)
+- New `AdminApplicationReviewScreen` listing pending entries from `therapist_verification_requests`
+- Approve / reject / request-more-info actions; on approve sets `user_roles.verified = true`
+- Entry from Settings → Admin (next to AI Metrics Dashboard)
+- RLS audit: applications must be admin-readable only
+
+**B2 — Public library contribution pipeline** (the heart of the user's "public forum needs review + disclaimer" concern)
+- Migration: new `contributed_exercises` table — `id, contributor_id, attribution_name, title, category, description, steps[], submitted_at, review_status (pending/approved/rejected), reviewed_by, reviewed_at, published_at, review_notes`
+- New submission UI in `ContributorToolsScreen` — form to submit a new exercise
+- New `AdminContentReviewScreen` — review queue for pending contributions
+- Library service merges bundled `content/exercises-comprehensive.js` (160 exercises) + approved-and-published contributed entries from Supabase
+- Library UI: attribution badge + reusable `<ContributedContentDisclaimer />` component shown on contributed entries
+- Disclaimer text: *"This content was contributed by [Name] and reviewed for safety. It reflects the contributor's perspective, not medical advice or the views of Alleviation Therapeutics."*
+
+**B3 — Role string rename** (deferred indefinitely; pure polish)
+- Migration: `UPDATE user_roles SET role='contributor' WHERE role='therapist'` + RLS policy updates
+- Rename `userRoleService` methods (`requestTherapistVerification` → `submitContributorApplication`, `isVerifiedTherapist` → `isApprovedContributor`, etc.) and call sites
+- User-facing UI is already correct after Phase A; B3 is internal-only cleanup.
 
 ### Forward boundaries
 

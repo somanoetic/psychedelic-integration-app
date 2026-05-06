@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -18,7 +18,6 @@ import ConversationalRegulatingResources from '../components/ConversationalRegul
 import IFSPartsWorkChatWithContext from '../enhanced-components/IFSPartsWorkChatWithContext';
 import IFSPartsEducationWidget from '../components/IFSPartsEducationWidget';
 import GroundingExercisesWidget from '../components/GroundingExercisesWidget';
-import userRoleService from '../lib/userRoleService';
 import { educationTopics, getTopicById } from '../content/education';
 import FormattedText from '../components/FormattedText';
 
@@ -27,23 +26,6 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const EducationScreen = ({ navigation }) => {
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [showConversational, setShowConversational] = useState(true);
-  const [userRole, setUserRole] = useState({ role: 'user', verified: false });
-  const [canAccessTraining, setCanAccessTraining] = useState(false);
-
-  useEffect(() => {
-    checkUserRole();
-  }, []);
-
-  const checkUserRole = async () => {
-    try {
-      const roleData = await userRoleService.getCurrentUserRole();
-      const canAccess = await userRoleService.canAccessTrainingScenarios();
-      setUserRole(roleData);
-      setCanAccessTraining(canAccess);
-    } catch (error) {
-      console.error('Error checking user role:', error);
-    }
-  };
 
   const handleTopicPress = (topicId) => {
     setSelectedTopic(topicId);
@@ -175,40 +157,6 @@ const EducationScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Contributor Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>✍️ Contribute to Huxley</Text>
-
-          {canAccessTraining ? (
-            <TouchableOpacity
-              style={styles.trainingCard}
-              onPress={() => navigation.navigate('ScenarioUpload')}
-            >
-              <View style={styles.trainingContent}>
-                <Text style={styles.trainingEmoji}>📚</Text>
-                <Text style={styles.trainingTitle}>Upload Training Scenarios</Text>
-                <Text style={styles.trainingDescription}>
-                  Submit examples to help Huxley respond more skillfully
-                </Text>
-                <Text style={styles.trainingNote}>✅ Approved Contributor</Text>
-              </View>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              style={styles.restrictedCard}
-              onPress={() => navigation.navigate('ContributorApplication')}
-            >
-              <View style={styles.trainingContent}>
-                <Text style={styles.trainingEmoji}>✍️</Text>
-                <Text style={styles.trainingTitle}>Become a Contributor</Text>
-                <Text style={styles.trainingDescription}>
-                  Practitioners and integration guides can apply to contribute training scenarios. All contributions are reviewed before going live.
-                </Text>
-                <Text style={styles.restrictedNote}>Apply to contribute</Text>
-              </View>
-            </TouchableOpacity>
-          )}
-        </View>
 
         {/* All Topics */}
         <View style={styles.section}>

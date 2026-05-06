@@ -168,29 +168,19 @@ const ContributorToolsScreen = ({ navigation }) => {
           )}
 
           {/* Contributor Tools */}
-          <Text style={styles.sectionHeader}>
-            {hasAccess ? 'Your Tools' : 'Available After Approval'}
-          </Text>
-          <View style={styles.card}>
-            <ToolCard
-              icon="school"
-              title="Upload Training Scenarios"
-              subtitle="Submit examples to help Huxley respond more skillfully"
-              onPress={() => navigation.navigate('ScenarioUpload')}
-              disabled={!hasAccess}
-            />
-            {hasAccess && (
-              <>
-                <View style={styles.separator} />
+          {hasAccess && (
+            <>
+              <Text style={styles.sectionHeader}>Your Tools</Text>
+              <View style={styles.card}>
                 <ToolCard
                   icon="edit"
                   title="Application Details"
                   subtitle="View the details you submitted"
                   onPress={() => navigation.navigate('ContributorApplication')}
                 />
-              </>
-            )}
-          </View>
+              </View>
+            </>
+          )}
 
           {/* Info */}
           <View style={styles.infoCard}>
@@ -200,10 +190,10 @@ const ContributorToolsScreen = ({ navigation }) => {
               color={colors.textSecondary}
             />
             <Text style={styles.infoText}>
-              Approved contributors can submit training scenarios that improve
-              Huxley’s integration support. Each submission is reviewed
-              before going live and is published with attribution to the
-              contributor.
+              Approved contributors will be able to submit exercises and
+              protocols to Huxley's public library. Submissions are reviewed
+              before going live and published with attribution to the
+              contributor. This feature is coming soon.
             </Text>
           </View>
 

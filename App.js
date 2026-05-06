@@ -72,7 +72,6 @@ import SettingsScreen from './screens/SettingsScreen';
 import ContributorToolsScreen from './screens/ContributorToolsScreen';
 import FindSupportScreen from './screens/FindSupportScreen';
 import ContributorApplicationScreen from './screens/ContributorApplicationScreen';
-import ScenarioUploadScreen from './screens/ScenarioUploadScreen';
 import RegulationToolkitScreen from './screens/RegulationToolkitScreen';
 import InnerAtlasScreen from './screens/InnerAtlasScreen';
 import NervousSystemSummaryScreen from './screens/NervousSystemSummaryScreen';
@@ -728,14 +727,6 @@ function App() {
                 options={{
                   headerShown: false,
                   title: 'Contributor Application'
-                }}
-              />
-              <Stack.Screen
-                name="ScenarioUpload"
-                component={ScenarioUploadScreen}
-                options={{
-                  headerShown: false,
-                  title: 'Upload Training Scenarios'
                 }}
               />
               <Stack.Screen
