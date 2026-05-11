@@ -121,7 +121,7 @@ const SettingsScreen = ({ navigation }) => {
             <SettingsRow
               icon="edit"
               title="Contributor Tools"
-              subtitle="Apply to contribute, manage your training scenarios"
+              subtitle="Apply to contribute to Huxley's library"
               onPress={() => navigation.navigate('ContributorTools')}
             />
           </View>
@@ -148,6 +148,13 @@ const SettingsScreen = ({ navigation }) => {
                   title="AI Metrics Dashboard"
                   subtitle="System-level AI service health and cost"
                   onPress={() => navigation.navigate('AdminMetricsDashboard')}
+                />
+                <View style={styles.separator} />
+                <SettingsRow
+                  icon="how-to-reg"
+                  title="Contributor Applications"
+                  subtitle="Review pending contributor applications"
+                  onPress={() => navigation.navigate('AdminApplicationReview')}
                 />
               </View>
             </>

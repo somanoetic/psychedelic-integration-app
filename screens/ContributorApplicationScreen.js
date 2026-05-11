@@ -17,6 +17,7 @@ const ContributorApplicationScreen = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [verificationStatus, setVerificationStatus] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     full_name: '',
     professional_background: '',
@@ -25,6 +26,19 @@ const ContributorApplicationScreen = ({ navigation }) => {
     contribution_focus: '',
     additional_info: ''
   });
+
+  const startResubmit = () => {
+    const d = verificationStatus?.data || {};
+    setFormData({
+      full_name: d.full_name || '',
+      professional_background: d.professional_background || '',
+      years_experience: d.years_experience != null ? String(d.years_experience) : '',
+      specializations: Array.isArray(d.specializations) ? d.specializations.join(', ') : (d.specializations || ''),
+      contribution_focus: d.contribution_focus || '',
+      additional_info: d.additional_info || '',
+    });
+    setIsEditing(true);
+  };
 
   useEffect(() => {
     checkVerificationStatus();
@@ -65,12 +79,17 @@ const ContributorApplicationScreen = ({ navigation }) => {
         }
       });
 
-      const result = await userRoleService.requestTherapistVerification(applicationData);
+      const isResubmit = isEditing && verificationStatus?.data?.id;
+      const result = isResubmit
+        ? await userRoleService.resubmitVerificationRequest(verificationStatus.data.id, applicationData)
+        : await userRoleService.requestTherapistVerification(applicationData);
 
       if (result.success) {
         Alert.alert(
-          'Application submitted',
-          "Thanks — your contributor application is in. We'll review it and email you once a decision is made.",
+          isResubmit ? 'Application updated' : 'Application submitted',
+          isResubmit
+            ? "Thanks — your updated application is back in the review queue. We'll email you once a decision is made."
+            : "Thanks — your contributor application is in. We'll review it and email you once a decision is made.",
           [{ text: 'OK', onPress: () => navigation.goBack() }]
         );
       } else {
@@ -99,8 +118,10 @@ const ContributorApplicationScreen = ({ navigation }) => {
     );
   }
 
-  // Show status if already submitted
-  if (verificationStatus?.status && verificationStatus.status !== 'none') {
+  // Show status if already submitted — unless the applicant has tapped
+  // "Update Application" to respond to a needs_more_info request, in which
+  // case fall through to the form below (now pre-filled).
+  if (verificationStatus?.status && verificationStatus.status !== 'none' && !isEditing) {
     return (
       <LinearGradient
         colors={gradients.standard}
@@ -165,6 +186,12 @@ const ContributorApplicationScreen = ({ navigation }) => {
                   {verificationStatus.data.review_notes}
                 </Text>
               )}
+              <TouchableOpacity
+                style={styles.submitButton}
+                onPress={startResubmit}
+              >
+                <Text style={styles.submitButtonText}>Update Application</Text>
+              </TouchableOpacity>
             </>
           )}
         </View>
@@ -187,15 +214,24 @@ const ContributorApplicationScreen = ({ navigation }) => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={styles.backButton}>← Back</Text>
         </TouchableOpacity>
-        <Text style={styles.title}>Contributor Application</Text>
+        <Text style={styles.title}>{isEditing ? 'Update Application' : 'Contributor Application'}</Text>
       </View>
 
-      <View style={styles.infoSection}>
-        <Text style={styles.infoTitle}>✍️ Contribute to Huxley</Text>
-        <Text style={styles.infoText}>
-          Practitioners and integration guides can apply to contribute training scenarios that help Huxley respond more skillfully. All contributions are reviewed before going live and are attributed to the contributor — they do not represent the views of Alleviation Therapeutics.
-        </Text>
-      </View>
+      {isEditing && verificationStatus?.data?.review_notes ? (
+        <View style={styles.reviewNotesBanner}>
+          <Text style={styles.reviewNotesBannerTitle}>📋 Reviewer asked for more info</Text>
+          <Text style={styles.reviewNotesBannerText}>
+            {verificationStatus.data.review_notes}
+          </Text>
+        </View>
+      ) : (
+        <View style={styles.infoSection}>
+          <Text style={styles.infoTitle}>✍️ Contribute to Huxley</Text>
+          <Text style={styles.infoText}>
+            Practitioners and integration guides can apply to contribute training scenarios that help Huxley respond more skillfully. All contributions are reviewed before going live and are attributed to the contributor — they do not represent the views of Alleviation Therapeutics.
+          </Text>
+        </View>
+      )}
 
       <View style={styles.formSection}>
         <Text style={styles.sectionTitle}>About You</Text>
@@ -285,7 +321,9 @@ const ContributorApplicationScreen = ({ navigation }) => {
         disabled={isSubmitting}
       >
         <Text style={styles.submitButtonText}>
-          {isSubmitting ? '⏳ Submitting...' : 'Submit Application'}
+          {isSubmitting
+            ? (isEditing ? '⏳ Updating...' : '⏳ Submitting...')
+            : (isEditing ? 'Resubmit Application' : 'Submit Application')}
         </Text>
       </TouchableOpacity>
 
@@ -381,6 +419,25 @@ const styles = {
     backgroundColor: '#fef2f2',
     padding: 12,
     borderRadius: 8,
+  },
+  reviewNotesBanner: {
+    margin: 16,
+    padding: 16,
+    backgroundColor: '#fef9e7',
+    borderRadius: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: '#f59e0b',
+  },
+  reviewNotesBannerTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#78350f',
+    marginBottom: 6,
+  },
+  reviewNotesBannerText: {
+    fontSize: 14,
+    color: '#78350f',
+    lineHeight: 20,
   },
   formSection: {
     margin: 16,

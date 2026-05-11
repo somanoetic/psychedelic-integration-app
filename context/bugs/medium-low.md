@@ -173,7 +173,7 @@ Created both as in-app screens:
 - Both registered in App.js navigation (PrivacyPolicy, TermsOfService routes)
 - Privacy policy linked from IntentionPrivacyControls "Learn more about privacy" (BUG-205)
 
-**Remaining:** Legal review recommended before production. Contact email addresses (privacy@, legal@alleviationtherapeutics.com) should be verified/configured.
+**Remaining:** Legal review recommended before production. Contact email addresses (privacy@, legal@somanoetic.com) should be verified/configured.
 
 ---
 
@@ -386,7 +386,7 @@ Sentry was initialized in `App.js` with a hardcoded DSN string, blocking env sep
 `screens/PrivacyPolicyScreen.js` and `screens/TermsOfServiceScreen.js` were drafted in-house (BUG-304 resolution). The resolution note flagged that legal review is recommended before production. For a therapeutic app handling sensitive journal data, this is not optional.
 
 **Also Pending:**
-- `privacy@alleviationtherapeutics.com` and `legal@alleviationtherapeutics.com` mailboxes need to exist and be monitored — currently referenced in the policies but not verified.
+- `privacy@somanoetic.com` and `legal@somanoetic.com` mailboxes need to exist and be monitored — currently referenced in the policies but not verified.
 
 **Proposed Fix:**
 1. Engage external counsel OR a templated review service (Iubenda, TermsFeed) — counsel preferred for therapeutic context
@@ -399,5 +399,65 @@ Sentry was initialized in `App.js` with a hardcoded DSN string, blocking env sep
 
 ---
 
-**Current Count:** 4 P2 active (BUG-213, BUG-306, BUG-307, BUG-308), 2 P3 active (BUG-301, BUG-303)
+### BUG-309: AI Metrics Dashboard — Missing Materialized Views
+**Priority:** P2 - Medium
+**Status:** Open
+**Reported:** 2026-05-09
+**Related:** FEAT-203 (AI metrics + admin dashboard)
+**Screen:** AdminMetricsDashboard
+
+**Description:**
+Opening Settings → AI Metrics Dashboard logs two PostgREST PGRST205 errors:
+- `Could not find the table 'public.mv_service_performance_last_7d' in the schema cache`
+- `Could not find the table 'public.mv_top_errors_last_24h' in the schema cache`
+
+Both materialized views are referenced by `lib/metricsService.js` but do not exist in the live Supabase project. Their definitions live in `supabase/migrations-archive/20260209000000_ai_monitoring_schema.sql` — the file is in the *archive* folder, never promoted to `migrations/`, so it was likely never applied to the current project (or was applied earlier and dropped).
+
+**Impact:**
+- Service health and top-errors panels of the dashboard show errors
+- Other panels (event stream, cost, etc.) may also be affected — full audit needed
+- Admin-only feature, so no end-user impact
+
+**Proposed Fix:**
+1. Diff `migrations-archive/20260209000000_ai_monitoring_schema.sql` against current live schema (some tables like `ai_metrics` already exist per BUG-207 resolution — don't double-create)
+2. Extract just the missing views/funcs/indexes into a new forward migration in `supabase/migrations/`
+3. Apply via Supabase dashboard
+4. Smoke test the dashboard end-to-end
+
+**Estimated Effort:** 2-4 hours
+
+---
+
+### BUG-311: No Email Notifications on Admin Application Decisions
+**Priority:** P2 - Medium
+**Status:** Open
+**Reported:** 2026-05-11
+**Related:** ADR-009 B1 (admin review of contributor applications)
+**Screens:** AdminApplicationReviewScreen → ContributorToolsScreen, ContributorApplicationScreen
+
+**Description:**
+When an admin approves, rejects, or requests more info on a contributor application via `AdminApplicationReviewScreen`, the applicant receives no notification of any kind. The decision is only visible if the applicant proactively opens the app and navigates to Contributor Tools. The "Submit Application" alert tells the applicant they'll receive an email — that promise is currently false.
+
+Three decision events that should notify:
+1. `approved` → "You've been approved as a Huxley contributor"
+2. `needs_more_info` → "We need a bit more information on your application" (with the reviewer's note)
+3. `rejected` → "Update on your application" (with the reviewer's note)
+
+**Impact:**
+- Promise made in submission flow is broken (UX trust hit)
+- For `needs_more_info`, the applicant is unlikely to discover the request without periodic app checks — applications stall indefinitely
+- Low end-user impact volume currently (small applicant pool, dev phase) but blocks productive review workflow
+
+**Proposed Fix:**
+1. SMTP setup must land first — Resend custom SMTP on `somanoetic.com` (tracked separately under Production Readiness Week 1)
+2. Supabase Edge Function triggered on UPDATE of `therapist_verification_requests.status` (or called explicitly from `userRoleService.approveApplication` / `_setApplicationStatus`)
+3. Function pulls applicant email + status + review_notes, renders templated email (React Email or plain HTML), sends via Resend API
+4. Templates: 3 transactional emails (approved / needs_more_info / rejected), each with a deep link back into the app
+5. Smoke test: trigger each decision type as admin, verify mail receipt + correct content
+
+**Estimated Effort:** 1 day (assumes SMTP already configured)
+
+---
+
+**Current Count:** 6 P2 active (BUG-213, BUG-306, BUG-307, BUG-308, BUG-309, BUG-311), 2 P3 active (BUG-301, BUG-303)
 **Resolved bugs archived in:** [resolved.md](resolved.md)

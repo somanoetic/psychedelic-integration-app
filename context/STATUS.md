@@ -1,6 +1,6 @@
 # Project Status
 
-**Last Updated:** 2026-05-05
+**Last Updated:** 2026-05-11
 **Version:** 1.1.0 (Build 4)
 **Phase:** Production Readiness — Week 1 (parallel with Phase 3 feature track)
 
@@ -49,7 +49,7 @@
 ### Top Priorities
 1. **Sentry DSN → env var** (BUG-307) + verify capture on prod build
 2. **Privacy Policy / Terms rewrite** for non-HIPAA framing (driven by ADR-009), then **legal review kickoff** (BUG-308)
-3. **Therapist-feature reframing** (driven by ADR-009 audit) — Phase A + B0 complete: renamed `TherapistReportScreen` → `IntegrationSummaryScreen`, `TherapistVerificationScreen` → `ContributorApplicationScreen`, `TherapistToolsScreen` → `ContributorToolsScreen`; dropped license-board verification claim; AI Metrics now admin-only via Settings; EducationScreen card reframed. **B0:** ripped out `ScenarioUploadScreen` + `ScenarioTrainingSystem` entirely (contributor-AI-training deemed too risky in psychedelic-integration context). DB state confirmed by user. **Next: B1 (application review pipeline), then B2 (public library contribution + attribution + disclaimer).**
+3. **Therapist-feature reframing** (driven by ADR-009 audit) — Phase A + B0 + **B1 complete (2026-05-11)**. Phase A: renamed `TherapistReportScreen` → `IntegrationSummaryScreen`, `TherapistVerificationScreen` → `ContributorApplicationScreen`, `TherapistToolsScreen` → `ContributorToolsScreen`; dropped license-board verification claim; AI Metrics now admin-only via Settings; EducationScreen card reframed. **B0:** ripped out `ScenarioUploadScreen` + `ScenarioTrainingSystem` entirely. **B1 (committed 2026-05-11):** admin review of contributor applications end-to-end. Includes `AdminApplicationReviewScreen` + `userRoleService.listApplications` / `approveApplication` / `rejectApplication` (auto-reverts user_roles to baseline on reject) / `requestMoreInfo` / `resubmitVerificationRequest`. Applicant-side: `ContributorApplicationScreen` has edit mode + resubmit path for `needs_more_info`; `ContributorToolsScreen` shows decision inline (rejection + reviewer notes visible on Tools surface, no tap-through). Four migrations: `20260506000001_b1_admin_review_policies` (admin SELECT/UPDATE policies + audit columns), `20260508000001_unify_is_admin_to_user_roles` (closes JWT-metadata escalation), `20260511000001_contributor_application_fields` (Phase A schema gap — added `professional_background`/`contribution_focus`), `20260511000002_user_resubmit_application` (RLS allowing applicant to flip `needs_more_info` → `pending`). Surfaced bugs during smoke test: BUG-309 (AI metrics MVs missing), BUG-311 (no email notifications on decisions). **Next: B2 (public library contribution + attribution + disclaimer).**
 4. **Production env separation** (FEAT-401) — separate Supabase project, prod Anthropic key, EAS prod profile (standard tiers — no BAA needed per ADR-009)
 
 ### Goals for This Week

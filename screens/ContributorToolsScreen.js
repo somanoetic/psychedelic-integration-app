@@ -47,12 +47,37 @@ const ContributorToolsScreen = ({ navigation }) => {
     roleData?.role === 'therapist' && roleData?.verified === true;
   const isAdmin = roleData?.role === 'admin' && roleData?.verified === true;
   const hasAccess = isVerified || isAdmin;
-  const isPending = verificationStatus?.status === 'pending';
+  const status = verificationStatus?.status;
+  const isPending = status === 'pending';
+  const isNeedsMoreInfo = status === 'needs_more_info';
+  const isRejected = status === 'rejected';
+  const reviewNotes = verificationStatus?.data?.review_notes;
 
-  const displayInfo = userRoleService.getRoleDisplayInfo(
+  const baseDisplay = userRoleService.getRoleDisplayInfo(
     roleData?.role,
     roleData?.verified,
   );
+
+  // For non-pending non-approved states, the verification status is the
+  // load-bearing signal — override the role-derived display so the
+  // applicant sees the actual outcome on this screen rather than having
+  // to tap through.
+  let displayInfo = baseDisplay;
+  if (isNeedsMoreInfo) {
+    displayInfo = {
+      ...baseDisplay,
+      title: 'More Information Needed',
+      badge: '📋 Info Needed',
+      color: '#d97706',
+    };
+  } else if (isRejected) {
+    displayInfo = {
+      ...baseDisplay,
+      title: 'Application Not Approved',
+      badge: '❌ Not Approved',
+      color: '#dc2626',
+    };
+  }
 
   const ToolCard = ({ icon, title, subtitle, onPress, disabled }) => (
     <TouchableOpacity
@@ -132,34 +157,66 @@ const ContributorToolsScreen = ({ navigation }) => {
             <Text style={styles.statusTitle}>{displayInfo.title}</Text>
             {isPending && (
               <Text style={styles.statusSubtext}>
-                Your verification is under review. You'll receive an email when
+                Your application is under review. You'll receive an email when
                 it's approved.
               </Text>
             )}
-            {!hasAccess && !isPending && (
+            {isNeedsMoreInfo && (
+              <>
+                <Text style={styles.statusSubtext}>
+                  The reviewer has asked for additional information before
+                  proceeding.
+                </Text>
+                {reviewNotes ? (
+                  <View style={styles.notesInline}>
+                    <Text style={styles.notesInlineLabel}>Reviewer's note</Text>
+                    <Text style={styles.notesInlineText}>{reviewNotes}</Text>
+                  </View>
+                ) : null}
+              </>
+            )}
+            {isRejected && (
+              <>
+                <Text style={styles.statusSubtext}>
+                  Unfortunately, your application was not approved.
+                </Text>
+                {reviewNotes ? (
+                  <View style={styles.notesInline}>
+                    <Text style={styles.notesInlineLabel}>Reason</Text>
+                    <Text style={styles.notesInlineText}>{reviewNotes}</Text>
+                  </View>
+                ) : null}
+              </>
+            )}
+            {!hasAccess && !isPending && !isNeedsMoreInfo && !isRejected && (
               <Text style={styles.statusSubtext}>
-                Apply to contribute training scenarios that help Huxley
-                respond more skillfully.
+                Apply to contribute to Huxley's library.
               </Text>
             )}
           </View>
 
-          {/* Application */}
-          {!hasAccess && (
+          {/* Application action — only shown when there's something to do */}
+          {!hasAccess && !isRejected && (
             <>
-              <Text style={styles.sectionHeader}>Apply</Text>
+              <Text style={styles.sectionHeader}>
+                {isNeedsMoreInfo ? 'Respond' : 'Apply'}
+              </Text>
               <View style={styles.card}>
                 <ToolCard
                   icon="edit"
                   title={
                     isPending
                       ? 'View Application Status'
-                      : 'Apply to Contribute'
+                      : isNeedsMoreInfo
+                        ? 'Respond to Reviewer'
+                        : 'Apply to Contribute'
                   }
                   subtitle={
                     isPending
                       ? 'Check the status of your application'
-                      : 'Tell us about your background and what you’d like to contribute'
+                      : isNeedsMoreInfo
+                        ? 'Update your application and resubmit for review'
+                        : 'Tell us about your background and what you’d like to contribute'
                   }
                   onPress={() => navigation.navigate('ContributorApplication')}
                 />
@@ -325,6 +382,28 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: colors.lightGray,
     marginLeft: 76,
+  },
+  notesInline: {
+    width: '100%',
+    marginTop: spacing.md,
+    padding: spacing.sm,
+    backgroundColor: '#fef9e7',
+    borderRadius: borderRadius.sm,
+    borderLeftWidth: 3,
+    borderLeftColor: '#f59e0b',
+  },
+  notesInlineLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#78350f',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
+  notesInlineText: {
+    fontSize: 14,
+    color: '#78350f',
+    lineHeight: 20,
   },
   infoCard: {
     flexDirection: 'row',

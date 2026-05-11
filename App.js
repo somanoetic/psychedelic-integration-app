@@ -57,6 +57,7 @@ import NetworkTestScreen from './screens/NetworkTestScreen';
 import ExerciseLibraryScreen from './screens/ExerciseLibraryScreen';
 import GuidedExerciseScreen from './screens/GuidedExerciseScreen';
 import AdminMetricsDashboard from './screens/AdminMetricsDashboard';
+import AdminApplicationReviewScreen from './screens/AdminApplicationReviewScreen';
 import SetIntentionScreen from './screens/SetIntentionScreen';
 import SessionChecklistScreen from './screens/SessionChecklistScreen';
 import InsightsScreen from './screens/InsightsScreen';
@@ -647,6 +648,14 @@ function App() {
                 options={{
                   headerShown: false,
                   title: 'Metrics Dashboard'
+                }}
+              />
+              <Stack.Screen
+                name="AdminApplicationReview"
+                component={AdminApplicationReviewScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Contributor Applications'
                 }}
               />
               <Stack.Screen
