@@ -196,7 +196,7 @@ const TermsOfServiceScreen = ({ navigation }) => {
           </Paragraph>
           <Paragraph>
             Alleviation Therapeutics{'\n'}
-            Email: legal@alleviationtherapeutics.com
+            Email: legal@somanoetic.com
           </Paragraph>
         </Section>
 

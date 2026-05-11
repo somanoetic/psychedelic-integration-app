@@ -209,7 +209,7 @@ const PrivacyPolicyScreen = ({ navigation }) => {
           </Paragraph>
           <Paragraph>
             Alleviation Therapeutics{'\n'}
-            Email: privacy@alleviationtherapeutics.com
+            Email: privacy@somanoetic.com
           </Paragraph>
         </Section>
 

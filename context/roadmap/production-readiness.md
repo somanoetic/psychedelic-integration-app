@@ -38,7 +38,7 @@
 
 **Still open / not yet tracked:**
 - Sentry project not created, no DSN configured
-- Privacy/Terms not legally reviewed; contact emails (privacy@, legal@alleviationtherapeutics.com) not verified
+- Privacy/Terms not legally reviewed; contact emails (privacy@, legal@somanoetic.com) not verified
 - iOS beta build is stale (BUG-306)
 - No prod/dev environment separation — single Supabase project, single Anthropic key
 - No store listing assets (screenshots, descriptions, content rating, data-safety form)
@@ -55,7 +55,7 @@
 **Legal & monitoring sign-off**
 - [ ] Create Sentry project, set `SENTRY_DSN`, verify it captures a forced JS error and a forced native crash on Android
 - [ ] Legal review of `screens/PrivacyPolicyScreen.js` + `screens/TermsOfServiceScreen.js` (external counsel or templated review)
-- [ ] Configure privacy@ + legal@alleviationtherapeutics.com mailboxes
+- [ ] Configure privacy@ + legal@somanoetic.com mailboxes
 - [ ] Decide HIPAA posture and document as ADR (likely "non-HIPAA wellness app" given current scope, but needs explicit call)
 
 **Production environment separation**
