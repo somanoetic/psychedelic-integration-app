@@ -35,6 +35,7 @@ const paperTheme = {
 
 import AuthScreen from './screens/AuthScreen';
 import OnboardingCarousel from './screens/OnboardingCarousel';
+import NonClinicalDisclosureScreen, { DISCLOSURE_STORAGE_KEY } from './screens/NonClinicalDisclosureScreen';
 // AnimatedSplash removed - go straight to app
 import ConversationScreen from './screens/ConversationScreen';
 import SimpleEnhancedConversationScreen from './screens/SimpleEnhancedConversationScreen';
@@ -204,10 +205,13 @@ function App() {
   const [bypassAuth, setBypassAuth] = useState(false); // Add bypass mode
   const [onboardingComplete, setOnboardingComplete] = useState(false);
   const [checkingOnboarding, setCheckingOnboarding] = useState(true);
+  const [disclosureAcknowledged, setDisclosureAcknowledged] = useState(false);
+  const [checkingDisclosure, setCheckingDisclosure] = useState(true);
   const [showSplash, setShowSplash] = useState(false); // Splash disabled
 
   useEffect(() => {
     checkOnboardingStatus();
+    checkDisclosureStatus();
   }, []);
 
   useEffect(() => {
@@ -246,6 +250,29 @@ function App() {
 
   const handleOnboardingComplete = () => {
     setOnboardingComplete(true);
+  };
+
+  // ADR-009 #7: one-time non-HIPAA wellness disclosure. Versioned key so we can
+  // re-show it if the disclosure copy changes materially (bump
+  // DISCLOSURE_VERSION in NonClinicalDisclosureScreen.js).
+  const checkDisclosureStatus = async () => {
+    try {
+      const timeoutPromise = new Promise((resolve) => {
+        setTimeout(() => resolve(null), 3000);
+      });
+      const storagePromise = AsyncStorage.getItem(DISCLOSURE_STORAGE_KEY);
+      const ack = await Promise.race([storagePromise, timeoutPromise]);
+      setDisclosureAcknowledged(ack === 'true');
+    } catch (error) {
+      console.error('Error checking disclosure status:', error);
+      setDisclosureAcknowledged(false);
+    } finally {
+      setCheckingDisclosure(false);
+    }
+  };
+
+  const handleDisclosureAcknowledged = () => {
+    setDisclosureAcknowledged(true);
   };
 
   const initializeApp = async () => {
@@ -311,6 +338,24 @@ function App() {
     return (
       <SafeAreaProvider>
         <OnboardingCarousel onComplete={handleOnboardingComplete} />
+      </SafeAreaProvider>
+    );
+  }
+
+  // ADR-009 #7: non-HIPAA wellness disclosure. Shown once per user (or whenever
+  // DISCLOSURE_VERSION is bumped) AFTER onboarding and before main app routes.
+  // Existing users who already finished onboarding will hit this on next launch
+  // post-update. Skip in dev bypass mode.
+  if (
+    (session?.user || bypassAuth) &&
+    onboardingComplete &&
+    !disclosureAcknowledged &&
+    !checkingDisclosure &&
+    !bypassAuth
+  ) {
+    return (
+      <SafeAreaProvider>
+        <NonClinicalDisclosureScreen onAcknowledge={handleDisclosureAcknowledged} />
       </SafeAreaProvider>
     );
   }
