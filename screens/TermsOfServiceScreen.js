@@ -4,7 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, spacing, borderRadius, typography } from '../theme/colors';
 
-const LAST_UPDATED = 'April 1, 2026';
+const LAST_UPDATED = 'May 12, 2026';
 
 const Section = ({ title, children }) => (
   <View style={styles.section}>
@@ -50,19 +50,23 @@ const TermsOfServiceScreen = ({ navigation }) => {
         {/* ---- 1. ABOUT THE APP ---- */}
         <Section title="1. About Huxley">
           <Paragraph>
-            Huxley is a personal integration tool designed to help individuals process and integrate transformative experiences into daily life. The App provides journaling, AI-guided reflection, nervous system tracking, and educational resources.
+            Huxley is a self-directed wellness and educational tool designed to help individuals process and integrate transformative experiences into daily life. The App provides journaling, AI-guided reflection, nervous system tracking, and educational resources.
+          </Paragraph>
+          <Paragraph>
+            Huxley is a consumer wellness product. It is not a healthcare service, and using it does not create a clinician–patient relationship between you and Alleviation Therapeutics or anyone associated with the App.
           </Paragraph>
         </Section>
 
         {/* ---- 2. NOT MEDICAL ADVICE ---- */}
-        <Section title="2. Not Medical or Therapeutic Advice">
+        <Section title="2. Not Medical, Psychiatric, or Therapeutic Care">
           <Paragraph>
             This is the most important section of these Terms:
           </Paragraph>
           <BulletList items={[
             'Huxley is NOT a substitute for professional medical, psychiatric, or therapeutic care',
-            'The AI guide (Huxley) is a supportive tool, not a therapist. It cannot diagnose, treat, or provide clinical recommendations',
-            'Content in the App (exercises, educational material, AI responses) is for informational and personal reflection purposes only',
+            'The AI guide (Huxley) is a reflection companion, not a therapist or clinician. It cannot diagnose, treat, prescribe, or provide clinical recommendations, and nothing it says should be acted on as medical or mental-health advice',
+            'Content in the App (exercises, educational material, AI responses, contributor submissions) is for informational, educational, and personal reflection purposes only',
+            'Huxley does not create, store, or transmit a clinical record. Information you record in the App is your own personal wellness data — not a medical chart',
             'If you are in crisis or experiencing a mental health emergency, contact emergency services (911) or the 988 Suicide & Crisis Lifeline immediately',
             'Always consult qualified healthcare professionals for medical or mental health concerns',
           ]} />
@@ -71,8 +75,23 @@ const TermsOfServiceScreen = ({ navigation }) => {
           </Paragraph>
         </Section>
 
-        {/* ---- 3. ELIGIBILITY ---- */}
-        <Section title="3. Eligibility">
+        {/* ---- 3. NOT A HIPAA-COVERED SERVICE ---- */}
+        <Section title="3. Not a HIPAA-Covered Service">
+          <Paragraph>
+            Huxley is a consumer wellness app, not a healthcare service. We are not a covered entity, business associate, or healthcare provider under the U.S. Health Insurance Portability and Accountability Act ("HIPAA"), and the data you record in the App is not Protected Health Information ("PHI") in the HIPAA sense.
+          </Paragraph>
+          <BulletList items={[
+            'No therapist or clinician sees your in-app content through Huxley — there is no provider portal, no client roster, no in-app handoff to a treatment provider, and no in-app assignment of work from a clinician to a client',
+            'If you choose to share an Integration Summary with a therapist via the OS share sheet, that delivery happens outside Huxley; what the therapist does with it after they receive it is governed by their own privacy and recordkeeping obligations, not ours',
+            'If a Huxley contributor or contributor-submitted exercise mentions clinical concepts, this is general educational content — not personalized clinical advice and not delivered to you in the course of treatment',
+          ]} />
+          <Paragraph>
+            We treat your wellness data as sensitive personal information and protect it with the technical safeguards described in our Privacy Policy. Those protections come from our consumer privacy practices and applicable consumer privacy laws (such as CCPA and, where applicable, GDPR), not from HIPAA.
+          </Paragraph>
+        </Section>
+
+        {/* ---- 4. ELIGIBILITY ---- */}
+        <Section title="4. Eligibility">
           <BulletList items={[
             'You must be at least 18 years old to use the App',
             'By creating an account, you represent that you are at least 18',
@@ -80,8 +99,8 @@ const TermsOfServiceScreen = ({ navigation }) => {
           ]} />
         </Section>
 
-        {/* ---- 4. YOUR ACCOUNT ---- */}
-        <Section title="4. Your Account">
+        {/* ---- 5. YOUR ACCOUNT ---- */}
+        <Section title="5. Your Account">
           <BulletList items={[
             'You are responsible for maintaining the security of your account credentials',
             'You are responsible for all activity that occurs under your account',
@@ -90,8 +109,8 @@ const TermsOfServiceScreen = ({ navigation }) => {
           ]} />
         </Section>
 
-        {/* ---- 5. YOUR CONTENT ---- */}
-        <Section title="5. Your Content">
+        {/* ---- 6. YOUR CONTENT ---- */}
+        <Section title="6. Your Content">
           <Paragraph>
             You retain full ownership of all content you create in the App (journal entries, reflections, intentions, etc.). We do not claim any intellectual property rights over your content.
           </Paragraph>
@@ -103,8 +122,8 @@ const TermsOfServiceScreen = ({ navigation }) => {
           ]} />
         </Section>
 
-        {/* ---- 6. ACCEPTABLE USE ---- */}
-        <Section title="6. Acceptable Use">
+        {/* ---- 7. ACCEPTABLE USE ---- */}
+        <Section title="7. Acceptable Use">
           <Paragraph>
             You agree not to:
           </Paragraph>
@@ -118,8 +137,8 @@ const TermsOfServiceScreen = ({ navigation }) => {
           ]} />
         </Section>
 
-        {/* ---- 7. AI FEATURES ---- */}
-        <Section title="7. AI Features & Limitations">
+        {/* ---- 8. AI FEATURES ---- */}
+        <Section title="8. AI Features & Limitations">
           <BulletList items={[
             'AI responses are generated by language models and may occasionally be inaccurate, unhelpful, or inappropriate',
             'AI responses do not represent the views or recommendations of Alleviation Therapeutics',
@@ -129,15 +148,15 @@ const TermsOfServiceScreen = ({ navigation }) => {
           ]} />
         </Section>
 
-        {/* ---- 8. INTELLECTUAL PROPERTY ---- */}
-        <Section title="8. Intellectual Property">
+        {/* ---- 9. INTELLECTUAL PROPERTY ---- */}
+        <Section title="9. Intellectual Property">
           <Paragraph>
             The App, including its design, code, exercises, educational content, and AI prompts, is owned by Alleviation Therapeutics and protected by copyright and other intellectual property laws. You may not copy, modify, distribute, or create derivative works from the App without our written permission.
           </Paragraph>
         </Section>
 
-        {/* ---- 9. AVAILABILITY ---- */}
-        <Section title="9. Service Availability">
+        {/* ---- 10. AVAILABILITY ---- */}
+        <Section title="10. Service Availability">
           <BulletList items={[
             'We strive to keep the App available at all times, but we do not guarantee uninterrupted service',
             'AI features depend on third-party services (Anthropic) and may be temporarily unavailable',
@@ -146,8 +165,8 @@ const TermsOfServiceScreen = ({ navigation }) => {
           ]} />
         </Section>
 
-        {/* ---- 10. LIMITATION OF LIABILITY ---- */}
-        <Section title="10. Limitation of Liability">
+        {/* ---- 11. LIMITATION OF LIABILITY ---- */}
+        <Section title="11. Limitation of Liability">
           <Paragraph>
             To the maximum extent permitted by law:
           </Paragraph>
@@ -159,8 +178,8 @@ const TermsOfServiceScreen = ({ navigation }) => {
           ]} />
         </Section>
 
-        {/* ---- 11. HARM REDUCTION ---- */}
-        <Section title="11. Harm Reduction Commitment">
+        {/* ---- 12. HARM REDUCTION ---- */}
+        <Section title="12. Harm Reduction Commitment">
           <Paragraph>
             Huxley is built on principles of harm reduction, informed consent, and personal agency. We believe:
           </Paragraph>
@@ -175,22 +194,22 @@ const TermsOfServiceScreen = ({ navigation }) => {
           </Paragraph>
         </Section>
 
-        {/* ---- 12. CHANGES ---- */}
-        <Section title="12. Changes to These Terms">
+        {/* ---- 13. CHANGES ---- */}
+        <Section title="13. Changes to These Terms">
           <Paragraph>
             We may update these Terms from time to time. If we make material changes, we will notify you through the App. Your continued use after changes take effect constitutes acceptance of the updated Terms.
           </Paragraph>
         </Section>
 
-        {/* ---- 13. GOVERNING LAW ---- */}
-        <Section title="13. Governing Law">
+        {/* ---- 14. GOVERNING LAW ---- */}
+        <Section title="14. Governing Law">
           <Paragraph>
             These Terms are governed by the laws of the state in which Alleviation Therapeutics is incorporated, without regard to conflict of law provisions.
           </Paragraph>
         </Section>
 
-        {/* ---- 14. CONTACT ---- */}
-        <Section title="14. Contact Us">
+        {/* ---- 15. CONTACT ---- */}
+        <Section title="15. Contact Us">
           <Paragraph>
             If you have questions about these Terms, contact us at:
           </Paragraph>

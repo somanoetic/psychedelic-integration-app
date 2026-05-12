@@ -4,7 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, spacing, borderRadius, typography } from '../theme/colors';
 
-const LAST_UPDATED = 'April 1, 2026';
+const LAST_UPDATED = 'May 12, 2026';
 
 const Section = ({ title, children }) => (
   <View style={styles.section}>
@@ -48,18 +48,34 @@ const PrivacyPolicyScreen = ({ navigation }) => {
         </Paragraph>
 
         <Paragraph>
-          Given the deeply personal nature of psychedelic integration work, we hold ourselves to the highest standards of data privacy and treat all therapeutic data as sensitive health information.
+          Huxley is a self-directed wellness and educational tool. The information you record in the App is personal wellness data — not a clinical record. Because of how personal that data is, we treat it with strong technical safeguards and minimal third-party sharing, and we are transparent about exactly what those safeguards are and aren't (see Section 2 below).
         </Paragraph>
 
-        {/* ---- 1. DATA WE COLLECT ---- */}
-        <Section title="1. Information We Collect">
+        {/* ---- NOT A HIPAA-COVERED SERVICE ---- */}
+        <Section title="1. Not a HIPAA-Covered Service">
+          <Paragraph>
+            Huxley is a consumer wellness and educational app. It is not a covered entity, business associate, or healthcare provider under the U.S. Health Insurance Portability and Accountability Act ("HIPAA"), and the data you record in the App is not Protected Health Information ("PHI") in the HIPAA sense.
+          </Paragraph>
+          <BulletList items={[
+            'We do not deliver medical, psychiatric, or therapeutic treatment through the App',
+            'We do not bill insurance and do not maintain a clinical chart for you',
+            'No therapist or clinician sees your in-app content through Huxley — there is no provider portal, no client roster, and no in-app handoff to a treatment provider',
+            'If you choose to share an Integration Summary with a therapist via the OS share sheet, that delivery happens entirely outside Huxley; whatever the therapist stores after receiving it is governed by their own privacy obligations, not ours',
+          ]} />
+          <Paragraph>
+            Your wellness data is still treated as sensitive personal information and protected by the safeguards described below — but we want you to know, before you decide what to record, that those protections come from our consumer privacy practices and applicable consumer privacy laws (such as CCPA and, where applicable, GDPR), not from HIPAA.
+          </Paragraph>
+        </Section>
+
+        {/* ---- 2. DATA WE COLLECT ---- */}
+        <Section title="2. Information We Collect">
           <Text style={styles.subheading}>Account Information</Text>
           <BulletList items={[
             'Email address (used for authentication)',
             'Password (encrypted by our authentication provider; we never see or store your plaintext password)',
           ]} />
 
-          <Text style={styles.subheading}>Therapeutic & Integration Data</Text>
+          <Text style={styles.subheading}>Personal Wellness & Reflection Data</Text>
           <Paragraph>
             The core purpose of the App is to help you process and integrate experiences. When you use the App, you may choose to record:
           </Paragraph>
@@ -83,8 +99,8 @@ const PrivacyPolicyScreen = ({ navigation }) => {
           ]} />
         </Section>
 
-        {/* ---- 2. HOW WE USE YOUR DATA ---- */}
-        <Section title="2. How We Use Your Data">
+        {/* ---- 3. HOW WE USE YOUR DATA ---- */}
+        <Section title="3. How We Use Your Data">
           <BulletList items={[
             'To provide the App\'s core features: journaling, AI conversations, nervous system tracking, and integration tools',
             'To personalize your AI interactions — the App uses your past context (with your permission) to provide more relevant guidance',
@@ -96,8 +112,8 @@ const PrivacyPolicyScreen = ({ navigation }) => {
           </Paragraph>
         </Section>
 
-        {/* ---- 3. AI PROCESSING ---- */}
-        <Section title="3. AI Processing & Third-Party Data Sharing">
+        {/* ---- 4. AI PROCESSING ---- */}
+        <Section title="4. AI Processing & Third-Party Data Sharing">
           <Paragraph>
             When you interact with Huxley (our AI guide) or other AI-powered features, your messages are sent to Anthropic (the company behind Claude) for processing. This is necessary to generate personalized responses.
           </Paragraph>
@@ -121,17 +137,17 @@ const PrivacyPolicyScreen = ({ navigation }) => {
           </Paragraph>
         </Section>
 
-        {/* ---- 4. DATA STORAGE ---- */}
-        <Section title="4. Where Your Data Is Stored">
+        {/* ---- 5. DATA STORAGE ---- */}
+        <Section title="5. Where Your Data Is Stored">
           <BulletList items={[
-            'Cloud database: Your account and therapeutic data are stored in our Supabase-hosted PostgreSQL database, encrypted at rest and in transit (TLS/SSL)',
+            'Cloud database: Your account and wellness data are stored in our Supabase-hosted PostgreSQL database, encrypted at rest and in transit (TLS/SSL)',
             'Local device: Some data (preferences, cached conversations) is stored on your device using AsyncStorage',
             'For certain features (like intentions), you can choose to keep data local-only and not sync it to the cloud',
           ]} />
         </Section>
 
-        {/* ---- 5. DATA SECURITY ---- */}
-        <Section title="5. Data Security">
+        {/* ---- 6. DATA SECURITY ---- */}
+        <Section title="6. Data Security">
           <Paragraph>
             We implement the following security measures:
           </Paragraph>
@@ -147,8 +163,8 @@ const PrivacyPolicyScreen = ({ navigation }) => {
           </Paragraph>
         </Section>
 
-        {/* ---- 6. YOUR RIGHTS ---- */}
-        <Section title="6. Your Rights">
+        {/* ---- 7. YOUR RIGHTS ---- */}
+        <Section title="7. Your Rights">
           <Paragraph>
             You have the right to:
           </Paragraph>
@@ -164,25 +180,25 @@ const PrivacyPolicyScreen = ({ navigation }) => {
           </Paragraph>
         </Section>
 
-        {/* ---- 7. DATA RETENTION ---- */}
-        <Section title="7. Data Retention">
+        {/* ---- 8. DATA RETENTION ---- */}
+        <Section title="8. Data Retention">
           <BulletList items={[
-            'Your therapeutic data is retained as long as your account is active',
+            'Your wellness and reflection data is retained as long as your account is active',
             'AI usage metrics are automatically deleted after 90 days',
             'Deleting your account permanently removes all your data from our servers',
             'Some anonymized, aggregated statistics (e.g., total app usage counts) may be retained after account deletion as they cannot be linked back to you',
           ]} />
         </Section>
 
-        {/* ---- 8. CHILDREN ---- */}
-        <Section title="8. Age Requirement">
+        {/* ---- 9. CHILDREN ---- */}
+        <Section title="9. Age Requirement">
           <Paragraph>
             Huxley is intended for adults aged 18 and older. We do not knowingly collect data from anyone under 18. If you believe a minor has created an account, please contact us and we will delete the account.
           </Paragraph>
         </Section>
 
-        {/* ---- 9. THIRD PARTIES ---- */}
-        <Section title="9. Third-Party Services">
+        {/* ---- 10. THIRD PARTIES ---- */}
+        <Section title="10. Third-Party Services">
           <Paragraph>
             We use the following third-party services:
           </Paragraph>
@@ -195,15 +211,15 @@ const PrivacyPolicyScreen = ({ navigation }) => {
           </Paragraph>
         </Section>
 
-        {/* ---- 10. CHANGES ---- */}
-        <Section title="10. Changes to This Policy">
+        {/* ---- 11. CHANGES ---- */}
+        <Section title="11. Changes to This Policy">
           <Paragraph>
             We may update this policy from time to time. If we make material changes, we will notify you through the App before the changes take effect. Your continued use of the App after changes constitutes acceptance of the updated policy.
           </Paragraph>
         </Section>
 
-        {/* ---- 11. CONTACT ---- */}
-        <Section title="11. Contact Us">
+        {/* ---- 12. CONTACT ---- */}
+        <Section title="12. Contact Us">
           <Paragraph>
             If you have questions about this privacy policy or your data, contact us at:
           </Paragraph>
