@@ -44,7 +44,7 @@ const ContributorToolsScreen = ({ navigation }) => {
   }, [navigation, loadData]);
 
   const isVerified =
-    roleData?.role === 'therapist' && roleData?.verified === true;
+    roleData?.role === 'contributor' && roleData?.verified === true;
   const isAdmin = roleData?.role === 'admin' && roleData?.verified === true;
   const hasAccess = isVerified || isAdmin;
   const status = verificationStatus?.status;

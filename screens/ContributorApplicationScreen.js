@@ -82,7 +82,7 @@ const ContributorApplicationScreen = ({ navigation }) => {
       const isResubmit = isEditing && verificationStatus?.data?.id;
       const result = isResubmit
         ? await userRoleService.resubmitVerificationRequest(verificationStatus.data.id, applicationData)
-        : await userRoleService.requestTherapistVerification(applicationData);
+        : await userRoleService.submitContributorApplication(applicationData);
 
       if (result.success) {
         Alert.alert(

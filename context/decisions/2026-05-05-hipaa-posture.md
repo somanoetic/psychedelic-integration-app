@@ -161,10 +161,13 @@ User confirmed `user_roles` and `therapist_verification_requests` exist with the
 - **Intentional scope cut:** AI services (`huxleyService`, `therapeuticIntegrationService`) stay bundled-only. Contributor content reaches users only via browse-the-library, not via AI recommendation — protects the attribution boundary and avoids the AI presenting contributor content as established protocol.
 - Disclaimer text: *"This content was contributed by [Name] and reviewed for safety. It reflects the contributor's perspective, not medical advice or the views of Alleviation Therapeutics."*
 
-**B3 — Role string rename** (deferred indefinitely; pure polish)
-- Migration: `UPDATE user_roles SET role='contributor' WHERE role='therapist'` + RLS policy updates
-- Rename `userRoleService` methods (`requestTherapistVerification` → `submitContributorApplication`, `isVerifiedTherapist` → `isApprovedContributor`, etc.) and call sites
-- User-facing UI is already correct after Phase A; B3 is internal-only cleanup.
+**B3 — Role string rename** ✅ **Done (2026-05-12)**
+- Migration `20260512000002_role_string_rename_contributor.sql` — drops the existing `valid_role` CHECK (defensively, against both the original name and the Postgres-default `user_roles_role_check` since the live schema drifted to permit `'therapist'`), `UPDATE`s `user_roles` rows from `'therapist'` → `'contributor'`, then recreates the constraint as `('user', 'contributor', 'admin')`. Dropped legacy `'service_account'` and `'moderator'` from the constraint vocabulary — neither is referenced anywhere in the codebase or any other migration. Idempotent.
+- **No RLS rewrites needed.** Repo-wide grep at B3 time confirmed no active policy filters on `role='therapist'`: admin gates use `public.is_admin()`, contributor gates use `auth.uid() = contributor_id`. The role string lives entirely in the JS layer.
+- `userRoleService.isVerifiedTherapist()` → `isApprovedContributor()`. `userRoleService.requestTherapistVerification(verificationData)` → `submitContributorApplication(applicationData)`. Method body trimmed (dropped dead `license_expiry`-specific date handling — that field was removed from the form in Phase A — and the `console.log` of cleaned input). Internal `'therapist'` string comparisons in `userRoleService.approveApplication`, `getRoleDisplayInfo`, `contributedExerciseService.submitExercise`, `ContributorToolsScreen`, `ContributorExerciseSubmissionScreen` all flipped to `'contributor'`. `ContributorApplicationScreen` updated to call the new method name.
+- Dev-only `AdminSetupScreen.makeUserTherapist` → `makeUserContributor` (button label, alert copy, style key all updated; the stale "Access to training scenarios" subtext from before B0 corrected to reference the contributor tools / public library submission flow).
+- User-facing UI is unchanged — the rename was always internal-only after Phase A had reframed the visible copy.
+- Test impact: 497 passing, no regressions caused by B3. (Pre-existing PNG-import failure in `conversationBot.test.js` is unrelated.)
 
 ### Forward boundaries
 

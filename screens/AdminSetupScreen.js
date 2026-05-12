@@ -128,7 +128,7 @@ const AdminSetupScreen = ({ navigation }) => {
     }
   };
 
-  const makeUserTherapist = async () => {
+  const makeUserContributor = async () => {
     setIsLoading(true);
     try {
       const user = await getCurrentUser();
@@ -142,7 +142,7 @@ const AdminSetupScreen = ({ navigation }) => {
         .from('user_roles')
         .upsert({
           user_id: user.id,
-          role: 'therapist',
+          role: 'contributor',
           verified: true,
           license_type: 'TESTING',
           license_number: 'TEST123',
@@ -157,16 +157,16 @@ const AdminSetupScreen = ({ navigation }) => {
       if (error) {
         throw error;
       }
-      
-      Alert.alert('Success!', 'You are now a verified therapist.');
+
+      Alert.alert('Success!', 'You are now an approved contributor.');
 
       // Clear cache so new role is loaded
       userRoleService.clearCache();
       checkCurrentRole();
 
     } catch (error) {
-      console.error('Error making user therapist:', error);
-      Alert.alert('Error', 'Failed to make user therapist: ' + error.message);
+      console.error('Error making user contributor:', error);
+      Alert.alert('Error', 'Failed to make user contributor: ' + error.message);
     } finally {
       setIsLoading(false);
     }
@@ -245,15 +245,15 @@ const AdminSetupScreen = ({ navigation }) => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.button, styles.therapistButton]}
-          onPress={makeUserTherapist}
+          style={[styles.button, styles.contributorButton]}
+          onPress={makeUserContributor}
           disabled={isLoading}
         >
           <Text style={styles.buttonText}>
-            🩺 Make Me Verified Therapist
+            ✅ Make Me Approved Contributor
           </Text>
           <Text style={styles.buttonSubtext}>
-            Access to training scenarios and professional features
+            Access to contributor tools and the public library submission flow
           </Text>
         </TouchableOpacity>
 
@@ -364,7 +364,7 @@ const styles = {
   adminButton: {
     backgroundColor: '#dc2626',
   },
-  therapistButton: {
+  contributorButton: {
     backgroundColor: '#059669',
   },
   refreshButton: {

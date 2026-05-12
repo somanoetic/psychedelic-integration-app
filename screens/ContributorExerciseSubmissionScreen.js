@@ -78,7 +78,7 @@ const ContributorExerciseSubmissionScreen = ({ navigation }) => {
       const role = await userRoleService.getCurrentUserRole();
       const verification = await userRoleService.getVerificationStatus();
       const approved =
-        (role?.role === 'therapist' && role?.verified === true) ||
+        (role?.role === 'contributor' && role?.verified === true) ||
         (role?.role === 'admin' && role?.verified === true);
 
       setHasAccess(approved);
