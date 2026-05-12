@@ -156,6 +156,13 @@ const SettingsScreen = ({ navigation }) => {
                   subtitle="Review pending contributor applications"
                   onPress={() => navigation.navigate('AdminApplicationReview')}
                 />
+                <View style={styles.separator} />
+                <SettingsRow
+                  icon="rate-review"
+                  title="Exercise Submissions"
+                  subtitle="Review pending contributed exercises"
+                  onPress={() => navigation.navigate('AdminContentReview')}
+                />
               </View>
             </>
           )}

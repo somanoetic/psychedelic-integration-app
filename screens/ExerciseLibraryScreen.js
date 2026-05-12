@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,14 +14,34 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
 import { getAllExercises, exerciseCategories } from '../content/exercises-comprehensive';
 import { colors, gradients, spacing, borderRadius, shadows, typography } from '../theme/colors';
+import contributedExerciseService from '../lib/contributedExerciseService';
+import ContributedContentDisclaimer from '../components/ContributedContentDisclaimer';
 
 const ExerciseLibraryScreen = ({ navigation }) => {
   const [selectedExercise, setSelectedExercise] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [contributedExercises, setContributedExercises] = useState([]);
 
-  // Get all exercises from the content file
-  const allPractices = getAllExercises();
+  // Bundled curated exercises always render synchronously; approved
+  // contributor submissions are async-merged once loaded. The library
+  // remains usable offline at the bundled set.
+  const bundledPractices = getAllExercises();
+  const allPractices = useMemo(
+    () => [...bundledPractices, ...contributedExercises],
+    [bundledPractices, contributedExercises],
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    contributedExerciseService.listPublished().then((result) => {
+      if (cancelled) return;
+      if (result.success) {
+        setContributedExercises(result.data);
+      }
+    });
+    return () => { cancelled = true; };
+  }, []);
 
   const getCategoryInfo = (categoryId) => {
     return exerciseCategories.find(c => c.id === categoryId) || exerciseCategories[0];
@@ -102,12 +122,17 @@ const ExerciseLibraryScreen = ({ navigation }) => {
                 </Text>
               </View>
 
-              {selectedExercise.source && (
+              {selectedExercise.isContributed ? (
+                <ContributedContentDisclaimer
+                  attributionName={selectedExercise.attributionName}
+                  style={styles.disclaimerBox}
+                />
+              ) : selectedExercise.source ? (
                 <View style={styles.sourceBox}>
                   <MaterialIcons name="menu-book" size={16} color={colors.textSecondary} />
                   <Text style={styles.sourceText}>Source: {selectedExercise.source}</Text>
                 </View>
-              )}
+              ) : null}
             </ScrollView>
 
             <View style={styles.modalFooter}>
@@ -246,6 +271,14 @@ const ExerciseLibraryScreen = ({ navigation }) => {
                     <View style={styles.metadataBadge}>
                       <Text style={styles.metadataBadgeText}>{exercise.steps.length} steps</Text>
                     </View>
+                    {exercise.isContributed && (
+                      <View style={styles.contributedBadge}>
+                        <MaterialIcons name="person-outline" size={12} color={colors.primary} />
+                        <Text style={styles.contributedBadgeText} numberOfLines={1}>
+                          By {exercise.attributionName}
+                        </Text>
+                      </View>
+                    )}
                   </View>
                 </View>
 
@@ -527,6 +560,24 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.textSecondary,
     fontStyle: 'italic',
+  },
+  disclaimerBox: {
+    marginTop: 16,
+  },
+  contributedBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    backgroundColor: `${colors.primary}15`,
+    borderRadius: 12,
+    maxWidth: 220,
+  },
+  contributedBadgeText: {
+    fontSize: 11,
+    color: colors.primary,
+    fontWeight: '500',
   },
   emptyState: {
     alignItems: 'center',

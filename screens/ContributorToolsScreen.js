@@ -230,6 +230,13 @@ const ContributorToolsScreen = ({ navigation }) => {
               <Text style={styles.sectionHeader}>Your Tools</Text>
               <View style={styles.card}>
                 <ToolCard
+                  icon="add-circle-outline"
+                  title="Submit an Exercise"
+                  subtitle="Contribute a practice to Huxley's public library"
+                  onPress={() => navigation.navigate('ContributorExerciseSubmission')}
+                />
+                <View style={styles.separator} />
+                <ToolCard
                   icon="edit"
                   title="Application Details"
                   subtitle="View the details you submitted"
@@ -247,10 +254,9 @@ const ContributorToolsScreen = ({ navigation }) => {
               color={colors.textSecondary}
             />
             <Text style={styles.infoText}>
-              Approved contributors will be able to submit exercises and
-              protocols to Huxley's public library. Submissions are reviewed
-              before going live and published with attribution to the
-              contributor. This feature is coming soon.
+              Approved contributors can submit exercises and protocols to
+              Huxley's public library. Submissions are reviewed before going
+              live and published with attribution to the contributor.
             </Text>
           </View>
 

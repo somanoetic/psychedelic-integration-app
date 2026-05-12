@@ -151,12 +151,14 @@ User confirmed `user_roles` and `therapist_verification_requests` exist with the
 - Entry from Settings → Admin (next to AI Metrics Dashboard)
 - RLS audit: applications must be admin-readable only
 
-**B2 — Public library contribution pipeline** (the heart of the user's "public forum needs review + disclaimer" concern)
-- Migration: new `contributed_exercises` table — `id, contributor_id, attribution_name, title, category, description, steps[], submitted_at, review_status (pending/approved/rejected), reviewed_by, reviewed_at, published_at, review_notes`
-- New submission UI in `ContributorToolsScreen` — form to submit a new exercise
-- New `AdminContentReviewScreen` — review queue for pending contributions
-- Library service merges bundled `content/exercises-comprehensive.js` (160 exercises) + approved-and-published contributed entries from Supabase
-- Library UI: attribution badge + reusable `<ContributedContentDisclaimer />` component shown on contributed entries
+**B2 — Public library contribution pipeline** ✅ **Done (2026-05-12)**
+- Migration `20260511000003_contributed_exercises.sql` — `contributed_exercises` table with `id, contributor_id, attribution_name, title, category, instructions, steps[], duration, submitted_at, review_status (pending/approved/rejected/needs_revision), reviewed_by, reviewed_at, published_at, review_notes` and full RLS (contributor own pending; admin all; authenticated users read approved+published).
+- `lib/contributedExerciseService.js` — contributor side: `submitExercise`, `listMySubmissions`, `reviseSubmission`, `deleteSubmission`. Admin side: `listForReview`, `approveSubmission` (sets `published_at` in same action), `rejectSubmission`, `requestRevision`. User-facing: `listPublished` (normalized to the bundled exercise shape).
+- `screens/ContributorExerciseSubmissionScreen.js` — list + form modes. Form: title, attribution, category picker, duration, instructions, dynamic steps[]. Doubles as the revise-after-needs_revision path. Gated to approved contributors/admins.
+- `screens/AdminContentReviewScreen.js` — tabbed (pending/needs_revision/approved/rejected) review queue with expandable cards, approve-and-publish / request-revision / reject actions, notes required for the latter two.
+- `components/ContributedContentDisclaimer.js` — reusable component with the ADR copy verbatim, used in `ExerciseLibraryScreen` modal and `GuidedExerciseScreen` instructions.
+- `ExerciseLibraryScreen` + `ConversationalExerciseLibrary` async-merge approved entries with bundled. Attribution chip on cards, disclaimer in detail/instructions.
+- **Intentional scope cut:** AI services (`huxleyService`, `therapeuticIntegrationService`) stay bundled-only. Contributor content reaches users only via browse-the-library, not via AI recommendation — protects the attribution boundary and avoids the AI presenting contributor content as established protocol.
 - Disclaimer text: *"This content was contributed by [Name] and reviewed for safety. It reflects the contributor's perspective, not medical advice or the views of Alleviation Therapeutics."*
 
 **B3 — Role string rename** (deferred indefinitely; pure polish)

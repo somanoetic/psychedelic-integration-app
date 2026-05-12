@@ -11,6 +11,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { colors, shadows, spacing, borderRadius } from '../theme/colors';
 import ShareWithTherapistButton from '../components/ShareWithTherapistButton';
 import { shareExercise } from '../lib/therapistShareService';
+import ContributedContentDisclaimer from '../components/ContributedContentDisclaimer';
 
 const GuidedExerciseScreen = ({ navigation, route }) => {
   const { exercise, categoryColor } = route.params;
@@ -63,6 +64,12 @@ const GuidedExerciseScreen = ({ navigation, route }) => {
         <Text style={[styles.purposeLabel, { color: accentColor }]}>Purpose</Text>
       </View>
       <Text style={styles.instructionsText}>{exercise.instructions}</Text>
+      {exercise.isContributed && (
+        <ContributedContentDisclaimer
+          attributionName={exercise.attributionName}
+          style={styles.disclaimerBox}
+        />
+      )}
       <TouchableOpacity
         style={[styles.beginButton, { backgroundColor: accentColor }]}
         onPress={handleNext}
@@ -260,6 +267,9 @@ const styles = StyleSheet.create({
     fontSize: 17,
     lineHeight: 26,
     color: colors.text,
+    marginBottom: spacing.lg,
+  },
+  disclaimerBox: {
     marginBottom: spacing.lg,
   },
   beginButton: {

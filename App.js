@@ -58,6 +58,8 @@ import ExerciseLibraryScreen from './screens/ExerciseLibraryScreen';
 import GuidedExerciseScreen from './screens/GuidedExerciseScreen';
 import AdminMetricsDashboard from './screens/AdminMetricsDashboard';
 import AdminApplicationReviewScreen from './screens/AdminApplicationReviewScreen';
+import AdminContentReviewScreen from './screens/AdminContentReviewScreen';
+import ContributorExerciseSubmissionScreen from './screens/ContributorExerciseSubmissionScreen';
 import SetIntentionScreen from './screens/SetIntentionScreen';
 import SessionChecklistScreen from './screens/SessionChecklistScreen';
 import InsightsScreen from './screens/InsightsScreen';
@@ -656,6 +658,22 @@ function App() {
                 options={{
                   headerShown: false,
                   title: 'Contributor Applications'
+                }}
+              />
+              <Stack.Screen
+                name="AdminContentReview"
+                component={AdminContentReviewScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Exercise Submissions'
+                }}
+              />
+              <Stack.Screen
+                name="ContributorExerciseSubmission"
+                component={ContributorExerciseSubmissionScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Submit an Exercise'
                 }}
               />
               <Stack.Screen

@@ -14,6 +14,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { colors } from '../theme/colors';
 import { icons } from '../lib/uiIcons';
 import { exerciseCategories as realCategories, getExercisesByCategory, getAllExercises } from '../content/exercises-comprehensive';
+import contributedExerciseService from '../lib/contributedExerciseService';
 
 const ConversationalExerciseLibrary = ({ navigation, route }) => {
   const [conversationStep, setConversationStep] = useState('initial'); // initial, search, browse, selected, searchResults
@@ -21,6 +22,7 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [fadeAnim] = useState(new Animated.Value(0));
+  const [contributedExercises, setContributedExercises] = useState([]);
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -28,6 +30,19 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
       duration: 600,
       useNativeDriver: true,
     }).start();
+  }, []);
+
+  // Load approved contributor submissions; bundled exercises still render
+  // synchronously so the library is usable while this resolves.
+  useEffect(() => {
+    let cancelled = false;
+    contributedExerciseService.listPublished().then((result) => {
+      if (cancelled) return;
+      if (result.success) {
+        setContributedExercises(result.data);
+      }
+    });
+    return () => { cancelled = true; };
   }, []);
 
   // If navigated with a category param, auto-select that category
@@ -42,12 +57,15 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
     }
   }, [route?.params?.category]);
 
-  const exerciseCategories = [
+  const exerciseCategories = useMemo(() => [
     ...realCategories
       .filter(c => c.id !== 'all')
       .map(c => ({
         ...c,
-        exercises: getExercisesByCategory(c.id),
+        exercises: [
+          ...getExercisesByCategory(c.id),
+          ...contributedExercises.filter(ex => ex.category === c.id),
+        ],
       })),
     {
       id: 'games',
@@ -59,7 +77,7 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
       exercises: [{ title: 'Glimmer Swiper', isGame: true }],
       isInteractive: true
     }
-  ];
+  ], [contributedExercises]);
 
   const renderHuxleyMessage = (message) => (
     <View style={styles.huxleyBubble}>
@@ -235,6 +253,14 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
                     {exercise.instructions}
                   </Text>
                 )}
+                {exercise.isContributed && (
+                  <View style={styles.contributedChip}>
+                    <MaterialIcons name="person-outline" size={11} color={colors.primary} />
+                    <Text style={styles.contributedChipText} numberOfLines={1}>
+                      By {exercise.attributionName}
+                    </Text>
+                  </View>
+                )}
               </View>
               <MaterialIcons name="chevron-right" size={20} color={colors.textLight} />
             </TouchableOpacity>
@@ -250,7 +276,10 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
     );
   };
 
-  const allExercises = useMemo(() => getAllExercises(), []);
+  const allExercises = useMemo(
+    () => [...getAllExercises(), ...contributedExercises],
+    [contributedExercises],
+  );
 
   const searchResults = useMemo(() => {
     if (!searchQuery.trim()) return [];
@@ -298,6 +327,14 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
                     <Text style={styles.exercisePreview} numberOfLines={2}>
                       {exercise.instructions}
                     </Text>
+                  )}
+                  {exercise.isContributed && (
+                    <View style={styles.contributedChip}>
+                      <MaterialIcons name="person-outline" size={11} color={colors.primary} />
+                      <Text style={styles.contributedChipText} numberOfLines={1}>
+                        By {exercise.attributionName}
+                      </Text>
+                    </View>
                   )}
                 </View>
                 <MaterialIcons name="chevron-right" size={20} color={colors.textLight} />
@@ -603,6 +640,23 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     marginTop: 4,
     lineHeight: 18,
+  },
+  contributedChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    alignSelf: 'flex-start',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    marginTop: 6,
+    backgroundColor: `${colors.primary}15`,
+    borderRadius: 10,
+    maxWidth: 220,
+  },
+  contributedChipText: {
+    fontSize: 11,
+    color: colors.primary,
+    fontWeight: '500',
   },
 });
 
