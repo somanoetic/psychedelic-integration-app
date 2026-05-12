@@ -192,7 +192,9 @@ const AdminApplicationReviewScreen = ({ navigation }) => {
             {inNotesFlow ? (
               <View style={styles.notesPanel}>
                 <Text style={styles.notesLabel}>
-                  {actionState.type === 'reject' ? 'Reason for rejection' : 'What more do you need?'}
+                  {actionState.type === 'reject'
+                    ? (app.status === 'approved' ? 'Reason for revoking' : 'Reason for rejection')
+                    : 'What more do you need?'}
                 </Text>
                 <TextInput
                   style={styles.notesInput}
@@ -201,7 +203,9 @@ const AdminApplicationReviewScreen = ({ navigation }) => {
                   value={actionState.notes}
                   onChangeText={(t) => setActionState({ ...actionState, notes: t })}
                   placeholder={actionState.type === 'reject'
-                    ? 'Will be shown to applicant on their status screen.'
+                    ? (app.status === 'approved'
+                        ? 'Shown to the contributor. Revoking returns their account to a regular user.'
+                        : 'Will be shown to applicant on their status screen.')
                     : 'Tell the applicant what additional info you need.'}
                   placeholderTextColor={colors.textLight}
                   editable={!submitting}
@@ -223,39 +227,50 @@ const AdminApplicationReviewScreen = ({ navigation }) => {
                       <ActivityIndicator size="small" color={colors.textInverse} />
                     ) : (
                       <Text style={styles.btnPrimaryText}>
-                        {actionState.type === 'reject' ? 'Confirm Rejection' : 'Request Info'}
+                        {actionState.type === 'reject'
+                          ? (app.status === 'approved' ? 'Confirm Revoke' : 'Confirm Rejection')
+                          : 'Request Info'}
                       </Text>
                     )}
                   </TouchableOpacity>
                 </View>
               </View>
+            ) : app.status === 'approved' ? (
+              <View style={styles.actions}>
+                <TouchableOpacity
+                  onPress={() => startNotesAction(app.id, 'reject')}
+                  style={[styles.btn, styles.btnGhostDanger]}
+                  disabled={submitting}
+                >
+                  <MaterialIcons name="block" size={18} color={colors.error} />
+                  <Text style={styles.btnGhostDangerText}>Revoke Approval</Text>
+                </TouchableOpacity>
+              </View>
             ) : (
-              app.status !== 'approved' && (
-                <View style={styles.actions}>
-                  <TouchableOpacity
-                    onPress={() => handleApprove(app)}
-                    style={[styles.btn, styles.btnPrimary]}
-                    disabled={submitting}
-                  >
-                    <MaterialIcons name="check" size={18} color={colors.textInverse} />
-                    <Text style={styles.btnPrimaryText}>Approve</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => startNotesAction(app.id, 'needs_more_info')}
-                    style={[styles.btn, styles.btnGhost]}
-                    disabled={submitting}
-                  >
-                    <Text style={styles.btnGhostText}>Need More Info</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => startNotesAction(app.id, 'reject')}
-                    style={[styles.btn, styles.btnGhostDanger]}
-                    disabled={submitting}
-                  >
-                    <Text style={styles.btnGhostDangerText}>Reject</Text>
-                  </TouchableOpacity>
-                </View>
-              )
+              <View style={styles.actions}>
+                <TouchableOpacity
+                  onPress={() => handleApprove(app)}
+                  style={[styles.btn, styles.btnPrimary]}
+                  disabled={submitting}
+                >
+                  <MaterialIcons name="check" size={18} color={colors.textInverse} />
+                  <Text style={styles.btnPrimaryText}>Approve</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => startNotesAction(app.id, 'needs_more_info')}
+                  style={[styles.btn, styles.btnGhost]}
+                  disabled={submitting}
+                >
+                  <Text style={styles.btnGhostText}>Need More Info</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => startNotesAction(app.id, 'reject')}
+                  style={[styles.btn, styles.btnGhostDanger]}
+                  disabled={submitting}
+                >
+                  <Text style={styles.btnGhostDangerText}>Reject</Text>
+                </TouchableOpacity>
+              </View>
             )}
           </View>
         )}
