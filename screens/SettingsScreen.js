@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
+import * as Sentry from '@sentry/react-native';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 import { supabase } from '../lib/supabase';
 import { exportAndShare } from '../lib/dataExportService';
@@ -33,6 +34,21 @@ const SettingsScreen = ({ navigation }) => {
     } finally {
       setExporting(false);
     }
+  };
+
+  // Manual Sentry verification helper. Visible in dev to anyone and in
+  // production to admins only — gated on the row render below. Each click
+  // produces a uniquely-tagged event so you can find it in the Sentry
+  // dashboard without confusing it with real errors.
+  const handleTriggerTestException = () => {
+    const tag = `verify-${Date.now()}`;
+    Sentry.captureException(new Error(`Sentry test exception (${tag})`), {
+      tags: { source: 'manual-verify', tag },
+    });
+    Alert.alert(
+      'Test exception sent',
+      `An exception was reported to Sentry with tag "${tag}". It should appear in your Sentry dashboard within ~30 seconds.`,
+    );
   };
 
   const handleSignOut = () => {
@@ -162,6 +178,21 @@ const SettingsScreen = ({ navigation }) => {
                   title="Exercise Submissions"
                   subtitle="Review pending contributed exercises"
                   onPress={() => navigation.navigate('AdminContentReview')}
+                />
+              </View>
+            </>
+          )}
+
+          {/* Diagnostics — visible in dev to all, in prod to admins only */}
+          {(__DEV__ || isAdmin) && (
+            <>
+              <Text style={styles.sectionHeader}>Diagnostics</Text>
+              <View style={styles.card}>
+                <SettingsRow
+                  icon="bug-report"
+                  title="Trigger Test Exception"
+                  subtitle="Reports a tagged error to Sentry to verify capture"
+                  onPress={handleTriggerTestException}
                 />
               </View>
             </>
