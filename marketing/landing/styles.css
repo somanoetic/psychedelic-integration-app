@@ -51,11 +51,7 @@ body {
     padding: 0 1.5rem;
 }
 
-/* ============ HEADER ============ */
-.site-header {
-    padding: 1.5rem 0;
-}
-
+/* ============ WORDMARK (footer only) ============ */
 .wordmark {
     font-family: var(--font-sans);
     font-weight: 600;
