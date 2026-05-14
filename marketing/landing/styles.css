@@ -281,6 +281,43 @@ section {
     font-size: 1rem;
 }
 
+/* ============ MEET HUXLEY ============ */
+.huxley {
+    background: var(--cream);
+}
+
+.huxley-intro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    max-width: 56rem;
+    margin: 0 auto;
+}
+
+.huxley-portrait {
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+    flex-shrink: 0;
+    border-radius: 50%;
+}
+
+.huxley-body {
+    text-align: center;
+}
+
+.huxley-body p {
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 1.25rem;
+}
+
+.huxley-body p:last-child {
+    margin-bottom: 0;
+}
+
 /* ============ FEATURES ============ */
 .features-list {
     list-style: none;
@@ -445,6 +482,19 @@ section {
         gap: 1.5rem;
     }
     .phase { flex: 1; }
+
+    .huxley-intro {
+        flex-direction: row;
+        align-items: center;
+        gap: 3rem;
+    }
+    .huxley-portrait {
+        width: 260px;
+        height: 260px;
+    }
+    .huxley-body {
+        text-align: left;
+    }
 
     .waitlist-form {
         flex-direction: row;
