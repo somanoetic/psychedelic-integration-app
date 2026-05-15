@@ -59,6 +59,10 @@ tmp/
 
 # Generated data
 scripts/chunked_documents.jsonl
+scripts/glimmer-images/staging-faces/
+scripts/glimmer-images/staging-nature/
+scripts/glimmer-images/staging-nature-resized/
+scripts/glimmer-images/*-contact-sheet.png
 coverage/
 supabase/.temp/
 
