@@ -1,4 +1,4 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import { Home, Pencil, GraduationCap, Compass, History } from 'lucide-react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -37,22 +37,19 @@ import AuthScreen from './screens/AuthScreen';
 import OnboardingCarousel from './screens/OnboardingCarousel';
 import NonClinicalDisclosureScreen, { DISCLOSURE_STORAGE_KEY } from './screens/NonClinicalDisclosureScreen';
 // AnimatedSplash removed - go straight to app
-import ConversationScreen from './screens/ConversationScreen';
 import SimpleEnhancedConversationScreen from './screens/SimpleEnhancedConversationScreen';
 import EnhancedConversationScreen from './screens/EnhancedConversationScreen';
 import EducationScreen from './screens/EducationScreen';
 import ConversationalHomeScreen from './components/ConversationalHomeScreen';
 import GridHomeScreen from './components/GridHomeScreen';
 import HuxleyChatScreen from './components/HuxleyChatScreen';
+import { HuxleyChatProvider } from './contexts/HuxleyChatContext';
 import AllSessionsScreen from './screens/AllSessionsScreen';
 import ExperienceMappingScreen from './screens/ExperienceMappingScreen';
 import TherapeuticIntegrationScreen from './screens/TherapeuticIntegrationScreen';
-import PreparationScreen from './screens/PreparationScreen';
 import GeneralPreparationScreen from './screens/preparation/GeneralPreparationScreen';
 import SessionPreparationScreen from './screens/preparation/SessionPreparationScreen';
 import SessionToolsScreen from './screens/SessionToolsScreen';
-import SessionDetailScreen from './screens/SessionDetailScreen';
-import InteractiveSessionMindMap from './screens/InteractiveSessionMindMap';
 import QuickNetworkTest from './screens/QuickNetworkTest';
 import NetworkTestScreen from './screens/NetworkTestScreen';
 import ExerciseLibraryScreen from './screens/ExerciseLibraryScreen';
@@ -65,6 +62,7 @@ import SetIntentionScreen from './screens/SetIntentionScreen';
 import SessionChecklistScreen from './screens/SessionChecklistScreen';
 import InsightsScreen from './screens/InsightsScreen';
 import ProcessIntegrateScreen from './screens/ProcessIntegrateScreen';
+import ProcessIntegratePickerScreen from './screens/ProcessIntegratePickerScreen';
 import InnerWorkScreen from './screens/InnerWorkScreen';
 import PracticeScreen from './screens/PracticeScreen';
 import ActiveImaginationScreen from './screens/ActiveImaginationScreen';
@@ -83,13 +81,18 @@ import TriggersGlimmersSummaryScreen from './screens/TriggersGlimmersSummaryScre
 import CoreBeliefsSummaryScreen from './screens/CoreBeliefsSummaryScreen';
 import PartsSummaryScreen from './screens/PartsSummaryScreen';
 import IntegrationSummaryScreen from './screens/IntegrationSummaryScreen';
+import WorksheetLibraryScreen from './screens/WorksheetLibraryScreen';
+import WorksheetPrintScreen from './screens/WorksheetPrintScreen';
+import ScanCaptureScreen from './screens/ScanCaptureScreen';
+import ScanReviewScreen from './screens/ScanReviewScreen';
+import ScanDetailScreen from './screens/ScanDetailScreen';
+
+import SessionsHubScreen from './screens/SessionsHubScreen';
 
 // Conversational Components
-import ConversationalSessionTools from './components/ConversationalSessionTools';
 import ConversationalAllSessions from './components/ConversationalAllSessions';
 import ConversationalExerciseLibrary from './components/ConversationalExerciseLibrary';
 import ConversationalTriggeredSupport from './components/ConversationalTriggeredSupport';
-import ConversationalJournalEntry from './components/ConversationalJournalEntry';
 import DailyJournal from './components/DailyJournal';
 import ConversationalNervousSystemMapping from './components/ConversationalNervousSystemMapping';
 import ConversationalTriggersGlimmers from './components/ConversationalTriggersGlimmers';
@@ -101,7 +104,8 @@ import TriggerTracker from './components/TriggerTracker';
 import GlimmerTracker from './components/GlimmerTracker';
 import NervousSystemCheckin from './components/NervousSystemCheckin';
 import PartsCheckin from './components/PartsCheckin';
-import CurriculumTracker from './components/CurriculumTracker';
+import IFSPartsInventory from './components/IFSPartsInventory';
+import TrailScreen from './components/TrailScreen';
 import HabitTracker from './components/HabitTracker';
 import * as Sentry from '@sentry/react-native';
 import config from './lib/config';
@@ -132,21 +136,15 @@ const MainTabs = () => {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
-
-          if (route.name === 'Home') {
-            iconName = 'home';
-          } else if (route.name === 'Journal') {
-            iconName = 'edit';
-          } else if (route.name === 'Learn') {
-            iconName = 'school';
-          } else if (route.name === 'Atlas') {
-            iconName = 'explore';
-          } else if (route.name === 'History') {
-            iconName = 'history';
-          }
-
-          return <MaterialIcons name={iconName} size={size} color={color} />;
+          const TAB_ICONS = {
+            Home,
+            Journal: Pencil,
+            Learn: GraduationCap,
+            Atlas: Compass,
+            History,
+          };
+          const Icon = TAB_ICONS[route.name] || Home;
+          return <Icon size={size} color={color} strokeWidth={focused ? 2.25 : 1.75} />;
         },
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textSecondary,
@@ -366,7 +364,7 @@ function App() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingTitle}>Huxley</Text>
+        <Text style={styles.loadingTitle}>Multitudes</Text>
         <Text style={styles.debugText}>{debugInfo}</Text>
         <Text style={styles.debugHint}>
           If stuck here, check console logs or try restarting
@@ -393,6 +391,7 @@ function App() {
     <SafeAreaProvider>
       <PaperProvider theme={paperTheme}>
         <ThemedAlertHost />
+        <HuxleyChatProvider>
         <NavigationContainer>
           <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={(session && session.user) || bypassAuth ? (bypassAuth ? 'MainTabs' : 'HuxleyChat') : 'Auth'}>
             {(session && session.user) || bypassAuth ? (
@@ -400,6 +399,14 @@ function App() {
               <Stack.Screen name="HuxleyChat" component={HuxleyChatScreen} />
               <Stack.Screen name="MainTabs" component={MainTabs} />
               {/* Dual Mode Conversation Screens */}
+              <Stack.Screen
+                name="ProcessIntegratePicker"
+                component={ProcessIntegratePickerScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Process & Integrate'
+                }}
+              />
               <Stack.Screen
                 name="ProcessIntegrate"
                 component={ProcessIntegrateScreen}
@@ -440,16 +447,8 @@ function App() {
                   title: 'Therapeutic Integration'
                 }}
               />
-              <Stack.Screen 
-                name="Preparation" 
-                component={PreparationScreen}
-                options={{ 
-                  headerShown: false,
-                  title: 'Preparation Hub'
-                }}
-              />
-              <Stack.Screen 
-                name="GeneralPreparation" 
+              <Stack.Screen
+                name="GeneralPreparation"
                 component={GeneralPreparationScreen}
                 options={{ 
                   headerShown: false,
@@ -465,19 +464,19 @@ function App() {
                 }}
               />
               <Stack.Screen
-                name="SessionTools"
-                component={ConversationalSessionTools}
+                name="SessionsHub"
+                component={SessionsHubScreen}
                 options={{
                   headerShown: false,
-                  title: 'Session Tools'
+                  title: 'Sessions'
                 }}
               />
               <Stack.Screen
-                name="SessionDetail"
-                component={SessionDetailScreen}
+                name="SessionTools"
+                component={SessionToolsScreen}
                 options={{
                   headerShown: false,
-                  title: 'Session Detail'
+                  title: 'Session Tools'
                 }}
               />
               {/* Legacy screens */}
@@ -487,14 +486,6 @@ function App() {
                 options={{ 
                   headerShown: false,
                   title: 'Enhanced Integration Session'
-                }}
-              />
-              <Stack.Screen 
-                name="MindMap" 
-                component={InteractiveSessionMindMap}
-                options={{ 
-                  headerShown: false,
-                  title: 'Mind Map'
                 }}
               />
               <Stack.Screen
@@ -514,6 +505,49 @@ function App() {
                 }}
               />
               <Stack.Screen
+                name="WorksheetLibrary"
+                component={WorksheetLibraryScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Printable Worksheets'
+                }}
+              />
+              <Stack.Screen
+                name="WorksheetPrint"
+                component={WorksheetPrintScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Get Printable'
+                }}
+              />
+              <Stack.Screen
+                name="ScanCapture"
+                component={ScanCaptureScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Scan a page',
+                  // No swipe-back; the capture screen owns its own lifecycle
+                  // (it triggers the native scanner on mount).
+                  gestureEnabled: false,
+                }}
+              />
+              <Stack.Screen
+                name="ScanReview"
+                component={ScanReviewScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Review scan'
+                }}
+              />
+              <Stack.Screen
+                name="ScanDetail"
+                component={ScanDetailScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Scan'
+                }}
+              />
+              <Stack.Screen
                 name="GuidedExercise"
                 component={GuidedExerciseScreen}
                 options={{
@@ -527,14 +561,6 @@ function App() {
                 options={{
                   headerShown: false,
                   title: 'Triggered Support'
-                }}
-              />
-              <Stack.Screen
-                name="JournalEntry"
-                component={ConversationalJournalEntry}
-                options={{
-                  headerShown: false,
-                  title: 'Journal Entry'
                 }}
               />
               <Stack.Screen
@@ -674,8 +700,16 @@ function App() {
                 }}
               />
               <Stack.Screen
+                name="IFSPartsInventory"
+                component={IFSPartsInventory}
+                options={{
+                  headerShown: false,
+                  title: 'Parts Inventory'
+                }}
+              />
+              <Stack.Screen
                 name="CurriculumTracker"
-                component={CurriculumTracker}
+                component={TrailScreen}
                 options={{
                   headerShown: false,
                   title: 'Your Progress'
@@ -814,10 +848,13 @@ function App() {
             <>
               <Stack.Screen name="Auth" component={AuthScreen} />
               <Stack.Screen name="NetworkTest" component={QuickNetworkTest} />
+              <Stack.Screen name="TermsOfService" component={TermsOfServiceScreen} />
+              <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
             </>
           )}
         </Stack.Navigator>
       </NavigationContainer>
+      </HuxleyChatProvider>
     </PaperProvider>
     </SafeAreaProvider>
   );
