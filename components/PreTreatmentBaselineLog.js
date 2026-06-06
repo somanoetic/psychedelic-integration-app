@@ -9,7 +9,7 @@ import {
   Alert,
   ActivityIndicator
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Wand2, CheckCircle2, X, ArrowLeft, ArrowRight, Check } from 'lucide-react-native';
 import { supabase } from '../lib/supabase';
 import { colors } from '../theme/colors';
 
@@ -350,7 +350,7 @@ const PreTreatmentBaselineLog = ({ onComplete, onSkip }) => {
           <Text style={styles.domainTitle}>{domain.title}</Text>
           <Text style={styles.infoContent}>{domain.content}</Text>
           <View style={styles.tipBox}>
-            <MaterialIcons name="tips-and-updates" size={20} color={colors.warning} />
+            <Wand2 size={20} color={colors.warning} strokeWidth={2} />
             <Text style={styles.tipText}>{domain.tip}</Text>
           </View>
         </View>
@@ -364,7 +364,7 @@ const PreTreatmentBaselineLog = ({ onComplete, onSkip }) => {
           <Text style={styles.domainTitle}>{domain.title}</Text>
           <Text style={styles.summaryContent}>{domain.content}</Text>
           <View style={styles.completionBox}>
-            <MaterialIcons name="check-circle" size={32} color={colors.success} />
+            <CheckCircle2 size={32} color={colors.success} strokeWidth={2} />
             <Text style={styles.completionText}>
               Your baseline is ready. Use this as a reference point to notice changes after your session.
             </Text>
@@ -432,7 +432,7 @@ const PreTreatmentBaselineLog = ({ onComplete, onSkip }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={onSkip} style={styles.closeButton}>
-          <MaterialIcons name="close" size={24} color={colors.textSecondary} />
+          <X size={24} color={colors.textSecondary} strokeWidth={2} />
         </TouchableOpacity>
         <View style={styles.headerInfo}>
           <Text style={styles.headerTitle}>Pre-Treatment Baseline</Text>
@@ -464,10 +464,10 @@ const PreTreatmentBaselineLog = ({ onComplete, onSkip }) => {
           onPress={() => setCurrentDomain(Math.max(0, currentDomain - 1))}
           disabled={currentDomain === 0}
         >
-          <MaterialIcons
-            name="arrow-back"
+          <ArrowLeft
             size={20}
             color={currentDomain === 0 ? colors.textLight : colors.textSecondary}
+            strokeWidth={2}
           />
           <Text
             style={[
@@ -497,11 +497,11 @@ const PreTreatmentBaselineLog = ({ onComplete, onSkip }) => {
               <Text style={styles.nextButtonText}>
                 {currentDomain === domains.length - 1 ? 'Save Baseline' : 'Next'}
               </Text>
-              <MaterialIcons
-                name={currentDomain === domains.length - 1 ? 'check' : 'arrow-forward'}
-                size={20}
-                color="#ffffff"
-              />
+              {currentDomain === domains.length - 1 ? (
+                <Check size={20} color="#ffffff" strokeWidth={2} />
+              ) : (
+                <ArrowRight size={20} color="#ffffff" strokeWidth={2} />
+              )}
             </>
           )}
         </TouchableOpacity>

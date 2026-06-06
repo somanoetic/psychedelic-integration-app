@@ -11,7 +11,13 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MessageSquareText, X, Bug, Lightbulb } from 'lucide-react-native';
+
+const FEEDBACK_ICON_MAP = {
+  'bug-report': Bug,
+  lightbulb: Lightbulb,
+  feedback: MessageSquareText,
+};
 import { supabase } from '../lib/supabase';
 
 export default function FeedbackButton({ style }) {
@@ -82,7 +88,7 @@ export default function FeedbackButton({ style }) {
         onPress={() => setModalVisible(true)}
         activeOpacity={0.7}
       >
-        <MaterialIcons name="feedback" size={24} color="#ffffff" />
+        <MessageSquareText size={24} color="#ffffff" strokeWidth={2} />
       </TouchableOpacity>
 
       <Modal
@@ -99,7 +105,7 @@ export default function FeedbackButton({ style }) {
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Send Feedback</Text>
               <TouchableOpacity onPress={handleClose}>
-                <MaterialIcons name="close" size={24} color="#666" />
+                <X size={24} color="#666" strokeWidth={2} />
               </TouchableOpacity>
             </View>
 
@@ -116,11 +122,16 @@ export default function FeedbackButton({ style }) {
                     ]}
                     onPress={() => setFeedbackType(type.id)}
                   >
-                    <MaterialIcons
-                      name={type.icon}
-                      size={24}
-                      color={feedbackType === type.id ? type.color : '#666'}
-                    />
+                    {(() => {
+                      const Icon = FEEDBACK_ICON_MAP[type.icon] || MessageSquareText;
+                      return (
+                        <Icon
+                          size={24}
+                          color={feedbackType === type.id ? type.color : '#666'}
+                          strokeWidth={2}
+                        />
+                      );
+                    })()}
                     <Text
                       style={[
                         styles.typeLabel,

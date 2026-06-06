@@ -10,7 +10,15 @@ import {
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  ArrowLeft,
+  AlertCircle,
+  RefreshCw,
+  PlusCircle,
+  CheckCircle2,
+  Circle,
+  Lightbulb,
+} from 'lucide-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 import { useSessionChecklist } from '../useSessionChecklist';
@@ -121,7 +129,7 @@ const SessionChecklistScreen = ({ navigation, route }) => {
               style={styles.backButton}
               onPress={() => navigation.goBack()}
             >
-              <MaterialIcons name="arrow-back" size={24} color={colors.textInverse} />
+              <ArrowLeft size={24} color={colors.textInverse} strokeWidth={2} />
             </TouchableOpacity>
             <Text style={styles.headerTitle}>Session Checklist</Text>
           </View>
@@ -144,17 +152,17 @@ const SessionChecklistScreen = ({ navigation, route }) => {
               style={styles.backButton}
               onPress={() => navigation.goBack()}
             >
-              <MaterialIcons name="arrow-back" size={24} color={colors.textInverse} />
+              <ArrowLeft size={24} color={colors.textInverse} strokeWidth={2} />
             </TouchableOpacity>
             <Text style={styles.headerTitle}>Session Checklist</Text>
           </View>
         </LinearGradient>
         <View style={styles.errorContainer}>
-          <MaterialIcons name="error-outline" size={64} color={colors.error} />
+          <AlertCircle size={64} color={colors.error} strokeWidth={1.5} />
           <Text style={styles.errorTitle}>Failed to Load</Text>
           <Text style={styles.errorText}>{error}</Text>
           <TouchableOpacity style={styles.retryButton} onPress={retry}>
-            <MaterialIcons name="refresh" size={20} color={colors.textInverse} />
+            <RefreshCw size={20} color={colors.textInverse} strokeWidth={2} />
             <Text style={styles.retryButtonText}>Try Again</Text>
           </TouchableOpacity>
         </View>
@@ -174,7 +182,7 @@ const SessionChecklistScreen = ({ navigation, route }) => {
             style={styles.backButton}
             onPress={() => navigation.goBack()}
           >
-            <MaterialIcons name="arrow-back" size={24} color={colors.textInverse} />
+            <ArrowLeft size={24} color={colors.textInverse} strokeWidth={2} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Session Checklist</Text>
         </View>
@@ -186,7 +194,7 @@ const SessionChecklistScreen = ({ navigation, route }) => {
       {/* Error banner */}
       {error && (
         <View style={styles.errorBanner}>
-          <MaterialIcons name="error-outline" size={20} color={colors.error} />
+          <AlertCircle size={20} color={colors.error} strokeWidth={2} />
           <Text style={styles.errorBannerText}>{error}</Text>
         </View>
       )}
@@ -227,7 +235,7 @@ const SessionChecklistScreen = ({ navigation, route }) => {
             disabled={syncing}
             activeOpacity={0.7}
           >
-            <MaterialIcons name="add-circle" size={24} color={colors.primary} />
+            <PlusCircle size={24} color={colors.primary} strokeWidth={2} />
             <Text style={styles.addButtonText}>Add Custom Item</Text>
           </TouchableOpacity>
 
@@ -241,11 +249,11 @@ const SessionChecklistScreen = ({ navigation, route }) => {
             onPress={handleToggleComplete}
             activeOpacity={0.7}
           >
-            <MaterialIcons
-              name={userMarkedComplete ? 'check-circle' : 'radio-button-unchecked'}
-              size={22}
-              color={colors.textInverse}
-            />
+            {userMarkedComplete ? (
+              <CheckCircle2 size={22} color={colors.textInverse} strokeWidth={2} />
+            ) : (
+              <Circle size={22} color={colors.textInverse} strokeWidth={2} />
+            )}
             <Text style={styles.markCompleteText}>
               {userMarkedComplete ? 'Checklist Complete ✓' : 'Mark Checklist Complete'}
             </Text>
@@ -253,7 +261,7 @@ const SessionChecklistScreen = ({ navigation, route }) => {
 
           {/* Tip box */}
           <View style={styles.tipBox}>
-            <MaterialIcons name="lightbulb" size={20} color={colors.golden} />
+            <Lightbulb size={20} color={colors.golden} strokeWidth={2} />
             <View style={styles.tipContent}>
               <Text style={styles.tipTitle}>Preparation Tips</Text>
               <Text style={styles.tipText}>

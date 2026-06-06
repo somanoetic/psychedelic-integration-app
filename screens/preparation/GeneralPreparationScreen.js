@@ -1,4 +1,8 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  ArrowLeft,
+  CheckCircle2,
+  ChevronRight,
+} from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
 import {
@@ -69,7 +73,7 @@ const GeneralPreparationScreen = ({ navigation }) => {
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <MaterialIcons name="arrow-back" size={24} color={colors.textInverse} />
+          <ArrowLeft size={24} color={colors.textInverse} strokeWidth={2} />
         </TouchableOpacity>
         <Text style={styles.heroTitle}>Foundational Preparation</Text>
         <Text style={styles.heroSubtitle}>
@@ -126,9 +130,9 @@ const GeneralPreparationScreen = ({ navigation }) => {
               </View>
               <View style={styles.flowItemRight}>
                 {completedSections.includes(section.id) ? (
-                  <MaterialIcons name="check-circle" size={24} color={colors.success} />
+                  <CheckCircle2 size={24} color={colors.success} strokeWidth={2} />
                 ) : (
-                  <MaterialIcons name="arrow-forward-ios" size={16} color={colors.textLight} />
+                  <ChevronRight size={16} color={colors.textLight} strokeWidth={2} />
                 )}
               </View>
             </TouchableOpacity>
@@ -186,7 +190,7 @@ const GeneralPreparationScreen = ({ navigation }) => {
           style={styles.backButton}
           onPress={() => setCurrentSection('overview')}
         >
-          <MaterialIcons name="arrow-back" size={24} color={colors.textSecondary} />
+          <ArrowLeft size={24} color={colors.textSecondary} strokeWidth={2} />
           <Text style={styles.backButtonText}>Back</Text>
         </TouchableOpacity>
         <Text style={styles.sectionTitle}>🧠 Nervous System Basics</Text>
@@ -211,7 +215,7 @@ const GeneralPreparationScreen = ({ navigation }) => {
           style={styles.backButton}
           onPress={() => setCurrentSection('overview')}
         >
-          <MaterialIcons name="arrow-back" size={24} color={colors.textSecondary} />
+          <ArrowLeft size={24} color={colors.textSecondary} strokeWidth={2} />
           <Text style={styles.backButtonText}>Back</Text>
         </TouchableOpacity>
         <Text style={styles.sectionTitle}>👥 Parts of You (IFS)</Text>
@@ -236,7 +240,7 @@ const GeneralPreparationScreen = ({ navigation }) => {
           style={styles.backButton}
           onPress={() => setCurrentSection('overview')}
         >
-          <MaterialIcons name="arrow-back" size={24} color={colors.textSecondary} />
+          <ArrowLeft size={24} color={colors.textSecondary} strokeWidth={2} />
           <Text style={styles.backButtonText}>Back</Text>
         </TouchableOpacity>
         <Text style={styles.sectionTitle}>🌱 Grounding & Somatic Practices</Text>

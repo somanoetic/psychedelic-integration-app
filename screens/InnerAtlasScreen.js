@@ -10,7 +10,7 @@ import {
   Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import { ChevronRight, BookOpenText } from 'lucide-react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../lib/supabase';
@@ -208,11 +208,11 @@ const InnerAtlasScreen = ({ navigation }) => {
   };
 
   const DOMAINS = [
-    { key: 'nervousSystem', emoji: '💚', icon: icons.nsMap, title: 'Nervous System', route: 'NervousSystemSummary', actionRoute: 'NervousSystemMapping', description: 'Your polyvagal map — states, patterns, and awareness' },
-    { key: 'resources', emoji: '🛠️', icon: icons.regulatingResources, title: 'Regulation Toolkit', route: 'RegulationToolkit', actionRoute: 'RegulatingResources', description: 'What actually helps you regulate in each state' },
-    { key: 'triggersGlimmers', emoji: '⚡', icon: icons.triggerGlimmerMap, title: 'Triggers & Glimmers', route: 'TriggersGlimmersSummary', actionRoute: 'TriggersGlimmers', description: 'What activates you and what brings you back' },
-    { key: 'coreBeliefs', emoji: '💭', icon: icons.coreBeliefs, title: 'Core Beliefs', route: 'CoreBeliefsSummary', actionRoute: 'CoreBeliefs', description: 'The deep beliefs that shape your experience' },
-    { key: 'parts', emoji: '🔮', icon: icons.roles, title: 'Parts', route: 'PartsSummary', actionRoute: 'IFSChat', description: 'Your inner family — protectors, exiles, and Self' },
+    { key: 'nervousSystem', icon: icons.nsMap, title: 'Nervous System', route: 'NervousSystemSummary', actionRoute: 'NervousSystemMapping', description: 'Your polyvagal map — states, patterns, and awareness' },
+    { key: 'resources', icon: icons.regulatingResources, title: 'Regulation Toolkit', route: 'RegulationToolkit', actionRoute: 'RegulatingResources', description: 'What actually helps you regulate in each state' },
+    { key: 'triggersGlimmers', icon: icons.triggerGlimmerMap, title: 'Triggers & Glimmers', route: 'TriggersGlimmersSummary', actionRoute: 'TriggersGlimmers', description: 'What activates you and what brings you back' },
+    { key: 'coreBeliefs', icon: icons.coreBeliefs, title: 'Core Beliefs', route: 'CoreBeliefsSummary', actionRoute: 'CoreBeliefs', description: 'The deep beliefs that shape your experience' },
+    { key: 'parts', icon: icons.roles, title: 'Parts', route: 'PartsSummary', actionRoute: 'IFSChat', description: 'Your inner family — protectors, exiles, and Self' },
   ];
 
   const renderCard = (domain) => {
@@ -229,11 +229,7 @@ const InnerAtlasScreen = ({ navigation }) => {
         activeOpacity={0.7}
       >
         <View style={styles.optionLeft}>
-          {domain.icon ? (
-            <Image source={domain.icon} style={styles.optionIconImage} />
-          ) : (
-            <Text style={styles.optionEmoji}>{domain.emoji}</Text>
-          )}
+          <Image source={domain.icon} style={styles.optionIconImage} />
           <View style={styles.optionText}>
             <Text style={styles.optionTitle}>{domain.title}</Text>
             {isMapped ? (
@@ -246,7 +242,7 @@ const InnerAtlasScreen = ({ navigation }) => {
             )}
           </View>
         </View>
-        <MaterialIcons name="chevron-right" size={24} color={colors.textSecondary} />
+        <ChevronRight size={24} color={colors.textSecondary} strokeWidth={2} />
       </TouchableOpacity>
     );
   };
@@ -300,9 +296,9 @@ const InnerAtlasScreen = ({ navigation }) => {
                   onPress={() => navigation.navigate('IntegrationSummary')}
                   activeOpacity={0.7}
                 >
-                  <MaterialIcons name="auto-stories" size={18} color={colors.primary} />
+                  <BookOpenText size={18} color={colors.primary} strokeWidth={2} />
                   <Text style={styles.reportButtonText}>View Integration Summary</Text>
-                  <MaterialIcons name="chevron-right" size={20} color={colors.primary} />
+                  <ChevronRight size={20} color={colors.primary} strokeWidth={2} />
                 </TouchableOpacity>
 
                 <ShareWithTherapistButton
@@ -400,10 +396,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
-  },
-  optionEmoji: {
-    fontSize: 36,
-    marginRight: spacing.md,
   },
   optionIconImage: {
     width: 112,

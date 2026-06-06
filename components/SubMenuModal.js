@@ -16,7 +16,7 @@ import {
   Image,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import { X, ChevronRight } from 'lucide-react-native';
 import { colors } from '../theme/colors';
 
 const SubMenuModal = ({ visible, onClose, title, options, onSelect }) => {
@@ -75,7 +75,7 @@ const SubMenuModal = ({ visible, onClose, title, options, onSelect }) => {
         <View style={styles.header}>
           <Text style={styles.title}>{title}</Text>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <MaterialIcons name="close" size={24} color={colors.textSecondary} />
+            <X size={24} color={colors.textSecondary} strokeWidth={2} />
           </TouchableOpacity>
         </View>
 
@@ -102,7 +102,7 @@ const SubMenuModal = ({ visible, onClose, title, options, onSelect }) => {
                   <Text style={styles.optionDescription}>{option.description}</Text>
                 )}
               </View>
-              <MaterialIcons name="chevron-right" size={24} color={colors.textSecondary} />
+              <ChevronRight size={24} color={colors.textSecondary} strokeWidth={2} />
             </TouchableOpacity>
           ))}
         </ScrollView>

@@ -24,7 +24,7 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import { ArrowLeft, ArrowRight, Brain, ChevronRight, X, Flame } from 'lucide-react-native';
 import { colors } from '../theme/colors';
 import SubliminalFlash from './SubliminalFlash';
 import subliminalPrimingService, { AFFIRMATION_THEMES } from '../lib/subliminalPrimingService';
@@ -269,7 +269,7 @@ const GlimmerSwiper = ({ navigation }) => {
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+            <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
           </TouchableOpacity>
           <Text style={styles.title}>Glimmer Swiper</Text>
           <View style={{ width: 40 }} />
@@ -287,18 +287,18 @@ const GlimmerSwiper = ({ navigation }) => {
           <View style={styles.instructions}>
             <Text style={styles.instructionsTitle}>How to Play:</Text>
             <View style={styles.instructionRow}>
-              <MaterialIcons name="arrow-back" size={24} color={colors.primary} />
+              <ArrowLeft size={24} color={colors.primary} strokeWidth={2} />
               <Text style={styles.instructionText}>Swipe LEFT for smiling faces</Text>
             </View>
             <View style={styles.instructionRow}>
-              <MaterialIcons name="arrow-forward" size={24} color={colors.sage} />
+              <ArrowRight size={24} color={colors.sage} strokeWidth={2} />
               <Text style={styles.instructionText}>Swipe RIGHT for nature scenes</Text>
             </View>
           </View>
 
           {subliminalEnabled && (
             <View style={styles.subliminalInfo}>
-              <MaterialIcons name="psychology" size={20} color={colors.secondary} />
+              <Brain size={20} color={colors.secondary} strokeWidth={2} />
               <Text style={styles.subliminalText}>
                 Includes subliminal affirmations for deeper healing
               </Text>
@@ -320,7 +320,7 @@ const GlimmerSwiper = ({ navigation }) => {
                     {mode.duration} min • {mode.images} images
                   </Text>
                 </View>
-                <MaterialIcons name="chevron-right" size={24} color={colors.primary} />
+                <ChevronRight size={24} color={colors.primary} strokeWidth={2} />
               </TouchableOpacity>
             ))}
           </View>
@@ -405,7 +405,7 @@ const GlimmerSwiper = ({ navigation }) => {
       {/* Header */}
       <View style={styles.gameHeader}>
         <TouchableOpacity onPress={endGame} style={styles.exitButton}>
-          <MaterialIcons name="close" size={24} color={colors.text} />
+          <X size={24} color={colors.text} strokeWidth={2} />
         </TouchableOpacity>
 
         <View style={styles.progressContainer}>
@@ -423,7 +423,7 @@ const GlimmerSwiper = ({ navigation }) => {
         </View>
 
         <View style={styles.streakBadge}>
-          <MaterialIcons name="local-fire-department" size={20} color={colors.primary} />
+          <Flame size={20} color={colors.primary} strokeWidth={2} />
           <Text style={styles.streakText}>{streak}</Text>
         </View>
       </View>
@@ -457,7 +457,7 @@ const GlimmerSwiper = ({ navigation }) => {
                 { opacity: pan.x.interpolate({ inputRange: [-SCREEN_WIDTH, 0], outputRange: [1, 0] }) },
               ]}
             >
-              <MaterialIcons name="arrow-back" size={48} color="#fff" />
+              <ArrowLeft size={48} color="#fff" strokeWidth={1.5} />
               <Text style={styles.swipeText}>FACE</Text>
             </Animated.View>
 
@@ -468,7 +468,7 @@ const GlimmerSwiper = ({ navigation }) => {
                 { opacity: pan.x.interpolate({ inputRange: [0, SCREEN_WIDTH], outputRange: [0, 1] }) },
               ]}
             >
-              <MaterialIcons name="arrow-forward" size={48} color="#fff" />
+              <ArrowRight size={48} color="#fff" strokeWidth={1.5} />
               <Text style={styles.swipeText}>NATURE</Text>
             </Animated.View>
           </Animated.View>
@@ -480,11 +480,11 @@ const GlimmerSwiper = ({ navigation }) => {
       {/* Swipe hints */}
       <View style={styles.hintsContainer}>
         <View style={styles.hint}>
-          <MaterialIcons name="arrow-back" size={32} color={colors.primary} />
+          <ArrowLeft size={32} color={colors.primary} strokeWidth={2} />
           <Text style={styles.hintText}>Faces</Text>
         </View>
         <View style={styles.hint}>
-          <MaterialIcons name="arrow-forward" size={32} color={colors.sage} />
+          <ArrowRight size={32} color={colors.sage} strokeWidth={2} />
           <Text style={styles.hintText}>Nature</Text>
         </View>
       </View>

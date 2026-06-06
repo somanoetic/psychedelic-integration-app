@@ -12,7 +12,14 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  ArrowLeft,
+  ChevronUp,
+  ChevronDown,
+  Inbox,
+  Ban,
+  Check,
+} from 'lucide-react-native';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 import userRoleService from '../lib/userRoleService';
 
@@ -161,11 +168,11 @@ const AdminApplicationReviewScreen = ({ navigation }) => {
           </View>
           <View style={styles.cardHeaderRight}>
             {renderBadge(app.status)}
-            <MaterialIcons
-              name={expanded ? 'expand-less' : 'expand-more'}
-              size={24}
-              color={colors.textLight}
-            />
+            {expanded ? (
+              <ChevronUp size={24} color={colors.textLight} strokeWidth={2} />
+            ) : (
+              <ChevronDown size={24} color={colors.textLight} strokeWidth={2} />
+            )}
           </View>
         </TouchableOpacity>
 
@@ -242,7 +249,7 @@ const AdminApplicationReviewScreen = ({ navigation }) => {
                   style={[styles.btn, styles.btnGhostDanger]}
                   disabled={submitting}
                 >
-                  <MaterialIcons name="block" size={18} color={colors.error} />
+                  <Ban size={18} color={colors.error} strokeWidth={2} />
                   <Text style={styles.btnGhostDangerText}>Revoke Approval</Text>
                 </TouchableOpacity>
               </View>
@@ -253,7 +260,7 @@ const AdminApplicationReviewScreen = ({ navigation }) => {
                   style={[styles.btn, styles.btnPrimary]}
                   disabled={submitting}
                 >
-                  <MaterialIcons name="check" size={18} color={colors.textInverse} />
+                  <Check size={18} color={colors.textInverse} strokeWidth={2} />
                   <Text style={styles.btnPrimaryText}>Approve</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -288,7 +295,7 @@ const AdminApplicationReviewScreen = ({ navigation }) => {
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+            <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Contributor Applications</Text>
           <View style={styles.backButton} />
@@ -315,7 +322,7 @@ const AdminApplicationReviewScreen = ({ navigation }) => {
           </View>
         ) : applications.length === 0 ? (
           <View style={styles.centerArea}>
-            <MaterialIcons name="inbox" size={48} color={colors.textLight} />
+            <Inbox size={48} color={colors.textLight} strokeWidth={1.5} />
             <Text style={styles.centerText}>No {STATUS_BADGE[statusFilter]?.label.toLowerCase() || ''} applications</Text>
           </View>
         ) : (

@@ -18,7 +18,19 @@ import {
   Image,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  ArrowLeft,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  ChevronRight,
+  Activity,
+  Brain,
+  MapPin,
+  HeartPulse,
+  Compass,
+  HelpCircle,
+} from 'lucide-react-native';
 import { supabase } from '../lib/supabase';
 import polyvagalContextService from '../lib/polyvagalContextService';
 import { icons } from '../lib/uiIcons';
@@ -38,6 +50,13 @@ const INTENSITY_LEVELS = [
   { value: 4, label: 'Strong', color: '#fb923c' },
   { value: 5, label: 'Intense', color: '#f87171' },
 ];
+
+const SECTION_ICON_MAP = {
+  accessibility: Activity,
+  psychology: Brain,
+  place: MapPin,
+  healing: HeartPulse,
+};
 
 const NervousSystemCheckin = ({ navigation, route }) => {
   const returnTo = route?.params?.returnTo;
@@ -160,6 +179,8 @@ const NervousSystemCheckin = ({ navigation, route }) => {
   const renderCollapsibleSection = (id, title, icon, value, setValue, placeholder) => {
     const isExpanded = expandedSection === id;
     const hasValue = value.trim().length > 0;
+    const SectionIcon = SECTION_ICON_MAP[icon] || Activity;
+    const ToggleIcon = isExpanded ? ChevronUp : ChevronDown;
 
     return (
       <View style={styles.collapsibleSection}>
@@ -167,16 +188,12 @@ const NervousSystemCheckin = ({ navigation, route }) => {
           style={[styles.sectionHeader, hasValue && styles.sectionHeaderComplete]}
           onPress={() => setExpandedSection(isExpanded ? null : id)}
         >
-          <MaterialIcons name={icon} size={20} color={hasValue ? colors.success : colors.textSecondary} />
+          <SectionIcon size={20} color={hasValue ? colors.success : colors.textSecondary} strokeWidth={2} />
           <Text style={[styles.sectionHeaderText, hasValue && styles.sectionHeaderTextComplete]}>
             {title}
           </Text>
-          {hasValue && <MaterialIcons name="check-circle" size={18} color={colors.success} />}
-          <MaterialIcons
-            name={isExpanded ? 'expand-less' : 'expand-more'}
-            size={24}
-            color={colors.textSecondary}
-          />
+          {hasValue && <CheckCircle2 size={18} color={colors.success} strokeWidth={2} />}
+          <ToggleIcon size={24} color={colors.textSecondary} strokeWidth={2} />
         </TouchableOpacity>
         {isExpanded && (
           <TextInput
@@ -200,7 +217,7 @@ const NervousSystemCheckin = ({ navigation, route }) => {
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+          <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Nervous System Check-in</Text>
         <View style={{ width: 24 }} />
@@ -315,7 +332,7 @@ const NervousSystemCheckin = ({ navigation, route }) => {
             <ActivityIndicator color="#fff" />
           ) : (
             <>
-              <MaterialIcons name="check-circle" size={20} color="#fff" />
+              <CheckCircle2 size={20} color="#fff" strokeWidth={2} />
               <Text style={styles.saveButtonText}>Save Check-in</Text>
             </>
           )}
@@ -330,11 +347,11 @@ const NervousSystemCheckin = ({ navigation, route }) => {
               return (
                 <View key={checkin.id} style={styles.recentCard}>
                   <View style={styles.recentHeader}>
-                    <MaterialIcons
-                      name={state?.icon || 'help'}
-                      size={20}
-                      color={state?.color || colors.textSecondary}
-                    />
+                    {state?.icon ? (
+                      <Image source={state.icon} style={styles.recentIconImage} />
+                    ) : (
+                      <HelpCircle size={20} color={colors.textSecondary} strokeWidth={2} />
+                    )}
                     <Text style={styles.recentType}>{state?.label || 'Unknown'}</Text>
                     <Text style={styles.recentTime}>{formatTime(checkin.created_at)}</Text>
                   </View>
@@ -365,11 +382,11 @@ const NervousSystemCheckin = ({ navigation, route }) => {
           style={styles.deepDiveLink}
           onPress={() => navigation.navigate('NervousSystemMapping')}
         >
-          <MaterialIcons name="explore" size={20} color={colors.success} />
+          <Compass size={20} color={colors.success} strokeWidth={2} />
           <Text style={styles.deepDiveLinkText}>
             Want to explore your nervous system more deeply? Try the full Nervous System Mapping
           </Text>
-          <MaterialIcons name="chevron-right" size={20} color={colors.success} />
+          <ChevronRight size={20} color={colors.success} strokeWidth={2} />
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -577,6 +594,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     marginBottom: 6,
+  },
+  recentIconImage: {
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
   },
   recentType: {
     flex: 1,

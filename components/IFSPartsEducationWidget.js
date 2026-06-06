@@ -1,4 +1,17 @@
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Briefcase,
+  Check,
+  CheckCircle2,
+  Ear,
+  Flame,
+  HandHeart,
+  Heart,
+  Sparkles,
+  Target,
+  X,
+} from 'lucide-react-native';
 import { useState, useEffect } from 'react';
 import {
   ScrollView,
@@ -83,8 +96,7 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
     {
       id: 'self_concept',
       title: 'Your Core Self',
-      emoji: '🌟',
-      icon: icons.transcendence,
+      icon: icons.selfEnergy,
       content: `At your center is your Self - the wise, compassionate, curious part of you. When you're in Self, you feel calm, clear, connected, and courageous. This is who you truly are beneath all the protection.`,
       characteristics: [
         'Naturally curious and open',
@@ -132,8 +144,7 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
     {
       id: 'exile_parts',
       title: 'Exile Parts',
-      emoji: '🧸',
-      icon: icons.softness,
+      icon: icons.exile,
       color: '#a855f7',
       content: `Exile parts carry our deepest wounds, unmet needs, and authentic feelings. Other parts try to protect them by keeping them hidden, but they hold our creativity, spontaneity, and capacity for joy.`,
       characteristics: [
@@ -223,22 +234,27 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
       content: `During your psychedelic experience, different parts may become more visible or vocal. This is an opportunity for healing and integration.`,
       guidance: [
         {
-          icon: '👂',
+          Icon: Ear,
+          iconColor: colors.primary,
           title: 'Listen with curiosity',
           description: 'If a part gets loud or scared, ask what it needs'
         },
         {
-          icon: '💚',
+          Icon: Heart,
+          iconColor: colors.success,
+          iconFill: colors.success,
           title: 'Offer reassurance',
           description: 'Let protective parts know you\'re safe and supported'
         },
         {
-          icon: '🤗',
+          Icon: HandHeart,
+          iconColor: '#a855f7',
           title: 'Welcome exiled parts',
           description: 'If vulnerable parts emerge, offer them love and attention'
         },
         {
-          icon: '🌟',
+          Icon: Sparkles,
+          iconColor: colors.warning,
           title: 'Stay in Self',
           description: 'Return to your center when parts become overwhelming'
         }
@@ -248,7 +264,7 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
     {
       id: 'completion',
       title: 'Understanding Your Inner Family',
-      emoji: '✨',
+      icon: icons.repairedHeart,
       content: `You now have tools to understand and work with your parts. Remember: all parts are welcome, all parts have good intentions, and your Self can lead with compassion.`,
       type: 'completion'
     }
@@ -348,7 +364,10 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
             </View>
 
             <View style={[styles.intentBox, { borderLeftColor: slide.color }]}>
-              <Text style={styles.intentTitle}>💝 Positive Intent:</Text>
+              <View style={styles.intentTitleRow}>
+                <Heart size={16} color={slide.color} fill={slide.color} strokeWidth={2} />
+                <Text style={styles.intentTitle}>Positive Intent:</Text>
+              </View>
               <Text style={styles.intentText}>{slide.positiveIntent}</Text>
             </View>
           </View>
@@ -366,15 +385,24 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
                 <View key={index} style={styles.exampleCard}>
                   <Text style={styles.exampleScenario}>{example.scenario}</Text>
                   <View style={styles.examplePart}>
-                    <Text style={styles.partLabel}>👔 Manager:</Text>
+                    <View style={styles.partLabelRow}>
+                      <Briefcase size={14} color={colors.primary} strokeWidth={2} />
+                      <Text style={styles.partLabel}>Manager:</Text>
+                    </View>
                     <Text style={styles.partExample}>{example.manager}</Text>
                   </View>
                   <View style={styles.examplePart}>
-                    <Text style={styles.partLabel}>🧸 Exile:</Text>
+                    <View style={styles.partLabelRow}>
+                      <Heart size={14} color="#a855f7" strokeWidth={2} />
+                      <Text style={styles.partLabel}>Exile:</Text>
+                    </View>
                     <Text style={styles.partExample}>{example.exile}</Text>
                   </View>
                   <View style={styles.examplePart}>
-                    <Text style={styles.partLabel}>🚒 Firefighter:</Text>
+                    <View style={styles.partLabelRow}>
+                      <Flame size={14} color="#dc2626" strokeWidth={2} />
+                      <Text style={styles.partLabel}>Firefighter:</Text>
+                    </View>
                     <Text style={styles.partExample}>{example.firefighter}</Text>
                   </View>
                 </View>
@@ -414,7 +442,7 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
                             {example}
                           </Text>
                           {isSelected && (
-                            <MaterialIcons name="check-circle" size={16} color={colors.success} style={styles.checkIcon} />
+                            <CheckCircle2 size={16} color={colors.success} strokeWidth={2} style={styles.checkIcon} />
                           )}
                         </TouchableOpacity>
                       );
@@ -435,7 +463,7 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
                         onPress={() => handleRemovePart(index)}
                         style={styles.removePartButton}
                       >
-                        <MaterialIcons name="close" size={16} color="#1e40af" />
+                        <X size={16} color="#1e40af" strokeWidth={2} />
                       </TouchableOpacity>
                     </View>
                   ))}
@@ -476,15 +504,25 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
             <Text style={styles.slideText}>{slide.content}</Text>
             
             <View style={styles.guidanceContainer}>
-              {slide.guidance.map((item, index) => (
-                <View key={index} style={styles.guidanceCard}>
-                  <Text style={styles.guidanceIcon}>{item.icon}</Text>
-                  <View style={styles.guidanceContent}>
-                    <Text style={styles.guidanceTitle}>{item.title}</Text>
-                    <Text style={styles.guidanceDescription}>{item.description}</Text>
+              {slide.guidance.map((item, index) => {
+                const ItemIcon = item.Icon;
+                return (
+                  <View key={index} style={styles.guidanceCard}>
+                    <View style={styles.guidanceIconWrap}>
+                      <ItemIcon
+                        size={24}
+                        color={item.iconColor || colors.primary}
+                        fill={item.iconFill || 'none'}
+                        strokeWidth={2}
+                      />
+                    </View>
+                    <View style={styles.guidanceContent}>
+                      <Text style={styles.guidanceTitle}>{item.title}</Text>
+                      <Text style={styles.guidanceDescription}>{item.description}</Text>
+                    </View>
                   </View>
-                </View>
-              ))}
+                );
+              })}
             </View>
           </View>
         );
@@ -497,7 +535,10 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
             <Text style={styles.slideText}>{slide.content}</Text>
             
             <View style={styles.completionBox}>
-              <Text style={styles.completionTitle}>🎯 Key Takeaways:</Text>
+              <View style={styles.completionTitleRow}>
+                <Target size={18} color={colors.primary} strokeWidth={2} />
+                <Text style={styles.completionTitle}>Key Takeaways:</Text>
+              </View>
               <Text style={styles.completionItem}>• You have different parts that protect and help you</Text>
               <Text style={styles.completionItem}>• All parts have positive intentions</Text>
               <Text style={styles.completionItem}>• Your Self can lead with curiosity and compassion</Text>
@@ -563,7 +604,7 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
           onPress={prevSlide}
           disabled={currentSlide === 0}
         >
-          <MaterialIcons name="arrow-back" size={20} color={currentSlide === 0 ? colors.textLight : colors.textSecondary} />
+          <ArrowLeft size={20} color={currentSlide === 0 ? colors.textLight : colors.textSecondary} strokeWidth={2} />
           <Text style={[styles.navButtonText, currentSlide === 0 && styles.disabledText]}>
             Previous
           </Text>
@@ -576,11 +617,11 @@ const IFSPartsEducationWidget = ({ onComplete, onSkip }) => {
           <Text style={styles.nextButtonText}>
             {currentSlide === educationSlides.length - 1 ? 'Complete' : 'Next'}
           </Text>
-          <MaterialIcons 
-            name={currentSlide === educationSlides.length - 1 ? 'check' : 'arrow-forward'} 
-            size={20} 
-            color="#ffffff" 
-          />
+          {currentSlide === educationSlides.length - 1 ? (
+            <Check size={20} color="#ffffff" strokeWidth={2} />
+          ) : (
+            <ArrowRight size={20} color="#ffffff" strokeWidth={2} />
+          )}
         </TouchableOpacity>
       </View>
     </View>
@@ -717,11 +758,16 @@ const styles = StyleSheet.create({
     borderLeftWidth: 4,
     width: '100%',
   },
+  intentTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 8,
+  },
   intentTitle: {
     fontSize: 14,
     fontWeight: '600',
     color: '#7c2d12',
-    marginBottom: 8,
   },
   intentText: {
     fontSize: 14,
@@ -750,12 +796,19 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: 8,
   },
+  partLabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginRight: 8,
+    minWidth: 110,
+  },
   partLabel: {
     fontSize: 14,
     fontWeight: '600',
     color: colors.text,
-    marginRight: 8,
-    minWidth: 90,
+    marginRight: 0,
+    minWidth: 0,
   },
   partExample: {
     fontSize: 14,
@@ -907,8 +960,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
   },
-  guidanceIcon: {
-    fontSize: 24,
+  guidanceIconWrap: {
     marginRight: 12,
     marginTop: 2,
   },
@@ -933,11 +985,16 @@ const styles = StyleSheet.create({
     width: '100%',
     marginTop: 16,
   },
+  completionTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 12,
+  },
   completionTitle: {
     fontSize: 16,
     fontWeight: '600',
     color: '#065f46',
-    marginBottom: 12,
   },
   completionItem: {
     fontSize: 14,

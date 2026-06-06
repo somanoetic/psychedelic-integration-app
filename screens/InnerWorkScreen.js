@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { MaterialIcons } from '@expo/vector-icons';
+import { ArrowLeft, ChevronRight, Clock, Lightbulb } from 'lucide-react-native';
 import { colors, gradients, spacing, borderRadius, shadows, typography } from '../theme/colors';
 import { icons } from '../lib/uiIcons';
 
@@ -97,7 +97,7 @@ const InnerWorkScreen = ({ navigation }) => {
               style={styles.backButton}
               onPress={() => navigation.goBack()}
             >
-              <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+              <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
             </TouchableOpacity>
           </View>
 
@@ -128,17 +128,23 @@ const InnerWorkScreen = ({ navigation }) => {
                   <View style={styles.optionText}>
                     <Text style={styles.optionTitle}>{option.title}</Text>
                     <Text style={styles.optionDescription}>{option.description}</Text>
-                    <Text style={styles.optionTime}>⏱️ {option.estimatedTime}</Text>
+                    <View style={styles.optionTimeRow}>
+                      <Clock size={14} color={colors.textLight} strokeWidth={2} />
+                      <Text style={styles.optionTime}>{option.estimatedTime}</Text>
+                    </View>
                   </View>
                 </View>
-                <MaterialIcons name="chevron-right" size={24} color={colors.textSecondary} />
+                <ChevronRight size={24} color={colors.textSecondary} strokeWidth={2} />
               </TouchableOpacity>
             ))}
           </View>
 
           {/* Tip */}
           <View style={styles.tipBox}>
-            <Text style={styles.tipTitle}>💡 Inner Work Tip</Text>
+            <View style={styles.tipTitleRow}>
+              <Lightbulb size={18} color={colors.primary} strokeWidth={2} />
+              <Text style={styles.tipTitle}>Inner Work Tip</Text>
+            </View>
             <Text style={styles.tipText}>
               Go at your own pace. Inner work is not about pushing through — it's about meeting yourself with curiosity and compassion.
             </Text>
@@ -242,6 +248,11 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     marginBottom: 4,
   },
+  optionTimeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
   optionTime: {
     fontSize: 13,
     color: colors.textLight,
@@ -253,11 +264,16 @@ const styles = StyleSheet.create({
     borderLeftWidth: 4,
     borderLeftColor: colors.primary,
   },
+  tipTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginBottom: spacing.xs,
+  },
   tipTitle: {
     fontSize: 15,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: spacing.xs,
   },
   tipText: {
     fontSize: 14,

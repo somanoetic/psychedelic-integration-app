@@ -17,7 +17,7 @@ import {
   Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import { ArrowLeft, ArrowRight } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../lib/supabase';
 import { colors, gradients, shadows, spacing, borderRadius, typography } from '../theme/colors';
@@ -142,7 +142,7 @@ const CoreBeliefsSummaryScreen = ({ navigation }) => {
           >
             <View style={styles.header}>
               <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+                <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
               </TouchableOpacity>
             </View>
 
@@ -164,7 +164,7 @@ const CoreBeliefsSummaryScreen = ({ navigation }) => {
                   activeOpacity={0.7}
                 >
                   <Text style={styles.startButtonText}>Take Assessment</Text>
-                  <MaterialIcons name="arrow-forward" size={18} color={colors.textInverse} />
+                  <ArrowRight size={18} color={colors.textInverse} strokeWidth={2} />
                 </TouchableOpacity>
               </View>
             ) : (

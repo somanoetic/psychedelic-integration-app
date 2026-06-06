@@ -27,7 +27,15 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  Lock,
+  X,
+  Plus,
+  ArrowLeft,
+  PlusCircle,
+  ChevronRight,
+  Inbox,
+} from 'lucide-react-native';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 import { exerciseCategories } from '../content/exercises-comprehensive';
 import contributedExerciseService from '../lib/contributedExerciseService';
@@ -237,7 +245,7 @@ const ContributorExerciseSubmissionScreen = ({ navigation }) => {
         <SafeAreaView style={styles.container} edges={['top']}>
           <Header navigation={navigation} title="Submit an Exercise" />
           <View style={styles.centerArea}>
-            <MaterialIcons name="lock-outline" size={42} color={colors.textLight} />
+            <Lock size={42} color={colors.textLight} strokeWidth={1.5} />
             <Text style={styles.centerTitle}>Approved contributors only</Text>
             <Text style={styles.centerText}>
               Submitting exercises is open to approved contributors. Apply via Contributor Tools and we'll review your application.
@@ -362,13 +370,13 @@ const ContributorExerciseSubmissionScreen = ({ navigation }) => {
                         onPress={() => removeStep(idx)}
                         style={styles.stepRemove}
                       >
-                        <MaterialIcons name="close" size={18} color={colors.textSecondary} />
+                        <X size={18} color={colors.textSecondary} strokeWidth={2} />
                       </TouchableOpacity>
                     )}
                   </View>
                 ))}
                 <TouchableOpacity onPress={addStep} style={styles.addStepButton}>
-                  <MaterialIcons name="add" size={18} color={colors.primary} />
+                  <Plus size={18} color={colors.primary} strokeWidth={2} />
                   <Text style={styles.addStepText}>Add step</Text>
                 </TouchableOpacity>
               </Field>
@@ -419,21 +427,21 @@ const ContributorExerciseSubmissionScreen = ({ navigation }) => {
           }
         >
           <TouchableOpacity style={styles.newCard} onPress={startNewSubmission}>
-            <MaterialIcons name="add-circle-outline" size={28} color={colors.primary} />
+            <PlusCircle size={28} color={colors.primary} strokeWidth={2} />
             <View style={{ flex: 1 }}>
               <Text style={styles.newCardTitle}>Submit a new exercise</Text>
               <Text style={styles.newCardSubtitle}>
                 Reviewed before going live. Published with attribution and a safety disclaimer.
               </Text>
             </View>
-            <MaterialIcons name="chevron-right" size={24} color={colors.textLight} />
+            <ChevronRight size={24} color={colors.textLight} strokeWidth={2} />
           </TouchableOpacity>
 
           <Text style={styles.sectionHeader}>Your submissions</Text>
 
           {submissions.length === 0 ? (
             <View style={styles.emptyCard}>
-              <MaterialIcons name="inbox" size={36} color={colors.textLight} />
+              <Inbox size={36} color={colors.textLight} strokeWidth={1.5} />
               <Text style={styles.emptyCardText}>
                 Nothing here yet. Tap "Submit a new exercise" to contribute your first one.
               </Text>
@@ -495,7 +503,7 @@ const Header = ({ navigation, title, onBack }) => (
       onPress={onBack ? onBack : () => navigation.goBack()}
       style={styles.headerButton}
     >
-      <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+      <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
     </TouchableOpacity>
     <Text style={styles.headerTitle}>{title}</Text>
     <View style={styles.headerButton} />

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { MaterialIcons } from '@expo/vector-icons';
+import { CloudOff, CheckCircle2 } from 'lucide-react-native';
 import { colors, gradients, spacing, borderRadius, shadows } from '../../theme/colors';
 
 /**
@@ -32,7 +32,7 @@ const ChecklistHeader = ({ checklist, syncing, offline }) => {
             )}
             {offline && !syncing && (
               <View style={styles.offlineIndicator}>
-                <MaterialIcons name="cloud-off" size={16} color={colors.textInverse} />
+                <CloudOff size={16} color={colors.textInverse} strokeWidth={2} />
                 <Text style={styles.offlineText}>Offline</Text>
               </View>
             )}
@@ -59,7 +59,7 @@ const ChecklistHeader = ({ checklist, syncing, offline }) => {
           {/* Completion badge */}
           {checklist.isComplete && (
             <View style={styles.completeBadge}>
-              <MaterialIcons name="check-circle" size={20} color={colors.success} />
+              <CheckCircle2 size={20} color={colors.success} strokeWidth={2} />
               <Text style={styles.completeText}>Checklist Complete!</Text>
             </View>
           )}

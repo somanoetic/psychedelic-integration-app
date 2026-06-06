@@ -9,9 +9,21 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  ArrowLeft,
+  Pencil,
+  PlusCircle,
+  ChevronRight,
+  Info,
+} from 'lucide-react-native';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 import userRoleService from '../lib/userRoleService';
+
+// Maps the icon strings passed to <ToolCard icon=... /> to Lucide components.
+const TOOL_ICON_MAP = {
+  edit: Pencil,
+  'add-circle-outline': PlusCircle,
+};
 
 const ContributorToolsScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
@@ -79,33 +91,36 @@ const ContributorToolsScreen = ({ navigation }) => {
     };
   }
 
-  const ToolCard = ({ icon, title, subtitle, onPress, disabled }) => (
-    <TouchableOpacity
-      style={[styles.toolCard, disabled && styles.toolCardDisabled]}
-      onPress={onPress}
-      disabled={disabled}
-      activeOpacity={0.7}
-    >
-      <View style={[styles.toolIcon, disabled && styles.toolIconDisabled]}>
-        <MaterialIcons
-          name={icon}
-          size={28}
-          color={disabled ? colors.textLight : colors.primary}
+  const ToolCard = ({ icon, title, subtitle, onPress, disabled }) => {
+    const ToolIcon = TOOL_ICON_MAP[icon] || Pencil;
+    return (
+      <TouchableOpacity
+        style={[styles.toolCard, disabled && styles.toolCardDisabled]}
+        onPress={onPress}
+        disabled={disabled}
+        activeOpacity={0.7}
+      >
+        <View style={[styles.toolIcon, disabled && styles.toolIconDisabled]}>
+          <ToolIcon
+            size={28}
+            color={disabled ? colors.textLight : colors.primary}
+            strokeWidth={2}
+          />
+        </View>
+        <View style={styles.toolText}>
+          <Text style={[styles.toolTitle, disabled && styles.toolTitleDisabled]}>
+            {title}
+          </Text>
+          <Text style={styles.toolSubtitle}>{subtitle}</Text>
+        </View>
+        <ChevronRight
+          size={22}
+          color={disabled ? colors.textLight : colors.textSecondary}
+          strokeWidth={2}
         />
-      </View>
-      <View style={styles.toolText}>
-        <Text style={[styles.toolTitle, disabled && styles.toolTitleDisabled]}>
-          {title}
-        </Text>
-        <Text style={styles.toolSubtitle}>{subtitle}</Text>
-      </View>
-      <MaterialIcons
-        name="chevron-right"
-        size={22}
-        color={disabled ? colors.textLight : colors.textSecondary}
-      />
-    </TouchableOpacity>
-  );
+      </TouchableOpacity>
+    );
+  };
 
   if (loading) {
     return (
@@ -137,7 +152,7 @@ const ContributorToolsScreen = ({ navigation }) => {
             onPress={() => navigation.goBack()}
             style={styles.backButton}
           >
-            <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+            <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Contributor Tools</Text>
           <View style={styles.backButton} />
@@ -248,10 +263,10 @@ const ContributorToolsScreen = ({ navigation }) => {
 
           {/* Info */}
           <View style={styles.infoCard}>
-            <MaterialIcons
-              name="info-outline"
+            <Info
               size={18}
               color={colors.textSecondary}
+              strokeWidth={2}
             />
             <Text style={styles.infoText}>
               Approved contributors can submit exercises and protocols to

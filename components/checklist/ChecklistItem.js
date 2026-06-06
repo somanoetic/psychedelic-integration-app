@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Check, ChevronDown, ChevronUp, X } from 'lucide-react-native';
 import { colors, spacing, borderRadius, shadows } from '../../theme/colors';
 
 /**
@@ -60,7 +60,7 @@ const ChecklistItem = ({ item, onToggle, onToggleNA, onDelete, disabled }) => {
             {item.isNa ? (
               <Text style={styles.checkboxNaLabel}>N/A</Text>
             ) : item.isChecked ? (
-              <MaterialIcons name="check" size={18} color={colors.textInverse} />
+              <Check size={18} color={colors.textInverse} strokeWidth={2} />
             ) : null}
           </View>
         </TouchableOpacity>
@@ -86,12 +86,21 @@ const ChecklistItem = ({ item, onToggle, onToggleNA, onDelete, disabled }) => {
               </View>
             )}
             {hasDescription && (
-              <MaterialIcons
-                name={expanded ? 'expand-less' : 'expand-more'}
-                size={20}
-                color={colors.textSecondary}
-                style={styles.expandIcon}
-              />
+              expanded ? (
+                <ChevronUp
+                  size={20}
+                  color={colors.textSecondary}
+                  strokeWidth={2}
+                  style={styles.expandIcon}
+                />
+              ) : (
+                <ChevronDown
+                  size={20}
+                  color={colors.textSecondary}
+                  strokeWidth={2}
+                  style={styles.expandIcon}
+                />
+              )
             )}
           </TouchableOpacity>
         </View>
@@ -118,7 +127,7 @@ const ChecklistItem = ({ item, onToggle, onToggleNA, onDelete, disabled }) => {
             style={styles.deleteButton}
             activeOpacity={0.7}
           >
-            <MaterialIcons name="close" size={20} color={colors.textSecondary} />
+            <X size={20} color={colors.textSecondary} strokeWidth={2} />
           </TouchableOpacity>
         )}
       </View>

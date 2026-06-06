@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   Alert
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Lightbulb, X, ArrowLeft, ArrowRight, Check } from 'lucide-react-native';
 import { supabase } from '../lib/supabase';
 import masterContextService from '../lib/masterContextService';
 import { colors } from '../theme/colors';
@@ -417,7 +417,7 @@ const PostSessionIntegrationJournal = ({ sessionId, onComplete, onSkip }) => {
         </View>
 
         <View style={styles.hintBox}>
-          <MaterialIcons name="lightbulb-outline" size={16} color={colors.warning} />
+          <Lightbulb size={16} color={colors.warning} strokeWidth={2} />
           <Text style={styles.hintText}>
             Even if nothing happened in this category, that's worth noting. Absence of experience is also data.
           </Text>
@@ -446,7 +446,7 @@ const PostSessionIntegrationJournal = ({ sessionId, onComplete, onSkip }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={onSkip} style={styles.closeButton}>
-          <MaterialIcons name="close" size={24} color={colors.textSecondary} />
+          <X size={24} color={colors.textSecondary} strokeWidth={2} />
         </TouchableOpacity>
         <View style={styles.headerInfo}>
           <Text style={styles.headerTitle}>Integration Journal</Text>
@@ -478,10 +478,10 @@ const PostSessionIntegrationJournal = ({ sessionId, onComplete, onSkip }) => {
           onPress={handlePrevious}
           disabled={currentCategory === 0}
         >
-          <MaterialIcons
-            name="arrow-back"
+          <ArrowLeft
             size={20}
             color={currentCategory === 0 ? colors.textLight : colors.textSecondary}
+            strokeWidth={2}
           />
           <Text
             style={[
@@ -505,11 +505,11 @@ const PostSessionIntegrationJournal = ({ sessionId, onComplete, onSkip }) => {
               <Text style={styles.nextButtonText}>
                 {currentCategory === categories.length - 1 ? 'Save Journal' : 'Next'}
               </Text>
-              <MaterialIcons
-                name={currentCategory === categories.length - 1 ? 'check' : 'arrow-forward'}
-                size={20}
-                color="#ffffff"
-              />
+              {currentCategory === categories.length - 1 ? (
+                <Check size={20} color="#ffffff" strokeWidth={2} />
+              ) : (
+                <ArrowRight size={20} color="#ffffff" strokeWidth={2} />
+              )}
             </>
           )}
         </TouchableOpacity>

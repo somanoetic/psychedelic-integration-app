@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { TouchableOpacity, Text, StyleSheet, Alert, ActivityIndicator } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Share2 } from 'lucide-react-native';
 import { colors, borderRadius } from '../theme/colors';
 
 /**
@@ -39,7 +39,7 @@ const ShareWithTherapistButton = ({ onShare, label = 'Share Summary', style }) =
       {sharing ? (
         <ActivityIndicator size="small" color="#FFFFFF" />
       ) : (
-        <MaterialIcons name="share" size={18} color="#FFFFFF" />
+        <Share2 size={18} color="#FFFFFF" strokeWidth={2} />
       )}
       <Text style={styles.text}>{sharing ? 'Preparing...' : label}</Text>
     </TouchableOpacity>

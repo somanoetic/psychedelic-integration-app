@@ -1,31 +1,34 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-  ScrollView,
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
+  ActivityIndicator,
   Alert,
   Animated,
-  ActivityIndicator,
+  Image,
   Platform,
-  KeyboardAvoidingView
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
+import { RotateCw } from 'lucide-react-native';
+import { colors, gradients } from '../theme/colors';
 import { supabase } from '../lib/supabase';
+import { icons } from '../lib/uiIcons';
 import huxleyService from '../lib/huxleyService';
 import EmbeddedPracticeWidget from '../enhanced-components/EmbeddedPracticeWidget';
-import FormattedText from '../components/FormattedText';
+import { ChatConversation } from '../components/chat';
+
+const NS_STATE_ICONS = {
+  ventral: icons.droplet,
+  sympathetic: icons.steam,
+  dorsal: icons.iceberg,
+  unknown: icons.uncertainState,
+};
 
 const TherapeuticIntegrationScreen = ({ navigation, route }) => {
-  console.log('TherapeuticIntegrationScreen route params:', route.params);
-
-  const insets = useSafeAreaInsets();
   const sessionParam = route?.params?.session || null;
 
-  // Core conversation state
   const [session, setSession] = useState(sessionParam);
   const [creatingSession, setCreatingSession] = useState(!sessionParam);
   const [messages, setMessages] = useState([]);
@@ -33,35 +36,29 @@ const TherapeuticIntegrationScreen = ({ navigation, route }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [entities, setEntities] = useState([]);
 
-  // Therapeutic features state
   const [currentPractice, setCurrentPractice] = useState(null);
   const [nervousSystemState, setNervousSystemState] = useState('unknown');
   const [stateConfidence, setStateConfidence] = useState(0);
   const [interventionsFocused, setInterventionsFocused] = useState([]);
 
-  // Session tracking
   const [practicesCompleted, setPracticesCompleted] = useState([]);
   const [regulationInterventions, setRegulationInterventions] = useState(0);
 
-  // Refs and animations
-  const scrollViewRef = useRef(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
-  // Unified AI service (singleton, no need for useRef)
-
-  // Auto-create session if none provided
   useEffect(() => {
     if (!sessionParam) {
       createNewSession();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Initialize conversation once session is ready
   useEffect(() => {
     if (session && session.id && !creatingSession) {
       initializeConversation();
       startHeartbeatAnimation();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session, creatingSession]);
 
   const createNewSession = async () => {
@@ -108,13 +105,15 @@ const TherapeuticIntegrationScreen = ({ navigation, route }) => {
     return (
       <LinearGradient
         colors={gradients.standard}
-        start={{ x: 1.0, y: 0.0 }}
-        end={{ x: 0.0, y: 1.0 }}
-        style={{ flex: 1 }}
+        start={gradients.standardStart}
+        end={gradients.standardEnd}
+        style={styles.container}
       >
         <View style={styles.errorContainer}>
           <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={[styles.errorText, { marginTop: 16 }]}>Setting up your session...</Text>
+          <Text style={[styles.errorText, { marginTop: 16 }]}>
+            Setting up your session...
+          </Text>
         </View>
       </LinearGradient>
     );
@@ -124,14 +123,15 @@ const TherapeuticIntegrationScreen = ({ navigation, route }) => {
     return (
       <LinearGradient
         colors={gradients.standard}
-        start={{ x: 1.0, y: 0.0 }}
-        end={{ x: 0.0, y: 1.0 }}
-        style={{ flex: 1 }}
+        start={gradients.standardStart}
+        end={gradients.standardEnd}
+        style={styles.container}
       >
         <View style={styles.errorContainer}>
           <Text style={styles.errorTitle}>Session Error</Text>
           <Text style={styles.errorText}>
-            No session data available. Please go back and start a new integration session.
+            No session data available. Please go back and start a new
+            integration session.
           </Text>
           <TouchableOpacity
             style={styles.backButton}
@@ -157,18 +157,15 @@ const TherapeuticIntegrationScreen = ({ navigation, route }) => {
           duration: 1000,
           useNativeDriver: true,
         }),
-      ])
+      ]),
     ).start();
   };
 
   const initializeConversation = async () => {
     try {
       const hasExistingMessages = await loadMessages();
-      
       if (!hasExistingMessages) {
-        setTimeout(() => {
-          initiateTherapeuticIntegration();
-        }, 1000);
+        setTimeout(() => initiateTherapeuticIntegration(), 1000);
       }
     } catch (error) {
       console.error('Error initializing conversation:', error);
@@ -177,30 +174,17 @@ const TherapeuticIntegrationScreen = ({ navigation, route }) => {
 
   const loadMessages = async () => {
     try {
-      // Check if this is a temporary session (offline/local)
       if (session.id && session.id.startsWith('temp_')) {
-        console.log('Loading from temporary session (offline mode)');
-        // Use session data passed from navigation
         const sessionData = session.session_data || {};
-        const loadedMessages = sessionData.messages || [];
-        const loadedEntities = sessionData.entities || [];
-        const loadedState = sessionData.nervousSystemState || 'unknown';
-        const loadedPractices = sessionData.practicesCompleted || [];
-        const loadedInterventions = sessionData.interventionsFocused || [];
-        
-        setMessages(loadedMessages);
-        setEntities(loadedEntities);
-        setNervousSystemState(loadedState);
-        setPracticesCompleted(loadedPractices);
-        setInterventionsFocused(loadedInterventions);
-        
-        // Initialize huxleyService mode
+        setMessages(sessionData.messages || []);
+        setEntities(sessionData.entities || []);
+        setNervousSystemState(sessionData.nervousSystemState || 'unknown');
+        setPracticesCompleted(sessionData.practicesCompleted || []);
+        setInterventionsFocused(sessionData.interventionsFocused || []);
         huxleyService.setMode('therapeutic_integration', { clearHistory: true });
-
-        return loadedMessages.length > 0;
+        return (sessionData.messages || []).length > 0;
       }
 
-      // Regular database session
       const { data, error } = await supabase
         .from('sessions')
         .select('session_data')
@@ -210,31 +194,14 @@ const TherapeuticIntegrationScreen = ({ navigation, route }) => {
       if (error) throw error;
 
       const sessionData = data?.session_data || {};
-      const loadedMessages = sessionData.messages || [];
-      const loadedEntities = sessionData.entities || [];
-      const loadedState = sessionData.nervousSystemState || 'unknown';
-      const loadedPractices = sessionData.practicesCompleted || [];
-      const loadedInterventions = sessionData.interventionsFocused || [];
-      
-      console.log('Loading therapeutic integration data:', {
-        sessionId: session.id,
-        messageCount: loadedMessages.length,
-        entityCount: loadedEntities.length,
-        nervousSystemState: loadedState,
-        practicesCompleted: loadedPractices.length
-      });
-      
-      setMessages(loadedMessages);
-      setEntities(loadedEntities);
-      setNervousSystemState(loadedState);
-      setPracticesCompleted(loadedPractices);
-      setInterventionsFocused(loadedInterventions);
-      
-      // Initialize huxleyService mode
-      huxleyService.setMode('therapeutic_integration', { clearHistory: true });
+      setMessages(sessionData.messages || []);
+      setEntities(sessionData.entities || []);
+      setNervousSystemState(sessionData.nervousSystemState || 'unknown');
+      setPracticesCompleted(sessionData.practicesCompleted || []);
+      setInterventionsFocused(sessionData.interventionsFocused || []);
 
-      return loadedMessages.length > 0;
-      
+      huxleyService.setMode('therapeutic_integration', { clearHistory: true });
+      return (sessionData.messages || []).length > 0;
     } catch (error) {
       console.error('Error loading messages:', error);
       return false;
@@ -245,154 +212,126 @@ const TherapeuticIntegrationScreen = ({ navigation, route }) => {
     try {
       const sessionData = {
         messages: newMessages,
-        entities: entities,
-        nervousSystemState: nervousSystemState,
-        stateConfidence: stateConfidence,
-        practicesCompleted: practicesCompleted,
-        regulationInterventions: regulationInterventions,
-        interventionsFocused: interventionsFocused,
+        entities,
+        nervousSystemState,
+        stateConfidence,
+        practicesCompleted,
+        regulationInterventions,
+        interventionsFocused,
         sessionType: 'integration',
         conversationMode: 'therapeutic_integration',
         lastUpdated: new Date().toISOString(),
-        ...additionalData
+        ...additionalData,
       };
 
-      // Try to save to database if session has a real ID
       if (session.id && !session.id.startsWith('temp_')) {
         try {
           const { error } = await supabase
             .from('sessions')
-            .update({ 
-              session_data: sessionData
-            })
+            .update({ session_data: sessionData })
             .eq('id', session.id);
-
-          if (error) {
-            console.error('Database save failed, using local storage:', error);
-            // Fall back to local storage
-            await saveToLocalStorage(sessionData);
-          } else {
-            console.log('Session saved to database successfully');
-          }
+          if (error) console.error('Database save failed:', error);
         } catch (dbError) {
-          console.error('Database unavailable, using local storage:', dbError);
-          await saveToLocalStorage(sessionData);
+          console.error('Database unavailable:', dbError);
         }
-      } else {
-        // Session is temporary, save to local storage
-        await saveToLocalStorage(sessionData);
       }
     } catch (error) {
       console.error('Error saving messages:', error);
     }
   };
 
-  const saveToLocalStorage = async (sessionData) => {
-    try {
-      // In a real app, you'd use AsyncStorage here
-      // For now, just log that we're saving locally
-      console.log('Saving session data locally:', {
-        sessionId: session.id,
-        messageCount: sessionData.messages.length,
-        entityCount: sessionData.entities?.length || 0
-      });
-      // TODO: Implement AsyncStorage.setItem(session.id, JSON.stringify(sessionData))
-    } catch (error) {
-      console.error('Local storage save failed:', error);
-    }
-  };
-
   const initiateTherapeuticIntegration = () => {
     const welcomeMessage = {
       role: 'assistant',
-      content: `Welcome to **Therapeutic Integration**! 
+      content: `Welcome to **Therapeutic Integration**!
 
 I'm here to help you connect insights from your psychedelic experiences to your life patterns and apply specific therapeutic interventions when needed.
 
-My focus is on:
-🧠 **Life Pattern Connections** - How your insights relate to current challenges
-💆 **Polyvagal Mapping** - Understanding your nervous system responses
-🤝 **Parts Work (IFS)** - Exploring different aspects of yourself
-🌱 **Somatic Practices** - Reconnecting with your body's wisdom
-💝 **Self-Compassion** - Healing shame and inner criticism
-
-Before we dive in, let's check in with your nervous system. How is your body feeling right in this moment?`,
+My focus is on:`,
+      bullets: [
+        { icon: 'thoughtCloud', label: 'Life Pattern Connections', description: 'How your insights relate to current challenges' },
+        { icon: 'nsMap', label: 'Polyvagal Mapping', description: 'Understanding your nervous system responses' },
+        { icon: 'group', label: 'Parts Work (IFS)', description: 'Exploring different aspects of yourself' },
+        { icon: 'sprout', label: 'Somatic Practices', description: "Reconnecting with your body's wisdom" },
+        { icon: 'compassion', label: 'Self-Compassion', description: 'Healing shame and inner criticism' },
+      ],
+      contentAfter: `Before we dive in, let's check in with your nervous system. How is your body feeling right in this moment?`,
       timestamp: new Date(),
       messageType: 'therapeutic_integration_intro',
       requiresPractice: {
         type: 'polyvagal_assessment',
         priority: 'high',
-        reason: 'session_initialization'
-      }
+        reason: 'session_initialization',
+      },
     };
 
     setMessages([welcomeMessage]);
-    
-    // Automatically show nervous system check-in
+
     setTimeout(() => {
       setCurrentPractice({
         type: 'polyvagal_assessment',
         title: "Let's check in with your nervous system",
-        description: "This helps me understand how to best support you therapeutically",
-        onComplete: handleNervousSystemAssessment
+        description: 'This helps me understand how to best support you therapeutically',
+        onComplete: handleNervousSystemAssessment,
       });
     }, 2000);
   };
 
   const handleNervousSystemAssessment = async (assessmentResult) => {
     const { state, intensity, notes } = assessmentResult;
-    
+
     setNervousSystemState(state);
     setStateConfidence(intensity / 10);
     setCurrentPractice(null);
-    
-    // Update regulation interventions if needed
+
     if (state === 'sympathetic' && intensity > 6) {
-      setRegulationInterventions(prev => prev + 1);
+      setRegulationInterventions((prev) => prev + 1);
     }
-    
-    // Generate therapeutic response based on assessment via huxleyService
+
     const contextualResponse = await huxleyService.chat(
       `Nervous system check-in: state=${state}, intensity=${intensity}${notes ? ', notes: ' + notes : ''}`,
     );
 
-    const suggestedPractice = contextualResponse.exerciseRecommendation || contextualResponse.therapeuticData?.suggestedPractice || null;
+    const suggestedPractice =
+      contextualResponse.exerciseRecommendation ||
+      contextualResponse.therapeuticData?.suggestedPractice ||
+      null;
 
     const responseMessage = {
       role: 'assistant',
       content: contextualResponse.message,
       timestamp: new Date(),
       nervousSystemContext: { state, intensity, notes },
-      requiresPractice: suggestedPractice
+      requiresPractice: suggestedPractice,
     };
-    
+
     const updatedMessages = [...messages, responseMessage];
     setMessages(updatedMessages);
-    
-    // Auto-suggest regulation if needed
+
     if (suggestedPractice && suggestedPractice.urgency === 'high') {
       setTimeout(() => {
         setCurrentPractice({
           ...suggestedPractice,
-          onComplete: handlePracticeComplete
+          onComplete: handlePracticeComplete,
         });
       }, 3000);
     }
-    
-    await saveMessages(updatedMessages, { 
+
+    await saveMessages(updatedMessages, {
       nervousSystemState: state,
-      stateConfidence: intensity / 10 
+      stateConfidence: intensity / 10,
     });
   };
 
-  const handleSendMessage = async () => {
-    if (!userInput.trim() || isLoading) return;
+  const handleSendMessage = async (text) => {
+    const trimmed = text.trim();
+    if (!trimmed || isLoading) return;
 
     const userMessage = {
       role: 'user',
-      content: userInput.trim(),
+      content: trimmed,
       timestamp: new Date(),
-      nervousSystemState: nervousSystemState
+      nervousSystemState,
     };
 
     const newMessages = [...messages, userMessage];
@@ -401,11 +340,13 @@ Before we dive in, let's check in with your nervous system. How is your body fee
     setIsLoading(true);
 
     try {
-      // Get therapeutic integration response via huxleyService
-      const response = await huxleyService.chat(userInput.trim());
+      const response = await huxleyService.chat(trimmed);
 
       const extractedEntities = response.therapeuticData?.extractedEntities || [];
-      const suggestedPractice = response.exerciseRecommendation || response.therapeuticData?.suggestedPractice || null;
+      const suggestedPractice =
+        response.exerciseRecommendation ||
+        response.therapeuticData?.suggestedPractice ||
+        null;
       const nervousSystemUpdate = response.therapeuticData?.nervousSystemUpdate || null;
       const therapeuticThemes = response.therapeuticData?.therapeuticThemes || [];
 
@@ -415,53 +356,47 @@ Before we dive in, let's check in with your nervous system. How is your body fee
         timestamp: new Date(),
         entities: extractedEntities,
         requiresPractice: suggestedPractice,
-        nervousSystemUpdate: nervousSystemUpdate,
-        therapeuticThemes: therapeuticThemes
+        nervousSystemUpdate,
+        therapeuticThemes,
       };
 
       const updatedMessages = [...newMessages, assistantMessage];
       setMessages(updatedMessages);
 
-      // Update entities if new ones were extracted
       if (extractedEntities.length > 0) {
-        const updatedEntities = [...entities, ...extractedEntities];
-        setEntities(updatedEntities);
+        setEntities((prev) => [...prev, ...extractedEntities]);
       }
 
-      // Update nervous system state if changed
       if (nervousSystemUpdate) {
         setNervousSystemState(nervousSystemUpdate.state);
         setStateConfidence(nervousSystemUpdate.confidence);
       }
 
-      // Track therapeutic interventions focused on
       if (therapeuticThemes.length > 0) {
-        setInterventionsFocused(prev => [...prev, ...therapeuticThemes]);
+        setInterventionsFocused((prev) => [...prev, ...therapeuticThemes]);
       }
 
-      // Show practice if recommended
       if (suggestedPractice && suggestedPractice.urgency !== 'low') {
         setTimeout(() => {
           setCurrentPractice({
             ...suggestedPractice,
-            onComplete: handlePracticeComplete
+            onComplete: handlePracticeComplete,
           });
         }, 2000);
       }
 
       await saveMessages(updatedMessages);
-
     } catch (error) {
       console.error('Error sending message:', error);
-      
-      const errorMessage = {
-        role: 'assistant',
-        content: "I'm here with you. Take a moment to breathe. Would you like to try sharing that again?",
-        timestamp: new Date(),
-        isError: true
-      };
-      
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'assistant',
+          content: "I'm here with you. Take a moment to breathe. Would you like to try sharing that again?",
+          timestamp: new Date(),
+          isError: true,
+        },
+      ]);
     } finally {
       setIsLoading(false);
     }
@@ -469,21 +404,20 @@ Before we dive in, let's check in with your nervous system. How is your body fee
 
   const handlePracticeComplete = async (practiceResult) => {
     const { practiceType, outcome, duration, effectiveness } = practiceResult;
-    
+
     const completedPractice = {
       type: practiceType,
       completedAt: new Date().toISOString(),
-      duration: duration,
-      effectiveness: effectiveness,
-      outcome: outcome
+      duration,
+      effectiveness,
+      outcome,
     };
-    
-    setPracticesCompleted(prev => [...prev, completedPractice]);
+
+    setPracticesCompleted((prev) => [...prev, completedPractice]);
     setCurrentPractice(null);
 
-    // Generate follow-up response via huxleyService
     const followUpResponse = await huxleyService.chat(
-      `I just completed a ${completedPractice.type} practice. Duration: ${completedPractice.duration}s. Effectiveness: ${completedPractice.effectiveness}/10. Outcome: ${completedPractice.outcome}`
+      `I just completed a ${completedPractice.type} practice. Duration: ${completedPractice.duration}s. Effectiveness: ${completedPractice.effectiveness}/10. Outcome: ${completedPractice.outcome}`,
     );
 
     const followUpMessage = {
@@ -491,259 +425,212 @@ Before we dive in, let's check in with your nervous system. How is your body fee
       content: followUpResponse.message,
       timestamp: new Date(),
       practiceFollowUp: true,
-      requiresPractice: followUpResponse.exerciseRecommendation || followUpResponse.therapeuticData?.suggestedPractice || null
+      requiresPractice:
+        followUpResponse.exerciseRecommendation ||
+        followUpResponse.therapeuticData?.suggestedPractice ||
+        null,
     };
 
     const updatedMessages = [...messages, followUpMessage];
     setMessages(updatedMessages);
-    
-    await saveMessages(updatedMessages, { 
-      practicesCompleted: [...practicesCompleted, completedPractice] 
+
+    await saveMessages(updatedMessages, {
+      practicesCompleted: [...practicesCompleted, completedPractice],
     });
   };
 
-  const renderNervousSystemHeader = () => {
-    const getStateEmoji = () => {
-      switch (nervousSystemState) {
-        case 'ventral': return '💚';
-        case 'sympathetic': return '⚡';
-        case 'dorsal': return '🛡️';
-        default: return '🧠';
-      }
-    };
+  const getStateIcon = () => NS_STATE_ICONS[nervousSystemState] || NS_STATE_ICONS.unknown;
 
-    const getStateLabel = () => {
-      switch (nervousSystemState) {
-        case 'ventral': return 'Safe & Social';
-        case 'sympathetic': return 'Activated';
-        case 'dorsal': return 'Protected';
-        default: return 'Checking in...';
-      }
-    };
-
-    return (
-      <View style={styles.nervousSystemHeader}>
-        <View style={styles.nervousSystemIndicator}>
-          <Animated.Text 
-            style={[
-              styles.stateEmoji,
-              { transform: [{ scale: pulseAnim }] }
-            ]}
-          >
-            {getStateEmoji()}
-          </Animated.Text>
-          <Text style={styles.stateLabel}>
-            {getStateLabel()}
-          </Text>
-        </View>
-        
-        <View style={styles.sessionInfo}>
-          <Text style={styles.sessionPhaseText}>
-            Therapeutic Integration
-          </Text>
-          <Text style={styles.practiceCount}>
-            {practicesCompleted.length} practices completed
-          </Text>
-        </View>
-      </View>
-    );
-  };
-
-  const renderTherapeuticFocus = () => {
-    if (interventionsFocused.length === 0) return null;
-
-    return (
-      <View style={styles.therapeuticFocusContainer}>
-        <Text style={styles.focusTitle}>Therapeutic Focus Areas:</Text>
-        <View style={styles.focusChips}>
-          {[...new Set(interventionsFocused)].slice(-4).map((intervention, index) => (
-            <View key={index} style={styles.focusChip}>
-              <Text style={styles.focusChipText}>{intervention}</Text>
-            </View>
-          ))}
-        </View>
-      </View>
-    );
-  };
-
-  const renderMessages = () => {
-    return messages.map((message, index) => (
-      <View
-        key={index}
-        style={[
-          styles.messageBubble,
-          message.role === 'user' ? styles.userBubble : styles.assistantBubble
-        ]}
-      >
-        <FormattedText style={[
-          styles.messageText,
-          message.role === 'user' ? styles.userText : styles.assistantText
-        ]}>
-          {message.content}
-        </FormattedText>
-
-        {/* Show therapeutic themes */}
-        {message.therapeuticThemes && message.therapeuticThemes.length > 0 && (
-          <View style={styles.therapeuticThemesContainer}>
-            {message.therapeuticThemes.map((theme, themeIndex) => (
-              <View key={themeIndex} style={styles.therapeuticThemeChip}>
-                <Text style={styles.therapeuticThemeText}>{theme}</Text>
-              </View>
-            ))}
-          </View>
-        )}
-        
-        {/* Show extracted entities */}
-        {message.entities && message.entities.length > 0 && (
-          <View style={styles.entitiesContainer}>
-            {message.entities.map((entity, entityIndex) => (
-              <View key={entityIndex} style={styles.entityChip}>
-                <Text style={styles.entityText}>{entity.name}</Text>
-              </View>
-            ))}
-          </View>
-        )}
-        
-        {/* Show nervous system context */}
-        {message.nervousSystemContext && (
-          <View style={styles.contextIndicator}>
-            <Text style={styles.contextText}>
-              State: {message.nervousSystemContext.state} ({message.nervousSystemContext.intensity}/10)
-            </Text>
-          </View>
-        )}
-        
-        {/* Show practice suggestion */}
-        {message.requiresPractice && (
-          <TouchableOpacity
-            style={styles.practiceIndicator}
-            onPress={() => {
-              if (message.requiresPractice.urgency === 'low') {
-                setCurrentPractice({
-                  ...message.requiresPractice,
-                  onComplete: handlePracticeComplete
-                });
-              }
-            }}
-          >
-            <Text style={styles.practiceText}>
-              {message.requiresPractice.urgency === 'high' 
-                ? '🔄 Practice will appear shortly...' 
-                : '💆 Tap for practice: ' + (message.requiresPractice.title || 'Practice available')}
-            </Text>
-          </TouchableOpacity>
-        )}
-      </View>
-    ));
-  };
-
-  const renderInput = () => {
-    if (currentPractice) {
-      return (
-        <View style={styles.practiceIndicatorBottom}>
-          <Text style={styles.practiceIndicatorText}>
-            🧘 Practice in progress: {currentPractice.title}
-          </Text>
-        </View>
-      );
+  const getStateLabel = () => {
+    switch (nervousSystemState) {
+      case 'ventral': return 'Safe & Social';
+      case 'sympathetic': return 'Activated';
+      case 'dorsal': return 'Protected';
+      default: return 'Checking in...';
     }
-
-    return (
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.textInput}
-          value={userInput}
-          onChangeText={setUserInput}
-          placeholder={(() => {
-            switch(nervousSystemState) {
-              case 'sympathetic': return "Take your time... what's present for you?";
-              case 'dorsal': return "No pressure... share whatever feels safe";
-              default: return "What insights would you like to explore therapeutically?";
-            }
-          })()}
-          multiline
-          maxLength={1000}
-          editable={!isLoading}
-        />
-        <TouchableOpacity
-          style={[
-            styles.sendButton,
-            (!userInput.trim() || isLoading) && styles.sendButtonDisabled
-          ]}
-          onPress={handleSendMessage}
-          disabled={!userInput.trim() || isLoading}
-        >
-          {isLoading ? (
-            <ActivityIndicator size="small" color="#ffffff" />
-          ) : (
-            <Text style={styles.sendButtonText}>→</Text>
-          )}
-        </TouchableOpacity>
-      </View>
-    );
   };
 
-  return (
-    <LinearGradient
-      colors={gradients.standard}
-      start={{ x: 1.0, y: 0.0 }}
-      end={{ x: 0.0, y: 1.0 }}
-      style={{ flex: 1 }}
-    >
-    <SafeAreaView style={[styles.container, { paddingBottom: insets.bottom }]} edges={['top', 'bottom']}>
-      {/* Header */}
+  const renderHeader = () => (
+    <View>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={styles.backText}>← Back</Text>
         </TouchableOpacity>
         <Text style={styles.title}>Therapeutic Integration</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('ExperienceMapping', { session })}>
-          <Text style={styles.switchText}>← Switch to Mapping</Text>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('ExperienceMapping', { session })}
+        >
+          <Text style={styles.switchText}>← Mapping</Text>
         </TouchableOpacity>
       </View>
-      
-      {/* Nervous System Header */}
-      {renderNervousSystemHeader()}
-      
-      {/* Therapeutic Focus Areas */}
-      {renderTherapeuticFocus()}
-      
-      <ScrollView
-        ref={scrollViewRef}
-        style={styles.messagesContainer}
-        contentContainerStyle={styles.messagesContent}
-        onContentSizeChange={() => 
-          scrollViewRef.current?.scrollToEnd({ animated: true })
-        }
-      >
-        {renderMessages()}
-        
-        {isLoading && (
-          <View style={styles.typingIndicator}>
-            <Text style={styles.typingText}>Considering therapeutic connections...</Text>
-            <ActivityIndicator size="small" color={colors.primary} />
+
+      <View style={styles.nervousSystemHeader}>
+        <View style={styles.nervousSystemIndicator}>
+          <Animated.Image
+            source={getStateIcon()}
+            style={[styles.stateIcon, { transform: [{ scale: pulseAnim }] }]}
+            resizeMode="contain"
+          />
+          <Text style={styles.stateLabel}>{getStateLabel()}</Text>
+        </View>
+        <View style={styles.sessionInfo}>
+          <Text style={styles.sessionPhaseText}>Therapeutic Integration</Text>
+          <Text style={styles.practiceCount}>
+            {practicesCompleted.length} practices completed
+          </Text>
+        </View>
+      </View>
+
+      {interventionsFocused.length > 0 && (
+        <View style={styles.therapeuticFocusContainer}>
+          <Text style={styles.focusTitle}>Therapeutic Focus Areas:</Text>
+          <View style={styles.focusChips}>
+            {[...new Set(interventionsFocused)].slice(-4).map((intervention, index) => (
+              <View key={index} style={styles.focusChip}>
+                <Text style={styles.focusChipText}>{intervention}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+      )}
+    </View>
+  );
+
+  // Inline message decorations: therapeutic themes, entities, NS context,
+  // and practice suggestions all render inside their bubble.
+  const renderMessageExtras = (message) => {
+    const themes = message.therapeuticThemes || [];
+    const ents = message.entities || [];
+    const nsContext = message.nervousSystemContext;
+    const practice = message.requiresPractice;
+
+    if (!themes.length && !ents.length && !nsContext && !practice) {
+      return null;
+    }
+
+    return (
+      <View>
+        {themes.length > 0 && (
+          <View style={styles.therapeuticThemesContainer}>
+            {themes.map((theme, i) => (
+              <View key={i} style={styles.therapeuticThemeChip}>
+                <Text style={styles.therapeuticThemeText}>{theme}</Text>
+              </View>
+            ))}
           </View>
         )}
-      </ScrollView>
 
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 20}
-        style={{ flexShrink: 0 }}
-      >
-        {renderInput()}
-      </KeyboardAvoidingView>
+        {ents.length > 0 && (
+          <View style={styles.entitiesContainer}>
+            {ents.map((entity, i) => (
+              <View key={i} style={styles.entityChip}>
+                <Text style={styles.entityText}>{entity.name}</Text>
+              </View>
+            ))}
+          </View>
+        )}
 
-      {/* Embedded Practice Widget */}
-      {currentPractice && (
-        <EmbeddedPracticeWidget
-          practice={currentPractice}
-          nervousSystemState={nervousSystemState}
-          onComplete={handlePracticeComplete}
-          onSkip={() => setCurrentPractice(null)}
+        {nsContext && (
+          <View style={styles.contextIndicator}>
+            <Text style={styles.contextText}>
+              State: {nsContext.state} ({nsContext.intensity}/10)
+            </Text>
+          </View>
+        )}
+
+        {practice && (
+          <TouchableOpacity
+            style={styles.practiceIndicator}
+            onPress={() => {
+              setCurrentPractice({
+                ...practice,
+                onComplete: handlePracticeComplete,
+              });
+            }}
+          >
+            {practice.urgency === 'high' ? (
+              <RotateCw size={14} color={colors.primary} strokeWidth={2.5} />
+            ) : (
+              <Image source={icons.meditate} style={styles.practiceIndicatorIcon} resizeMode="contain" />
+            )}
+            <Text style={styles.practiceText}>
+              {practice.urgency === 'high'
+                ? 'Practice will appear shortly...'
+                : 'Tap for practice: ' + (practice.title || 'Practice available')}
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    );
+  };
+
+  // Adapt {role, content, ...therapeutic fields} → ChatConversation shape.
+  // Pass-through all the decoration fields so renderMessageExtras can use them.
+  const toChatMessages = (msgs) =>
+    msgs.map((m, i) => ({
+      id: m.timestamp ? `${i}-${new Date(m.timestamp).getTime()}` : `${i}`,
+      role: m.role,
+      content: m.content,
+      bullets: m.bullets,
+      contentAfter: m.contentAfter,
+      therapeuticThemes: m.therapeuticThemes,
+      entities: m.entities,
+      nervousSystemContext: m.nervousSystemContext,
+      requiresPractice: m.requiresPractice,
+    }));
+
+  const inputBlocked = isLoading;
+  const inputPlaceholder = (() => {
+    switch (nervousSystemState) {
+      case 'sympathetic': return "Take your time... what's present for you?";
+      case 'dorsal': return 'No pressure... share whatever feels safe';
+      default: return 'What insights would you like to explore therapeutically?';
+    }
+  })();
+
+  // While a practice is active, input is replaced by a status banner;
+  // EmbeddedPracticeWidget renders as an overlay on top of everything.
+  const inputReplacement = currentPractice ? (
+    <View style={styles.practiceIndicatorBottom}>
+      <Image source={icons.meditate} style={styles.practiceBannerIcon} resizeMode="contain" />
+      <Text style={styles.practiceIndicatorText}>
+        Practice in progress: {currentPractice.title}
+      </Text>
+    </View>
+  ) : null;
+
+  const overlay = currentPractice ? (
+    <EmbeddedPracticeWidget
+      practice={currentPractice}
+      nervousSystemState={nervousSystemState}
+      onComplete={handlePracticeComplete}
+      onSkip={() => setCurrentPractice(null)}
+    />
+  ) : null;
+
+  return (
+    <LinearGradient
+      colors={gradients.standard}
+      start={gradients.standardStart}
+      end={gradients.standardEnd}
+      style={styles.container}
+    >
+      <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+        <ChatConversation
+          messages={toChatMessages(messages)}
+          isTyping={isLoading}
+          onSend={handleSendMessage}
+          inputText={userInput}
+          onInputTextChange={setUserInput}
+          inputPlaceholder={inputPlaceholder}
+          inputDisabled={inputBlocked}
+          inputReplacement={inputReplacement}
+          header={renderHeader()}
+          renderMessageExtras={renderMessageExtras}
+          overlay={overlay}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 20}
         />
-      )}
-    </SafeAreaView>
+      </SafeAreaView>
     </LinearGradient>
   );
 };
@@ -752,12 +639,14 @@ const styles = {
   container: {
     flex: 1,
   },
+  safeArea: {
+    flex: 1,
+  },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 32,
-    backgroundColor: '#f5f5f5',
   },
   errorTitle: {
     fontSize: 24,
@@ -768,13 +657,13 @@ const styles = {
   },
   errorText: {
     fontSize: 16,
-    color: '#666',
+    color: colors.text,
     textAlign: 'center',
     marginBottom: 32,
     lineHeight: 24,
   },
   backButton: {
-    backgroundColor: '#2196f3',
+    backgroundColor: colors.primary,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
@@ -788,41 +677,43 @@ const styles = {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 16,
-    backgroundColor: colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.lightGray,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
   },
   backText: {
     fontSize: 16,
     color: colors.primary,
+    fontWeight: '600',
   },
   title: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: '700',
     color: colors.text,
   },
   switchText: {
     fontSize: 12,
     color: colors.success,
+    fontWeight: '600',
   },
   nervousSystemHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.lightGray,
+    paddingVertical: 10,
+    marginHorizontal: 16,
+    marginBottom: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.6)',
+    borderRadius: 12,
   },
   nervousSystemIndicator: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
   },
-  stateEmoji: {
-    fontSize: 20,
+  stateIcon: {
+    width: 28,
+    height: 28,
   },
   stateLabel: {
     fontSize: 14,
@@ -834,19 +725,17 @@ const styles = {
   },
   sessionPhaseText: {
     fontSize: 12,
-    color: colors.textSecondary,
+    color: colors.text,
     fontWeight: '500',
   },
   practiceCount: {
     fontSize: 11,
-    color: colors.textLight,
+    color: colors.text,
+    opacity: 0.7,
   },
   therapeuticFocusContainer: {
-    backgroundColor: colors.surface,
-    paddingHorizontal: 16,
+    marginHorizontal: 16,
     paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.lightGray,
   },
   focusTitle: {
     fontSize: 11,
@@ -860,8 +749,8 @@ const styles = {
     gap: 4,
   },
   focusChip: {
-    paddingHorizontal: 6,
-    paddingVertical: 2,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
     backgroundColor: colors.bubbleArchetypal,
     borderRadius: 8,
   },
@@ -870,45 +759,11 @@ const styles = {
     color: '#92400e',
     fontWeight: '500',
   },
-  messagesContainer: {
-    flex: 1,
-  },
-  messagesContent: {
-    padding: 16,
-    paddingBottom: 24,
-  },
-  messageBubble: {
-    marginVertical: 4,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 16,
-    maxWidth: '85%',
-  },
-  userBubble: {
-    backgroundColor: colors.primary,
-    alignSelf: 'flex-end',
-  },
-  assistantBubble: {
-    backgroundColor: colors.surface,
-    alignSelf: 'flex-start',
-    borderWidth: 1,
-    borderColor: colors.lightGray,
-  },
-  messageText: {
-    fontSize: 16,
-    lineHeight: 22,
-  },
-  userText: {
-    color: colors.textInverse,
-  },
-  assistantText: {
-    color: colors.text,
-  },
   therapeuticThemesContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 4,
-    marginTop: 8,
+    marginTop: 6,
   },
   therapeuticThemeChip: {
     paddingHorizontal: 6,
@@ -925,7 +780,7 @@ const styles = {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 6,
-    marginTop: 8,
+    marginTop: 6,
   },
   entityChip: {
     paddingHorizontal: 8,
@@ -942,7 +797,7 @@ const styles = {
     marginTop: 6,
     paddingTop: 6,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.3)',
+    borderTopColor: 'rgba(0, 0, 0, 0.08)',
   },
   contextText: {
     fontSize: 11,
@@ -950,82 +805,49 @@ const styles = {
     fontStyle: 'italic',
   },
   practiceIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
     marginTop: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    backgroundColor: 'rgba(212, 114, 92, 0.1)',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    backgroundColor: 'rgba(93, 134, 214, 0.1)',
     borderRadius: 8,
   },
+  practiceIndicatorIcon: {
+    width: 16,
+    height: 16,
+  },
   practiceText: {
+    flex: 1,
     fontSize: 12,
     color: colors.primary,
     fontWeight: '500',
   },
-  typingIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    backgroundColor: '#f3f4f6',
-    borderRadius: 16,
-    alignSelf: 'flex-start',
-    marginTop: 8,
-  },
-  typingText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    fontStyle: 'italic',
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    padding: 16,
-    backgroundColor: colors.surface,
-    borderTopWidth: 1,
-    borderTopColor: colors.lightGray,
-    alignItems: 'flex-end',
-    gap: 12,
-  },
-  textInput: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 16,
-    maxHeight: 120,
-    backgroundColor: colors.surface,
-  },
-  sendButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  sendButtonDisabled: {
-    backgroundColor: colors.textLight,
-  },
-  sendButtonText: {
-    fontSize: 20,
-    color: colors.textInverse,
-    fontWeight: 'bold',
+  practiceBannerIcon: {
+    width: 22,
+    height: 22,
   },
   practiceIndicatorBottom: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    padding: 16,
-    backgroundColor: '#eff6ff',
-    borderTopWidth: 1,
-    borderTopColor: '#dbeafe',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    marginHorizontal: 16,
+    marginBottom: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   practiceIndicatorText: {
     fontSize: 14,
     color: colors.primary,
-    fontWeight: '500',
+    fontWeight: '600',
   },
 };
 

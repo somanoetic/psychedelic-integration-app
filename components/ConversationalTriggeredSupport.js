@@ -9,8 +9,47 @@ import {
   Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  ArrowLeft,
+  ArrowRight,
+  ChevronRight,
+  Siren,
+  Sparkles,
+  HelpCircle,
+  Home,
+  Phone,
+  FilePen,
+  Brain,
+  Dumbbell,
+  LifeBuoy,
+  CheckCircle2,
+  RotateCcw,
+  AlertOctagon,
+  Eye,
+  Wind,
+  Activity,
+} from 'lucide-react-native';
 import { colors } from '../theme/colors';
+
+const OPTION_ICON_MAP = {
+  emergency: Siren,
+  'self-improvement': Sparkles,
+  help: HelpCircle,
+  home: Home,
+  'arrow-back': ArrowLeft,
+  'edit-note': FilePen,
+  psychology: Brain,
+  'fitness-center': Dumbbell,
+  'support-agent': LifeBuoy,
+  'check-circle': CheckCircle2,
+  replay: RotateCcw,
+};
+
+const EXERCISE_ICON_MAP = {
+  visibility: Eye,
+  air: Wind,
+  accessibility: Activity,
+};
 
 const ConversationalTriggeredSupport = ({ navigation }) => {
   const [conversationStep, setConversationStep] = useState('initial'); // initial, safety_check, grounding, support_options, exercise
@@ -90,17 +129,20 @@ const ConversationalTriggeredSupport = ({ navigation }) => {
     </View>
   );
 
-  const renderUserOption = (text, onPress, icon, color = colors.primary) => (
-    <TouchableOpacity
-      style={[styles.responseBubble, { backgroundColor: color }]}
-      onPress={onPress}
-      activeOpacity={0.8}
-    >
-      <MaterialIcons name={icon} size={20} color="#ffffff" style={styles.responseIcon} />
-      <Text style={styles.responseText}>{text}</Text>
-      <MaterialIcons name="arrow-forward" size={16} color="rgba(255,255,255,0.8)" />
-    </TouchableOpacity>
-  );
+  const renderUserOption = (text, onPress, icon, color = colors.primary) => {
+    const Icon = OPTION_ICON_MAP[icon] || HelpCircle;
+    return (
+      <TouchableOpacity
+        style={[styles.responseBubble, { backgroundColor: color }]}
+        onPress={onPress}
+        activeOpacity={0.8}
+      >
+        <Icon size={20} color="#ffffff" strokeWidth={2} style={styles.responseIcon} />
+        <Text style={styles.responseText}>{text}</Text>
+        <ArrowRight size={16} color="rgba(255,255,255,0.8)" strokeWidth={2} />
+      </TouchableOpacity>
+    );
+  };
 
   const renderInitialStep = () => (
     <>
@@ -126,7 +168,7 @@ const ConversationalTriggeredSupport = ({ navigation }) => {
         {crisisResources.map((resource, index) => (
           <View key={index} style={styles.crisisCard}>
             <View style={styles.crisisHeader}>
-              <MaterialIcons name="phone" size={24} color={colors.error} />
+              <Phone size={24} color={colors.error} strokeWidth={2} />
               <Text style={styles.crisisName}>{resource.name}</Text>
             </View>
             <Text style={styles.crisisNumber}>{resource.number}</Text>
@@ -154,25 +196,28 @@ const ConversationalTriggeredSupport = ({ navigation }) => {
       )}
 
       <View style={styles.exercisesContainer}>
-        {groundingExercises.map((exercise) => (
-          <TouchableOpacity
-            key={exercise.id}
-            style={[styles.exerciseCard, { borderLeftColor: exercise.color }]}
-            onPress={() => {
-              setSelectedExercise(exercise);
-              setConversationStep('exercise');
-            }}
-          >
-            <View style={[styles.exerciseIcon, { backgroundColor: `${exercise.color}20` }]}>
-              <MaterialIcons name={exercise.icon} size={32} color={exercise.color} />
-            </View>
-            <View style={styles.exerciseContent}>
-              <Text style={styles.exerciseName}>{exercise.name}</Text>
-              <Text style={styles.exerciseDescription}>{exercise.description}</Text>
-            </View>
-            <MaterialIcons name="chevron-right" size={24} color={colors.textLight} />
-          </TouchableOpacity>
-        ))}
+        {groundingExercises.map((exercise) => {
+          const ExIcon = EXERCISE_ICON_MAP[exercise.icon] || Sparkles;
+          return (
+            <TouchableOpacity
+              key={exercise.id}
+              style={[styles.exerciseCard, { borderLeftColor: exercise.color }]}
+              onPress={() => {
+                setSelectedExercise(exercise);
+                setConversationStep('exercise');
+              }}
+            >
+              <View style={[styles.exerciseIcon, { backgroundColor: `${exercise.color}20` }]}>
+                <ExIcon size={32} color={exercise.color} strokeWidth={2} />
+              </View>
+              <View style={styles.exerciseContent}>
+                <Text style={styles.exerciseName}>{exercise.name}</Text>
+                <Text style={styles.exerciseDescription}>{exercise.description}</Text>
+              </View>
+              <ChevronRight size={24} color={colors.textLight} strokeWidth={2} />
+            </TouchableOpacity>
+          );
+        })}
       </View>
 
       <View style={styles.optionsContainer}>
@@ -200,7 +245,7 @@ const ConversationalTriggeredSupport = ({ navigation }) => {
           navigation.navigate('IFSChat');
         }, 'psychology', colors.primary)}
         {renderUserOption('Journal my feelings', () => {
-          navigation.navigate('JournalEntry');
+          navigation.navigate('MainTabs', { screen: 'Journal' });
         }, 'edit-note', '#06b6d4')}
         {renderUserOption('Browse exercises', () => {
           navigation.navigate('ExerciseLibrary');
@@ -254,10 +299,10 @@ const ConversationalTriggeredSupport = ({ navigation }) => {
       {/* Header */}
       <View style={[styles.header, styles.urgentHeader]}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <MaterialIcons name="arrow-back" size={24} color="#ffffff" />
+          <ArrowLeft size={24} color="#ffffff" strokeWidth={2} />
         </TouchableOpacity>
         <Text style={styles.appNameUrgent}>Triggered Support</Text>
-        <MaterialIcons name="sos" size={24} color="#ffffff" />
+        <AlertOctagon size={24} color="#ffffff" strokeWidth={2} />
       </View>
 
       <ScrollView

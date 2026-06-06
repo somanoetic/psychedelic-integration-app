@@ -17,7 +17,7 @@ import {
   Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import { ArrowLeft, ArrowRight, MapPin, Activity, Brain, Footprints } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../lib/supabase';
 import polyvagalContextService from '../lib/polyvagalContextService';
@@ -27,9 +27,9 @@ import { shareNervousSystem } from '../lib/therapistShareService';
 import { icons } from '../lib/uiIcons';
 
 const STATES = [
-  { key: 'ventral', emoji: '💚', icon: icons.droplet, label: 'Safe & Connected', subtitle: 'Ventral vagal' },
-  { key: 'sympathetic', emoji: '⚡', icon: icons.steam, label: 'Fight / Flight', subtitle: 'Sympathetic' },
-  { key: 'dorsal', emoji: '🫥', icon: icons.iceberg, label: 'Shutdown / Freeze', subtitle: 'Dorsal vagal' },
+  { key: 'ventral', icon: icons.droplet, label: 'Safe & Connected', subtitle: 'Ventral vagal' },
+  { key: 'sympathetic', icon: icons.steam, label: 'Fight / Flight', subtitle: 'Sympathetic' },
+  { key: 'dorsal', icon: icons.iceberg, label: 'Shutdown / Freeze', subtitle: 'Dorsal vagal' },
 ];
 
 const PATTERN_FIELDS = [
@@ -38,6 +38,13 @@ const PATTERN_FIELDS = [
   { key: 'thoughts', icon: 'psychology', label: 'Thoughts' },
   { key: 'behaviors', icon: 'directions-run', label: 'Behaviors' },
 ];
+
+const FIELD_ICON_MAP = {
+  place: MapPin,
+  accessibility: Activity,
+  psychology: Brain,
+  'directions-run': Footprints,
+};
 
 const NervousSystemSummaryScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
@@ -79,7 +86,7 @@ const NervousSystemSummaryScreen = ({ navigation }) => {
     </View>
   );
 
-  const renderStateCard = ({ key, emoji, icon, label, subtitle }) => {
+  const renderStateCard = ({ key, icon, label, subtitle }) => {
     const statePatterns = patterns?.[`${key}_patterns`] || {};
     const fields = PATTERN_FIELDS.filter(f => statePatterns[f.key]?.length > 0);
     const totalItems = fields.reduce((sum, f) => sum + statePatterns[f.key].length, 0);
@@ -87,11 +94,7 @@ const NervousSystemSummaryScreen = ({ navigation }) => {
     return (
       <View key={key} style={styles.card}>
         <View style={styles.cardHeader}>
-          {icon ? (
-            <Image source={icon} style={styles.cardIconImage} />
-          ) : (
-            <Text style={styles.cardEmoji}>{emoji}</Text>
-          )}
+          <Image source={icon} style={styles.cardIconImage} />
           <View style={styles.cardHeaderText}>
             <Text style={styles.cardTitle}>{label}</Text>
             <Text style={styles.cardSubtitle}>
@@ -102,15 +105,18 @@ const NervousSystemSummaryScreen = ({ navigation }) => {
           </View>
         </View>
 
-        {fields.map(f => (
-          <View key={f.key} style={styles.fieldGroup}>
-            <View style={styles.fieldHeader}>
-              <MaterialIcons name={f.icon} size={14} color={colors.textSecondary} />
-              <Text style={styles.fieldLabel}>{f.label}</Text>
+        {fields.map(f => {
+          const FieldIcon = FIELD_ICON_MAP[f.icon] || MapPin;
+          return (
+            <View key={f.key} style={styles.fieldGroup}>
+              <View style={styles.fieldHeader}>
+                <FieldIcon size={14} color={colors.textSecondary} strokeWidth={2} />
+                <Text style={styles.fieldLabel}>{f.label}</Text>
+              </View>
+              {renderChips(statePatterns[f.key])}
             </View>
-            {renderChips(statePatterns[f.key])}
-          </View>
-        ))}
+          );
+        })}
       </View>
     );
   };
@@ -159,7 +165,7 @@ const NervousSystemSummaryScreen = ({ navigation }) => {
           >
             <View style={styles.header}>
               <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+                <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
               </TouchableOpacity>
             </View>
 
@@ -181,7 +187,7 @@ const NervousSystemSummaryScreen = ({ navigation }) => {
                   activeOpacity={0.7}
                 >
                   <Text style={styles.startButtonText}>Map Your States</Text>
-                  <MaterialIcons name="arrow-forward" size={18} color={colors.textInverse} />
+                  <ArrowRight size={18} color={colors.textInverse} strokeWidth={2} />
                 </TouchableOpacity>
               </View>
             ) : (
@@ -210,7 +216,7 @@ const NervousSystemSummaryScreen = ({ navigation }) => {
                   onPress={() => navigation.navigate('NervousSystemMapping')}
                   activeOpacity={0.7}
                 >
-                  <Text style={styles.tipTitle}>🔄 Deepen Your Map</Text>
+                  <Text style={styles.tipTitle}>Deepen Your Map</Text>
                   <Text style={styles.tipText}>
                     Your nervous system map evolves as your awareness grows. Revisit anytime to add new patterns.
                   </Text>

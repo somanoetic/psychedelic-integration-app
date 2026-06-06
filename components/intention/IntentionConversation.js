@@ -1,29 +1,63 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  FlatList,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-  Keyboard,
-  ActivityIndicator,
-} from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
-import { colors, spacing, borderRadius, shadows } from '../../theme/colors';
-import IntentionMessageBubble from './IntentionMessageBubble';
+  Bookmark,
+  CheckCircle2,
+  Compass,
+  CloudOff,
+  Hand,
+  Heart,
+  Library,
+  Lightbulb,
+  MessageCircle,
+  Pencil,
+  Search,
+  Sparkles,
+  Wand2,
+} from 'lucide-react-native';
+import { borderRadius, colors, spacing } from '../../theme/colors';
+import { ChatConversation } from '../chat';
+
+// Map conversationStage strings to Lucide icon components.
+const STAGE_ICON_MAP = {
+  welcome: Hand,
+  direction: Compass,
+  deepen: Sparkles,
+  confirm: CheckCircle2,
+  exploration: Search,
+  formulation: Pencil,
+  refinement: Wand2,
+  review: CheckCircle2,
+};
+
+// Map suggested-action types to Lucide icon components.
+const ACTION_ICON_MAP = {
+  review_intention: CheckCircle2,
+  explore_template: Library,
+  browse_templates: Bookmark,
+  edit_draft: Pencil,
+  nervous_system_check: Heart,
+};
+
+const STAGE_LABELS = {
+  welcome: 'Getting Started',
+  direction: 'Finding Direction',
+  deepen: 'Going Deeper',
+  confirm: 'Your Intention',
+  exploration: 'Exploring',
+  formulation: 'Formulating',
+  refinement: 'Refining',
+  review: 'Reviewing',
+};
 
 /**
  * IntentionConversation - AI conversation interface for intention guidance
  *
- * Features:
- * - Scrollable message history
- * - Message input with send button
- * - Loading indicator during AI response
- * - Suggested actions from AI
- * - Quick action buttons (view templates, edit draft)
+ * Wraps the shared <ChatConversation> with intention-specific chrome:
+ * a stage indicator, quick-action buttons, and per-message suggested-action chips.
+ *
+ * The parent SetIntentionScreen still owns the message state, the gradient
+ * background, and all the navigation/save logic — this is a presentation layer.
  */
 const IntentionConversation = ({
   conversationHistory,
@@ -38,46 +72,18 @@ const IntentionConversation = ({
 }) => {
   const [messageText, setMessageText] = useState('');
   const [isUserTyping, setIsUserTyping] = useState(false);
-  const flatListRef = useRef(null);
   const typingTimeoutRef = useRef(null);
-  const pendingMessageRef = useRef(null);
 
-  // Scroll to bottom when new message arrives
-  useEffect(() => {
-    if (conversationHistory.length > 0) {
-      setTimeout(() => {
-        flatListRef.current?.scrollToEnd({ animated: true });
-      }, 100);
-    }
-  }, [conversationHistory]);
-
-  // Scroll to bottom when keyboard opens
-  useEffect(() => {
-    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
-    const sub = Keyboard.addListener(showEvent, () => {
-      setTimeout(() => {
-        flatListRef.current?.scrollToEnd({ animated: true });
-      }, 150);
-    });
-    return () => sub.remove();
-  }, []);
-
-  // Clean up typing timeout on unmount
   useEffect(() => {
     return () => {
       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     };
   }, []);
 
-  /**
-   * Track when user is actively typing in the input.
-   * If Huxley is "thinking" (loading) and user starts typing more,
-   * we queue the follow-up so it gets appended before Huxley responds.
-   */
+  // Track user typing so the loading text can switch from "Huxley is thinking"
+  // to "Huxley is waiting for you to finish" when the user keeps typing.
   const handleTextChange = (text) => {
     setMessageText(text);
-
-    // Mark user as typing
     setIsUserTyping(true);
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     typingTimeoutRef.current = setTimeout(() => {
@@ -85,202 +91,146 @@ const IntentionConversation = ({
     }, 1500);
   };
 
-  /**
-   * Handle send message
-   */
   const handleSend = () => {
-    if (!messageText.trim() || disabled) return;
-
-    onSendMessage(messageText.trim());
+    const trimmed = messageText.trim();
+    if (!trimmed || disabled) return;
+    onSendMessage(trimmed);
     setMessageText('');
     setIsUserTyping(false);
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
   };
 
-  /**
-   * Render stage indicator
-   */
-  const renderStageIndicator = () => {
-    const stageLabels = {
-      welcome: 'Getting Started',
-      direction: 'Finding Direction',
-      deepen: 'Going Deeper',
-      confirm: 'Your Intention',
-      exploration: 'Exploring',
-      formulation: 'Formulating',
-      refinement: 'Refining',
-      review: 'Reviewing',
-    };
+  // The parent owns conversationHistory in {role, content, timestamp, suggestedActions, isError}
+  // shape. Pass through suggestedActions + isError + nervousSystemState so renderMessageExtras
+  // can use them.
+  const toChatMessages = (history) =>
+    history.map((m, i) => ({
+      id: m.timestamp ? `${i}-${new Date(m.timestamp).getTime()}` : `${i}`,
+      role: m.role,
+      content: m.content,
+      suggestedActions: m.suggestedActions,
+      isError: m.isError,
+    }));
 
-    const stageIcons = {
-      welcome: 'waving-hand',
-      direction: 'explore',
-      deepen: 'self-improvement',
-      confirm: 'check-circle',
-      exploration: 'search',
-      formulation: 'edit',
-      refinement: 'auto-fix-high',
-      review: 'check-circle',
-    };
+  // Suggested-action chips rendered inside the bubble, plus an offline badge
+  // on error messages.
+  const renderMessageExtras = (message) => {
+    const actions = message.suggestedActions || [];
+    const hasActions = actions.length > 0;
+    if (!hasActions && !message.isError) return null;
 
     return (
-      <View style={styles.stageIndicator}>
-        <MaterialIcons
-          name={stageIcons[conversationStage] || 'chat'}
-          size={16}
-          color={colors.primary}
-        />
-        <Text style={styles.stageText}>
-          {stageLabels[conversationStage] || 'Chatting'}
-        </Text>
-      </View>
-    );
-  };
-
-  /**
-   * Render quick actions
-   */
-  const renderQuickActions = () => {
-    if (conversationStage === 'welcome') return null;
-
-    return (
-      <View style={styles.quickActions}>
-        <TouchableOpacity
-          style={styles.quickActionButton}
-          onPress={onViewTemplates}
-          activeOpacity={0.7}
-        >
-          <MaterialIcons name="library-books" size={18} color={colors.primary} />
-          <Text style={styles.quickActionText}>View Templates</Text>
-        </TouchableOpacity>
-
-        {conversationStage !== 'welcome' && (
-          <TouchableOpacity
-            style={styles.quickActionButton}
-            onPress={onEditDraft}
-            activeOpacity={0.7}
-          >
-            <MaterialIcons name="edit" size={18} color={colors.primary} />
-            <Text style={styles.quickActionText}>Edit Draft</Text>
-          </TouchableOpacity>
+      <View>
+        {message.isError && (
+          <View style={styles.errorBadge}>
+            <CloudOff size={14} color={colors.error} strokeWidth={2} />
+            <Text style={styles.errorBadgeText}>Offline</Text>
+          </View>
+        )}
+        {hasActions && (
+          <View style={styles.actionsContainer}>
+            {actions.map((action, index) => {
+              const ActionIcon = ACTION_ICON_MAP[action.type] || Lightbulb;
+              return (
+                <TouchableOpacity
+                  key={index}
+                  style={styles.actionChip}
+                  onPress={() => onActionPress?.(action)}
+                  activeOpacity={0.7}
+                >
+                  <ActionIcon size={16} color={colors.primary} strokeWidth={2} />
+                  <Text style={styles.actionText}>{action.message}</Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
         )}
       </View>
     );
   };
 
-  /**
-   * Render empty state
-   */
-  const renderEmpty = () => (
-    <View style={styles.emptyContainer}>
-      <MaterialIcons name="chat-bubble-outline" size={64} color={colors.lightGray} />
-      <Text style={styles.emptyText}>
-        Your conversation will appear here
-      </Text>
-    </View>
-  );
-
-  /**
-   * Render message item
-   */
-  const renderMessage = ({ item, index }) => (
-    <IntentionMessageBubble
-      message={item}
-      nervousSystemState={nervousSystemState}
-      isLatest={index === conversationHistory.length - 1}
-      onActionPress={onActionPress}
-    />
-  );
-
-  return (
-    <View style={styles.container}>
-      {/* Stage Indicator */}
-      {renderStageIndicator()}
-
-      {/* Quick Actions */}
-      {renderQuickActions()}
-
-      {/* Message List */}
-      <FlatList
-        ref={flatListRef}
-        data={conversationHistory}
-        renderItem={renderMessage}
-        keyExtractor={(item, index) => `${index}-${item.timestamp}`}
-        contentContainerStyle={styles.messageList}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={renderEmpty}
-        onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
-      />
-
-      {/* Loading Indicator - shows waiting message if user is still typing */}
-      {loading && (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="small" color={colors.primary} />
-          <Text style={styles.loadingText}>
-            {isUserTyping ? 'Huxley is waiting for you to finish...' : 'Huxley is thinking...'}
+  // Header: stage indicator + (after welcome) View Templates / Edit Draft quick actions.
+  const renderHeader = () => {
+    const StageIcon = STAGE_ICON_MAP[conversationStage] || MessageCircle;
+    return (
+      <View style={styles.headerContainer}>
+        <View style={styles.stageIndicator}>
+          <StageIcon size={16} color={colors.primary} strokeWidth={2} />
+          <Text style={styles.stageText}>
+            {STAGE_LABELS[conversationStage] || 'Chatting'}
           </Text>
         </View>
-      )}
 
-      {/* Input Area */}
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          value={messageText}
-          onChangeText={handleTextChange}
-          placeholder="Share what's on your mind..."
-          placeholderTextColor={colors.textLight}
-          multiline
-          maxLength={500}
-          editable={!disabled}
-          onSubmitEditing={handleSend}
-          onFocus={() => {
-            setTimeout(() => {
-              flatListRef.current?.scrollToEnd({ animated: true });
-            }, 300);
-          }}
-          returnKeyType="send"
-          blurOnSubmit={false}
-        />
-        <TouchableOpacity
-          style={[
-            styles.sendButton,
-            (!messageText.trim() || disabled) && styles.sendButtonDisabled
-          ]}
-          onPress={handleSend}
-          disabled={!messageText.trim() || disabled}
-          activeOpacity={0.7}
-        >
-          <MaterialIcons
-            name="send"
-            size={24}
-            color={messageText.trim() && !disabled ? colors.textInverse : colors.textLight}
-          />
-        </TouchableOpacity>
+        {conversationStage !== 'welcome' && (
+          <View style={styles.quickActions}>
+            <TouchableOpacity
+              style={styles.quickActionButton}
+              onPress={onViewTemplates}
+              activeOpacity={0.7}
+            >
+              <Library size={18} color={colors.primary} strokeWidth={2} />
+              <Text style={styles.quickActionText}>View Templates</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.quickActionButton}
+              onPress={onEditDraft}
+              activeOpacity={0.7}
+            >
+              <Pencil size={18} color={colors.primary} strokeWidth={2} />
+              <Text style={styles.quickActionText}>Edit Draft</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
+    );
+  };
 
-      {/* Character Counter */}
-      {messageText.length > 400 && (
-        <Text style={styles.charCounter}>
-          {messageText.length}/500
-        </Text>
-      )}
+  // Character counter shows above the input when getting close to max length.
+  // Render it via the toast slot since it sits visually just above the input row.
+  const charCounterToast = messageText.length > 400 ? (
+    <View style={styles.charCounterContainer}>
+      <Text style={styles.charCounter}>{messageText.length}/500</Text>
     </View>
+  ) : null;
+
+  // SetIntentionScreen owns the gradient + KeyboardAvoidingView at the parent
+  // level. We render ChatConversation directly so the gradient flows from the
+  // screen's header straight through the chat without any opaque seams.
+  return (
+    <ChatConversation
+      messages={toChatMessages(conversationHistory)}
+      isTyping={loading}
+      onSend={disabled ? undefined : handleSend}
+      inputText={messageText}
+      onInputTextChange={handleTextChange}
+      inputPlaceholder={
+        isUserTyping && loading
+          ? 'Huxley is waiting for you to finish...'
+          : "Share what's on your mind..."
+      }
+      inputDisabled={disabled}
+      header={renderHeader()}
+      toast={charCounterToast}
+      renderMessageExtras={renderMessageExtras}
+      disableKeyboardAvoiding
+    />
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  headerContainer: {
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.sm,
+    gap: spacing.sm,
   },
   stageIndicator: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surfaceAlt,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderRadius: borderRadius.md,
-    marginBottom: spacing.md,
     alignSelf: 'flex-start',
     gap: spacing.xs,
   },
@@ -293,87 +243,65 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.sm,
-    marginBottom: spacing.md,
   },
   quickActionButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.surface,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
     borderRadius: borderRadius.md,
     borderWidth: 1,
-    borderColor: colors.lightGray,
+    borderColor: colors.primary,
     gap: spacing.xs,
   },
   quickActionText: {
     fontSize: 14,
     color: colors.primary,
+    fontWeight: '600',
+  },
+  errorBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: 'rgba(229, 115, 115, 0.1)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    alignSelf: 'flex-start',
+  },
+  errorBadgeText: {
+    fontSize: 12,
+    color: colors.error,
     fontWeight: '500',
   },
-  messageList: {
-    paddingBottom: 60,
-    flexGrow: 1,
+  actionsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.xs,
+    marginTop: spacing.sm,
   },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: spacing.xxl,
-  },
-  emptyText: {
-    marginTop: spacing.md,
-    fontSize: 16,
-    color: colors.textSecondary,
-    textAlign: 'center',
-  },
-  loadingContainer: {
+  actionChip: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: spacing.sm,
-    gap: spacing.sm,
+    gap: 6,
+    backgroundColor: 'rgba(93, 134, 214, 0.1)',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
   },
-  loadingText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    fontStyle: 'italic',
+  actionText: {
+    fontSize: 13,
+    color: colors.primary,
+    fontWeight: '500',
   },
-  inputContainer: {
-    flexDirection: 'row',
+  charCounterContainer: {
+    paddingHorizontal: spacing.md,
     alignItems: 'flex-end',
-    backgroundColor: colors.surface,
-    borderRadius: borderRadius.md,
-    borderWidth: 1,
-    borderColor: colors.lightGray,
-    padding: spacing.sm,
-    marginTop: spacing.md,
-    gap: spacing.sm,
-    ...shadows.soft,
-  },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    color: colors.text,
-    maxHeight: 100,
-    paddingVertical: spacing.xs,
-  },
-  sendButton: {
-    width: 44,
-    height: 44,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.primary,
-    borderRadius: borderRadius.full,
-  },
-  sendButtonDisabled: {
-    backgroundColor: colors.lightGray,
   },
   charCounter: {
     fontSize: 12,
     color: colors.textSecondary,
-    textAlign: 'right',
-    marginTop: spacing.xs,
   },
 });
 

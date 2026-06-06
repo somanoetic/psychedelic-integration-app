@@ -9,7 +9,18 @@ import {
   ActivityIndicator,
   Image,
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  HandHeart,
+  Heart,
+  Shield,
+  Sparkles,
+  Sprout,
+  Target,
+  Zap,
+} from 'lucide-react-native';
 import educationProgressService from '../lib/educationProgressService';
 import { icons } from '../lib/uiIcons';
 import { colors } from '../theme/colors';
@@ -155,18 +166,24 @@ const NervousSystemEducationWidget = ({ onComplete, onSkip }) => {
       options: [
         {
           id: 'ventral',
-          label: '🌱 Safe & Social',
-          description: 'Calm, connected, curious'
+          label: 'Safe & Social',
+          description: 'Calm, connected, curious',
+          Icon: Sprout,
+          iconColor: colors.success
         },
         {
           id: 'sympathetic',
-          label: '⚡ Fight/Flight',
-          description: 'Energized, anxious, activated'
+          label: 'Fight/Flight',
+          description: 'Energized, anxious, activated',
+          Icon: Zap,
+          iconColor: colors.warning
         },
         {
           id: 'dorsal',
-          label: '🛡️ Shutdown',
-          description: 'Numb, disconnected, low energy'
+          label: 'Shutdown',
+          description: 'Numb, disconnected, low energy',
+          Icon: Shield,
+          iconColor: colors.textSecondary
         }
       ]
     },
@@ -264,19 +281,24 @@ const NervousSystemEducationWidget = ({ onComplete, onSkip }) => {
       content: `Remember these key points during your psychedelic experience:`,
       guidance: [
         {
-          icon: '🌟',
+          Icon: Sparkles,
+          iconColor: colors.warning,
           text: 'All states are normal and temporary'
         },
         {
-          icon: '🧘',
+          Icon: Heart,
+          iconColor: colors.primary,
           text: 'Use your anchor: "Trust. Let go. Be open."'
         },
         {
-          icon: '🤲',
+          Icon: HandHeart,
+          iconColor: '#a855f7',
           text: 'Your support team is there if you need help'
         },
         {
-          icon: '💚',
+          Icon: Heart,
+          iconColor: colors.success,
+          iconFill: colors.success,
           text: 'Be compassionate with whatever arises'
         }
       ],
@@ -285,7 +307,7 @@ const NervousSystemEducationWidget = ({ onComplete, onSkip }) => {
     {
       id: 'completion',
       title: 'Well Done!',
-      emoji: '✨',
+      icon: icons.gift,
       content: `You now have a foundation for understanding your nervous system. This awareness will serve you well during your healing journey.`,
       type: 'completion'
     }
@@ -377,19 +399,31 @@ const NervousSystemEducationWidget = ({ onComplete, onSkip }) => {
             <Text style={styles.questionText}>{slide.question}</Text>
             
             <View style={styles.optionsContainer}>
-              {slide.options.map((option) => (
-                <TouchableOpacity
-                  key={option.id}
-                  style={[
-                    styles.optionButton,
-                    userResponses[slide.id] === option.id && styles.selectedOption
-                  ]}
-                  onPress={() => handleAssessmentResponse(option.id)}
-                >
-                  <Text style={styles.optionLabel}>{option.label}</Text>
-                  <Text style={styles.optionDescription}>{option.description}</Text>
-                </TouchableOpacity>
-              ))}
+              {slide.options.map((option) => {
+                const OptionIcon = option.Icon;
+                return (
+                  <TouchableOpacity
+                    key={option.id}
+                    style={[
+                      styles.optionButton,
+                      userResponses[slide.id] === option.id && styles.selectedOption
+                    ]}
+                    onPress={() => handleAssessmentResponse(option.id)}
+                  >
+                    <View style={styles.optionLabelRow}>
+                      {OptionIcon ? (
+                        <OptionIcon
+                          size={20}
+                          color={option.iconColor || colors.primary}
+                          strokeWidth={2}
+                        />
+                      ) : null}
+                      <Text style={styles.optionLabel}>{option.label}</Text>
+                    </View>
+                    <Text style={styles.optionDescription}>{option.description}</Text>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
           </View>
         );
@@ -423,12 +457,24 @@ const NervousSystemEducationWidget = ({ onComplete, onSkip }) => {
             <Text style={styles.slideText}>{slide.content}</Text>
             
             <View style={styles.guidanceContainer}>
-              {slide.guidance.map((item, index) => (
-                <View key={index} style={styles.guidanceItem}>
-                  <Text style={styles.guidanceIcon}>{item.icon}</Text>
-                  <Text style={styles.guidanceText}>{item.text}</Text>
-                </View>
-              ))}
+              {slide.guidance.map((item, index) => {
+                const ItemIcon = item.Icon;
+                return (
+                  <View key={index} style={styles.guidanceItem}>
+                    <View style={styles.guidanceIconWrap}>
+                      {ItemIcon ? (
+                        <ItemIcon
+                          size={24}
+                          color={item.iconColor || colors.primary}
+                          fill={item.iconFill || 'none'}
+                          strokeWidth={2}
+                        />
+                      ) : null}
+                    </View>
+                    <Text style={styles.guidanceText}>{item.text}</Text>
+                  </View>
+                );
+              })}
             </View>
           </View>
         );
@@ -441,7 +487,10 @@ const NervousSystemEducationWidget = ({ onComplete, onSkip }) => {
             <Text style={styles.slideText}>{slide.content}</Text>
             
             <View style={styles.completionBox}>
-              <Text style={styles.completionTitle}>🎯 Key Takeaways:</Text>
+              <View style={styles.completionTitleRow}>
+                <Target size={18} color="#065f46" strokeWidth={2} />
+                <Text style={styles.completionTitle}>Key Takeaways:</Text>
+              </View>
               <Text style={styles.completionItem}>• You have three main nervous system states</Text>
               <Text style={styles.completionItem}>• All states are normal and protective</Text>
               <Text style={styles.completionItem}>• Simple practices can help with regulation</Text>
@@ -486,7 +535,7 @@ const NervousSystemEducationWidget = ({ onComplete, onSkip }) => {
           onPress={prevSlide}
           disabled={currentSlide === 0}
         >
-          <MaterialIcons name="arrow-back" size={20} color={currentSlide === 0 ? colors.textLight : colors.textSecondary} />
+          <ArrowLeft size={20} color={currentSlide === 0 ? colors.textLight : colors.textSecondary} strokeWidth={2} />
           <Text style={[styles.navButtonText, currentSlide === 0 && styles.disabledText]}>
             Previous
           </Text>
@@ -499,11 +548,11 @@ const NervousSystemEducationWidget = ({ onComplete, onSkip }) => {
           <Text style={styles.nextButtonText}>
             {currentSlide === educationSlides.length - 1 ? 'Complete' : 'Next'}
           </Text>
-          <MaterialIcons 
-            name={currentSlide === educationSlides.length - 1 ? 'check' : 'arrow-forward'} 
-            size={20} 
-            color="#ffffff" 
-          />
+          {currentSlide === educationSlides.length - 1 ? (
+            <Check size={20} color="#ffffff" strokeWidth={2} />
+          ) : (
+            <ArrowRight size={20} color="#ffffff" strokeWidth={2} />
+          )}
         </TouchableOpacity>
       </View>
     </View>
@@ -646,11 +695,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#dbeafe',
     borderColor: colors.primary,
   },
+  optionLabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
+  },
   optionLabel: {
     fontSize: 16,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: 4,
   },
   optionDescription: {
     fontSize: 14,
@@ -702,9 +756,10 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
   },
-  guidanceIcon: {
-    fontSize: 24,
+  guidanceIconWrap: {
     marginRight: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   guidanceText: {
     fontSize: 16,
@@ -719,11 +774,16 @@ const styles = StyleSheet.create({
     width: '100%',
     marginTop: 16,
   },
+  completionTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 12,
+  },
   completionTitle: {
     fontSize: 16,
     fontWeight: '600',
     color: '#065f46',
-    marginBottom: 12,
   },
   completionItem: {
     fontSize: 14,

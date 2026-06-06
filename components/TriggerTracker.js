@@ -18,7 +18,32 @@ import {
   Image,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  CheckCircle2,
+  ChevronUp,
+  ChevronDown,
+  ArrowLeft,
+  AlertOctagon,
+  ChevronRight,
+  Save,
+  HelpCircle,
+  Compass,
+  AlertTriangle,
+  Activity,
+  Frown,
+  Footprints,
+  HeartPulse,
+  Smile,
+} from 'lucide-react-native';
+
+const SECTION_ICON_MAP = {
+  warning: AlertTriangle,
+  accessibility: Activity,
+  'sentiment-very-dissatisfied': Frown,
+  'directions-run': Footprints,
+  healing: HeartPulse,
+  mood: Smile,
+};
 import { supabase } from '../lib/supabase';
 import { icons } from '../lib/uiIcons';
 import { colors } from '../theme/colors';
@@ -164,16 +189,19 @@ const TriggerTracker = ({ navigation }) => {
           style={[styles.sectionHeader, hasValue && styles.sectionHeaderComplete]}
           onPress={() => setExpandedSection(isExpanded ? null : id)}
         >
-          <MaterialIcons name={icon} size={20} color={hasValue ? colors.success : colors.textSecondary} />
+          {(() => {
+            const Icon = SECTION_ICON_MAP[icon] || HelpCircle;
+            return <Icon size={20} color={hasValue ? colors.success : colors.textSecondary} strokeWidth={2} />;
+          })()}
           <Text style={[styles.sectionHeaderText, hasValue && styles.sectionHeaderTextComplete]}>
             {title} {isRequired && <Text style={styles.required}>*</Text>}
           </Text>
-          {hasValue && <MaterialIcons name="check-circle" size={18} color={colors.success} />}
-          <MaterialIcons
-            name={isExpanded ? 'expand-less' : 'expand-more'}
-            size={24}
-            color={colors.textSecondary}
-          />
+          {hasValue && <CheckCircle2 size={18} color={colors.success} strokeWidth={2} />}
+          {isExpanded ? (
+            <ChevronUp size={24} color={colors.textSecondary} strokeWidth={2} />
+          ) : (
+            <ChevronDown size={24} color={colors.textSecondary} strokeWidth={2} />
+          )}
         </TouchableOpacity>
         {isExpanded && (
           <TextInput
@@ -197,7 +225,7 @@ const TriggerTracker = ({ navigation }) => {
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+          <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Log a Trigger</Text>
         <View style={{ width: 24 }} />
@@ -229,13 +257,13 @@ const TriggerTracker = ({ navigation }) => {
           activeOpacity={0.85}
         >
           <View style={styles.sosIconWrap}>
-            <MaterialIcons name="sos" size={22} color="#fff" />
+            <AlertOctagon size={22} color="#fff" strokeWidth={2} />
           </View>
           <View style={styles.sosTextWrap}>
             <Text style={styles.sosTitle}>Still activated? Get support now</Text>
             <Text style={styles.sosSubtitle}>Grounding exercises and crisis resources</Text>
           </View>
-          <MaterialIcons name="chevron-right" size={22} color={colors.error} />
+          <ChevronRight size={22} color={colors.error} strokeWidth={2} />
         </TouchableOpacity>
 
         {/* Trigger Type Selection */}
@@ -349,7 +377,7 @@ const TriggerTracker = ({ navigation }) => {
             <ActivityIndicator color="#fff" />
           ) : (
             <>
-              <MaterialIcons name="save" size={20} color="#fff" />
+              <Save size={20} color="#fff" strokeWidth={2} />
               <Text style={styles.saveButtonText}>Log Trigger</Text>
             </>
           )}
@@ -364,11 +392,11 @@ const TriggerTracker = ({ navigation }) => {
               return (
                 <View key={trigger.id} style={styles.recentCard}>
                   <View style={styles.recentHeader}>
-                    <MaterialIcons
-                      name={type?.icon || 'help'}
-                      size={20}
-                      color={type?.color || colors.textSecondary}
-                    />
+                    {type?.icon ? (
+                      <Image source={type.icon} style={{ width: 20, height: 20 }} />
+                    ) : (
+                      <HelpCircle size={20} color={colors.textSecondary} strokeWidth={2} />
+                    )}
                     <Text style={styles.recentType}>{type?.label || 'Unknown'}</Text>
                     <Text style={styles.recentTime}>{formatTime(trigger.created_at)}</Text>
                   </View>
@@ -399,11 +427,11 @@ const TriggerTracker = ({ navigation }) => {
           style={styles.discoveryLink}
           onPress={() => navigation.navigate('TriggersGlimmers')}
         >
-          <MaterialIcons name="explore" size={20} color="#8b5cf6" />
+          <Compass size={20} color="#8b5cf6" strokeWidth={2} />
           <Text style={styles.discoveryLinkText}>
             Want to explore your triggers more deeply? Try the Triggers & Glimmers discovery exercise
           </Text>
-          <MaterialIcons name="chevron-right" size={20} color="#8b5cf6" />
+          <ChevronRight size={20} color="#8b5cf6" strokeWidth={2} />
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

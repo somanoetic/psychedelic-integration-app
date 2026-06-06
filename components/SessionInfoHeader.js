@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, ScrollView, Alert, Platform } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, ScrollView, Keyboard, Alert, Platform } from 'react-native';
+import { Pencil, PlusCircle, X } from 'lucide-react-native';
 import { supabase } from '../lib/supabase';
 import { colors } from '../theme/colors';
+
+const toTitleCase = (str) =>
+  str.replace(/\b\w/g, (c) => c.toUpperCase());
 
 const SessionInfoHeader = ({ session, onUpdate }) => {
   const [showEditModal, setShowEditModal] = useState(false);
@@ -13,6 +16,22 @@ const SessionInfoHeader = ({ session, onUpdate }) => {
   const [participants, setParticipants] = useState('');
   const [context, setContext] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+
+  // KeyboardAvoidingView is unreliable inside <Modal> on iOS — track keyboard
+  // height manually so we can push the modal up.
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+    const showSub = Keyboard.addListener(showEvent, (e) => {
+      setKeyboardHeight(e.endCoordinates?.height || 0);
+    });
+    const hideSub = Keyboard.addListener(hideEvent, () => setKeyboardHeight(0));
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   if (!session) return null;
 
@@ -49,8 +68,39 @@ const SessionInfoHeader = ({ session, onUpdate }) => {
   const saveSessionInfo = async () => {
     setIsSaving(true);
     try {
+      const trimmedMedicine = medicine.trim();
+      const previousMedicine = sessionInfo.medicine?.trim() || '';
+      const titleWasDefault = session.session_data?.titleIsDefault === true;
+      const firstMedicineFill = !previousMedicine && !!trimmedMedicine;
+
+      let nextTitle = session.title;
+      let nextTitleIsDefault = session.session_data?.titleIsDefault;
+
+      // Auto-rename to "[Medicine] Session [N] - [Date]" the first time the
+      // user fills in medicine, but only if they didn't set a custom title at
+      // creation. RLS scopes the count query to the current user.
+      if (firstMedicineFill && titleWasDefault) {
+        const { count, error: countError } = await supabase
+          .from('sessions')
+          .select('id', { count: 'exact', head: true })
+          .ilike('session_data->sessionInfo->>medicine', trimmedMedicine)
+          .neq('id', session.id);
+
+        if (!countError) {
+          const sessionNumber = (count || 0) + 1;
+          const dateLabel = new Date(session.journey_date).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          });
+          nextTitle = `${toTitleCase(trimmedMedicine)} Session ${sessionNumber} - ${dateLabel}`;
+          nextTitleIsDefault = false;
+        }
+      }
+
       const updatedSessionData = {
         ...session.session_data,
+        titleIsDefault: nextTitleIsDefault,
         sessionInfo: {
           medicine,
           dosage,
@@ -61,19 +111,28 @@ const SessionInfoHeader = ({ session, onUpdate }) => {
         }
       };
 
-      const { error } = await supabase
+      const updates = { session_data: updatedSessionData };
+      if (nextTitle !== session.title) {
+        updates.title = nextTitle;
+      }
+
+      // .select().single() returns the canonical row after update so we can
+      // verify the write landed and propagate the authoritative state.
+      const { data: updatedRow, error } = await supabase
         .from('sessions')
-        .update({ session_data: updatedSessionData })
-        .eq('id', session.id);
+        .update(updates)
+        .eq('id', session.id)
+        .select()
+        .single();
 
       if (error) throw error;
+      if (!updatedRow) {
+        throw new Error('Update returned no row — check RLS policies.');
+      }
 
-      // Update local session object
+      // Update local session object with the row the DB actually saved.
       if (onUpdate) {
-        onUpdate({
-          ...session,
-          session_data: updatedSessionData
-        });
+        onUpdate(updatedRow);
       }
 
       setShowEditModal(false);
@@ -106,7 +165,11 @@ const SessionInfoHeader = ({ session, onUpdate }) => {
             <Text style={styles.date}>📅 {formatDate(session.journey_date)}</Text>
           </View>
           <TouchableOpacity style={styles.editButton} onPress={openEditModal}>
-            <MaterialIcons name={hasSessionInfo ? "edit" : "add-circle"} size={20} color={colors.primary} />
+            {hasSessionInfo ? (
+              <Pencil size={20} color={colors.primary} strokeWidth={2} />
+            ) : (
+              <PlusCircle size={20} color={colors.primary} strokeWidth={2} />
+            )}
             <Text style={styles.editButtonText}>{hasSessionInfo ? 'Edit' : 'Add Details'}</Text>
           </TouchableOpacity>
         </View>
@@ -160,13 +223,17 @@ const SessionInfoHeader = ({ session, onUpdate }) => {
         animationType="slide"
         onRequestClose={() => setShowEditModal(false)}
       >
-        <View style={styles.modalOverlay}>
+        <View style={[styles.modalOverlay, { paddingBottom: keyboardHeight }]}>
           <View style={styles.modalContent}>
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+              contentContainerStyle={{ paddingBottom: 12 }}
+            >
               <View style={styles.modalHeader}>
                 <Text style={styles.modalTitle}>Session Details</Text>
                 <TouchableOpacity onPress={() => setShowEditModal(false)}>
-                  <MaterialIcons name="close" size={24} color={colors.textSecondary} />
+                  <X size={24} color={colors.textSecondary} strokeWidth={2} />
                 </TouchableOpacity>
               </View>
 
@@ -252,11 +319,17 @@ const SessionInfoHeader = ({ session, onUpdate }) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#ffffff',
-    borderBottomWidth: 1,
-    borderBottomColor: colors.lightGray,
+    backgroundColor: colors.surface,
+    borderRadius: 16,
+    marginHorizontal: 24,
+    marginBottom: 12,
     paddingHorizontal: 20,
     paddingVertical: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
   },
   header: {
     flexDirection: 'row',
@@ -311,16 +384,18 @@ const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
+    justifyContent: 'flex-end',
     alignItems: 'center',
   },
   modalContent: {
     backgroundColor: '#ffffff',
-    borderRadius: 16,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
     padding: 24,
-    width: '90%',
-    maxWidth: 500,
-    maxHeight: '80%',
+    paddingTop: 20,
+    width: '100%',
+    maxWidth: 600,
+    maxHeight: '92%',
   },
   modalHeader: {
     flexDirection: 'row',

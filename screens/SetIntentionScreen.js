@@ -13,7 +13,15 @@ import {
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  Flower2,
+  MessageCircle,
+  Library,
+  Pencil,
+  ArrowLeft,
+  CloudOff,
+} from 'lucide-react-native';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 import { supabase } from '../lib/supabase';
@@ -517,7 +525,7 @@ const SetIntentionScreen = ({ navigation, route }) => {
   const renderWelcome = () => (
     <View style={styles.welcomeContainer}>
       <View style={styles.welcomeHeader}>
-        <MaterialIcons name="spa" size={64} color={colors.primary} />
+        <Flower2 size={64} color={colors.primary} strokeWidth={1.5} />
         <Text style={styles.welcomeTitle}>Set Your Intention</Text>
         <Text style={styles.welcomeSubtitle}>
           Let me guide you in crafting a meaningful intention for your session.
@@ -563,7 +571,7 @@ const SetIntentionScreen = ({ navigation, route }) => {
             <ActivityIndicator size="small" color={colors.textInverse} />
           ) : (
             <>
-              <MaterialIcons name="chat" size={20} color={colors.textInverse} />
+              <MessageCircle size={20} color={colors.textInverse} strokeWidth={2} />
               <Text style={styles.primaryButtonText}>Start Conversation</Text>
             </>
           )}
@@ -578,7 +586,7 @@ const SetIntentionScreen = ({ navigation, route }) => {
           disabled={loading}
           activeOpacity={0.8}
         >
-          <MaterialIcons name="library-books" size={20} color={colors.primary} />
+          <Library size={20} color={colors.primary} strokeWidth={2} />
           <Text style={styles.secondaryButtonText}>Browse Templates</Text>
         </TouchableOpacity>
 
@@ -677,75 +685,44 @@ const SetIntentionScreen = ({ navigation, route }) => {
     return null;
   };
 
-  /**
-   * Render tab navigation at bottom
-   */
-  const renderTabBar = () => {
-    if (mode === 'welcome') return null;
-
-    const tabs = [
-      { key: 'conversation', label: 'Conversation', icon: 'chat' },
-      { key: 'templates', label: 'Templates', icon: 'library-books' },
-      { key: 'draft', label: 'Draft', icon: 'edit' },
-    ];
-
-    return (
-      <View style={styles.tabBar}>
-        {tabs.map(tab => (
-          <TouchableOpacity
-            key={tab.key}
-            style={[styles.tab, mode === tab.key && styles.tabActive]}
-            onPress={() => setMode(tab.key)}
-            activeOpacity={0.7}
-          >
-            <MaterialIcons
-              name={tab.icon}
-              size={24}
-              color={mode === tab.key ? colors.primary : colors.textSecondary}
-            />
-            <Text style={[
-              styles.tabLabel,
-              mode === tab.key && styles.tabLabelActive
-            ]}>
-              {tab.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-    );
-  };
-
   // Loading state
   if (initializing) {
     return (
-      <SafeAreaView style={styles.container} edges={['top']}>
-        <LinearGradient colors={gradients.warm} start={{ x: 1.0, y: 0.0 }} end={{ x: 0.0, y: 1.0 }} style={styles.headerGradient}>
-          <View style={styles.headerRow}>
+      <LinearGradient
+        colors={gradients.standard}
+        start={gradients.standardStart}
+        end={gradients.standardEnd}
+        style={styles.container}
+      >
+        <SafeAreaView style={styles.safeArea} edges={['top']}>
+          <View style={styles.header}>
             <TouchableOpacity
               style={styles.backButton}
               onPress={() => navigation.goBack()}
             >
-              <MaterialIcons name="arrow-back" size={24} color={colors.textInverse} />
+              <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
             </TouchableOpacity>
             <Text style={styles.headerTitle}>Set Your Intention</Text>
           </View>
-        </LinearGradient>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={styles.loadingText}>Preparing...</Text>
-        </View>
-      </SafeAreaView>
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={colors.primary} />
+            <Text style={styles.loadingText}>Preparing...</Text>
+          </View>
+        </SafeAreaView>
+      </LinearGradient>
     );
   }
 
   return (
-    <SafeAreaView
-      style={[styles.container, { paddingBottom: insets.bottom }]}
-      edges={['top']}
+    <LinearGradient
+      colors={gradients.standard}
+      start={gradients.standardStart}
+      end={gradients.standardEnd}
+      style={styles.container}
     >
-      {/* Header */}
-      <LinearGradient colors={gradients.warm} start={{ x: 1.0, y: 0.0 }} end={{ x: 0.0, y: 1.0 }} style={styles.headerGradient}>
-        <View style={styles.headerRow}>
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
+        {/* Header — transparent, sits on the screen gradient */}
+        <View style={styles.header}>
           <TouchableOpacity
             style={styles.backButton}
             onPress={() => {
@@ -764,67 +741,69 @@ const SetIntentionScreen = ({ navigation, route }) => {
               }
             }}
           >
-            <MaterialIcons name="arrow-back" size={24} color={colors.textInverse} />
+            <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Set Your Intention</Text>
-        </View>
-        {sessionData?.title && (
-          <Text style={styles.headerSubtitle}>{sessionData.title}</Text>
-        )}
-      </LinearGradient>
-
-      {/* Error banner */}
-      {error && mode !== 'welcome' && (
-        <View style={styles.errorBanner}>
-          <MaterialIcons name="cloud-off" size={20} color={colors.warning} />
-          <Text style={styles.errorBannerText}>
-            {offline ? 'Working offline' : error}
-          </Text>
-        </View>
-      )}
-
-      {/* Main Content - conversation mode gets its own layout (no outer ScrollView) */}
-      <KeyboardAvoidingView
-        style={styles.keyboardAvoid}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-      >
-        {mode === 'conversation' || mode === 'templates' ? (
-          <View style={styles.conversationContainer}>
-            {renderContent()}
+          <View style={styles.headerTextContainer}>
+            <Text style={styles.headerTitle}>Set Your Intention</Text>
+            {sessionData?.title && (
+              <Text style={styles.headerSubtitle}>{sessionData.title}</Text>
+            )}
           </View>
-        ) : (
-          <ScrollView
-            ref={scrollViewRef}
-            style={styles.scrollContainer}
-            contentContainerStyle={styles.scrollContent}
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
-          >
-            {renderContent()}
-          </ScrollView>
-        )}
-      </KeyboardAvoidingView>
+        </View>
 
-      {/* Tab Bar Navigation */}
-      {renderTabBar()}
-    </SafeAreaView>
+        {/* Error banner */}
+        {error && mode !== 'welcome' && (
+          <View style={styles.errorBanner}>
+            <CloudOff size={20} color={colors.warning} strokeWidth={2} />
+            <Text style={styles.errorBannerText}>
+              {offline ? 'Working offline' : error}
+            </Text>
+          </View>
+        )}
+
+        {/* Main Content. Conversation mode runs full-bleed (its own input row
+            owns inset spacing). Other modes render inside a ScrollView. */}
+        <KeyboardAvoidingView
+          style={styles.keyboardAvoid}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+        >
+          {mode === 'conversation' ? (
+            renderContent()
+          ) : mode === 'templates' || mode === 'draft' ? (
+            <View style={styles.modeContainer}>{renderContent()}</View>
+          ) : (
+            <ScrollView
+              ref={scrollViewRef}
+              style={styles.scrollContainer}
+              contentContainerStyle={styles.scrollContent}
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="handled"
+            >
+              {renderContent()}
+            </ScrollView>
+          )}
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
-  headerGradient: {
-    paddingTop: spacing.sm,
-    paddingBottom: spacing.sm,
-    paddingHorizontal: spacing.md,
+  safeArea: {
+    flex: 1,
   },
-  headerRow: {
+  header: {
     flexDirection: 'row',
     alignItems: 'center',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  headerTextContainer: {
+    flex: 1,
   },
   backButton: {
     width: 36,
@@ -835,23 +814,21 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: colors.textInverse,
-    flex: 1,
+    fontWeight: '700',
+    color: colors.text,
   },
   headerSubtitle: {
     fontSize: 14,
-    color: colors.textInverse,
-    opacity: 0.9,
-    marginLeft: 44,
+    color: colors.text,
+    opacity: 0.75,
     marginTop: 2,
   },
   keyboardAvoid: {
     flex: 1,
   },
-  conversationContainer: {
+  modeContainer: {
     flex: 1,
-    padding: spacing.lg,
+    paddingHorizontal: spacing.lg,
     paddingBottom: spacing.sm,
   },
   scrollContainer: {
@@ -966,34 +943,6 @@ const styles = StyleSheet.create({
   },
   buttonDisabled: {
     opacity: 0.5,
-  },
-
-  // Tab Bar
-  tabBar: {
-    flexDirection: 'row',
-    backgroundColor: colors.surface,
-    borderTopWidth: 1,
-    borderTopColor: colors.lightGray,
-    paddingVertical: spacing.sm,
-    ...shadows.soft,
-  },
-  tab: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: spacing.sm,
-  },
-  tabActive: {
-    borderTopWidth: 2,
-    borderTopColor: colors.primary,
-  },
-  tabLabel: {
-    fontSize: 12,
-    color: colors.textSecondary,
-    marginTop: spacing.xs,
-  },
-  tabLabelActive: {
-    color: colors.primary,
-    fontWeight: '600',
   },
 });
 

@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   Image,
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { ArrowLeft, ArrowRight, Check, Info, X } from 'lucide-react-native';
 import { supabase } from '../lib/supabase';
 import { icons } from '../lib/uiIcons';
 import { colors } from '../theme/colors';
@@ -272,7 +272,7 @@ const IFSPartsInventory = ({ onComplete, onSkip }) => {
       <Text style={styles.stepText}>{steps[currentStep].content}</Text>
 
       <View style={styles.infoBox}>
-        <MaterialIcons name="info" size={20} color={colors.primary} />
+        <Info size={20} color={colors.primary} strokeWidth={2} />
         <Text style={styles.infoText}>
           All parts are welcome. All parts have good intentions. Your job is simply to notice them with curiosity.
         </Text>
@@ -318,7 +318,7 @@ const IFSPartsInventory = ({ onComplete, onSkip }) => {
                       isSelected && { backgroundColor: category.color, borderColor: category.color }
                     ]}>
                       {isSelected && (
-                        <MaterialIcons name="check" size={16} color="#ffffff" />
+                        <Check size={16} color="#ffffff" strokeWidth={2} />
                       )}
                     </View>
                     <Text style={[styles.partName, isSelected && { color: category.color, fontWeight: '600' }]}>
@@ -336,7 +336,7 @@ const IFSPartsInventory = ({ onComplete, onSkip }) => {
                       onPress={() => togglePart(step.category, part.name)}
                       hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                     >
-                      <MaterialIcons name="close" size={20} color={colors.error} />
+                      <X size={20} color={colors.error} strokeWidth={2} />
                     </TouchableOpacity>
                   )}
                 </TouchableOpacity>
@@ -478,7 +478,7 @@ const IFSPartsInventory = ({ onComplete, onSkip }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={onSkip} style={styles.skipButton}>
-          <MaterialIcons name="close" size={24} color={colors.textSecondary} />
+          <X size={24} color={colors.textSecondary} strokeWidth={2} />
         </TouchableOpacity>
         <View style={styles.progressContainer}>
           <Text style={styles.progressText}>
@@ -505,10 +505,10 @@ const IFSPartsInventory = ({ onComplete, onSkip }) => {
           onPress={handlePrevious}
           disabled={currentStep === 0}
         >
-          <MaterialIcons
-            name="arrow-back"
+          <ArrowLeft
             size={20}
             color={currentStep === 0 ? colors.textLight : colors.textSecondary}
+            strokeWidth={2}
           />
           <Text style={[styles.navButtonText, currentStep === 0 && styles.navButtonDisabledText]}>
             Back
@@ -522,11 +522,11 @@ const IFSPartsInventory = ({ onComplete, onSkip }) => {
           <Text style={styles.nextButtonText}>
             {currentStep === steps.length - 1 ? 'Complete' : 'Next'}
           </Text>
-          <MaterialIcons
-            name={currentStep === steps.length - 1 ? 'check' : 'arrow-forward'}
-            size={20}
-            color="#ffffff"
-          />
+          {currentStep === steps.length - 1 ? (
+            <Check size={20} color="#ffffff" strokeWidth={2} />
+          ) : (
+            <ArrowRight size={20} color="#ffffff" strokeWidth={2} />
+          )}
         </TouchableOpacity>
       </View>
     </View>

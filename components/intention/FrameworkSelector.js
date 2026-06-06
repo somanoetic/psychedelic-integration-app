@@ -1,7 +1,25 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  Users,
+  Activity,
+  Compass,
+  HeartPulse,
+  ListChecks,
+  Infinity as InfinityIcon,
+  ChevronRight,
+} from 'lucide-react-native';
 import { colors, spacing, borderRadius } from '../../theme/colors';
+
+// Map legacy MaterialIcons names from the frameworks data array to Lucide.
+const FRAMEWORK_ICON_MAP = {
+  groups: Users,
+  accessibility: Activity,
+  explore: Compass,
+  healing: HeartPulse,
+  'integration-instructions': ListChecks,
+  'all-inclusive': InfinityIcon,
+};
 
 /**
  * FrameworkSelector - Choose therapeutic framework
@@ -41,6 +59,7 @@ const FrameworkSelector = ({ selectedFramework, onSelectFramework, allowNull = f
         <View style={styles.optionsContainer}>
           {frameworks.map((fw) => {
             const isSelected = selectedFramework === fw.key;
+            const FrameworkIcon = FRAMEWORK_ICON_MAP[fw.icon] || ListChecks;
             return (
               <TouchableOpacity
                 key={fw.key || 'null'}
@@ -48,10 +67,10 @@ const FrameworkSelector = ({ selectedFramework, onSelectFramework, allowNull = f
                 onPress={() => onSelectFramework(fw.key)}
                 activeOpacity={0.7}
               >
-                <MaterialIcons
-                  name={fw.icon}
+                <FrameworkIcon
                   size={24}
                   color={isSelected ? colors.textInverse : colors.primary}
+                  strokeWidth={2}
                 />
                 <Text style={[styles.label, isSelected && styles.labelSelected]}>
                   {fw.label}
@@ -67,7 +86,7 @@ const FrameworkSelector = ({ selectedFramework, onSelectFramework, allowNull = f
       </ScrollView>
       {showScrollHint && (
         <View style={styles.scrollHint}>
-          <MaterialIcons name="chevron-right" size={20} color={colors.textSecondary} />
+          <ChevronRight size={20} color={colors.textSecondary} strokeWidth={2} />
         </View>
       )}
     </View>

@@ -1,31 +1,23 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-  ScrollView,
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
+  ActivityIndicator,
   Alert,
   Animated,
-  ActivityIndicator,
   Platform,
-  KeyboardAvoidingView,
-  Image
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
+import { colors, gradients } from '../theme/colors';
 import { supabase } from '../lib/supabase';
 import huxleyService from '../lib/huxleyService';
-import FormattedText from '../components/FormattedText';
+import { ChatConversation } from '../components/chat';
 
 const ExperienceMappingScreen = ({ navigation, route }) => {
-  console.log('ExperienceMappingScreen route params:', route.params);
-
-  const insets = useSafeAreaInsets();
   const sessionParam = route?.params?.session || null;
 
-  // Core conversation state
   const [session, setSession] = useState(sessionParam);
   const [creatingSession, setCreatingSession] = useState(!sessionParam);
   const [messages, setMessages] = useState([]);
@@ -34,22 +26,20 @@ const ExperienceMappingScreen = ({ navigation, route }) => {
   const [sessionProgress, setSessionProgress] = useState(null);
   const [showPaperReminder, setShowPaperReminder] = useState(true);
 
-  // Refs
-  const scrollViewRef = useRef(null);
   const paperReminderOpacity = useRef(new Animated.Value(1)).current;
 
-  // Auto-create session if none provided
   useEffect(() => {
     if (!sessionParam) {
       createNewSession();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Initialize conversation (must be before early returns)
   useEffect(() => {
     if (session && session.id && !creatingSession) {
       initializeConversation();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session, creatingSession]);
 
   const dismissPaperReminder = () => {
@@ -60,12 +50,12 @@ const ExperienceMappingScreen = ({ navigation, route }) => {
     }).start(() => setShowPaperReminder(false));
   };
 
-  // Auto-dismiss paper reminder after 8 seconds
   useEffect(() => {
     if (showPaperReminder) {
       const timer = setTimeout(dismissPaperReminder, 8000);
       return () => clearTimeout(timer);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showPaperReminder]);
 
   const createNewSession = async () => {
@@ -110,38 +100,52 @@ const ExperienceMappingScreen = ({ navigation, route }) => {
 
   if (creatingSession) {
     return (
-      <View style={styles.errorContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={[styles.errorText, { marginTop: 16 }]}>Setting up your session...</Text>
-      </View>
+      <LinearGradient
+        colors={gradients.standard}
+        start={gradients.standardStart}
+        end={gradients.standardEnd}
+        style={styles.container}
+      >
+        <View style={styles.errorContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={[styles.errorText, { marginTop: 16 }]}>
+            Setting up your session...
+          </Text>
+        </View>
+      </LinearGradient>
     );
   }
 
   if (!session || !session.id) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorTitle}>Session Error</Text>
-        <Text style={styles.errorText}>
-          No session data available. Please go back and start a new experience processing session.
-        </Text>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.backButtonText}>Go Back</Text>
-        </TouchableOpacity>
-      </View>
+      <LinearGradient
+        colors={gradients.standard}
+        start={gradients.standardStart}
+        end={gradients.standardEnd}
+        style={styles.container}
+      >
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorTitle}>Session Error</Text>
+          <Text style={styles.errorText}>
+            No session data available. Please go back and start a new
+            experience processing session.
+          </Text>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={styles.backButtonText}>Go Back</Text>
+          </TouchableOpacity>
+        </View>
+      </LinearGradient>
     );
   }
 
   const initializeConversation = async () => {
     try {
       const hasExistingMessages = await loadMessages();
-
       if (!hasExistingMessages) {
-        setTimeout(() => {
-          initiateExperienceMapping();
-        }, 1000);
+        setTimeout(() => initiateExperienceMapping(), 1000);
       }
     } catch (error) {
       console.error('Error initializing conversation:', error);
@@ -150,25 +154,17 @@ const ExperienceMappingScreen = ({ navigation, route }) => {
 
   const loadMessages = async () => {
     try {
-      // Check if this is a temporary session (offline/local)
       if (session.id && session.id.startsWith('temp_')) {
-        console.log('Loading from temporary session (offline mode)');
-        // Use session data passed from navigation
         const sessionData = session.session_data || {};
         const loadedMessages = sessionData.messages || [];
-
         setMessages(loadedMessages);
-
-        // Initialize mode handler with saved context
         const handler = huxleyService.getModeHandler();
         if (handler && handler.initializeWithContext) {
           handler.initializeWithContext(sessionData.experienceData || {});
         }
-
         return loadedMessages.length > 0;
       }
 
-      // Regular database session
       const { data, error } = await supabase
         .from('sessions')
         .select('session_data')
@@ -179,22 +175,13 @@ const ExperienceMappingScreen = ({ navigation, route }) => {
 
       const sessionData = data?.session_data || {};
       const loadedMessages = sessionData.messages || [];
-
-      console.log('Loading experience mapping data:', {
-      sessionId: session.id,
-      messageCount: loadedMessages.length,
-      });
-
       setMessages(loadedMessages);
 
-      // Initialize mode handler with saved context
       const handler = huxleyService.getModeHandler();
       if (handler && handler.initializeWithContext) {
         handler.initializeWithContext(sessionData.experienceData || {});
       }
-
       return loadedMessages.length > 0;
-
     } catch (error) {
       console.error('Error loading messages:', error);
       return false;
@@ -208,55 +195,28 @@ const ExperienceMappingScreen = ({ navigation, route }) => {
         sessionType: 'experience',
         conversationMode: 'experience_mapping',
         lastUpdated: new Date().toISOString(),
-        ...additionalData
+        ...additionalData,
       };
 
-      // Try to save to database if session has a real ID
       if (session.id && !session.id.startsWith('temp_')) {
         try {
           const { error } = await supabase
             .from('sessions')
-            .update({
-              session_data: sessionData
-            })
+            .update({ session_data: sessionData })
             .eq('id', session.id);
-
           if (error) {
-            console.error('Database save failed, using local storage:', error);
-            // Fall back to local storage
-            await saveToLocalStorage(sessionData);
-          } else {
-            console.log('Session saved to database successfully');
+            console.error('Database save failed:', error);
           }
         } catch (dbError) {
-          console.error('Database unavailable, using local storage:', dbError);
-          await saveToLocalStorage(sessionData);
+          console.error('Database unavailable:', dbError);
         }
-      } else {
-        // Session is temporary, save to local storage
-        await saveToLocalStorage(sessionData);
       }
     } catch (error) {
       console.error('Error saving messages:', error);
     }
   };
 
-  const saveToLocalStorage = async (sessionData) => {
-    try {
-      // In a real app, you'd use AsyncStorage here
-      // For now, just log that we're saving locally
-      console.log('Saving session data locally:', {
-        sessionId: session.id,
-        messageCount: sessionData.messages.length,
-      });
-      // TODO: Implement AsyncStorage.setItem(session.id, JSON.stringify(sessionData))
-    } catch (error) {
-      console.error('Local storage save failed:', error);
-    }
-  };
-
   const initiateExperienceMapping = () => {
-    // Set Huxley to experience_mapping mode with a clean history
     huxleyService.setMode('experience_mapping', { clearHistory: true });
 
     const welcomeContent = `Welcome to **Experience Processing**!
@@ -273,27 +233,28 @@ We'll work through 4 phases:
 
 **Let's start:** What are the first images or experiences that come to mind from your journey?`;
 
-    const welcomeMessage = {
-      role: 'assistant',
-      content: welcomeContent,
-      timestamp: new Date(),
-      currentPhase: 1,
-      messageType: 'experience_mapping_intro',
-    };
-
-    setMessages([welcomeMessage]);
+    setMessages([
+      {
+        role: 'assistant',
+        content: welcomeContent,
+        timestamp: new Date(),
+        currentPhase: 1,
+        messageType: 'experience_mapping_intro',
+      },
+    ]);
   };
 
-  const handleSendMessage = async () => {
-    if (!userInput.trim() || isLoading) return;
+  const handleSendMessage = async (text) => {
+    const trimmed = text.trim();
+    if (!trimmed || isLoading) return;
 
     const currentPhase = sessionProgress?.phase || 1;
 
     const userMessage = {
       role: 'user',
-      content: userInput.trim(),
+      content: trimmed,
       timestamp: new Date(),
-      currentPhase: currentPhase
+      currentPhase,
     };
 
     const newMessages = [...messages, userMessage];
@@ -302,7 +263,7 @@ We'll work through 4 phases:
     setIsLoading(true);
 
     try {
-      const response = await huxleyService.chat(userInput.trim());
+      const response = await huxleyService.chat(trimmed);
 
       const assistantMessage = {
         role: 'assistant',
@@ -314,17 +275,14 @@ We'll work through 4 phases:
       const updatedMessages = [...newMessages, assistantMessage];
       setMessages(updatedMessages);
 
-      // Update session progress from handler
       if (response.sessionProgress) {
         setSessionProgress(response.sessionProgress);
       }
 
       await saveMessages(updatedMessages);
-
     } catch (error) {
       console.error('Error sending message:', error);
 
-      // Enhanced error handling with network diagnostics
       let errorContent = "I'm here with you. Take a moment to breathe.";
       let showNetworkTest = false;
 
@@ -340,198 +298,160 @@ You can continue documenting your experience, and I'll be back online soon.`;
         showNetworkTest = true;
       }
 
-      const errorMessage = {
-        role: 'assistant',
-        content: errorContent,
-        timestamp: new Date(),
-        isError: true,
-        showNetworkTest: showNetworkTest
-      };
-
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: 'assistant',
+          content: errorContent,
+          timestamp: new Date(),
+          isError: true,
+          showNetworkTest,
+        },
+      ]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // (dismissPaperReminder moved up before early returns)
+  // Adapt {role, content, ...extras} → ChatConversation message shape, generating
+  // stable-ish ids since the original messages don't carry them.
+  const toChatMessages = (msgs) =>
+    msgs.map((m, i) => ({
+      id: m.timestamp ? `${i}-${new Date(m.timestamp).getTime()}` : `${i}`,
+      role: m.role,
+      content: m.content,
+      // pass-through fields used by renderMessageExtras
+      showNetworkTest: m.showNetworkTest,
+    }));
 
-  const renderInlineProgress = () => {
-    const currentPhase = sessionProgress?.phase || 1;
+  const currentPhase = sessionProgress?.phase || 1;
+
+  const phasePlaceholder = (() => {
+    switch (currentPhase) {
+      case 1: return 'Share what you experienced - and write it down on your paper...';
+      case 2: return 'How did different elements relate to each other?';
+      case 3: return 'What meaning do these experiences hold for your life?';
+      case 4: return 'What practices would help you integrate these insights?';
+      default: return 'Share your thoughts about the experience...';
+    }
+  })();
+
+  const renderHeader = () => {
     const phaseNames = ['Gathering', 'Dynamics', 'Interpretation', 'Ritual'];
 
     return (
-      <View style={styles.inlineProgress}>
-        {phaseNames.map((name, i) => {
-          const num = i + 1;
-          const isComplete = num < currentPhase;
-          const isCurrent = num === currentPhase;
-          return (
-            <React.Fragment key={num}>
-              {i > 0 && (
-                <View style={[
-                  styles.progressLine,
-                  isComplete && styles.progressLineComplete,
-                ]} />
-              )}
-              <View style={[
-                styles.progressDot,
-                isComplete && styles.progressDotComplete,
-                isCurrent && styles.progressDotCurrent,
-              ]}>
-                <Text style={[
-                  styles.progressDotText,
-                  (isComplete || isCurrent) && styles.progressDotTextActive,
-                ]}>{num}</Text>
-              </View>
-            </React.Fragment>
-          );
-        })}
-        <Text style={styles.progressLabel}>
-          {phaseNames[currentPhase - 1] || 'Gathering'}
-        </Text>
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          <Text style={styles.backText}>←</Text>
+        </TouchableOpacity>
+
+        <View style={styles.inlineProgress}>
+          {phaseNames.map((name, i) => {
+            const num = i + 1;
+            const isComplete = num < currentPhase;
+            const isCurrent = num === currentPhase;
+            return (
+              <React.Fragment key={num}>
+                {i > 0 && (
+                  <View
+                    style={[
+                      styles.progressLine,
+                      isComplete && styles.progressLineComplete,
+                    ]}
+                  />
+                )}
+                <View
+                  style={[
+                    styles.progressDot,
+                    isComplete && styles.progressDotComplete,
+                    isCurrent && styles.progressDotCurrent,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.progressDotText,
+                      (isComplete || isCurrent) && styles.progressDotTextActive,
+                    ]}
+                  >
+                    {num}
+                  </Text>
+                </View>
+              </React.Fragment>
+            );
+          })}
+          <Text style={styles.progressLabel}>
+            {phaseNames[currentPhase - 1] || 'Gathering'}
+          </Text>
+        </View>
+
+        <TouchableOpacity
+          onPress={() => navigation.navigate('TherapeuticIntegration', { session })}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+        >
+          <Text style={styles.switchText}>Integration →</Text>
+        </TouchableOpacity>
       </View>
     );
   };
 
-  const renderMessages = () => {
-    return messages.map((message, index) => (
-      <View
-        key={index}
-        style={[
-          styles.messageRow,
-          message.role === 'user' ? styles.userRow : styles.assistantRow
-        ]}
+  // Network-test button rendered inside the bubble for error messages
+  // that flagged showNetworkTest.
+  const renderMessageExtras = (message) => {
+    if (!message.showNetworkTest) return null;
+    return (
+      <TouchableOpacity
+        style={styles.networkTestButton}
+        onPress={() => navigation.navigate('NetworkTest')}
       >
-        {message.role === 'assistant' && (
-          <Image
-            source={require('../assets/images/huxley-avatar.png')}
-            style={styles.huxleyAvatar}
-            resizeMode="contain"
-          />
-        )}
-        <View
-          style={[
-            styles.messageBubble,
-            message.role === 'user' ? styles.userBubble : styles.assistantBubble
-          ]}
-        >
-        <FormattedText style={[
-          styles.messageText,
-          message.role === 'user' ? styles.userText : styles.assistantText
-        ]}>
-          {message.content}
-        </FormattedText>
-
-        {/* Show network test button for connectivity errors */}
-        {message.showNetworkTest && (
-          <TouchableOpacity
-            style={styles.networkTestButton}
-            onPress={() => navigation.navigate('NetworkTest')}
-          >
-            <Text style={styles.networkTestButtonText}>Run Network Test</Text>
-          </TouchableOpacity>
-        )}
-        </View>
-      </View>
-    ));
+        <Text style={styles.networkTestButtonText}>Run Network Test</Text>
+      </TouchableOpacity>
+    );
   };
 
-  const renderInput = () => {
-    const currentPhase = sessionProgress?.phase || 1;
-
+  // Paper reminder toast — only on phase 1, auto-dismisses after 8s.
+  // Sits absolutely positioned above the input via the `toast` slot.
+  const renderToast = () => {
+    if (!showPaperReminder || currentPhase !== 1) return null;
     return (
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.textInput}
-          value={userInput}
-          onChangeText={setUserInput}
-          placeholder={(() => {
-            switch(currentPhase) {
-              case 1: return "Share what you experienced - and write it down on your paper...";
-              case 2: return "How did different elements relate to each other?";
-              case 3: return "What meaning do these experiences hold for your life?";
-              case 4: return "What practices would help you integrate these insights?";
-              default: return "Share your thoughts about the experience...";
-            }
-          })()}
-          multiline
-          maxLength={1500}
-          editable={!isLoading}
-        />
+      <Animated.View style={[styles.paperToast, { opacity: paperReminderOpacity }]}>
+        <Text style={styles.paperToastText}>
+          Have paper & pen nearby to anchor memories
+        </Text>
         <TouchableOpacity
-          style={[
-            styles.sendButton,
-            (!userInput.trim() || isLoading) && styles.sendButtonDisabled
-          ]}
-          onPress={handleSendMessage}
-          disabled={!userInput.trim() || isLoading}
+          onPress={dismissPaperReminder}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          {isLoading ? (
-            <ActivityIndicator size="small" color="#ffffff" />
-          ) : (
-            <Text style={styles.sendButtonText}>→</Text>
-          )}
+          <Text style={styles.paperToastDismiss}>✕</Text>
         </TouchableOpacity>
-      </View>
+      </Animated.View>
     );
   };
 
   return (
-    <LinearGradient colors={gradients.standard} start={{ x: 1.0, y: 0.0 }} end={{ x: 0.0, y: 1.0 }} style={{ flex: 1 }}>
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      {/* Header with inline progress */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-          <Text style={styles.backText}>←</Text>
-        </TouchableOpacity>
-        {renderInlineProgress()}
-        <TouchableOpacity onPress={() => navigation.navigate('TherapeuticIntegration', { session })} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-          <Text style={styles.switchText}>Integration →</Text>
-        </TouchableOpacity>
-      </View>
-
-      <ScrollView
-        ref={scrollViewRef}
-        style={styles.messagesContainer}
-        contentContainerStyle={styles.messagesContent}
-        onContentSizeChange={() =>
-          scrollViewRef.current?.scrollToEnd({ animated: true })
-        }
-      >
-        {renderMessages()}
-
-        {isLoading && (
-          <View style={styles.typingIndicator}>
-            <Image
-              source={require('../assets/images/huxley-avatar.png')}
-              style={styles.huxleyAvatar}
-              resizeMode="contain"
-            />
-            <Text style={styles.typingText}>Processing your experience...</Text>
-            <ActivityIndicator size="small" color={colors.primary} />
-          </View>
-        )}
-      </ScrollView>
-
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 20}
-        style={{ flexShrink: 0 }}
-      >
-        {renderInput()}
-      </KeyboardAvoidingView>
-
-      {/* Paper reminder toast */}
-      {showPaperReminder && (sessionProgress?.phase || 1) === 1 && (
-        <Animated.View style={[styles.paperToast, { opacity: paperReminderOpacity }]}>
-          <Text style={styles.paperToastText}>Have paper & pen nearby to anchor memories</Text>
-          <TouchableOpacity onPress={dismissPaperReminder} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-            <Text style={styles.paperToastDismiss}>✕</Text>
-          </TouchableOpacity>
-        </Animated.View>
-      )}
-    </SafeAreaView>
+    <LinearGradient
+      colors={gradients.standard}
+      start={gradients.standardStart}
+      end={gradients.standardEnd}
+      style={styles.container}
+    >
+      <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+        <ChatConversation
+          messages={toChatMessages(messages)}
+          isTyping={isLoading}
+          onSend={handleSendMessage}
+          inputText={userInput}
+          onInputTextChange={setUserInput}
+          inputPlaceholder={phasePlaceholder}
+          inputDisabled={isLoading}
+          header={renderHeader()}
+          toast={renderToast()}
+          renderMessageExtras={renderMessageExtras}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+        />
+      </SafeAreaView>
     </LinearGradient>
   );
 };
@@ -540,12 +460,14 @@ const styles = {
   container: {
     flex: 1,
   },
+  safeArea: {
+    flex: 1,
+  },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 32,
-    backgroundColor: '#f5f5f5',
   },
   errorTitle: {
     fontSize: 24,
@@ -556,13 +478,13 @@ const styles = {
   },
   errorText: {
     fontSize: 16,
-    color: '#666',
+    color: colors.text,
     textAlign: 'center',
     marginBottom: 32,
     lineHeight: 24,
   },
   backButton: {
-    backgroundColor: '#2196f3',
+    backgroundColor: colors.primary,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
@@ -578,18 +500,16 @@ const styles = {
     justifyContent: 'space-between',
     paddingHorizontal: 12,
     paddingVertical: 10,
-    backgroundColor: colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.lightGray,
   },
   backText: {
-    fontSize: 18,
+    fontSize: 22,
     color: colors.primary,
     fontWeight: '600',
   },
   switchText: {
     fontSize: 12,
     color: colors.success,
+    fontWeight: '600',
   },
   inlineProgress: {
     flexDirection: 'row',
@@ -600,9 +520,9 @@ const styles = {
     width: 22,
     height: 22,
     borderRadius: 11,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
     borderWidth: 1.5,
-    borderColor: '#d1d5db',
+    borderColor: 'rgba(255, 255, 255, 0.8)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -617,7 +537,7 @@ const styles = {
   progressDotText: {
     fontSize: 11,
     fontWeight: 'bold',
-    color: colors.textLight,
+    color: colors.text,
   },
   progressDotTextActive: {
     color: '#fff',
@@ -625,16 +545,16 @@ const styles = {
   progressLine: {
     width: 12,
     height: 2,
-    backgroundColor: '#d1d5db',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
   },
   progressLineComplete: {
     backgroundColor: colors.success,
   },
   progressLabel: {
     fontSize: 12,
-    color: colors.textSecondary,
+    color: colors.text,
     marginLeft: 8,
-    fontWeight: '500',
+    fontWeight: '600',
   },
   paperToast: {
     position: 'absolute',
@@ -668,110 +588,7 @@ const styles = {
     paddingLeft: 12,
     fontWeight: '600',
   },
-  messagesContainer: {
-    flex: 1,
-  },
-  messagesContent: {
-    padding: 16,
-    paddingBottom: 24,
-  },
-  messageRow: {
-    flexDirection: 'row',
-    marginVertical: 4,
-    alignItems: 'flex-end',
-  },
-  userRow: {
-    justifyContent: 'flex-end',
-  },
-  assistantRow: {
-    justifyContent: 'flex-start',
-  },
-  huxleyAvatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    marginRight: 8,
-    marginBottom: 2,
-  },
-  messageBubble: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 16,
-  },
-  userBubble: {
-    maxWidth: '80%',
-    backgroundColor: colors.primary,
-  },
-  assistantBubble: {
-    flex: 1,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.lightGray,
-  },
-  messageText: {
-    fontSize: 16,
-    lineHeight: 22,
-  },
-  userText: {
-    color: colors.textInverse,
-  },
-  assistantText: {
-    color: colors.text,
-  },
-  typingIndicator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    backgroundColor: '#f3f4f6',
-    borderRadius: 16,
-    alignSelf: 'flex-start',
-    marginTop: 8,
-  },
-  typingText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    fontStyle: 'italic',
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    padding: 16,
-    backgroundColor: colors.surface,
-    borderTopWidth: 1,
-    borderTopColor: colors.lightGray,
-    alignItems: 'flex-end',
-    gap: 12,
-  },
-  textInput: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 16,
-    maxHeight: 120,
-    backgroundColor: colors.surface,
-  },
-  sendButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  sendButtonDisabled: {
-    backgroundColor: colors.textLight,
-  },
-  sendButtonText: {
-    fontSize: 20,
-    color: colors.textInverse,
-    fontWeight: 'bold',
-  },
   networkTestButton: {
-    marginTop: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
     backgroundColor: colors.primary,
@@ -780,7 +597,7 @@ const styles = {
   },
   networkTestButtonText: {
     fontSize: 12,
-    color: colors.textInverse,
+    color: '#fff',
     fontWeight: '500',
   },
 };

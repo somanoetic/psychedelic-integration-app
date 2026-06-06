@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Switch, StyleSheet, TouchableOpacity } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Lock, Info, ArrowRight } from 'lucide-react-native';
 import { useNavigation } from '@react-navigation/native';
 import { colors, spacing, borderRadius } from '../../theme/colors';
 
@@ -18,7 +18,7 @@ const IntentionPrivacyControls = ({ saveToDatabase, onToggle }) => {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <MaterialIcons name="lock" size={20} color={colors.primary} />
+        <Lock size={20} color={colors.primary} strokeWidth={2} />
         <Text style={styles.headerText}>Privacy Settings</Text>
       </View>
 
@@ -40,10 +40,10 @@ const IntentionPrivacyControls = ({ saveToDatabase, onToggle }) => {
 
       {/* Explanation */}
       <View style={styles.explanation}>
-        <MaterialIcons
-          name="info"
+        <Info
           size={16}
           color={colors.textSecondary}
+          strokeWidth={2}
           style={styles.infoIcon}
         />
         <Text style={styles.explanationText}>
@@ -61,7 +61,7 @@ const IntentionPrivacyControls = ({ saveToDatabase, onToggle }) => {
         activeOpacity={0.7}
       >
         <Text style={styles.learnMoreText}>Learn more about privacy</Text>
-        <MaterialIcons name="arrow-forward" size={14} color={colors.primary} />
+        <ArrowRight size={14} color={colors.primary} strokeWidth={2} />
       </TouchableOpacity>
     </View>
   );

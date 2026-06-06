@@ -1,7 +1,25 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  Heart,
+  Compass,
+  Palette,
+  Flower2,
+  Circle,
+  Infinity as InfinityIcon,
+  ChevronRight,
+} from 'lucide-react-native';
 import { colors, spacing, borderRadius } from '../../theme/colors';
+
+// Map legacy MaterialIcons names from the sessionTypes data array to Lucide.
+const TYPE_ICON_MAP = {
+  favorite: Heart,
+  explore: Compass,
+  palette: Palette,
+  spa: Flower2,
+  circle: Circle,
+  'all-inclusive': InfinityIcon,
+};
 
 /**
  * SessionTypeSelector - Choose session type
@@ -41,6 +59,7 @@ const SessionTypeSelector = ({ selectedType, onSelectType, allowNull = false }) 
         <View style={styles.optionsContainer}>
           {sessionTypes.map((type) => {
             const isSelected = selectedType === type.key;
+            const TypeIcon = TYPE_ICON_MAP[type.icon] || Circle;
             return (
               <TouchableOpacity
                 key={type.key || 'null'}
@@ -52,10 +71,10 @@ const SessionTypeSelector = ({ selectedType, onSelectType, allowNull = false }) 
                 onPress={() => onSelectType(type.key)}
                 activeOpacity={0.7}
               >
-                <MaterialIcons
-                  name={type.icon}
+                <TypeIcon
                   size={20}
                   color={isSelected ? type.color : colors.textSecondary}
+                  strokeWidth={2}
                 />
                 <Text style={[
                   styles.label,
@@ -72,7 +91,7 @@ const SessionTypeSelector = ({ selectedType, onSelectType, allowNull = false }) 
       </ScrollView>
       {showScrollHint && (
         <View style={styles.scrollHint}>
-          <MaterialIcons name="chevron-right" size={20} color={colors.textSecondary} />
+          <ChevronRight size={20} color={colors.textSecondary} strokeWidth={2} />
         </View>
       )}
     </View>

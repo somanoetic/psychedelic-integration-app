@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -7,9 +7,20 @@ import {
   StyleSheet,
   ActivityIndicator,
   ScrollView,
+  Keyboard,
+  Platform,
   Image,
+  findNodeHandle,
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  Sparkles,
+  Lightbulb,
+  Wand2,
+  MessageCircle,
+  CloudUpload,
+  Save,
+  Lock,
+} from 'lucide-react-native';
 import { colors, spacing, borderRadius, shadows } from '../../theme/colors';
 
 /**
@@ -41,6 +52,40 @@ const IntentionDraftEditor = ({
   const isNearLimit = charCount > maxChars * 0.9;
   const isOverLimit = charCount > maxChars;
 
+  const scrollRef = useRef(null);
+  const inputRef = useRef(null);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+
+  // Track keyboard height so the ScrollView always has room to scroll the
+  // focused TextInput above the keyboard.
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+    const showSub = Keyboard.addListener(showEvent, (e) => {
+      setKeyboardHeight(e.endCoordinates?.height || 0);
+    });
+    const hideSub = Keyboard.addListener(hideEvent, () => setKeyboardHeight(0));
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
+
+  const handleInputFocus = () => {
+    setTimeout(() => {
+      if (!inputRef.current || !scrollRef.current) return;
+      const scrollNode = findNodeHandle(scrollRef.current);
+      if (!scrollNode) return;
+      inputRef.current.measureLayout(
+        scrollNode,
+        (_x, y) => {
+          scrollRef.current?.scrollTo({ y: Math.max(0, y - 24), animated: true });
+        },
+        () => {}
+      );
+    }, 250);
+  };
+
   /**
    * Render character counter
    */
@@ -65,7 +110,7 @@ const IntentionDraftEditor = ({
     return (
       <View style={styles.feedbackContainer}>
         <View style={styles.feedbackHeader}>
-          <MaterialIcons name="insights" size={20} color={colors.primary} />
+          <Sparkles size={20} color={colors.primary} strokeWidth={2} />
           <Text style={styles.feedbackTitle}>AI Feedback</Text>
         </View>
 
@@ -75,10 +120,10 @@ const IntentionDraftEditor = ({
           <View style={styles.suggestionsContainer}>
             {feedback.suggestions.map((suggestion, index) => (
               <View key={index} style={styles.suggestionItem}>
-                <MaterialIcons
-                  name="lightbulb"
+                <Lightbulb
                   size={16}
                   color={colors.golden}
+                  strokeWidth={2}
                 />
                 <Text style={styles.suggestionText}>{suggestion.message}</Text>
               </View>
@@ -104,7 +149,7 @@ const IntentionDraftEditor = ({
     <View style={styles.guideContainer}>
       <View style={styles.guideSection}>
         <View style={styles.guideHeader}>
-          <MaterialIcons name="lightbulb" size={18} color={colors.golden} />
+          <Lightbulb size={18} color={colors.golden} strokeWidth={2} />
           <Text style={styles.guideTitle}>Make it yours</Text>
         </View>
         <Text style={styles.guideText}>
@@ -136,7 +181,7 @@ const IntentionDraftEditor = ({
   const renderTips = () => (
     <View style={styles.tipsContainer}>
       <View style={styles.tipsHeader}>
-        <MaterialIcons name="tips-and-updates" size={18} color={colors.sage} />
+        <Wand2 size={18} color={colors.sage} strokeWidth={2} />
         <Text style={styles.tipsTitle}>Tips for Writing Your Intention</Text>
       </View>
       <View style={styles.tipsList}>
@@ -169,7 +214,13 @@ const IntentionDraftEditor = ({
   );
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <ScrollView
+      ref={scrollRef}
+      style={styles.container}
+      contentContainerStyle={{ paddingBottom: 24 + keyboardHeight }}
+      showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled"
+    >
       <View style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
@@ -202,6 +253,7 @@ const IntentionDraftEditor = ({
         {/* Text Input */}
         <View style={styles.inputContainer}>
           <TextInput
+            ref={inputRef}
             style={styles.input}
             value={draftIntention}
             onChangeText={onChangeDraft}
@@ -211,6 +263,7 @@ const IntentionDraftEditor = ({
             maxLength={maxChars}
             textAlignVertical="top"
             editable={!loading}
+            onFocus={handleInputFocus}
           />
           {renderCharCounter()}
         </View>
@@ -227,7 +280,7 @@ const IntentionDraftEditor = ({
               disabled={loading}
               activeOpacity={0.7}
             >
-              <MaterialIcons name="chat" size={20} color={colors.sage} />
+              <MessageCircle size={20} color={colors.sage} strokeWidth={2} />
               <Text style={styles.exploreButtonText}>Explore deeper with Huxley</Text>
             </TouchableOpacity>
           )}
@@ -245,11 +298,11 @@ const IntentionDraftEditor = ({
               <ActivityIndicator size="small" color={colors.primary} />
             ) : (
               <>
-                <MaterialIcons
-                  name={saveToDatabase ? 'cloud-upload' : 'save'}
-                  size={20}
-                  color={colors.primary}
-                />
+                {saveToDatabase ? (
+                  <CloudUpload size={20} color={colors.primary} strokeWidth={2} />
+                ) : (
+                  <Save size={20} color={colors.primary} strokeWidth={2} />
+                )}
                 <Text style={styles.saveButtonText}>
                   {saveToDatabase ? 'Save & Sync' : 'Save Locally'}
                 </Text>
@@ -260,7 +313,7 @@ const IntentionDraftEditor = ({
 
         {/* Privacy Notice */}
         <View style={styles.privacyNotice}>
-          <MaterialIcons name="lock" size={16} color={colors.textSecondary} />
+          <Lock size={16} color={colors.textSecondary} strokeWidth={2} />
           <Text style={styles.privacyText}>
             {saveToDatabase
               ? 'Your intention will be saved securely to your account'

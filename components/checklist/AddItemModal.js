@@ -12,8 +12,24 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  X,
+  Info,
+  Plus,
+  Dumbbell,
+  Shield,
+  Flower2,
+  ListChecks,
+} from 'lucide-react-native';
 import { colors, spacing, borderRadius, shadows } from '../../theme/colors';
+
+// Map legacy MaterialIcons names stored in the categories array to Lucide.
+const CATEGORY_ICON_MAP = {
+  'fitness-center': Dumbbell,
+  shield: Shield,
+  spa: Flower2,
+  checklist: ListChecks,
+};
 
 /**
  * AddItemModal - Modal form for adding custom checklist items
@@ -93,7 +109,7 @@ const AddItemModal = ({ visible, onClose, onAdd, loading }) => {
           <View style={styles.header}>
             <Text style={styles.headerTitle}>Add Custom Item</Text>
             <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
-              <MaterialIcons name="close" size={24} color={colors.text} />
+              <X size={24} color={colors.text} strokeWidth={2} />
             </TouchableOpacity>
           </View>
 
@@ -144,38 +160,41 @@ const AddItemModal = ({ visible, onClose, onAdd, loading }) => {
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Category</Text>
               <View style={styles.categoryGrid}>
-                {categories.map((cat) => (
-                  <TouchableOpacity
-                    key={cat.value}
-                    style={[
-                      styles.categoryButton,
-                      category === cat.value && styles.categoryButtonActive,
-                    ]}
-                    onPress={() => setCategory(cat.value)}
-                    disabled={loading}
-                    activeOpacity={0.7}
-                  >
-                    <MaterialIcons
-                      name={cat.icon}
-                      size={24}
-                      color={category === cat.value ? colors.textInverse : colors.textSecondary}
-                    />
-                    <Text
+                {categories.map((cat) => {
+                  const CategoryIcon = CATEGORY_ICON_MAP[cat.icon] || ListChecks;
+                  return (
+                    <TouchableOpacity
+                      key={cat.value}
                       style={[
-                        styles.categoryButtonText,
-                        category === cat.value && styles.categoryButtonTextActive,
+                        styles.categoryButton,
+                        category === cat.value && styles.categoryButtonActive,
                       ]}
+                      onPress={() => setCategory(cat.value)}
+                      disabled={loading}
+                      activeOpacity={0.7}
                     >
-                      {cat.label}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
+                      <CategoryIcon
+                        size={24}
+                        color={category === cat.value ? colors.textInverse : colors.textSecondary}
+                        strokeWidth={2}
+                      />
+                      <Text
+                        style={[
+                          styles.categoryButtonText,
+                          category === cat.value && styles.categoryButtonTextActive,
+                        ]}
+                      >
+                        {cat.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
               </View>
             </View>
 
             {/* Info box */}
             <View style={styles.infoBox}>
-              <MaterialIcons name="info" size={20} color={colors.sage} />
+              <Info size={20} color={colors.sage} strokeWidth={2} />
               <Text style={styles.infoText}>
                 Custom items can be edited or deleted at any time.
               </Text>
@@ -201,7 +220,7 @@ const AddItemModal = ({ visible, onClose, onAdd, loading }) => {
                 <Text style={styles.addButtonText}>Adding...</Text>
               ) : (
                 <>
-                  <MaterialIcons name="add" size={20} color={colors.textInverse} />
+                  <Plus size={20} color={colors.textInverse} strokeWidth={2} />
                   <Text style={styles.addButtonText}>Add Item</Text>
                 </>
               )}

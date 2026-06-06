@@ -7,12 +7,15 @@ import {
   Animated,
   Dimensions,
   Modal,
+  Image,
   ActivityIndicator,
   ScrollView
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ChevronRight, Play, Star, X } from 'lucide-react-native';
 
 import { colors } from '../theme/colors';
+import { icons } from '../lib/uiIcons';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -162,28 +165,28 @@ const EmbeddedPracticeWidget = ({ practice, nervousSystemState, onComplete, onSk
         name: 'Safe & Social',
         description: 'Calm, connected, curious',
         color: colors.success,
-        emoji: '💚'
+        icon: icons.droplet,
       },
       {
-        id: 'sympathetic', 
+        id: 'sympathetic',
         name: 'Activated',
         description: 'Energized, anxious, or overwhelmed',
         color: colors.error,
-        emoji: '⚡'
+        icon: icons.steam,
       },
       {
         id: 'dorsal',
         name: 'Protected',
         description: 'Numb, withdrawn, or heavy',
         color: colors.slate,
-        emoji: '🛡️'
+        icon: icons.iceberg,
       },
       {
         id: 'unsure',
         name: "I'm not sure",
         description: 'Help me figure out my state',
         color: colors.textSecondary,
-        emoji: '🤔'
+        icon: icons.uncertainState,
       }
     ];
 
@@ -205,7 +208,7 @@ const EmbeddedPracticeWidget = ({ practice, nervousSystemState, onComplete, onSk
                 onPress={() => setPracticeData({ ...practiceData, selectedState: option.id })}
               >
                 <View style={styles.stateOptionHeader}>
-                  <Text style={styles.stateEmoji}>{option.emoji}</Text>
+                  <Image source={option.icon} style={styles.stateOptionIcon} resizeMode="contain" />
                   <Text style={[styles.stateOptionName, { color: option.color }]}>
                     {option.name}
                   </Text>
@@ -281,41 +284,38 @@ const EmbeddedPracticeWidget = ({ practice, nervousSystemState, onComplete, onSk
     }
 
     if (currentStep === 'state_identification') {
+      const areas = [
+        { icon: icons.lungs, title: 'Your Breathing', prompt: 'Is it fast, slow, shallow, or deep?' },
+        { icon: icons.bodyScan, title: 'Your Body', prompt: 'Are you tense, relaxed, restless, or heavy?' },
+        { icon: icons.movement, title: 'Your Energy', prompt: 'Do you feel activated, calm, or withdrawn?' },
+        { icon: icons.repairedHeart, title: 'Your Heart', prompt: 'Is it racing, steady, or hard to notice?' },
+        { icon: icons.thoughtCloud, title: 'Your Thoughts', prompt: 'Are they racing, clear, or foggy?' },
+      ];
+
       return (
         <View style={styles.assessmentStep}>
-          <Text style={styles.stepTitle}>🌱 Let's explore your current state</Text>
-          <Text style={styles.stepSubtitle}>Take a moment to notice each area:</Text>
-          
-          <View style={styles.identificationExercise}>
-            <View style={styles.identificationStep}>
-              <Text style={styles.identificationTitle}>Your Breathing 🌬️</Text>
-              <Text style={styles.identificationPrompt}>Is it fast, slow, shallow, or deep?</Text>
-            </View>
-            
-            <View style={styles.identificationStep}>
-              <Text style={styles.identificationTitle}>Your Body 💪</Text>
-              <Text style={styles.identificationPrompt}>Are you tense, relaxed, restless, or heavy?</Text>
-            </View>
-            
-            <View style={styles.identificationStep}>
-              <Text style={styles.identificationTitle}>Your Energy ⚡</Text>
-              <Text style={styles.identificationPrompt}>Do you feel activated, calm, or withdrawn?</Text>
-            </View>
-            
-            <View style={styles.identificationStep}>
-              <Text style={styles.identificationTitle}>Your Heart 💖</Text>
-              <Text style={styles.identificationPrompt}>Is it racing, steady, or hard to notice?</Text>
-            </View>
-            
-            <View style={styles.identificationStep}>
-              <Text style={styles.identificationTitle}>Your Thoughts 🧠</Text>
-              <Text style={styles.identificationPrompt}>Are they racing, clear, or foggy?</Text>
-            </View>
+          <View style={styles.stepTitleRow}>
+            <Image source={icons.sprout} style={styles.stepTitleIcon} resizeMode="contain" />
+            <Text style={styles.stepTitle}>Let's explore your current state</Text>
           </View>
-          
+          <Text style={styles.stepSubtitle}>Take a moment to notice each area:</Text>
+
+          <View style={styles.identificationExercise}>
+            {areas.map((area) => (
+              <View key={area.title} style={styles.identificationStep}>
+                <View style={styles.identificationTitleRow}>
+                  <Image source={area.icon} style={styles.identificationIcon} resizeMode="contain" />
+                  <Text style={styles.identificationTitle}>{area.title}</Text>
+                </View>
+                <Text style={styles.identificationPrompt}>{area.prompt}</Text>
+              </View>
+            ))}
+          </View>
+
           <View style={styles.identificationHint}>
+            <Image source={icons.insight} style={styles.identificationHintIcon} resizeMode="contain" />
             <Text style={styles.identificationHintText}>
-              🌟 There's no right or wrong answer. Just notice with kindness.
+              There's no right or wrong answer. Just notice with kindness.
             </Text>
           </View>
         </View>
@@ -447,20 +447,24 @@ const EmbeddedPracticeWidget = ({ practice, nervousSystemState, onComplete, onSk
       <View style={styles.effectivenessContainer}>
         <Text style={styles.effectivenessTitle}>How helpful was this practice?</Text>
         <View style={styles.starsContainer}>
-          {[1,2,3,4,5].map(star => (
-            <TouchableOpacity
-              key={star}
-              onPress={() => setEffectiveness(star * 2)} // Scale to 1-10
-              style={styles.starButton}
-            >
-              <Text style={[
-                styles.starEmoji,
-                { opacity: effectiveness >= star * 2 ? 1 : 0.3 }
-              ]}>
-                ⭐
-              </Text>
-            </TouchableOpacity>
-          ))}
+          {[1,2,3,4,5].map(star => {
+            const filled = effectiveness >= star * 2;
+            return (
+              <TouchableOpacity
+                key={star}
+                onPress={() => setEffectiveness(star * 2)}
+                style={styles.starButton}
+                accessibilityLabel={`Rate ${star} of 5`}
+              >
+                <Star
+                  size={28}
+                  color={filled ? colors.warning : colors.lightGray}
+                  fill={filled ? colors.warning : 'transparent'}
+                  strokeWidth={2}
+                />
+              </TouchableOpacity>
+            );
+          })}
         </View>
       </View>
     );
@@ -511,11 +515,11 @@ const EmbeddedPracticeWidget = ({ practice, nervousSystemState, onComplete, onSk
           {/* Header */}
           <View style={styles.header}>
             <View style={styles.headerLeft}>
-              <Text style={styles.headerEmoji}>🧘</Text>
+              <Image source={icons.meditate} style={styles.headerIcon} resizeMode="contain" />
               <Text style={styles.headerTitle}>Practice</Text>
             </View>
-            <TouchableOpacity onPress={handleSkip} style={styles.skipButton}>
-              <Text style={styles.skipText}>×</Text>
+            <TouchableOpacity onPress={handleSkip} style={styles.skipButton} accessibilityLabel="Close practice">
+              <X size={22} color={colors.textSecondary} strokeWidth={2} />
             </TouchableOpacity>
           </View>
 
@@ -529,11 +533,11 @@ const EmbeddedPracticeWidget = ({ practice, nervousSystemState, onComplete, onSk
           <View style={[styles.footer, { paddingBottom: 20 + insets.bottom }]}>
             {!isActive && practice.type !== 'polyvagal_assessment' ? (
               <TouchableOpacity style={styles.startButton} onPress={handleStart}>
-                <Text style={styles.buttonEmoji}>▶️</Text>
+                <Play size={18} color={colors.textInverse} strokeWidth={2.5} fill={colors.textInverse} />
                 <Text style={styles.startButtonText}>Start Practice</Text>
               </TouchableOpacity>
             ) : (
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={[
                   styles.nextButton,
                   !canProceed() && styles.nextButtonDisabled
@@ -548,7 +552,7 @@ const EmbeddedPracticeWidget = ({ practice, nervousSystemState, onComplete, onSk
                     return 'Next';
                   })()}
                 </Text>
-                <Text style={styles.buttonEmoji}>→</Text>
+                <ChevronRight size={20} color={colors.textInverse} strokeWidth={2.5} />
               </TouchableOpacity>
             )}
           </View>
@@ -800,24 +804,26 @@ const styles = {
   starButton: {
     padding: 4,
   },
-  starEmoji: {
-    fontSize: 24,
-  },
-  stateEmoji: {
-    fontSize: 20,
+  stateOptionIcon: {
+    width: 28,
+    height: 28,
     marginRight: 8,
   },
-  headerEmoji: {
-    fontSize: 20,
+  headerIcon: {
+    width: 28,
+    height: 28,
     marginRight: 8,
   },
-  skipText: {
-    fontSize: 20,
-    color: colors.textSecondary,
+  stepTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginBottom: 8,
   },
-  buttonEmoji: {
-    fontSize: 16,
-    color: colors.textInverse,
+  stepTitleIcon: {
+    width: 24,
+    height: 24,
   },
   identificationExercise: {
     marginTop: 16,
@@ -831,11 +837,20 @@ const styles = {
     borderLeftWidth: 3,
     borderLeftColor: colors.primary,
   },
+  identificationTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
+  },
+  identificationIcon: {
+    width: 22,
+    height: 22,
+  },
   identificationTitle: {
     fontSize: 16,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: 4,
   },
   identificationPrompt: {
     fontSize: 14,
@@ -843,14 +858,21 @@ const styles = {
     lineHeight: 20,
   },
   identificationHint: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
     backgroundColor: colors.bubbleArchetypal,
     borderRadius: 8,
     padding: 12,
   },
+  identificationHintIcon: {
+    width: 22,
+    height: 22,
+  },
   identificationHintText: {
+    flex: 1,
     fontSize: 14,
     color: '#92400e',
-    textAlign: 'center',
     fontStyle: 'italic',
   },
   footer: {

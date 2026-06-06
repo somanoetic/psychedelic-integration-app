@@ -1,8 +1,25 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  CheckCircle2,
+  Library,
+  Bookmark,
+  Pencil,
+  Heart,
+  Lightbulb,
+  CloudOff,
+} from 'lucide-react-native';
 import { colors, spacing, borderRadius, shadows } from '../../theme/colors';
 import FormattedText from '../FormattedText';
+
+// Map message.suggestedActions[].type to Lucide icon component.
+const ACTION_ICON_MAP = {
+  review_intention: CheckCircle2,
+  explore_template: Library,
+  browse_templates: Bookmark,
+  edit_draft: Pencil,
+  nervous_system_check: Heart,
+};
 
 /**
  * IntentionMessageBubble - Individual message bubble in conversation
@@ -58,43 +75,22 @@ const IntentionMessageBubble = ({ message, nervousSystemState, isLatest, onActio
 
     return (
       <View style={styles.actionsContainer}>
-        {message.suggestedActions.map((action, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.actionChip}
-            onPress={() => onActionPress?.(action)}
-            activeOpacity={0.7}
-          >
-            <MaterialIcons
-              name={getActionIcon(action.type)}
-              size={16}
-              color={colors.primary}
-            />
-            <Text style={styles.actionText}>{action.message}</Text>
-          </TouchableOpacity>
-        ))}
+        {message.suggestedActions.map((action, index) => {
+          const ActionIcon = ACTION_ICON_MAP[action.type] || Lightbulb;
+          return (
+            <TouchableOpacity
+              key={index}
+              style={styles.actionChip}
+              onPress={() => onActionPress?.(action)}
+              activeOpacity={0.7}
+            >
+              <ActionIcon size={16} color={colors.primary} strokeWidth={2} />
+              <Text style={styles.actionText}>{action.message}</Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
     );
-  };
-
-  /**
-   * Get icon for action type
-   */
-  const getActionIcon = (type) => {
-    switch (type) {
-      case 'review_intention':
-        return 'check-circle';
-      case 'explore_template':
-        return 'library-books';
-      case 'browse_templates':
-        return 'collections-bookmark';
-      case 'edit_draft':
-        return 'edit';
-      case 'nervous_system_check':
-        return 'favorite';
-      default:
-        return 'lightbulb';
-    }
   };
 
   if (isUser) {
@@ -133,7 +129,7 @@ const IntentionMessageBubble = ({ message, nervousSystemState, isLatest, onActio
 
           {isError && (
             <View style={styles.errorBadge}>
-              <MaterialIcons name="cloud-off" size={14} color={colors.error} />
+              <CloudOff size={14} color={colors.error} strokeWidth={2} />
               <Text style={styles.errorBadgeText}>Offline</Text>
             </View>
           )}

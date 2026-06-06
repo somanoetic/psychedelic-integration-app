@@ -18,7 +18,45 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  X,
+  Plus,
+  CheckCircle2,
+  PlusCircle,
+  ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
+  Target,
+  Check,
+  Sun,
+  Moon,
+  Clock,
+  CalendarDays,
+  Sparkles,
+  Mountain,
+  Wind,
+  Activity,
+  Brain,
+  Users,
+  Trees,
+  HelpCircle,
+} from 'lucide-react-native';
+
+const HABIT_ICON_MAP = {
+  'wb-sunny': Sun,
+  'nightlight-round': Moon,
+  schedule: Clock,
+  'date-range': CalendarDays,
+  'self-improvement': Sparkles,
+  'auto-awesome': Sparkles,
+  landscape: Mountain,
+  air: Wind,
+  accessibility: Activity,
+  psychology: Brain,
+  groups: Users,
+  park: Trees,
+  'check-circle': CheckCircle2,
+};
 import { supabase } from '../lib/supabase';
 import { colors } from '../theme/colors';
 
@@ -271,7 +309,7 @@ const HabitTracker = ({ navigation }) => {
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>Add Habit</Text>
             <TouchableOpacity onPress={() => setShowAddModal(false)}>
-              <MaterialIcons name="close" size={28} color={colors.textSecondary} />
+              <X size={28} color={colors.textSecondary} strokeWidth={2} />
             </TouchableOpacity>
           </View>
 
@@ -295,11 +333,16 @@ const HabitTracker = ({ navigation }) => {
                     ]}
                     onPress={() => setNewHabitCategory(cat.id)}
                   >
-                    <MaterialIcons
-                      name={cat.icon}
-                      size={16}
-                      color={newHabitCategory === cat.id ? '#fff' : colors.textSecondary}
-                    />
+                    {(() => {
+                      const Icon = HABIT_ICON_MAP[cat.icon] || HelpCircle;
+                      return (
+                        <Icon
+                          size={16}
+                          color={newHabitCategory === cat.id ? '#fff' : colors.textSecondary}
+                          strokeWidth={2}
+                        />
+                      );
+                    })()}
                     <Text style={[
                       styles.categoryChipText,
                       newHabitCategory === cat.id && { color: '#fff' },
@@ -312,7 +355,7 @@ const HabitTracker = ({ navigation }) => {
                 onPress={addHabit}
                 disabled={!newHabitName.trim()}
               >
-                <MaterialIcons name="add" size={20} color="#fff" />
+                <Plus size={20} color="#fff" strokeWidth={2} />
                 <Text style={styles.addButtonText}>Add Custom Habit</Text>
               </TouchableOpacity>
             </View>
@@ -329,7 +372,10 @@ const HabitTracker = ({ navigation }) => {
                     disabled={isAdded}
                   >
                     <View style={[styles.presetIcon, { backgroundColor: `${preset.color}20` }]}>
-                      <MaterialIcons name={preset.icon} size={24} color={preset.color} />
+                      {(() => {
+                        const Icon = HABIT_ICON_MAP[preset.icon] || HelpCircle;
+                        return <Icon size={24} color={preset.color} strokeWidth={2} />;
+                      })()}
                     </View>
                     <View style={styles.presetContent}>
                       <Text style={styles.presetName}>{preset.name}</Text>
@@ -338,9 +384,9 @@ const HabitTracker = ({ navigation }) => {
                       </Text>
                     </View>
                     {isAdded ? (
-                      <MaterialIcons name="check-circle" size={24} color={colors.success} />
+                      <CheckCircle2 size={24} color={colors.success} strokeWidth={2} />
                     ) : (
-                      <MaterialIcons name="add-circle-outline" size={24} color={colors.textLight} />
+                      <PlusCircle size={24} color={colors.textLight} strokeWidth={2} />
                     )}
                   </TouchableOpacity>
                 );
@@ -358,7 +404,7 @@ const HabitTracker = ({ navigation }) => {
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+          <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Habit Tracker</Text>
         <View style={{ width: 24 }} />
@@ -386,7 +432,7 @@ const HabitTracker = ({ navigation }) => {
         {/* Date Navigator */}
         <View style={styles.dateNavigator}>
           <TouchableOpacity onPress={() => navigateDate(-1)} style={styles.dateArrow}>
-            <MaterialIcons name="chevron-left" size={28} color={colors.textSecondary} />
+            <ChevronLeft size={28} color={colors.textSecondary} strokeWidth={2} />
           </TouchableOpacity>
           <Text style={styles.dateText}>{formatDate(selectedDate)}</Text>
           <TouchableOpacity
@@ -394,10 +440,10 @@ const HabitTracker = ({ navigation }) => {
             style={styles.dateArrow}
             disabled={isToday}
           >
-            <MaterialIcons
-              name="chevron-right"
+            <ChevronRight
               size={28}
               color={isToday ? colors.lightGray : colors.textSecondary}
+              strokeWidth={2}
             />
           </TouchableOpacity>
         </View>
@@ -420,7 +466,7 @@ const HabitTracker = ({ navigation }) => {
         {/* Habits */}
         {habits.length === 0 ? (
           <View style={styles.emptyState}>
-            <MaterialIcons name="track-changes" size={64} color="#d1d5db" />
+            <Target size={64} color="#d1d5db" strokeWidth={1.5} />
             <Text style={styles.emptyTitle}>No habits yet</Text>
             <Text style={styles.emptyText}>
               Add habits to start building your daily practice
@@ -429,7 +475,7 @@ const HabitTracker = ({ navigation }) => {
               style={styles.emptyAddButton}
               onPress={() => setShowAddModal(true)}
             >
-              <MaterialIcons name="add" size={20} color="#fff" />
+              <Plus size={20} color="#fff" strokeWidth={2} />
               <Text style={styles.emptyAddButtonText}>Add Your First Habit</Text>
             </TouchableOpacity>
           </View>
@@ -438,7 +484,10 @@ const HabitTracker = ({ navigation }) => {
             {groupedHabits.map(group => (
               <View key={group.id} style={styles.habitGroup}>
                 <View style={styles.groupHeader}>
-                  <MaterialIcons name={group.icon} size={20} color={group.color} />
+                  {(() => {
+                    const Icon = HABIT_ICON_MAP[group.icon] || HelpCircle;
+                    return <Icon size={20} color={group.color} strokeWidth={2} />;
+                  })()}
                   <Text style={[styles.groupTitle, { color: group.color }]}>{group.label}</Text>
                 </View>
                 {group.habits.map(habit => {
@@ -451,16 +500,21 @@ const HabitTracker = ({ navigation }) => {
                       onLongPress={() => deleteHabit(habit)}
                     >
                       <View style={[styles.checkbox, isCompleted && { backgroundColor: habit.color, borderColor: habit.color }]}>
-                        {isCompleted && <MaterialIcons name="check" size={16} color="#fff" />}
+                        {isCompleted && <Check size={16} color="#fff" strokeWidth={2} />}
                       </View>
                       <Text style={[styles.habitName, isCompleted && styles.habitNameCompleted]}>
                         {habit.habit_name}
                       </Text>
-                      <MaterialIcons
-                        name={habit.icon || 'check-circle'}
-                        size={20}
-                        color={isCompleted ? habit.color : '#d1d5db'}
-                      />
+                      {(() => {
+                        const Icon = HABIT_ICON_MAP[habit.icon || 'check-circle'] || CheckCircle2;
+                        return (
+                          <Icon
+                            size={20}
+                            color={isCompleted ? habit.color : '#d1d5db'}
+                            strokeWidth={2}
+                          />
+                        );
+                      })()}
                     </TouchableOpacity>
                   );
                 })}
@@ -471,7 +525,7 @@ const HabitTracker = ({ navigation }) => {
               style={styles.addHabitButton}
               onPress={() => setShowAddModal(true)}
             >
-              <MaterialIcons name="add" size={24} color="#5d86d6" />
+              <Plus size={24} color="#5d86d6" strokeWidth={2} />
               <Text style={styles.addHabitButtonText}>Add New Habit</Text>
             </TouchableOpacity>
           </>

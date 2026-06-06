@@ -1,26 +1,23 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  TextInput,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-  Keyboard,
   ActivityIndicator,
   Alert,
-  Image
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
+import { ArrowLeft } from 'lucide-react-native';
 import { supabase } from '../lib/supabase';
 import huxleyService from '../lib/huxleyService';
 import polyvagalContextService from '../lib/polyvagalContextService';
-import { colors } from '../theme/colors';
+import { colors, gradients } from '../theme/colors';
 import ShareWithTherapistButton from './ShareWithTherapistButton';
 import { shareRegulatingResources } from '../lib/therapistShareService';
+import { ChatConversation } from './chat';
 
 /**
  * Conversational Regulating Resources Discovery
@@ -30,37 +27,36 @@ import { shareRegulatingResources } from '../lib/therapistShareService';
  * Context-aware: loads prior patterns, initializes huxleyService with
  * user context, and saves structured results back to polyvagal_patterns.
  */
+
+// Adapt this screen's {id,text,isAI} shape to ChatConversation's {id,role,content}.
+// Keeping the internal shape avoids touching huxleyService.getConversationHistory()
+// and the save path; we only translate at the render boundary.
+const toChatMessages = (messages) =>
+  messages.map((m) => ({
+    id: m.id,
+    role: m.isAI ? 'assistant' : 'user',
+    content: m.text,
+  }));
+
 const ConversationalRegulatingResources = ({ user: userProp, onComplete, navigation }) => {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
   const [initializing, setInitializing] = useState(true);
-  const [phase, setPhase] = useState('intro'); // 'intro', 'sympathetic', 'dorsal', 'ventral', 'summary', 'complete'
+  const [phase, setPhase] = useState('intro');
   const [sessionProgress, setSessionProgress] = useState(null);
   const [saving, setSaving] = useState(false);
   const [savedResourceData, setSavedResourceData] = useState(null);
   const [currentUser, setCurrentUser] = useState(userProp || null);
   const [isReturning, setIsReturning] = useState(false);
-  const scrollViewRef = useRef(null);
-
-  // Scroll to bottom when keyboard opens
-  useEffect(() => {
-    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
-    const sub = Keyboard.addListener(showEvent, () => {
-      setTimeout(() => {
-        scrollViewRef.current?.scrollToEnd({ animated: true });
-      }, 150);
-    });
-    return () => sub.remove();
-  }, []);
 
   useEffect(() => {
     initializeConversation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const initializeConversation = async () => {
     try {
-      // Get user and initialize huxley with full context
       let user = currentUser;
       if (!user) {
         const { data } = await supabase.auth.getUser();
@@ -73,15 +69,14 @@ const ConversationalRegulatingResources = ({ user: userProp, onComplete, navigat
       }
       huxleyService.setMode('regulating_resources', { clearHistory: true });
 
-      // Load prior patterns to personalize opening and detect returning user
       const priorPatterns = user
         ? await polyvagalContextService.getPatternsForAI(user.id)
         : null;
 
-      const hasExistingResources = (priorPatterns?.individualResources?.length > 0) ||
+      const hasExistingResources =
+        (priorPatterns?.individualResources?.length > 0) ||
         (priorPatterns?.interactiveResources?.length > 0);
 
-      // Tell the mode handler if this is a returning user
       if (hasExistingResources) {
         setIsReturning(true);
         const handler = huxleyService.getModeHandler?.();
@@ -96,34 +91,41 @@ const ConversationalRegulatingResources = ({ user: userProp, onComplete, navigat
 
       const openingText = buildOpeningMessage(priorPatterns);
 
-      setMessages([{
-        id: Date.now(),
-        text: openingText,
-        isAI: true,
-        timestamp: new Date()
-      }]);
+      setMessages([
+        {
+          id: Date.now(),
+          text: openingText,
+          isAI: true,
+          timestamp: new Date(),
+        },
+      ]);
     } catch (error) {
       console.error('[Resources] Init error:', error);
       huxleyService.setMode('regulating_resources', { clearHistory: true });
-      setMessages([{
-        id: Date.now(),
-        text: "Hi! Let's get a snapshot of your regulation toolkit. We'll go state by state and just list what you actually do — no judgment, everything counts. Then we'll step back and look at the full picture together. Where would you like to start?",
-        isAI: true,
-        timestamp: new Date()
-      }]);
+      setMessages([
+        {
+          id: Date.now(),
+          text: "Hi! Let's get a snapshot of your regulation toolkit. We'll go state by state and just list what you actually do — no judgment, everything counts. Then we'll step back and look at the full picture together. Where would you like to start?",
+          isAI: true,
+          timestamp: new Date(),
+        },
+      ]);
     } finally {
       setInitializing(false);
     }
   };
 
   const buildOpeningMessage = (patterns) => {
-    const baseMsg = "Hi! Let's get a snapshot of your regulation toolkit. We'll go state by state and just list what you actually do — no judgment, everything counts. Then we'll step back and look at the full picture together. Where would you like to start?";
+    const baseMsg =
+      "Hi! Let's get a snapshot of your regulation toolkit. We'll go state by state and just list what you actually do — no judgment, everything counts. Then we'll step back and look at the full picture together. Where would you like to start?";
 
     if (!patterns || !patterns.hasMappedStates) {
       return baseMsg;
     }
 
-    const hasResources = (patterns.individualResources?.length > 0) || (patterns.interactiveResources?.length > 0);
+    const hasResources =
+      (patterns.individualResources?.length > 0) ||
+      (patterns.interactiveResources?.length > 0);
 
     if (hasResources) {
       return "Welcome back! Your regulation toolkit is a living document that grows with you. What's changed since last time? Have you tried anything new? Has anything stopped working? Or would you like to do a full fresh snapshot?";
@@ -133,34 +135,32 @@ const ConversationalRegulatingResources = ({ user: userProp, onComplete, navigat
   };
 
   const sendMessage = async (overrideText) => {
-    const text = (overrideText || inputText).trim();
-    if (!text) return;
+    const text = (overrideText ?? inputText).trim();
+    if (!text || loading) return;
 
     const userMessage = {
       id: Date.now(),
       text,
       isAI: false,
-      timestamp: new Date()
+      timestamp: new Date(),
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInputText('');
     setLoading(true);
 
     try {
-      // Handler controls phase and context automatically
       const response = await huxleyService.chat(text);
 
       const aiMessage = {
         id: Date.now() + 1,
         text: response.message,
         isAI: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
 
-      setMessages(prev => [...prev, aiMessage]);
+      setMessages((prev) => [...prev, aiMessage]);
 
-      // Update from mode handler
       if (response.sessionProgress) {
         setSessionProgress(response.sessionProgress);
         setPhase(response.sessionProgress.phase);
@@ -170,9 +170,6 @@ const ConversationalRegulatingResources = ({ user: userProp, onComplete, navigat
       Alert.alert('Error', 'Failed to send message. Please try again.');
     } finally {
       setLoading(false);
-      setTimeout(() => {
-        scrollViewRef.current?.scrollToEnd({ animated: true });
-      }, 100);
     }
   };
 
@@ -180,11 +177,9 @@ const ConversationalRegulatingResources = ({ user: userProp, onComplete, navigat
     setSaving(true);
 
     try {
-      // Get structured data from mode handler
       const handlerSummary = huxleyService.getSessionSummary();
       const conversationHistory = huxleyService.getConversationHistory();
 
-      // Save to database — store both state-based and flat resource lists for compatibility
       const allResources = handlerSummary?.resources || {};
       const flatResources = {
         passive: [],
@@ -194,7 +189,6 @@ const ConversationalRegulatingResources = ({ user: userProp, onComplete, navigat
         connection: [],
       };
 
-      // Flatten across states for the flat columns
       for (const state of ['sympathetic', 'dorsal', 'ventral']) {
         const stateRes = allResources[state] || {};
         for (const category of Object.keys(flatResources)) {
@@ -226,13 +220,17 @@ const ConversationalRegulatingResources = ({ user: userProp, onComplete, navigat
 
       console.log('[Resources] Saved successfully:', data.id);
 
-      // Also update polyvagal patterns with the new resources
       if (currentUser?.id) {
         const allIndividual = [];
         const allInteractive = [];
         for (const state of ['sympathetic', 'dorsal', 'ventral']) {
           const stateRes = allResources[state] || {};
-          allIndividual.push(...(stateRes.passive || []), ...(stateRes.cognitive || []), ...(stateRes.creative || []), ...(stateRes.movement || []));
+          allIndividual.push(
+            ...(stateRes.passive || []),
+            ...(stateRes.cognitive || []),
+            ...(stateRes.creative || []),
+            ...(stateRes.movement || []),
+          );
           allInteractive.push(...(stateRes.connection || []));
         }
         await polyvagalContextService.updateRegulatingResources(currentUser.id, {
@@ -241,19 +239,20 @@ const ConversationalRegulatingResources = ({ user: userProp, onComplete, navigat
         });
       }
 
-      // Show completion message
       const completionMessage = {
         id: Date.now(),
-        text: "Your regulation toolkit has been saved! These are your personal resources - things that actually work for you. You can revisit and add to this toolkit anytime.",
+        text: 'Your regulation toolkit has been saved! These are your personal resources - things that actually work for you. You can revisit and add to this toolkit anytime.',
         isAI: true,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
 
-      setSavedResourceData({ state_based_resources: allResources, created_at: new Date().toISOString() });
-      setMessages(prev => [...prev, completionMessage]);
+      setSavedResourceData({
+        state_based_resources: allResources,
+        created_at: new Date().toISOString(),
+      });
+      setMessages((prev) => [...prev, completionMessage]);
       setPhase('complete');
 
-      // Notify parent component, then navigate to toolkit view
       if (onComplete) {
         setTimeout(() => onComplete(data), 2000);
       } else if (navigation) {
@@ -267,192 +266,169 @@ const ConversationalRegulatingResources = ({ user: userProp, onComplete, navigat
     }
   };
 
-  const renderMessage = (message) => {
-    return (
-      <View
-        key={message.id}
-        style={[
-          styles.messageContainer,
-          message.isAI ? styles.aiMessage : styles.userMessage
-        ]}
-      >
-        {message.isAI && (
-          <Image
-            source={require('../assets/images/huxley-avatar.png')}
-            style={styles.huxleyAvatar}
-            resizeMode="contain"
-          />
-        )}
-        <View style={[styles.messageBubble, message.isAI ? styles.aiBubble : styles.userBubble]}>
-          <Text style={[styles.messageText, message.isAI ? styles.aiText : styles.userText]}>
-            {message.text}
+  const renderHeader = () => (
+    <View>
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => (onComplete ? onComplete() : navigation?.goBack())}
+          style={styles.backButton}
+        >
+          <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Regulating Resources</Text>
+      </View>
+
+      <View style={styles.phaseIndicator}>
+        <View style={[styles.phaseItem, phase === 'sympathetic' && styles.phaseActive]}>
+          <Text style={styles.phaseText}>
+            Activated ({sessionProgress?.sympatheticCount || 0})
           </Text>
         </View>
+        <View style={[styles.phaseItem, phase === 'dorsal' && styles.phaseActive]}>
+          <Text style={styles.phaseText}>
+            Shutdown ({sessionProgress?.dorsalCount || 0})
+          </Text>
+        </View>
+        <View style={[styles.phaseItem, phase === 'ventral' && styles.phaseActive]}>
+          <Text style={styles.phaseText}>
+            Connected ({sessionProgress?.ventralCount || 0})
+          </Text>
+        </View>
+      </View>
+
+      {initializing && (
+        <View style={styles.initializingRow}>
+          <ActivityIndicator size="small" color={colors.primary} />
+          <Text style={styles.initializingText}>Loading your context...</Text>
+        </View>
+      )}
+    </View>
+  );
+
+  const renderBelowMessages = () => {
+    if (phase === 'complete') {
+      if (!savedResourceData) return null;
+      return (
+        <View style={styles.shareWrapper}>
+          <ShareWithTherapistButton
+            onShare={() => shareRegulatingResources(savedResourceData)}
+          />
+        </View>
+      );
+    }
+
+    return (
+      <View style={styles.actionsContainer}>
+        {phase === 'intro' && !isReturning && (
+          <>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() =>
+                sendMessage("Let's start with what I do when I'm stressed or activated")
+              }
+            >
+              <Text style={styles.actionButtonText}>Start with Activated State</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.actionButton, styles.secondaryButton]}
+              onPress={() =>
+                sendMessage("Let's start with what I do when I'm shut down or numb")
+              }
+            >
+              <Text style={[styles.actionButtonText, styles.secondaryButtonText]}>
+                Start with Shutdown State
+              </Text>
+            </TouchableOpacity>
+          </>
+        )}
+
+        {phase === 'intro' && isReturning && (
+          <>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() =>
+                sendMessage("I've tried some new things and want to update my toolkit")
+              }
+            >
+              <Text style={styles.actionButtonText}>Update My Toolkit</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.actionButton, styles.secondaryButton]}
+              onPress={() => {
+                setIsReturning(false);
+                const handler = huxleyService.getModeHandler?.();
+                if (handler) handler.isReturningUser = false;
+                sendMessage("Let's do a fresh snapshot of everything");
+              }}
+            >
+              <Text style={[styles.actionButtonText, styles.secondaryButtonText]}>
+                Fresh Snapshot
+              </Text>
+            </TouchableOpacity>
+          </>
+        )}
+
+        {['update', 'sympathetic', 'dorsal', 'ventral', 'review', 'summary'].includes(
+          phase,
+        ) && (
+          <TouchableOpacity
+            style={styles.actionButton}
+            onPress={handleComplete}
+            disabled={saving}
+          >
+            {saving ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={styles.actionButtonText}>Complete & Save Resources</Text>
+            )}
+          </TouchableOpacity>
+        )}
       </View>
     );
   };
 
+  // Input is hidden during the completion phase. Withholding onSend tells
+  // ChatConversation to skip the input row entirely.
+  const isComplete = phase === 'complete';
+
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+    <LinearGradient
+      colors={gradients.standard}
+      start={gradients.standardStart}
+      end={gradients.standardEnd}
+      style={styles.container}
     >
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation?.goBack()}
-          style={styles.backButton}
-        >
-          <MaterialIcons name="arrow-back" size={24} color={colors.text} />
-        </TouchableOpacity>
-        <MaterialIcons name="self-improvement" size={24} color={colors.primary} />
-        <Text style={styles.headerTitle}>Regulating Resources</Text>
-      </View>
-
-      {/* Phase indicator */}
-      <View style={styles.phaseIndicator}>
-        <View style={[styles.phaseItem, phase === 'sympathetic' && styles.phaseActive]}>
-          <Text style={styles.phaseText}>Activated ({sessionProgress?.sympatheticCount || 0})</Text>
-        </View>
-        <View style={[styles.phaseItem, phase === 'dorsal' && styles.phaseActive]}>
-          <Text style={styles.phaseText}>Shutdown ({sessionProgress?.dorsalCount || 0})</Text>
-        </View>
-        <View style={[styles.phaseItem, phase === 'ventral' && styles.phaseActive]}>
-          <Text style={styles.phaseText}>Connected ({sessionProgress?.ventralCount || 0})</Text>
-        </View>
-      </View>
-
-      <ScrollView
-        ref={scrollViewRef}
-        style={styles.messagesContainer}
-        contentContainerStyle={styles.messagesContent}
-        onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
-      >
-        {initializing && (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="small" color={colors.primary} />
-            <Text style={styles.loadingText}>Loading your context...</Text>
-          </View>
-        )}
-        {messages.map(renderMessage)}
-        {loading && (
-          <View style={styles.loadingContainer}>
-            <Image
-              source={require('../assets/images/huxley-avatar.png')}
-              style={styles.huxleyAvatar}
-              resizeMode="contain"
-            />
-            <View style={styles.loadingBubble}>
-              <ActivityIndicator size="small" color={colors.primary} />
-              <Text style={styles.loadingText}>Huxley is thinking...</Text>
-            </View>
-          </View>
-        )}
-      </ScrollView>
-
-      {/* Action buttons */}
-      {phase !== 'complete' && (
-        <View style={styles.actionsContainer}>
-          {phase === 'intro' && !isReturning && (
-            <>
-              <TouchableOpacity
-                style={styles.actionButton}
-                onPress={() => sendMessage("Let's start with what I do when I'm stressed or activated")}
-              >
-                <Text style={styles.actionButtonText}>Start with Activated State</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.actionButton, styles.secondaryButton]}
-                onPress={() => sendMessage("Let's start with what I do when I'm shut down or numb")}
-              >
-                <Text style={[styles.actionButtonText, styles.secondaryButtonText]}>Start with Shutdown State</Text>
-              </TouchableOpacity>
-            </>
-          )}
-          {phase === 'intro' && isReturning && (
-            <>
-              <TouchableOpacity
-                style={styles.actionButton}
-                onPress={() => sendMessage("I've tried some new things and want to update my toolkit")}
-              >
-                <Text style={styles.actionButtonText}>Update My Toolkit</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.actionButton, styles.secondaryButton]}
-                onPress={() => {
-                  setIsReturning(false);
-                  const handler = huxleyService.getModeHandler?.();
-                  if (handler) handler.isReturningUser = false;
-                  sendMessage("Let's do a fresh snapshot of everything");
-                }}
-              >
-                <Text style={[styles.actionButtonText, styles.secondaryButtonText]}>Fresh Snapshot</Text>
-              </TouchableOpacity>
-            </>
-          )}
-          {(phase === 'update' || phase === 'sympathetic' || phase === 'dorsal' || phase === 'ventral' || phase === 'review' || phase === 'summary') && (
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={handleComplete}
-              disabled={saving}
-            >
-              {saving ? (
-                <ActivityIndicator size="small" color="#fff" />
-              ) : (
-                <Text style={styles.actionButtonText}>Complete & Save Resources</Text>
-              )}
-            </TouchableOpacity>
-          )}
-        </View>
-      )}
-
-      {/* Share button on completion */}
-      {phase === 'complete' && savedResourceData && (
-        <View style={{ paddingHorizontal: 16, paddingBottom: 8 }}>
-          <ShareWithTherapistButton onShare={() => shareRegulatingResources(savedResourceData)} />
-        </View>
-      )}
-
-      {/* Input area */}
-      {phase !== 'complete' && (
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            value={inputText}
-            onChangeText={setInputText}
-            placeholder="Share your resources..."
-            placeholderTextColor={colors.textLight}
-            multiline
-            maxLength={1000}
-          />
-          <TouchableOpacity
-            style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}
-            onPress={() => sendMessage()}
-            disabled={loading || !inputText.trim()}
-          >
-            <MaterialIcons name="send" size={24} color="#fff" />
-          </TouchableOpacity>
-        </View>
-      )}
-    </KeyboardAvoidingView>
-    </SafeAreaView>
+      <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+        <ChatConversation
+          messages={toChatMessages(messages)}
+          isTyping={loading}
+          onSend={isComplete ? undefined : (text) => sendMessage(text)}
+          inputText={inputText}
+          onInputTextChange={setInputText}
+          inputPlaceholder="Share your resources..."
+          inputDisabled={loading}
+          header={renderHeader()}
+          belowMessages={renderBelowMessages()}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+        />
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb'
+  },
+  safeArea: {
+    flex: 1,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: colors.lightGray,
-    gap: 8
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    gap: 8,
   },
   backButton: {
     padding: 4,
@@ -460,161 +436,81 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#111827'
+    color: colors.text,
   },
   phaseIndicator: {
     flexDirection: 'row',
-    padding: 12,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: colors.lightGray,
-    gap: 8
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+    gap: 8,
   },
   phaseItem: {
     flex: 1,
-    paddingVertical: 6,
+    paddingVertical: 8,
     paddingHorizontal: 12,
-    borderRadius: 12,
-    backgroundColor: '#f3f4f6',
-    alignItems: 'center'
+    borderRadius: 14,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    alignItems: 'center',
   },
   phaseActive: {
-    backgroundColor: 'rgba(255, 255, 255, 0.9)'
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 2,
+    elevation: 1,
   },
   phaseText: {
     fontSize: 12,
-    color: colors.textSecondary,
-    fontWeight: '500'
+    color: colors.text,
+    fontWeight: '500',
   },
-  messagesContainer: {
-    flex: 1
-  },
-  messagesContent: {
-    padding: 16,
-    gap: 12
-  },
-  messageContainer: {
-    flexDirection: 'row',
-    marginBottom: 12,
-    gap: 8
-  },
-  aiMessage: {
-    justifyContent: 'flex-start'
-  },
-  userMessage: {
-    justifyContent: 'flex-end',
-    flexDirection: 'row-reverse'
-  },
-  huxleyAvatar: {
-    width: 60,
-    height: 60,
-    marginRight: 8,
-    marginTop: 4
-  },
-  loadingBubble: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: colors.lightGray,
-    borderRadius: 16,
-    padding: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8
-  },
-  messageBubble: {
-    padding: 12,
-    borderRadius: 16
-  },
-  aiBubble: {
-    flex: 1,
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: colors.lightGray
-  },
-  userBubble: {
-    maxWidth: '75%',
-    backgroundColor: colors.primary
-  },
-  messageText: {
-    fontSize: 15,
-    lineHeight: 20
-  },
-  aiText: {
-    color: '#111827'
-  },
-  userText: {
-    color: '#fff'
-  },
-  loadingContainer: {
+  initializingRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    paddingVertical: 8
+    paddingVertical: 8,
+    paddingHorizontal: 16,
   },
-  loadingText: {
+  initializingText: {
     fontSize: 14,
-    color: colors.textSecondary,
-    fontStyle: 'italic'
+    color: colors.text,
+    fontStyle: 'italic',
   },
   actionsContainer: {
-    padding: 16,
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: colors.lightGray,
-    gap: 8
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    gap: 8,
   },
   actionButton: {
     backgroundColor: colors.primary,
-    paddingVertical: 12,
+    paddingVertical: 14,
     paddingHorizontal: 20,
-    borderRadius: 8,
-    alignItems: 'center'
+    borderRadius: 12,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    elevation: 2,
   },
   secondaryButton: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: colors.primary
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderWidth: 2,
+    borderColor: colors.primary,
   },
   actionButtonText: {
     color: '#fff',
     fontSize: 15,
-    fontWeight: '600'
+    fontWeight: '600',
   },
   secondaryButtonText: {
-    color: colors.primary
+    color: colors.primary,
   },
-  inputContainer: {
-    flexDirection: 'row',
-    padding: 16,
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: colors.lightGray,
-    gap: 12
-  },
-  input: {
-    flex: 1,
-    minHeight: 40,
-    maxHeight: 100,
-    borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 20,
+  shareWrapper: {
     paddingHorizontal: 16,
-    paddingVertical: 10,
-    fontSize: 15,
-    color: '#111827',
-    backgroundColor: '#f9fafb'
+    paddingBottom: 8,
   },
-  sendButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  sendButtonDisabled: {
-    backgroundColor: '#d1d5db'
-  }
 });
 
 export default ConversationalRegulatingResources;

@@ -7,7 +7,15 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  Lightbulb,
+  Star,
+  Brain,
+  Tag,
+  PlusCircle,
+  ChevronDown,
+  ChevronUp,
+} from 'lucide-react-native';
 import { colors, spacing, borderRadius, shadows } from '../../theme/colors';
 import FrameworkSelector from './FrameworkSelector';
 import SessionTypeSelector from './SessionTypeSelector';
@@ -51,7 +59,7 @@ const IntentionTemplates = ({
    */
   const renderEmpty = () => (
     <View style={styles.emptyContainer}>
-      <MaterialIcons name="lightbulb-outline" size={64} color={colors.lightGray} />
+      <Lightbulb size={64} color={colors.lightGray} strokeWidth={1.5} />
       <Text style={styles.emptyTitle}>No Templates Found</Text>
       <Text style={styles.emptyText}>
         Try adjusting your filters or browse all templates
@@ -84,7 +92,7 @@ const IntentionTemplates = ({
         {/* Featured Badge */}
         {item.is_featured && (
           <View style={styles.featuredBadge}>
-            <MaterialIcons name="star" size={12} color={colors.golden} />
+            <Star size={12} color={colors.golden} fill={colors.golden} strokeWidth={2} />
             <Text style={styles.featuredText}>Featured</Text>
           </View>
         )}
@@ -96,13 +104,13 @@ const IntentionTemplates = ({
         <View style={styles.templateMeta}>
           {item.framework && (
             <View style={styles.metaChip}>
-              <MaterialIcons name="psychology" size={14} color={colors.primary} />
+              <Brain size={14} color={colors.primary} strokeWidth={2} />
               <Text style={styles.metaText}>{formatFramework(item.framework)}</Text>
             </View>
           )}
           {item.session_type && (
             <View style={styles.metaChip}>
-              <MaterialIcons name="label" size={14} color={colors.sage} />
+              <Tag size={14} color={colors.sage} strokeWidth={2} />
               <Text style={styles.metaText}>{formatSessionType(item.session_type)}</Text>
             </View>
           )}
@@ -147,7 +155,7 @@ const IntentionTemplates = ({
               onPress={() => onSelectTemplate(item)}
               activeOpacity={0.7}
             >
-              <MaterialIcons name="add-circle" size={20} color={colors.textInverse} />
+              <PlusCircle size={20} color={colors.textInverse} strokeWidth={2} />
               <Text style={styles.useButtonText}>Use This Template</Text>
             </TouchableOpacity>
           </View>
@@ -155,11 +163,11 @@ const IntentionTemplates = ({
 
         {/* Expand/Collapse Indicator */}
         <View style={styles.expandIndicator}>
-          <MaterialIcons
-            name={isExpanded ? 'expand-less' : 'expand-more'}
-            size={24}
-            color={colors.textSecondary}
-          />
+          {isExpanded ? (
+            <ChevronUp size={24} color={colors.textSecondary} strokeWidth={2} />
+          ) : (
+            <ChevronDown size={24} color={colors.textSecondary} strokeWidth={2} />
+          )}
         </View>
       </TouchableOpacity>
     );

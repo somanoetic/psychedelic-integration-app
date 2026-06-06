@@ -9,7 +9,18 @@ import {
   Platform,
   Image,
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  ArrowLeft,
+  CheckCircle2,
+  ChevronRight,
+  Ear,
+  Eye,
+  Hand,
+  Lightbulb,
+  Soup,
+  Sprout,
+  Wind,
+} from 'lucide-react-native';
 import { icons } from '../lib/uiIcons';
 import { colors } from '../theme/colors';
 
@@ -23,7 +34,6 @@ const GroundingExercisesWidget = ({ onComplete, onSkip }) => {
     {
       id: '5-4-3-2-1',
       title: '5-4-3-2-1 Grounding',
-      emoji: '👁️',
       icon: icons.observation,
       duration: '3-5 minutes',
       description: 'Use your senses to anchor yourself in the present moment',
@@ -33,38 +43,37 @@ const GroundingExercisesWidget = ({ onComplete, onSkip }) => {
           sense: 'See',
           instruction: 'Name 5 things you can see around you',
           detail: 'Look around and notice: colors, shapes, textures, objects. Say them out loud or in your mind.',
-          icon: '👁️'
+          Icon: Eye
         },
         {
           sense: 'Touch',
           instruction: 'Name 4 things you can touch or feel',
           detail: 'Notice: your clothes on your skin, your feet in shoes, temperature, chair texture.',
-          icon: '✋'
+          Icon: Hand
         },
         {
           sense: 'Hear',
           instruction: 'Name 3 things you can hear',
           detail: 'Listen for: distant sounds, your breathing, air conditioning, voices.',
-          icon: '👂'
+          Icon: Ear
         },
         {
           sense: 'Smell',
           instruction: 'Name 2 things you can smell',
           detail: 'Notice: air freshener, coffee, outdoors, your clothes, cleaning products.',
-          icon: '👃'
+          Icon: Wind
         },
         {
           sense: 'Taste',
           instruction: 'Name 1 thing you can taste',
           detail: 'Notice: what\'s left in your mouth, gum, breath, or take a sip of water.',
-          icon: '👅'
+          Icon: Soup
         }
       ]
     },
     {
       id: 'breath-counting',
       title: 'Breath Counting',
-      emoji: '💨',
       icon: icons.breath,
       duration: '5 minutes',
       description: 'Calm your nervous system with mindful breathing',
@@ -137,7 +146,10 @@ const GroundingExercisesWidget = ({ onComplete, onSkip }) => {
       </View>
 
       <View style={styles.content}>
-        <Text style={styles.introTitle}>🌱 Practice Regulation Techniques</Text>
+        <View style={styles.introTitleRow}>
+          <Sprout size={22} color={colors.success} strokeWidth={2} />
+          <Text style={styles.introTitle}>Practice Regulation Techniques</Text>
+        </View>
         <Text style={styles.introText}>
           These exercises help you practice nervous system regulation before your session. 
           Choose what feels right for you in this moment.
@@ -154,19 +166,15 @@ const GroundingExercisesWidget = ({ onComplete, onSkip }) => {
               onPress={() => startExercise(exercise.id)}
             >
               <View style={styles.exerciseHeader}>
-                {exercise.icon ? (
-                  <Image source={exercise.icon} style={styles.exerciseIconImage} />
-                ) : (
-                  <Text style={styles.exerciseEmoji}>{exercise.emoji}</Text>
-                )}
+                <Image source={exercise.icon} style={styles.exerciseIconImage} />
                 <View style={styles.exerciseInfo}>
                   <Text style={styles.exerciseTitle}>{exercise.title}</Text>
                   <Text style={styles.exerciseDuration}>{exercise.duration}</Text>
                 </View>
                 {completedExercises.includes(exercise.id) ? (
-                  <MaterialIcons name="check-circle" size={24} color={colors.success} />
+                  <CheckCircle2 size={24} color={colors.success} strokeWidth={2} />
                 ) : (
-                  <MaterialIcons name="arrow-forward-ios" size={16} color={colors.textLight} />
+                  <ChevronRight size={16} color={colors.textLight} strokeWidth={2} />
                 )}
               </View>
               <Text style={styles.exerciseDescription}>{exercise.description}</Text>
@@ -175,7 +183,10 @@ const GroundingExercisesWidget = ({ onComplete, onSkip }) => {
         </View>
 
         <View style={styles.tipBox}>
-          <Text style={styles.tipTitle}>💡 Preparation Tips</Text>
+          <View style={styles.tipTitleRow}>
+            <Lightbulb size={18} color={colors.warning} strokeWidth={2} />
+            <Text style={styles.tipTitle}>Preparation Tips</Text>
+          </View>
           <Text style={styles.tipItem}>• Practice 2-3 exercises before your session</Text>
           <Text style={styles.tipItem}>• Notice which techniques work best for you</Text>
           <Text style={styles.tipItem}>• Remember these during your journey if you need grounding</Text>
@@ -205,7 +216,7 @@ const GroundingExercisesWidget = ({ onComplete, onSkip }) => {
             onPress={() => setCurrentExercise(null)}
             style={styles.backButton}
           >
-            <MaterialIcons name="arrow-back" size={24} color={colors.textSecondary} />
+            <ArrowLeft size={24} color={colors.textSecondary} strokeWidth={2} />
             <Text style={styles.backButtonText}>Back</Text>
           </TouchableOpacity>
           
@@ -214,12 +225,11 @@ const GroundingExercisesWidget = ({ onComplete, onSkip }) => {
           </View>
         </View>
 
-        <ScrollView style={styles.exerciseContent}>
-          {exercise.icon ? (
-            <Image source={exercise.icon} style={styles.currentExerciseIconImage} />
-          ) : (
-            <Text style={styles.currentExerciseEmoji}>{exercise.emoji}</Text>
-          )}
+        <ScrollView
+          style={styles.exerciseContent}
+          contentContainerStyle={styles.exerciseContentInner}
+        >
+          <Image source={exercise.icon} style={styles.currentExerciseIconImage} />
           <Text style={styles.currentExerciseTitle}>{exercise.title}</Text>
           <Text style={styles.currentExerciseDescription}>{exercise.description}</Text>
 
@@ -241,15 +251,22 @@ const GroundingExercisesWidget = ({ onComplete, onSkip }) => {
 
   const render5432Exercise = (exercise) => (
     <View style={styles.stepsContainer}>
-      {exercise.steps.map((step, index) => (
-        <View key={index} style={styles.stepCard}>
-          <View style={styles.stepHeader}>
-            <Text style={styles.stepIcon}>{step.icon}</Text>
-            <Text style={styles.stepTitle}>{step.instruction}</Text>
+      {exercise.steps.map((step, index) => {
+        const StepIcon = step.Icon;
+        return (
+          <View key={index} style={styles.stepCard}>
+            <View style={styles.stepHeader}>
+              <View style={styles.stepIconWrap}>
+                {StepIcon ? (
+                  <StepIcon size={20} color={colors.success} strokeWidth={2} />
+                ) : null}
+              </View>
+              <Text style={styles.stepTitle}>{step.instruction}</Text>
+            </View>
+            <Text style={styles.stepDetail}>{step.detail}</Text>
           </View>
-          <Text style={styles.stepDetail}>{step.detail}</Text>
-        </View>
-      ))}
+        );
+      })}
       
       <View style={styles.exerciseGuide}>
         <Text style={styles.guideTitle}>How to practice:</Text>
@@ -322,6 +339,11 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: colors.text,
+  },
+  introTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
     marginBottom: 12,
   },
   introText: {
@@ -349,10 +371,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 8,
-  },
-  exerciseEmoji: {
-    fontSize: 24,
-    marginRight: 12,
   },
   exerciseIconImage: {
     width: 72,
@@ -384,11 +402,16 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 24,
   },
+  tipTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
+  },
   tipTitle: {
     fontSize: 16,
     fontWeight: '600',
     color: '#7c2d12',
-    marginBottom: 12,
   },
   tipItem: {
     fontSize: 14,
@@ -440,12 +463,10 @@ const styles = StyleSheet.create({
   },
   exerciseContent: {
     flex: 1,
-    padding: 24,
   },
-  currentExerciseEmoji: {
-    fontSize: 48,
-    textAlign: 'center',
-    marginBottom: 16,
+  exerciseContentInner: {
+    padding: 24,
+    paddingBottom: 32,
   },
   currentExerciseIconImage: {
     width: 160,
@@ -483,9 +504,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 8,
   },
-  stepIcon: {
-    fontSize: 20,
+  stepIconWrap: {
     marginRight: 8,
+    width: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   stepTitle: {
     fontSize: 16,

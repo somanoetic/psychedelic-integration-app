@@ -7,62 +7,61 @@ import {
   FlatList,
   TouchableOpacity,
   StatusBar,
+  Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, gradients, spacing, borderRadius } from '../theme/colors';
+import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
+import { icons } from '../lib/uiIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const { width } = Dimensions.get('window');
 
+// Slide 1 uses the brand logo which has the wordmark baked into the image,
+// so the explicit title is suppressed for that slide only.
 const ONBOARDING_SLIDES = [
   {
     id: '1',
-    emoji: '🌟',
-    title: 'Welcome to Huxley',
-    subtitle: 'Direct Knowing Through Integration',
-    description: 'Your companion for psychedelic integration and therapeutic healing. A safe space to process experiences, develop insights, and cultivate lasting growth.',
-    gradient: [colors.cream, colors.sand],
+    icon: icons.multitudesLogo,
+    iconStyle: 'brand',
+    title: null,
+    subtitle: 'Many selves. One you.',
+    description: 'Your companion for psychedelic integration and therapeutic healing — a space to process experiences, develop insights, and cultivate lasting growth.',
   },
   {
     id: '2',
-    emoji: '🧠',
-    title: 'Understand Your Nervous System',
-    subtitle: 'Foundation of Healing',
-    description: 'Learn about polyvagal theory, how trauma affects your nervous system, and practical tools to restore regulation and safety.',
-    gradient: [colors.sand, colors.sage],
+    icon: icons.balance,
+    title: 'Understand your nervous system',
+    subtitle: 'The foundation of healing',
+    description: 'Learn polyvagal theory, how stress and trauma shape your physiology, and practical tools to restore regulation and safety.',
   },
   {
     id: '3',
-    emoji: '🗺️',
-    title: 'Map Your Journey',
-    subtitle: 'Process & Integrate',
-    description: 'Use AI-guided conversations to map your psychedelic experiences, identify insights, and weave them into your daily life.',
-    gradient: [colors.sage, colors.dustyRose],
+    icon: icons.mapRefined,
+    title: 'Map your journey',
+    subtitle: 'Process & integrate',
+    description: 'Use AI-guided conversations to make sense of non-ordinary experiences, surface insights, and weave them into daily life.',
   },
   {
     id: '4',
-    emoji: '💪',
-    title: 'Practice & Grow',
-    subtitle: 'Exercise Library',
-    description: 'Access breathing exercises, grounding techniques, IFS parts work, and more. Build your personal toolkit for regulation and healing.',
-    gradient: [colors.dustyRose, colors.cream],
+    icon: icons.meditate,
+    title: 'Practice & grow',
+    subtitle: 'A toolkit you can return to',
+    description: 'Breathwork, grounding, IFS parts work, and somatic exercises — a personal library for regulation and resilience.',
   },
   {
     id: '5',
-    emoji: '📚',
-    title: 'Deepen Your Learning',
-    subtitle: 'Educational Resources',
+    icon: icons.library,
+    title: 'Deepen your learning',
+    subtitle: 'Grounded in research',
     description: 'Explore polyvagal theory, Internal Family Systems, harm reduction, set and setting, and evidence-based integration practices.',
-    gradient: [colors.cream, colors.sand],
   },
   {
     id: '6',
-    emoji: '🧘',
-    title: 'Prepare Mindfully',
-    subtitle: 'Set Your Intention',
-    description: 'Before each session, prepare your mind and nervous system. Set intentions, assess your state, and create conditions for safe exploration.',
-    gradient: [colors.sand, colors.sage],
+    icon: icons.intention,
+    title: 'Prepare mindfully',
+    subtitle: 'Set your intention',
+    description: 'Before each journey, settle your nervous system, clarify intentions, and create the conditions for safe exploration.',
   },
 ];
 
@@ -90,23 +89,29 @@ const OnboardingCarousel = ({ onComplete }) => {
       onComplete();
     } catch (error) {
       console.error('Error saving onboarding status:', error);
-      onComplete(); // Continue anyway
+      onComplete();
     }
   };
 
-  const renderSlide = ({ item }) => (
-    <LinearGradient
-      colors={item.gradient}
-      style={styles.slide}
-    >
-      <View style={styles.slideContent}>
-        <Text style={styles.emoji}>{item.emoji}</Text>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.subtitle}>{item.subtitle}</Text>
-        <Text style={styles.description}>{item.description}</Text>
+  const renderSlide = ({ item }) => {
+    const isBrand = item.iconStyle === 'brand';
+    return (
+      <View style={styles.slide}>
+        <View style={styles.slideContent}>
+          <View style={[styles.iconWrap, isBrand && styles.iconWrapBrand]}>
+            <Image
+              source={item.icon}
+              style={isBrand ? styles.brandImage : styles.iconImage}
+              resizeMode="contain"
+            />
+          </View>
+          {item.title && <Text style={styles.title}>{item.title}</Text>}
+          {item.subtitle && <Text style={styles.subtitle}>{item.subtitle}</Text>}
+          <Text style={styles.description}>{item.description}</Text>
+        </View>
       </View>
-    </LinearGradient>
-  );
+    );
+  };
 
   const renderDots = () => (
     <View style={styles.dotsContainer}>
@@ -125,54 +130,54 @@ const OnboardingCarousel = ({ onComplete }) => {
   return (
     <LinearGradient
       colors={gradients.standard}
-      start={{ x: 1.0, y: 0.0 }}
-      end={{ x: 0.0, y: 1.0 }}
+      start={gradients.standardStart}
+      end={gradients.standardEnd}
       style={{ flex: 1 }}
     >
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <StatusBar barStyle="dark-content" />
+      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+        <StatusBar barStyle="dark-content" />
 
-      {/* Skip button */}
-      {currentIndex < ONBOARDING_SLIDES.length - 1 && (
-        <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
-          <Text style={styles.skipText}>Skip</Text>
-        </TouchableOpacity>
-      )}
+        {currentIndex < ONBOARDING_SLIDES.length - 1 && (
+          <TouchableOpacity style={styles.skipButton} onPress={handleSkip}>
+            <Text style={styles.skipText}>Skip</Text>
+          </TouchableOpacity>
+        )}
 
-      {/* Slides */}
-      <FlatList
-        ref={flatListRef}
-        data={ONBOARDING_SLIDES}
-        renderItem={renderSlide}
-        keyExtractor={(item) => item.id}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        onMomentumScrollEnd={(event) => {
-          const index = Math.round(event.nativeEvent.contentOffset.x / width);
-          setCurrentIndex(index);
-        }}
-        scrollEnabled={true}
-      />
+        <FlatList
+          ref={flatListRef}
+          data={ONBOARDING_SLIDES}
+          renderItem={renderSlide}
+          keyExtractor={(item) => item.id}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          onMomentumScrollEnd={(event) => {
+            const index = Math.round(event.nativeEvent.contentOffset.x / width);
+            setCurrentIndex(index);
+          }}
+          scrollEnabled={true}
+        />
 
-      {/* Dots indicator */}
-      {renderDots()}
+        {renderDots()}
 
-      {/* Navigation buttons */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={[styles.button, styles.primaryButton]}
-          onPress={handleNext}
-        >
-          <Text style={styles.primaryButtonText}>
-            {currentIndex === ONBOARDING_SLIDES.length - 1 ? 'Get Started' : 'Next'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={[styles.button, styles.primaryButton]}
+            onPress={handleNext}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.primaryButtonText}>
+              {currentIndex === ONBOARDING_SLIDES.length - 1 ? 'Get Started' : 'Next'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
     </LinearGradient>
   );
 };
+
+const ICON_SIZE = Math.min(width * 0.55, 240);
+const BRAND_SIZE = Math.min(width * 0.75, 320);
 
 const styles = StyleSheet.create({
   container: {
@@ -180,7 +185,7 @@ const styles = StyleSheet.create({
   },
   skipButton: {
     position: 'absolute',
-    top: spacing.md + 40, // Account for status bar
+    top: spacing.md + 40,
     right: spacing.lg,
     zIndex: 10,
     paddingHorizontal: spacing.md,
@@ -200,33 +205,52 @@ const styles = StyleSheet.create({
   },
   slideContent: {
     alignItems: 'center',
-    maxWidth: 400,
+    maxWidth: 420,
   },
-  emoji: {
-    fontSize: 80,
+  iconWrap: {
+    width: ICON_SIZE,
+    height: ICON_SIZE,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.xl,
+  },
+  iconWrapBrand: {
+    width: BRAND_SIZE,
+    height: BRAND_SIZE,
     marginBottom: spacing.lg,
   },
+  iconImage: {
+    width: '100%',
+    height: '100%',
+  },
+  brandImage: {
+    width: '100%',
+    height: '100%',
+  },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
+    fontSize: 30,
+    fontWeight: '700',
     color: colors.deepEarth,
     textAlign: 'center',
     marginBottom: spacing.sm,
     letterSpacing: -0.5,
+    lineHeight: 36,
   },
   subtitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
     color: colors.primary,
     textAlign: 'center',
-    marginBottom: spacing.lg,
+    marginBottom: spacing.md,
+    letterSpacing: 0.3,
+    textTransform: 'uppercase',
   },
   description: {
     fontSize: 16,
     color: colors.slate,
     textAlign: 'center',
     lineHeight: 24,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.sm,
   },
   dotsContainer: {
     flexDirection: 'row',
@@ -235,8 +259,8 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.lg,
   },
   dot: {
-    height: 10,
-    borderRadius: 5,
+    height: 8,
+    borderRadius: 4,
     marginHorizontal: 4,
   },
   activeDot: {
@@ -244,8 +268,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
   },
   inactiveDot: {
-    width: 10,
-    backgroundColor: colors.sand,
+    width: 8,
+    backgroundColor: 'rgba(58, 58, 58, 0.18)',
   },
   buttonContainer: {
     paddingHorizontal: spacing.xl,
@@ -261,15 +285,11 @@ const styles = StyleSheet.create({
   },
   primaryButton: {
     backgroundColor: colors.primary,
-    shadowColor: colors.deepEarth,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
+    ...shadows.medium,
   },
   primaryButtonText: {
     color: colors.white,
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '700',
     letterSpacing: 0.3,
   },

@@ -8,27 +8,24 @@
  * 'active_imagination' mode with the same chat UI and session persistence.
  */
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  TextInput,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-  Keyboard,
   ActivityIndicator,
-  Image,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import huxleyService from '../lib/huxleyService';
 import ifsContextService from '../lib/ifsContextService';
 import masterContextService from '../lib/masterContextService';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../lib/supabase';
-import { colors } from '../theme/colors';
+import { colors, gradients } from '../theme/colors';
+import { ChatConversation } from '../components/chat';
 
 const ENTRY_METHODS = [
   { id: 'open', label: 'Open Invitation', description: 'Empty the mind and see who appears' },
@@ -38,9 +35,7 @@ const ENTRY_METHODS = [
 ];
 
 const ActiveImaginationScreen = ({ navigation, route }) => {
-  // Pre-loaded figure from another screen (Experience Mapping, IFS Parts Work)
   const preloadedFigure = route?.params?.figure || null;
-  const preloadedSource = route?.params?.source || null; // 'ifs' | 'experience_mapping'
 
   const [currentPhase, setCurrentPhase] = useState('safety_check');
   const [messages, setMessages] = useState([]);
@@ -49,7 +44,6 @@ const ActiveImaginationScreen = ({ navigation, route }) => {
   const [isAIMode, setIsAIMode] = useState(true);
   const [loading, setLoading] = useState(true);
 
-  // Session state
   const [userId, setUserId] = useState(null);
   const [entryMethod, setEntryMethod] = useState(preloadedFigure ? 'journey_figure' : null);
   const [knownParts, setKnownParts] = useState([]);
@@ -62,28 +56,10 @@ const ActiveImaginationScreen = ({ navigation, route }) => {
   const [ethicalInsights, setEthicalInsights] = useState('');
   const [ritualDesigned, setRitualDesigned] = useState('');
 
-  const scrollViewRef = useRef(null);
-
-  // Scroll on keyboard show
   useEffect(() => {
-    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
-    const sub = Keyboard.addListener(showEvent, () => {
-      setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 150);
-    });
-    return () => sub.remove();
+    initializeSession();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => { initializeSession(); }, []);
-
-  useEffect(() => {
-    if (scrollViewRef.current) {
-      setTimeout(() => scrollViewRef.current?.scrollToEnd({ animated: true }), 100);
-    }
-  }, [messages, isTyping]);
-
-  // ---------------------------------------------------------------------------
-  // Initialization
-  // ---------------------------------------------------------------------------
 
   const initializeSession = async () => {
     try {
@@ -95,14 +71,12 @@ const ActiveImaginationScreen = ({ navigation, route }) => {
         await huxleyService.initialize(userData.id);
         huxleyService.setMode('active_imagination', { clearHistory: true });
 
-        // Load known parts for journey_figure entry
         const partsData = await ifsContextService.loadUserParts(userData.id);
         setKnownParts(partsData.allParts || []);
       } else {
         huxleyService.setMode('active_imagination', { clearHistory: true });
       }
 
-      // If we have a preloaded figure, skip to safety check with context
       if (preloadedFigure) {
         addMessage('assistant', getSafetyCheckMessage(preloadedFigure));
       } else {
@@ -115,10 +89,6 @@ const ActiveImaginationScreen = ({ navigation, route }) => {
       setLoading(false);
     }
   };
-
-  // ---------------------------------------------------------------------------
-  // Phase messages
-  // ---------------------------------------------------------------------------
 
   const getSafetyCheckMessage = (figure) => {
     const figureContext = figure
@@ -137,22 +107,20 @@ Before we begin, a few things:
 Are you in a relatively calm, grounded state right now? Do you have someone you could reach out to if the session becomes intense?`;
   };
 
-  const getEntrySelectionMessage = () => {
-    return `Good. Let's begin.
+  const getEntrySelectionMessage = () => `Good. Let's begin.
 
 How would you like to enter the imagination today?
 
 Choose your entry point:`;
-  };
 
   const getInvitationPrompt = (method, figure) => {
     switch (method) {
       case 'open':
         return 'Close your eyes if that feels comfortable. Let your mind settle completely. Direct your inner eye to a quiet, dim place inside you. Wait with alert attention — not looking for anything, just watching. What appears? Even something small or seemingly insignificant.';
       case 'fantasy':
-        return 'What feeling or recurring thought has been pulling at you lately? Something that keeps surfacing — an emotion, a mood, an image that won\'t let go. Describe it, and let\'s see who or what is behind it.';
+        return "What feeling or recurring thought has been pulling at you lately? Something that keeps surfacing — an emotion, a mood, an image that won't let go. Describe it, and let's see who or what is behind it.";
       case 'inner_place':
-        return 'Is there a place in your imagination you feel drawn to right now? A landscape, a room, a cave, a threshold, a body of water? Go there in your mind\'s eye. Describe what you see, hear, and feel.';
+        return "Is there a place in your imagination you feel drawn to right now? A landscape, a room, a cave, a threshold, a body of water? Go there in your mind's eye. Describe what you see, hear, and feel.";
       case 'journey_figure':
         if (figure) {
           return `You encountered ${figure.name || figure.part_name} in your previous work. Let's invite them back.\n\nClose your eyes. Picture ${figure.name || figure.part_name} as you last saw them. Call to them gently. Where do they appear? What do they look like now?`;
@@ -163,10 +131,6 @@ Choose your entry point:`;
     }
   };
 
-  // ---------------------------------------------------------------------------
-  // Message helpers
-  // ---------------------------------------------------------------------------
-
   const addMessage = (sender, text, options = null) => {
     const newMessage = {
       id: Date.now() + Math.random(),
@@ -176,33 +140,26 @@ Choose your entry point:`;
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       isAI: sender === 'assistant' && isAIMode,
     };
-    setMessages(prev => [...prev, newMessage]);
+    setMessages((prev) => [...prev, newMessage]);
   };
-
-  // ---------------------------------------------------------------------------
-  // Option handling
-  // ---------------------------------------------------------------------------
 
   const handleOptionSelect = async (option) => {
     addMessage('user', option);
 
-    // Safety check responses
     if (currentPhase === 'safety_check') {
       await handleSafetyResponse(option);
       return;
     }
 
-    // Entry method selection
     if (currentPhase === 'entry_selection') {
-      const method = ENTRY_METHODS.find(m => m.label === option);
+      const method = ENTRY_METHODS.find((m) => m.label === option);
       if (method) {
         await handleEntryMethodSelection(method.id);
         return;
       }
-      // Known part selection for journey_figure
       if (option.startsWith('Figure: ')) {
         const partName = option.replace('Figure: ', '');
-        const part = knownParts.find(p => p.part_name === partName);
+        const part = knownParts.find((p) => p.part_name === partName);
         if (part) {
           setActiveFigure(part);
           await handleEntryMethodSelection('journey_figure', part);
@@ -211,54 +168,34 @@ Choose your entry point:`;
       }
     }
 
-    // Phase transition options
-    if (option === 'Move to Values Check') {
-      transitionToValues();
-      return;
-    }
-    if (option === 'Move to Ritual') {
-      transitionToRitual();
-      return;
-    }
-    if (option === 'End Session') {
-      await handleEndSession();
-      return;
-    }
-    if (option === 'Save Figure to Parts Inventory') {
-      await handleSaveFigure();
-      return;
-    }
-    if (option === 'Ground and close') {
-      await handleGroundAndClose();
-      return;
-    }
-    if (option === 'Regulate first') {
-      navigation.navigate('NervousSystemCheckin');
-      return;
-    }
+    if (option === 'Move to Values Check') return transitionToValues();
+    if (option === 'Move to Ritual') return transitionToRitual();
+    if (option === 'End Session') return handleEndSession();
+    if (option === 'Save Figure to Parts Inventory') return handleSaveFigure();
+    if (option === 'Ground and close') return handleGroundAndClose();
+    if (option === 'Regulate first') return navigation.navigate('NervousSystemCheckin');
 
-    // Default: send as chat message
     await handleSendMessage(option);
   };
 
   const handleSafetyResponse = async (response) => {
     const lower = response.toLowerCase();
-    const notReady = lower.includes('no') || lower.includes("can't") || lower.includes('not really') ||
-                     lower.includes('activated') || lower.includes('anxious') || lower.includes('overwhelm');
+    const notReady =
+      lower.includes('no') || lower.includes("can't") || lower.includes('not really') ||
+      lower.includes('activated') || lower.includes('anxious') || lower.includes('overwhelm');
 
     if (notReady) {
-      addMessage('assistant',
+      addMessage(
+        'assistant',
         "That's completely okay. Active Imagination works best when you're starting from a grounded place. Your nervous system's readiness matters.\n\nWould you like to do a brief grounding exercise first, or come back another time?",
-        ['Regulate first', 'End Session']
+        ['Regulate first', 'End Session'],
       );
       return;
     }
 
-    // User seems ready — note nervous system state
     setNervousSystemStart('grounded');
 
     if (preloadedFigure) {
-      // Skip entry selection, go straight to invitation with preloaded figure
       setCurrentPhase('invitation');
       setEntryMethod('journey_figure');
       setIsTyping(true);
@@ -268,17 +205,14 @@ Choose your entry point:`;
         addMessage('assistant', prompt);
       }, 600);
     } else {
-      // Show entry method selection
       setCurrentPhase('entry_selection');
       const entryMessage = getEntrySelectionMessage();
-      const options = ENTRY_METHODS.map(m => m.label);
+      const options = ENTRY_METHODS.map((m) => m.label);
 
-      // If user has known parts, add journey_figure options
       if (knownParts.length > 0) {
         addMessage('assistant', entryMessage, options);
       } else {
-        // Remove "From a Journey Figure" if no known parts
-        const filteredOptions = options.filter(o => o !== 'From a Journey Figure');
+        const filteredOptions = options.filter((o) => o !== 'From a Journey Figure');
         addMessage('assistant', entryMessage, filteredOptions);
       }
     }
@@ -289,12 +223,8 @@ Choose your entry point:`;
     setCurrentPhase('invitation');
 
     if (method === 'journey_figure' && !figure && knownParts.length > 0) {
-      // Show known parts to choose from
-      const partOptions = knownParts.slice(0, 6).map(p => `Figure: ${p.part_name}`);
-      addMessage('assistant',
-        'Which figure would you like to invite back?',
-        partOptions
-      );
+      const partOptions = knownParts.slice(0, 6).map((p) => `Figure: ${p.part_name}`);
+      addMessage('assistant', 'Which figure would you like to invite back?', partOptions);
       return;
     }
 
@@ -306,12 +236,8 @@ Choose your entry point:`;
     }, 600);
   };
 
-  // ---------------------------------------------------------------------------
-  // Main chat handler
-  // ---------------------------------------------------------------------------
-
   const handleSendMessage = async (messageOverride = null) => {
-    const message = messageOverride || userInput.trim();
+    const message = (messageOverride ?? userInput).trim();
     if (!message) return;
 
     if (!messageOverride) {
@@ -321,11 +247,9 @@ Choose your entry point:`;
     setIsTyping(true);
 
     try {
-      // Track exchanges for grounding checks
       const newCount = exchangeCount + 1;
       setExchangeCount(newCount);
 
-      // Check for real-person dialogue (safety)
       const realPersonRedirect = checkForRealPerson(message);
       if (realPersonRedirect) {
         setIsTyping(false);
@@ -333,7 +257,6 @@ Choose your entry point:`;
         return;
       }
 
-      // Build phase context for the AI
       const phaseContext = buildPhaseContext(message, newCount);
 
       const aiResponse = await huxleyService.chat(message, {
@@ -344,33 +267,28 @@ Choose your entry point:`;
       setIsTyping(false);
       setIsAIMode(aiResponse.isAI);
 
-      // Extract figure data if present
       if (aiResponse.therapeuticData?.innerFigures) {
         updateDiscoveredFigures(aiResponse.therapeuticData.innerFigures);
       }
 
       addMessage('assistant', aiResponse.message);
 
-      // Capture phase-specific data
       if (currentPhase === 'values') {
-        setEthicalInsights(prev => prev ? prev + '\n' + message : message);
+        setEthicalInsights((prev) => (prev ? prev + '\n' + message : message));
       } else if (currentPhase === 'ritual') {
         setRitualDesigned(message);
       }
 
-      // Phase advancement
       advancePhase(message, aiResponse.message, newCount);
-
     } catch (error) {
       setIsTyping(false);
       console.error('[ActiveImagination] Chat error:', error);
-      addMessage('assistant', "I'm here with you. Take a moment. When you're ready, continue describing what you see or feel.");
+      addMessage(
+        'assistant',
+        "I'm here with you. Take a moment. When you're ready, continue describing what you see or feel.",
+      );
     }
   };
-
-  // ---------------------------------------------------------------------------
-  // Safety: real person detection
-  // ---------------------------------------------------------------------------
 
   const checkForRealPerson = (message) => {
     const lower = message.toLowerCase();
@@ -380,7 +298,7 @@ Choose your entry point:`;
       'my therapist', 'my friend',
     ];
 
-    const isRealPerson = realPersonIndicators.some(indicator => lower.includes(indicator));
+    const isRealPerson = realPersonIndicators.some((indicator) => lower.includes(indicator));
 
     if (isRealPerson && currentPhase === 'dialogue') {
       return "I notice you're describing a real person from your life. For Active Imagination to work safely, we need to dialogue with the inner quality this person represents, not the external person themselves.\n\nCan you ask this figure to show its true form — the part of YOU it represents? What quality or energy does this person carry for you?";
@@ -389,20 +307,15 @@ Choose your entry point:`;
     return null;
   };
 
-  // ---------------------------------------------------------------------------
-  // Phase context building
-  // ---------------------------------------------------------------------------
-
   const buildPhaseContext = (message, count) => {
     const context = {
       phase: currentPhase,
       entryMethod,
       exchangeCount: count,
       activeFigure: activeFigure ? (activeFigure.name || activeFigure.part_name) : null,
-      discoveredFigures: discoveredFigures.map(f => f.name),
+      discoveredFigures: discoveredFigures.map((f) => f.name),
     };
 
-    // Grounding check every 6 exchanges during dialogue
     if (currentPhase === 'dialogue' && count > 0 && count % 6 === 0) {
       context.groundingCheckDue = true;
     }
@@ -410,55 +323,51 @@ Choose your entry point:`;
     return context;
   };
 
-  // ---------------------------------------------------------------------------
-  // Phase advancement
-  // ---------------------------------------------------------------------------
-
   const advancePhase = (userMessage, aiResponse, count) => {
     const lower = aiResponse.toLowerCase();
 
     if (currentPhase === 'invitation') {
-      // Move to dialogue once a figure appears
-      const figureAppeared = lower.includes('what do they') || lower.includes('what does') ||
-                             lower.includes('stay with') || lower.includes('what do you feel') ||
-                             count >= 3;
+      const figureAppeared =
+        lower.includes('what do they') || lower.includes('what does') ||
+        lower.includes('stay with') || lower.includes('what do you feel') ||
+        count >= 3;
       if (figureAppeared) {
         setCurrentPhase('dialogue');
       }
     }
 
-    // During dialogue, after substantial exchange, offer transition
     if (currentPhase === 'dialogue' && count >= 12 && count % 6 === 0) {
       setDialogueSummary(
-        messages.filter(m => m.sender === 'user').map(m => m.text).join('\n')
+        messages.filter((m) => m.sender === 'user').map((m) => m.text).join('\n'),
       );
 
-      addMessage('assistant',
-        'We\'ve been in deep dialogue for a while. How are you feeling? Would you like to continue, or does this feel like a natural pause?',
-        ['Continue dialogue', 'Move to Values Check']
+      addMessage(
+        'assistant',
+        "We've been in deep dialogue for a while. How are you feeling? Would you like to continue, or does this feel like a natural pause?",
+        ['Continue dialogue', 'Move to Values Check'],
       );
     }
 
-    // After values exchange, offer transition to ritual
     if (currentPhase === 'values' && count >= 2) {
       setTimeout(() => {
-        addMessage('assistant',
+        addMessage(
+          'assistant',
           'Thank you for that reflection. Shall we move to the final step — choosing a small physical act to honor this experience?',
-          ['Move to Ritual', 'Continue reflecting']
+          ['Move to Ritual', 'Continue reflecting'],
         );
       }, 1000);
     }
 
-    // After ritual is designed, offer session end
     if (currentPhase === 'ritual' && count >= 1) {
       const saveOptions = discoveredFigures.length > 0
         ? ['Save Figure to Parts Inventory', 'Ground and close']
         : ['Ground and close'];
 
       setTimeout(() => {
-        addMessage('assistant',
-          'Beautiful. When you\'re ready, carry that intention into a quiet moment today.',
-          saveOptions
+        addMessage(
+          'assistant',
+          "Beautiful. When you're ready, carry that intention into a quiet moment today.",
+          saveOptions,
         );
       }, 1000);
     }
@@ -469,8 +378,9 @@ Choose your entry point:`;
     setIsTyping(true);
     setTimeout(() => {
       setIsTyping(false);
-      addMessage('assistant',
-        "Let's step back and apply ethical consciousness to what just happened.\n\nDid any figure demand something extreme — total devotion, abandoning your responsibilities, or acting against your values?\n\nDid one voice try to take over completely, leaving no room for other perspectives?\n\nAre there human values — fairness, kindness, commitment to your relationships — that need to be honored alongside what you experienced?"
+      addMessage(
+        'assistant',
+        "Let's step back and apply ethical consciousness to what just happened.\n\nDid any figure demand something extreme — total devotion, abandoning your responsibilities, or acting against your values?\n\nDid one voice try to take over completely, leaving no room for other perspectives?\n\nAre there human values — fairness, kindness, commitment to your relationships — that need to be honored alongside what you experienced?",
       );
     }, 800);
   };
@@ -480,31 +390,24 @@ Choose your entry point:`;
     setIsTyping(true);
     setTimeout(() => {
       setIsTyping(false);
-      addMessage('assistant',
-        "Now comes the final step: incarnating the meaning.\n\nWhat you experienced in this dialogue has real significance. To anchor it in your life, choose a small physical act — something solitary, quiet, and simple.\n\nIt should embody the MEANING, not act it out literally.\n\nExamples: lighting a candle, placing a stone on a windowsill, writing a single word on paper, touching water, taking a mindful walk.\n\nWhat physical act would honor what you experienced today?"
+      addMessage(
+        'assistant',
+        "Now comes the final step: incarnating the meaning.\n\nWhat you experienced in this dialogue has real significance. To anchor it in your life, choose a small physical act — something solitary, quiet, and simple.\n\nIt should embody the MEANING, not act it out literally.\n\nExamples: lighting a candle, placing a stone on a windowsill, writing a single word on paper, touching water, taking a mindful walk.\n\nWhat physical act would honor what you experienced today?",
       );
     }, 800);
   };
 
-  // ---------------------------------------------------------------------------
-  // Figure tracking
-  // ---------------------------------------------------------------------------
-
   const updateDiscoveredFigures = (figures) => {
-    setDiscoveredFigures(prev => {
-      const existing = new Set(prev.map(f => f.name));
-      const newFigures = figures.filter(f => !existing.has(f.name));
+    setDiscoveredFigures((prev) => {
+      const existing = new Set(prev.map((f) => f.name));
+      const newFigures = figures.filter((f) => !existing.has(f.name));
       return [...prev, ...newFigures];
     });
   };
 
-  // ---------------------------------------------------------------------------
-  // Session save & end
-  // ---------------------------------------------------------------------------
-
   const handleSaveFigure = async () => {
     if (!userId || discoveredFigures.length === 0) {
-      addMessage('assistant', "No new figures to save right now.", ['Ground and close']);
+      addMessage('assistant', 'No new figures to save right now.', ['Ground and close']);
       return;
     }
 
@@ -523,9 +426,10 @@ Choose your entry point:`;
         });
       }
 
-      addMessage('assistant',
+      addMessage(
+        'assistant',
         `Saved ${discoveredFigures.length} figure(s) to your parts inventory. You can continue working with them in IFS Parts Work or future Active Imagination sessions.`,
-        ['Ground and close']
+        ['Ground and close'],
       );
     } catch (error) {
       console.error('[ActiveImagination] Save figure error:', error);
@@ -535,20 +439,19 @@ Choose your entry point:`;
 
   const handleEndSession = async () => {
     await saveSession();
-
-    addMessage('assistant',
-      "Take a few deep breaths. Feel your feet on the ground. Notice the room around you — its sounds, its light, its temperature.\n\nThe figures will wait. You can return to this dialogue whenever you're ready.\n\nThank you for doing this deep inner work.",
+    addMessage(
+      'assistant',
+      'Take a few deep breaths. Feel your feet on the ground. Notice the room around you — its sounds, its light, its temperature.\n\nThe figures will wait. You can return to this dialogue whenever you\'re ready.\n\nThank you for doing this deep inner work.',
     );
   };
 
   const handleGroundAndClose = async () => {
     await saveSession();
-
-    addMessage('assistant',
-      "Before you go: Feel your feet on the ground. Take three slow breaths. Look around the room and name three things you can see.\n\nYou've done meaningful inner work today. Carry it lightly.\n\nThe figures will be there when you return."
+    addMessage(
+      'assistant',
+      "Before you go: Feel your feet on the ground. Take three slow breaths. Look around the room and name three things you can see.\n\nYou've done meaningful inner work today. Carry it lightly.\n\nThe figures will be there when you return.",
     );
 
-    // Navigate back after a pause
     setTimeout(() => {
       if (navigation) navigation.goBack();
     }, 5000);
@@ -560,8 +463,8 @@ Choose your entry point:`;
     try {
       const duration = Math.round((new Date() - sessionStartTime) / 1000 / 60);
       const conversationText = messages
-        .filter(m => m.sender === 'user' || m.sender === 'assistant')
-        .map(m => `${m.sender}: ${m.text}`)
+        .filter((m) => m.sender === 'user' || m.sender === 'assistant')
+        .map((m) => `${m.sender}: ${m.text}`)
         .join('\n');
 
       const { error } = await supabase
@@ -592,202 +495,131 @@ Choose your entry point:`;
     }
   };
 
-  // ---------------------------------------------------------------------------
-  // Render
-  // ---------------------------------------------------------------------------
-
-  const renderMessage = (message) => {
-    const isUser = message.sender === 'user';
-
-    if (!isUser) {
-      return (
-        <View key={message.id} style={styles.assistantMessageRow}>
-          <Image
-            source={require('../assets/images/huxley-avatar.png')}
-            style={styles.huxleyAvatar}
-            resizeMode="contain"
-          />
-          <View style={[styles.messageBubble, styles.assistantBubble]}>
-            <Text style={[styles.messageText, styles.assistantText]}>
-              {message.text}
-            </Text>
-
-            {message.options && (
-              <View style={styles.optionsContainer}>
-                {message.options.map((option, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={styles.optionButton}
-                    onPress={() => handleOptionSelect(option)}
-                  >
-                    <Text style={styles.optionText}>{option}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            )}
-
-            <View style={styles.messageFooter}>
-              <Text style={[styles.timestamp, styles.assistantTimestamp]}>
-                {message.timestamp}
-              </Text>
-              {message.isAI && (
-                <Text style={styles.aiIndicator}>AI</Text>
-              )}
-            </View>
-          </View>
-        </View>
-      );
-    }
-
+  if (loading) {
     return (
-      <View key={message.id} style={[styles.messageContainer, styles.userMessageContainer]}>
-        <View style={[styles.messageBubble, styles.userBubble]}>
-          <Text style={[styles.messageText, styles.userText]}>
-            {message.text}
-          </Text>
-          <View style={styles.messageFooter}>
-            <Text style={[styles.timestamp, styles.userTimestamp]}>
-              {message.timestamp}
-            </Text>
-          </View>
+      <LinearGradient
+        colors={gradients.standard}
+        start={gradients.standardStart}
+        end={gradients.standardEnd}
+        style={styles.container}
+      >
+        <View style={styles.centerContent}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={styles.loadingText}>Preparing the space...</Text>
         </View>
+      </LinearGradient>
+    );
+  }
+
+  // Convert internal {sender, text, options} to ChatConversation shape.
+  // Options pass through so renderMessageExtras can render them as buttons.
+  const toChatMessages = (msgs) =>
+    msgs.map((m) => ({
+      id: m.id,
+      role: m.sender === 'user' ? 'user' : 'assistant',
+      content: m.text,
+      options: m.options,
+    }));
+
+  // Tappable option buttons that live inside an assistant bubble.
+  const renderMessageExtras = (message) => {
+    if (!message.options || message.options.length === 0) return null;
+    return (
+      <View style={styles.optionsContainer}>
+        {message.options.map((option, index) => (
+          <TouchableOpacity
+            key={index}
+            style={styles.optionButton}
+            onPress={() => handleOptionSelect(option)}
+          >
+            <Text style={styles.optionText}>{option}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
     );
   };
 
-  if (loading) {
-    return (
-      <View style={[styles.container, styles.centerContent]}>
-        <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>Preparing the space...</Text>
+  const renderHeader = () => (
+    <View style={styles.header}>
+      <TouchableOpacity onPress={() => navigation?.goBack()}>
+        <Text style={styles.backText}>← Back</Text>
+      </TouchableOpacity>
+      <View style={styles.headerCenter}>
+        <Text style={styles.headerTitle}>Active Imagination</Text>
+        {activeFigure && (
+          <Text style={styles.figureIndicator}>
+            With: {activeFigure.name || activeFigure.part_name}
+          </Text>
+        )}
       </View>
-    );
-  }
+      <View style={styles.headerSpacer} />
+    </View>
+  );
 
+  // Hide input row during entry-method selection (user is choosing from option
+  // buttons instead). Withholding onSend tells ChatConversation to skip it.
   const showInput = currentPhase !== 'entry_selection';
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <KeyboardAvoidingView
-        style={styles.keyboardAvoid}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-      >
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation?.goBack()}>
-            <Text style={styles.backButton}>← Back</Text>
-          </TouchableOpacity>
-          <View style={styles.headerCenter}>
-            <Text style={styles.headerTitle}>Active Imagination</Text>
-            {activeFigure && (
-              <Text style={styles.figureIndicator}>
-                With: {activeFigure.name || activeFigure.part_name}
-              </Text>
-            )}
-          </View>
-          <View style={styles.headerSpacer} />
-        </View>
-
-        {/* Messages */}
-        <ScrollView
-          ref={scrollViewRef}
-          style={styles.messagesContainer}
-          contentContainerStyle={styles.messagesContent}
-          onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
-        >
-          {messages.map(renderMessage)}
-
-          {isTyping && (
-            <View style={styles.assistantMessageRow}>
-              <Image
-                source={require('../assets/images/huxley-avatar.png')}
-                style={styles.huxleyAvatar}
-                resizeMode="contain"
-              />
-              <View style={[styles.messageBubble, styles.assistantBubble]}>
-                <View style={styles.typingIndicator}>
-                  <View style={styles.typingDot} />
-                  <View style={[styles.typingDot, styles.typingDot2]} />
-                  <View style={[styles.typingDot, styles.typingDot3]} />
-                </View>
-                <Text style={styles.typingText}>Huxley is present...</Text>
-              </View>
-            </View>
-          )}
-        </ScrollView>
-
-        {/* Input */}
-        {showInput && (
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.input}
-              value={userInput}
-              onChangeText={setUserInput}
-              placeholder="Describe what you see, feel, or hear..."
-              placeholderTextColor={colors.textLight}
-              multiline
-              maxLength={1000}
-              onSubmitEditing={() => {
-                if (userInput.trim()) handleSendMessage();
-              }}
-            />
-            <TouchableOpacity
-              style={[styles.sendButton, !userInput.trim() && styles.sendButtonDisabled]}
-              onPress={() => handleSendMessage()}
-              disabled={!userInput.trim() || isTyping}
-            >
-              {isTyping ? (
-                <ActivityIndicator size="small" color="#ffffff" />
-              ) : (
-                <Text style={styles.sendButtonText}>Send</Text>
-              )}
-            </TouchableOpacity>
-          </View>
-        )}
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+    <LinearGradient
+      colors={gradients.standard}
+      start={gradients.standardStart}
+      end={gradients.standardEnd}
+      style={styles.container}
+    >
+      <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+        <ChatConversation
+          messages={toChatMessages(messages)}
+          isTyping={isTyping}
+          onSend={showInput ? () => handleSendMessage() : undefined}
+          inputText={userInput}
+          onInputTextChange={setUserInput}
+          inputPlaceholder="Describe what you see, feel, or hear..."
+          inputDisabled={isTyping}
+          header={renderHeader()}
+          renderMessageExtras={renderMessageExtras}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
+        />
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.surface,
+  },
+  safeArea: {
+    flex: 1,
   },
   centerContent: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
   loadingText: {
     marginTop: 16,
     fontSize: 16,
-    color: colors.textSecondary,
-  },
-  keyboardAvoid: {
-    flex: 1,
-    backgroundColor: colors.background,
+    color: colors.text,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 16,
-    backgroundColor: colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.lightGray,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
   },
-  backButton: {
+  backText: {
     fontSize: 16,
     color: colors.primary,
-    fontWeight: '500',
+    fontWeight: '600',
   },
   headerCenter: {
     alignItems: 'center',
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: '700',
     color: colors.text,
   },
   figureIndicator: {
@@ -799,153 +631,20 @@ const styles = StyleSheet.create({
   headerSpacer: {
     width: 60,
   },
-  messagesContainer: {
-    flex: 1,
-  },
-  messagesContent: {
-    padding: 16,
-    paddingBottom: 8,
-  },
-  messageContainer: {
-    marginBottom: 16,
-  },
-  userMessageContainer: {
-    alignItems: 'flex-end',
-  },
-  assistantMessageRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 16,
-  },
-  huxleyAvatar: {
-    width: 54,
-    height: 54,
-    marginRight: 8,
-    marginTop: 4,
-  },
-  messageBubble: {
-    maxWidth: '80%',
-    borderRadius: 16,
-    padding: 12,
-  },
-  userBubble: {
-    backgroundColor: colors.primary,
-    borderBottomRightRadius: 4,
-  },
-  assistantBubble: {
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderBottomLeftRadius: 4,
-    borderWidth: 1,
-    borderColor: colors.lightGray,
-    flex: 1,
-  },
-  messageText: {
-    fontSize: 15,
-    lineHeight: 22,
-  },
-  userText: {
-    color: colors.textInverse,
-  },
-  assistantText: {
-    color: colors.text,
-  },
-  messageFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 4,
-  },
-  timestamp: {
-    fontSize: 11,
-  },
-  userTimestamp: {
-    color: 'rgba(255, 255, 255, 0.7)',
-  },
-  assistantTimestamp: {
-    color: colors.mediumGray,
-  },
-  aiIndicator: {
-    fontSize: 10,
-    color: colors.primary,
-    fontWeight: '600',
-    backgroundColor: `${colors.primary}1A`,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
-    marginLeft: 8,
-  },
   optionsContainer: {
-    marginTop: 12,
     gap: 8,
   },
   optionButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    borderWidth: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderWidth: 2,
     borderColor: colors.primary,
-    borderRadius: 8,
-    padding: 10,
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
   },
   optionText: {
     fontSize: 14,
     color: colors.primary,
-    fontWeight: '500',
-    textAlign: 'center',
-  },
-  typingIndicator: {
-    flexDirection: 'row',
-    gap: 4,
-    paddingVertical: 8,
-  },
-  typingDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: colors.mediumGray,
-  },
-  typingDot2: {
-    opacity: 0.7,
-  },
-  typingDot3: {
-    opacity: 0.4,
-  },
-  typingText: {
-    fontSize: 14,
-    color: colors.mediumGray,
-    fontStyle: 'italic',
-    marginTop: 4,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    padding: 16,
-    backgroundColor: colors.surface,
-    borderTopWidth: 1,
-    borderTopColor: colors.lightGray,
-    gap: 12,
-  },
-  input: {
-    flex: 1,
-    backgroundColor: colors.offWhite,
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    fontSize: 15,
-    color: colors.text,
-    maxHeight: 100,
-  },
-  sendButton: {
-    backgroundColor: colors.primary,
-    borderRadius: 20,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    justifyContent: 'center',
-    minWidth: 70,
-  },
-  sendButtonDisabled: {
-    backgroundColor: colors.mediumGray,
-  },
-  sendButtonText: {
-    color: colors.textInverse,
-    fontSize: 15,
     fontWeight: '600',
     textAlign: 'center',
   },

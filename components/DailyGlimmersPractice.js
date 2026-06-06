@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
   Image,
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Heart, PlusCircle, PartyPopper, X, ArrowLeft, ArrowRight, Check } from 'lucide-react-native';
 import { supabase } from '../lib/supabase';
 import { icons } from '../lib/uiIcons';
 import { colors } from '../theme/colors';
@@ -250,7 +250,7 @@ const DailyGlimmersPractice = ({ onComplete, onSkip }) => {
         </View>
 
         <View style={styles.highlightBox}>
-          <MaterialIcons name="favorite" size={20} color="#dc2626" />
+          <Heart size={20} color="#dc2626" strokeWidth={2} />
           <Text style={styles.highlightText}>
             This practice is especially powerful during the integration window after psychedelic sessions.
           </Text>
@@ -361,7 +361,7 @@ const DailyGlimmersPractice = ({ onComplete, onSkip }) => {
               onPress={handleAddAnother}
               disabled={!currentGlimmer.trim()}
             >
-              <MaterialIcons name="add-circle-outline" size={20} color={colors.success} />
+              <PlusCircle size={20} color={colors.success} strokeWidth={2} />
               <Text style={styles.addAnotherText}>Add another</Text>
             </TouchableOpacity>
           </View>
@@ -429,7 +429,7 @@ const DailyGlimmersPractice = ({ onComplete, onSkip }) => {
         )}
 
         <View style={styles.completionMessage}>
-          <MaterialIcons name="celebration" size={24} color={colors.success} />
+          <PartyPopper size={24} color={colors.success} strokeWidth={2} />
           <Text style={styles.completionText}>
             You're training your nervous system to notice safety. Keep practicing daily, especially during your integration window.
           </Text>
@@ -472,7 +472,7 @@ const DailyGlimmersPractice = ({ onComplete, onSkip }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={onSkip} style={styles.skipButton}>
-          <MaterialIcons name="close" size={24} color={colors.textSecondary} />
+          <X size={24} color={colors.textSecondary} strokeWidth={2} />
         </TouchableOpacity>
         <View style={styles.progressContainer}>
           <Text style={styles.progressText}>
@@ -499,10 +499,10 @@ const DailyGlimmersPractice = ({ onComplete, onSkip }) => {
           onPress={() => setCurrentStep(Math.max(0, currentStep - 1))}
           disabled={currentStep === 0}
         >
-          <MaterialIcons
-            name="arrow-back"
+          <ArrowLeft
             size={20}
             color={currentStep === 0 ? colors.textLight : colors.textSecondary}
+            strokeWidth={2}
           />
           <Text style={[styles.navButtonText, currentStep === 0 && styles.navButtonDisabledText]}>
             Back
@@ -513,11 +513,11 @@ const DailyGlimmersPractice = ({ onComplete, onSkip }) => {
           <Text style={styles.nextButtonText}>
             {currentStep === steps.length - 1 ? 'Complete' : 'Next'}
           </Text>
-          <MaterialIcons
-            name={currentStep === steps.length - 1 ? 'check' : 'arrow-forward'}
-            size={20}
-            color="#ffffff"
-          />
+          {currentStep === steps.length - 1 ? (
+            <Check size={20} color="#ffffff" strokeWidth={2} />
+          ) : (
+            <ArrowRight size={20} color="#ffffff" strokeWidth={2} />
+          )}
         </TouchableOpacity>
       </View>
     </View>

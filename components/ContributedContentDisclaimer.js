@@ -4,17 +4,17 @@
 
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Info } from 'lucide-react-native';
 import { colors, spacing, borderRadius } from '../theme/colors';
 
 const ContributedContentDisclaimer = ({ attributionName, style }) => {
   const safeName = (attributionName || 'a community contributor').trim() || 'a community contributor';
   return (
     <View style={[styles.container, style]}>
-      <MaterialIcons
-        name="info-outline"
+      <Info
         size={18}
         color={colors.textSecondary}
+        strokeWidth={2}
         style={styles.icon}
       />
       <Text style={styles.text}>

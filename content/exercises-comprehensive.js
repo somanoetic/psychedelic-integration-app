@@ -2823,7 +2823,7 @@ export const exerciseCategories = [
     id: 'stoic',
     name: 'Stoic Philosophy',
     icon: 'school',
-    iconImage: icons.selfReflect,
+    iconImage: icons.stoic,
     color: '#78716c',
     description: 'Ancient wisdom practices for resilience and perspective'
   },

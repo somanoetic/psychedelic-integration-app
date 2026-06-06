@@ -11,11 +11,55 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  X,
+  Clock,
+  Lightbulb,
+  BookOpen,
+  Check,
+  ArrowLeft,
+  Search,
+  SearchX,
+  ChevronRight,
+  User,
+  Grid3x3,
+  Wind,
+  Mountain,
+  Activity,
+  Heart,
+  Users,
+  Sparkles,
+  Flower2,
+  Brain,
+  Repeat,
+  Dumbbell,
+  GraduationCap,
+  HeartPulse,
+} from 'lucide-react-native';
 import { getAllExercises, exerciseCategories } from '../content/exercises-comprehensive';
 import { colors, gradients, spacing, borderRadius, shadows, typography } from '../theme/colors';
 import contributedExerciseService from '../lib/contributedExerciseService';
 import ContributedContentDisclaimer from '../components/ContributedContentDisclaimer';
+
+// Map the legacy MaterialIcons names stored in exerciseCategories data
+// to Lucide components. Used only when an iconImage isn't available.
+const CATEGORY_LUCIDE = {
+  apps: Grid3x3,
+  air: Wind,
+  landscape: Mountain,
+  accessibility: Activity,
+  favorite: Heart,
+  groups: Users,
+  'self-improvement': Sparkles,
+  spa: Flower2,
+  psychology: Brain,
+  lightbulb: Lightbulb,
+  repeat: Repeat,
+  'auto-awesome': Sparkles,
+  'fitness-center': Dumbbell,
+  school: GraduationCap,
+  healing: HeartPulse,
+};
 
 const ExerciseLibraryScreen = ({ navigation }) => {
   const [selectedExercise, setSelectedExercise] = useState(null);
@@ -68,6 +112,7 @@ const ExerciseLibraryScreen = ({ navigation }) => {
     if (!selectedExercise) return null;
 
     const categoryInfo = getCategoryInfo(selectedExercise.category);
+    const CategoryIcon = CATEGORY_LUCIDE[categoryInfo.icon] || Sparkles;
 
     return (
       <Modal
@@ -82,16 +127,16 @@ const ExerciseLibraryScreen = ({ navigation }) => {
               <View style={styles.modalHeaderTop}>
                 <Text style={styles.modalTitle}>{selectedExercise.title}</Text>
                 <TouchableOpacity onPress={() => setSelectedExercise(null)}>
-                  <MaterialIcons name="close" size={28} color={colors.textInverse} />
+                  <X size={28} color={colors.textInverse} strokeWidth={2} />
                 </TouchableOpacity>
               </View>
               <View style={styles.modalMetadata}>
                 <View style={styles.metadataItem}>
-                  <MaterialIcons name="schedule" size={16} color={colors.textInverse} />
+                  <Clock size={16} color={colors.textInverse} strokeWidth={2} />
                   <Text style={styles.metadataText}>{selectedExercise.duration} min</Text>
                 </View>
                 <View style={styles.metadataItem}>
-                  <MaterialIcons name={categoryInfo.icon} size={16} color={colors.textInverse} />
+                  <CategoryIcon size={16} color={colors.textInverse} strokeWidth={2} />
                   <Text style={styles.metadataText}>{categoryInfo.name}</Text>
                 </View>
               </View>
@@ -99,12 +144,18 @@ const ExerciseLibraryScreen = ({ navigation }) => {
 
             <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false}>
               <View style={styles.instructionsSection}>
-                <Text style={styles.sectionTitle}>💡 Purpose</Text>
+                <View style={styles.sectionTitleRow}>
+                  <Lightbulb size={18} color={colors.primary} strokeWidth={2} />
+                  <Text style={styles.sectionTitle}>Purpose</Text>
+                </View>
                 <Text style={styles.instructionsText}>{selectedExercise.instructions}</Text>
               </View>
 
               <View style={styles.stepsSection}>
-                <Text style={styles.sectionTitle}>📋 Steps</Text>
+                <View style={styles.sectionTitleRow}>
+                  <Check size={18} color={colors.primary} strokeWidth={2} />
+                  <Text style={styles.sectionTitle}>Steps</Text>
+                </View>
                 {selectedExercise.steps.map((step, index) => (
                   <View key={index} style={styles.stepItem}>
                     <View style={styles.stepNumber}>
@@ -116,7 +167,7 @@ const ExerciseLibraryScreen = ({ navigation }) => {
               </View>
 
               <View style={styles.tipBox}>
-                <MaterialIcons name="lightbulb" size={20} color={colors.warning} />
+                <Lightbulb size={20} color={colors.warning} strokeWidth={2} />
                 <Text style={styles.tipText}>
                   Take your time with each step. There's no rush. This is your practice.
                 </Text>
@@ -129,7 +180,7 @@ const ExerciseLibraryScreen = ({ navigation }) => {
                 />
               ) : selectedExercise.source ? (
                 <View style={styles.sourceBox}>
-                  <MaterialIcons name="menu-book" size={16} color={colors.textSecondary} />
+                  <BookOpen size={16} color={colors.textSecondary} strokeWidth={2} />
                   <Text style={styles.sourceText}>Source: {selectedExercise.source}</Text>
                 </View>
               ) : null}
@@ -140,7 +191,7 @@ const ExerciseLibraryScreen = ({ navigation }) => {
                 style={[styles.startButton, { backgroundColor: categoryInfo.color }]}
                 onPress={() => setSelectedExercise(null)}
               >
-                <MaterialIcons name="check" size={20} color={colors.textInverse} />
+                <Check size={20} color={colors.textInverse} strokeWidth={2} />
                 <Text style={styles.startButtonText}>Got It</Text>
               </TouchableOpacity>
             </View>
@@ -162,7 +213,7 @@ const ExerciseLibraryScreen = ({ navigation }) => {
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
-          <MaterialIcons name="arrow-back" size={24} color={colors.textInverse} />
+          <ArrowLeft size={24} color={colors.textInverse} strokeWidth={2} />
         </TouchableOpacity>
 
         <Text style={styles.heroTitle}>Exercise Library</Text>
@@ -172,7 +223,7 @@ const ExerciseLibraryScreen = ({ navigation }) => {
       </LinearGradient>
 
       <View style={styles.searchContainer}>
-        <MaterialIcons name="search" size={20} color={colors.textSecondary} />
+        <Search size={20} color={colors.textSecondary} strokeWidth={2} />
         <TextInput
           style={styles.searchInput}
           placeholder="Search exercises..."
@@ -183,7 +234,7 @@ const ExerciseLibraryScreen = ({ navigation }) => {
         />
         {searchQuery.length > 0 && (
           <TouchableOpacity onPress={() => setSearchQuery('')}>
-            <MaterialIcons name="close" size={20} color={colors.textSecondary} />
+            <X size={20} color={colors.textSecondary} strokeWidth={2} />
           </TouchableOpacity>
         )}
       </View>
@@ -194,38 +245,41 @@ const ExerciseLibraryScreen = ({ navigation }) => {
         style={styles.categoryScroll}
         contentContainerStyle={styles.categoryScrollContent}
       >
-        {exerciseCategories.map(category => (
-          <TouchableOpacity
-            key={category.id}
-            style={[
-              styles.categoryChip,
-              selectedCategory === category.id && { backgroundColor: category.color }
-            ]}
-            onPress={() => setSelectedCategory(category.id)}
-          >
-            {category.iconImage ? (
-              <Image
-                source={category.iconImage}
-                style={[
-                  styles.categoryChipIcon,
-                  selectedCategory !== category.id && { opacity: 0.6 },
-                ]}
-              />
-            ) : (
-              <MaterialIcons
-                name={category.icon}
-                size={18}
-                color={selectedCategory === category.id ? colors.textInverse : colors.textSecondary}
-              />
-            )}
-            <Text style={[
-              styles.categoryChipText,
-              selectedCategory === category.id && styles.categoryChipTextActive
-            ]}>
-              {category.name}
-            </Text>
-          </TouchableOpacity>
-        ))}
+        {exerciseCategories.map(category => {
+          const FallbackIcon = CATEGORY_LUCIDE[category.icon] || Sparkles;
+          return (
+            <TouchableOpacity
+              key={category.id}
+              style={[
+                styles.categoryChip,
+                selectedCategory === category.id && { backgroundColor: category.color }
+              ]}
+              onPress={() => setSelectedCategory(category.id)}
+            >
+              {category.iconImage ? (
+                <Image
+                  source={category.iconImage}
+                  style={[
+                    styles.categoryChipIcon,
+                    selectedCategory !== category.id && { opacity: 0.6 },
+                  ]}
+                />
+              ) : (
+                <FallbackIcon
+                  size={18}
+                  color={selectedCategory === category.id ? colors.textInverse : colors.textSecondary}
+                  strokeWidth={2}
+                />
+              )}
+              <Text style={[
+                styles.categoryChipText,
+                selectedCategory === category.id && styles.categoryChipTextActive
+              ]}>
+                {category.name}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </ScrollView>
 
       <ScrollView style={styles.exercisesList} showsVerticalScrollIndicator={false}>
@@ -236,7 +290,7 @@ const ExerciseLibraryScreen = ({ navigation }) => {
 
           {filteredPractices.length === 0 && (
             <View style={styles.emptyState}>
-              <MaterialIcons name="search-off" size={48} color={colors.textSecondary} />
+              <SearchX size={48} color={colors.textSecondary} strokeWidth={1.5} />
               <Text style={styles.emptyStateText}>No exercises found</Text>
               <Text style={styles.emptyStateSubtext}>Try a different search or category</Text>
             </View>
@@ -244,6 +298,7 @@ const ExerciseLibraryScreen = ({ navigation }) => {
 
           {filteredPractices.map((exercise, index) => {
             const categoryInfo = getCategoryInfo(exercise.category);
+            const CardFallbackIcon = CATEGORY_LUCIDE[categoryInfo.icon] || Sparkles;
             return (
               <TouchableOpacity
                 key={index}
@@ -254,7 +309,7 @@ const ExerciseLibraryScreen = ({ navigation }) => {
                   {categoryInfo.iconImage ? (
                     <Image source={categoryInfo.iconImage} style={styles.exerciseIconImage} />
                   ) : (
-                    <MaterialIcons name={categoryInfo.icon} size={24} color={colors.textInverse} />
+                    <CardFallbackIcon size={24} color={colors.textInverse} strokeWidth={2} />
                   )}
                 </View>
 
@@ -265,7 +320,7 @@ const ExerciseLibraryScreen = ({ navigation }) => {
                   </Text>
                   <View style={styles.exerciseMetadata}>
                     <View style={styles.metadataBadge}>
-                      <MaterialIcons name="schedule" size={14} color={colors.textSecondary} />
+                      <Clock size={14} color={colors.textSecondary} strokeWidth={2} />
                       <Text style={styles.metadataBadgeText}>{exercise.duration} min</Text>
                     </View>
                     <View style={styles.metadataBadge}>
@@ -273,7 +328,7 @@ const ExerciseLibraryScreen = ({ navigation }) => {
                     </View>
                     {exercise.isContributed && (
                       <View style={styles.contributedBadge}>
-                        <MaterialIcons name="person-outline" size={12} color={colors.primary} />
+                        <User size={12} color={colors.primary} strokeWidth={2} />
                         <Text style={styles.contributedBadgeText} numberOfLines={1}>
                           By {exercise.attributionName}
                         </Text>
@@ -282,7 +337,7 @@ const ExerciseLibraryScreen = ({ navigation }) => {
                   </View>
                 </View>
 
-                <MaterialIcons name="chevron-right" size={24} color={colors.textLight} />
+                <ChevronRight size={24} color={colors.textLight} strokeWidth={2} />
               </TouchableOpacity>
             );
           })}
@@ -492,11 +547,16 @@ const styles = StyleSheet.create({
   instructionsSection: {
     marginBottom: 24,
   },
+  sectionTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
+  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: 12,
   },
   instructionsText: {
     fontSize: 15,

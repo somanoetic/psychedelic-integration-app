@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
+  Image,
   TouchableOpacity,
   ScrollView,
   Animated,
@@ -10,6 +11,7 @@ import {
 } from 'react-native';
 import educationProgressService from '../lib/educationProgressService';
 import { colors } from '../theme/colors';
+import { icons } from '../lib/uiIcons';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -60,12 +62,12 @@ const PolyvagalEducationWidget = ({ onComplete, onSkip }) => {
     {
       title: "Understanding Your Nervous System",
       content: "Your nervous system has three main states that affect how you feel and respond to the world. Learning to recognize these states can help you understand your experience better.",
-      emoji: "🧠"
+      icon: icons.nsMap,
     },
     {
       title: "Safe & Social (Ventral Vagal)",
       content: "When you feel calm, connected, and curious. Your body feels relaxed, you can think clearly, and you're open to connection with others. This is your optimal state for learning and growth.",
-      emoji: "💚",
+      icon: icons.droplet,
       examples: [
         "Feeling calm and peaceful",
         "Able to connect with others easily",
@@ -77,7 +79,7 @@ const PolyvagalEducationWidget = ({ onComplete, onSkip }) => {
     {
       title: "Activated (Sympathetic)",
       content: "Your fight-or-flight response is active. You might feel energized, anxious, or overwhelmed. Your body is preparing for action - this isn't bad, it's protective!",
-      emoji: "⚡",
+      icon: icons.steam,
       examples: [
         "Heart racing or beating fast",
         "Feeling anxious, worried, or on edge",
@@ -89,7 +91,7 @@ const PolyvagalEducationWidget = ({ onComplete, onSkip }) => {
     {
       title: "Protected (Dorsal Vagal)",
       content: "Your system has pulled back for protection. You might feel numb, disconnected, or 'shut down'. This is also protective - your nervous system is conserving energy.",
-      emoji: "🛡️",
+      icon: icons.iceberg,
       examples: [
         "Feeling numb or disconnected",
         "Hard to feel emotions",
@@ -101,7 +103,7 @@ const PolyvagalEducationWidget = ({ onComplete, onSkip }) => {
     {
       title: "Why This Matters",
       content: "Understanding your nervous system state helps me support you better. There's no 'wrong' state - each one makes sense given your experience. We can work with whatever state you're in.",
-      emoji: "🌟"
+      icon: icons.selfEnergy,
     }
   ];
 
@@ -134,7 +136,7 @@ const PolyvagalEducationWidget = ({ onComplete, onSkip }) => {
     
     return (
       <View style={styles.stepContainer}>
-        <Text style={styles.stepEmoji}>{step.emoji}</Text>
+        <Image source={step.icon} style={styles.stepIcon} />
         <Text style={styles.stepTitle}>{step.title}</Text>
         <Text style={styles.stepContent}>{step.content}</Text>
         
@@ -327,8 +329,10 @@ const styles = {
     paddingVertical: 24,
     alignItems: 'center',
   },
-  stepEmoji: {
-    fontSize: 48,
+  stepIcon: {
+    width: 132,
+    height: 132,
+    resizeMode: 'contain',
     marginBottom: 16,
   },
   stepTitle: {

@@ -13,12 +13,13 @@ import {
   Image
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Brain, ArrowLeft, ArrowRight, MessageCircle, Send, CheckCircle2 } from 'lucide-react-native';
 import Slider from '@react-native-community/slider';
 import { supabase } from '../lib/supabase';
 import huxleyService from '../lib/huxleyService';
 import { coreBeliefsDomains, coreBeliefQuestions } from '../data/coreBeliefQuestions';
-import { colors } from '../theme/colors';
+import { colors, gradients } from '../theme/colors';
 import ShareWithTherapistButton from './ShareWithTherapistButton';
 import { shareCoreBeliefs } from '../lib/therapistShareService';
 
@@ -275,7 +276,7 @@ const CoreBeliefsAssessment = ({ user: userProp, onComplete, navigation }) => {
 
   const renderIntro = () => (
     <View style={styles.content}>
-      <MaterialIcons name="psychology" size={64} color={colors.primary} style={styles.introIcon} />
+      <Brain size={64} color={colors.primary} strokeWidth={1.5} style={styles.introIcon} />
       <Text style={styles.title}>Core Beliefs Inventory</Text>
       <Text style={styles.description}>
         This assessment measures 10 core belief domains that shape how you see yourself, others, and the world.
@@ -347,7 +348,7 @@ const CoreBeliefsAssessment = ({ user: userProp, onComplete, navigation }) => {
               onPress={goToPrevious}
               disabled={currentQuestion === 0}
             >
-              <MaterialIcons name="arrow-back" size={24} color={currentQuestion === 0 ? colors.textLight : colors.primary} />
+              <ArrowLeft size={24} color={currentQuestion === 0 ? colors.textLight : colors.primary} strokeWidth={2} />
               <Text style={[styles.navButtonText, currentQuestion === 0 && styles.navButtonTextDisabled]}>Previous</Text>
             </TouchableOpacity>
 
@@ -358,7 +359,7 @@ const CoreBeliefsAssessment = ({ user: userProp, onComplete, navigation }) => {
               <Text style={styles.navButtonText}>
                 {currentQuestion === coreBeliefQuestions.length - 1 ? 'Finish' : 'Next'}
               </Text>
-              <MaterialIcons name="arrow-forward" size={24} color={colors.primary} />
+              <ArrowRight size={24} color={colors.primary} strokeWidth={2} />
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -457,7 +458,7 @@ const CoreBeliefsAssessment = ({ user: userProp, onComplete, navigation }) => {
         keyboardVerticalOffset={100}
       >
         <View style={styles.discussionHeader}>
-          <MaterialIcons name="chat" size={24} color={colors.primary} />
+          <MessageCircle size={24} color={colors.primary} strokeWidth={2} />
           <Text style={styles.discussionHeaderTitle}>Results Discussion</Text>
         </View>
 
@@ -511,7 +512,7 @@ const CoreBeliefsAssessment = ({ user: userProp, onComplete, navigation }) => {
             onPress={sendMessage}
             disabled={loading || !inputText.trim()}
           >
-            <MaterialIcons name="send" size={24} color="#fff" />
+            <Send size={24} color="#fff" strokeWidth={2} />
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
@@ -520,7 +521,7 @@ const CoreBeliefsAssessment = ({ user: userProp, onComplete, navigation }) => {
 
   const renderComplete = () => (
     <View style={styles.completeContainer}>
-      <MaterialIcons name="check-circle" size={64} color={colors.success} />
+      <CheckCircle2 size={64} color={colors.success} strokeWidth={1.5} />
       <Text style={styles.completeTitle}>Assessment Complete!</Text>
       <Text style={styles.completeText}>
         Your core beliefs assessment has been saved. You can revisit these results anytime and track how your beliefs evolve over time.
@@ -542,13 +543,19 @@ const CoreBeliefsAssessment = ({ user: userProp, onComplete, navigation }) => {
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <LinearGradient
+      colors={gradients.standard}
+      start={gradients.standardStart}
+      end={gradients.standardEnd}
+      style={styles.container}
+    >
+      <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <View style={styles.topHeader}>
         <TouchableOpacity
           onPress={() => navigation?.goBack()}
           style={styles.backButton}
         >
-          <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+          <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
         </TouchableOpacity>
         <Text style={styles.topHeaderTitle}>Core Beliefs</Text>
         <View style={{ width: 40 }} />
@@ -558,14 +565,17 @@ const CoreBeliefsAssessment = ({ user: userProp, onComplete, navigation }) => {
       {phase === 'results' && renderResults()}
       {phase === 'discussion' && renderDiscussion()}
       {phase === 'complete' && renderComplete()}
-    </SafeAreaView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb'
+  },
+  safeArea: {
+    flex: 1,
   },
   topHeader: {
     flexDirection: 'row',

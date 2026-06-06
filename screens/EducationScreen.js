@@ -1,13 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
   Dimensions,
-  Platform
+  Platform,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  BookOpen,
+  Check,
+  Clock,
+  Lightbulb,
+  MessageCircle,
+  Target,
+} from 'lucide-react-native';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 import { LinearGradient } from 'expo-linear-gradient';
 import ConversationalEducation from '../components/ConversationalEducation';
@@ -20,12 +29,53 @@ import IFSPartsEducationWidget from '../components/IFSPartsEducationWidget';
 import GroundingExercisesWidget from '../components/GroundingExercisesWidget';
 import { educationTopics, getTopicById } from '../content/education';
 import FormattedText from '../components/FormattedText';
+import { icons } from '../lib/uiIcons';
+
+// Mirror ConversationalEducation.js — semantic topic ID -> illustrated PNG icon
+const TOPIC_ICONS = {
+  nervous_system: icons.dna,
+  ifs_basics: icons.group,
+  grounding_practices: icons.sprout,
+  ifs_chat: icons.chat,
+  polyvagal_mapping: icons.foldedMap,
+  core_beliefs: icons.thoughtCloud,
+  triggers_glimmers: icons.trigger,
+  regulating_resources: icons.tools,
+  integration_basics: icons.integration,
+  somatic_awareness: icons.lungs,
+  brain_and_healing: icons.dna,
+  building_habits: icons.integration,
+  cognitive_patterns: icons.thoughtCloud,
+  trauma_understanding: icons.repairedHeart,
+  attachment_styles: icons.community,
+  harm_reduction: icons.guidance,
+  contemplative_practices: icons.meditate,
+  psychedelic_preparation: icons.newBeginning,
+  acceptance_commitment: icons.goals,
+};
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-const EducationScreen = ({ navigation }) => {
+const EducationScreen = ({ navigation, route }) => {
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [showConversational, setShowConversational] = useState(true);
+  // If the user was deep-linked into a topic from another screen (e.g.
+  // the trail), remember where to send them back when the topic closes.
+  const [returnTo, setReturnTo] = useState(null);
+
+  // Honor a `selectedTopicId` route param so deep-links (e.g. from the
+  // trail's education markers) open directly to the requested topic.
+  // If `returnTo` is also provided, stash it so handleEducationComplete
+  // can navigate back instead of leaving the user on the Learn hub.
+  useEffect(() => {
+    const id = route?.params?.selectedTopicId;
+    const back = route?.params?.returnTo;
+    if (id) {
+      setSelectedTopic(id);
+      if (back) setReturnTo(back);
+      navigation.setParams?.({ selectedTopicId: undefined, returnTo: undefined });
+    }
+  }, [route?.params?.selectedTopicId]);
 
   const handleTopicPress = (topicId) => {
     setSelectedTopic(topicId);
@@ -33,6 +83,11 @@ const EducationScreen = ({ navigation }) => {
 
   const handleEducationComplete = () => {
     setSelectedTopic(null);
+    if (returnTo) {
+      const dest = returnTo;
+      setReturnTo(null);
+      navigation.navigate(dest);
+    }
   };
 
   const renderEducationHub = () => {
@@ -53,7 +108,7 @@ const EducationScreen = ({ navigation }) => {
               style={styles.conversationalToggle}
               onPress={() => setShowConversational(true)}
             >
-              <MaterialIcons name="chat" size={24} color={colors.primary} />
+              <MessageCircle size={24} color={colors.primary} strokeWidth={2} />
               <Text style={styles.conversationalToggleText}>Guided</Text>
             </TouchableOpacity>
           </View>
@@ -95,7 +150,10 @@ const EducationScreen = ({ navigation }) => {
                 <Text style={styles.ifsDescription}>
                   Chat-based guidance through the Six F's to get to know one of your parts
                 </Text>
-                <Text style={styles.ifsTime}>⏱️ 15-20 minutes • Interactive</Text>
+                <View style={styles.ifsTimeRow}>
+                  <Clock size={14} color={colors.primary} strokeWidth={2} />
+                  <Text style={styles.ifsTime}>15-20 minutes • Interactive</Text>
+                </View>
               </View>
             </View>
           </TouchableOpacity>
@@ -119,7 +177,10 @@ const EducationScreen = ({ navigation }) => {
                 <Text style={styles.mappingDescription}>
                   Identify what each state looks and feels like for you
                 </Text>
-                <Text style={styles.mappingTime}>⏱️ 10-15 minutes</Text>
+                <View style={styles.mappingTimeRow}>
+                  <Clock size={14} color={colors.textLight} strokeWidth={2} />
+                  <Text style={styles.mappingTime}>10-15 minutes</Text>
+                </View>
               </View>
             </View>
           </TouchableOpacity>
@@ -135,7 +196,10 @@ const EducationScreen = ({ navigation }) => {
                 <Text style={styles.mappingDescription}>
                   Map what dysregulates you and what brings safety
                 </Text>
-                <Text style={styles.mappingTime}>⏱️ 10-12 minutes</Text>
+                <View style={styles.mappingTimeRow}>
+                  <Clock size={14} color={colors.textLight} strokeWidth={2} />
+                  <Text style={styles.mappingTime}>10-12 minutes</Text>
+                </View>
               </View>
             </View>
           </TouchableOpacity>
@@ -151,7 +215,10 @@ const EducationScreen = ({ navigation }) => {
                 <Text style={styles.mappingDescription}>
                   Identify what helps you regulate - alone and with others
                 </Text>
-                <Text style={styles.mappingTime}>⏱️ 8-10 minutes</Text>
+                <View style={styles.mappingTimeRow}>
+                  <Clock size={14} color={colors.textLight} strokeWidth={2} />
+                  <Text style={styles.mappingTime}>8-10 minutes</Text>
+                </View>
               </View>
             </View>
           </TouchableOpacity>
@@ -168,7 +235,11 @@ const EducationScreen = ({ navigation }) => {
                 style={styles.topicCard}
                 onPress={() => handleTopicPress(topic.id)}
               >
-                <Text style={styles.topicEmoji}>{topic.emoji}</Text>
+                {TOPIC_ICONS[topic.id] ? (
+                  <Image source={TOPIC_ICONS[topic.id]} style={styles.topicCardIcon} />
+                ) : (
+                  <BookOpen size={28} color={colors.primary} strokeWidth={1.5} />
+                )}
                 <Text style={styles.topicTitle}>{topic.title}</Text>
                 <Text style={styles.topicDescription}>{topic.description}</Text>
                 <Text style={styles.topicTime}>{topic.estimatedTime}</Text>
@@ -179,7 +250,10 @@ const EducationScreen = ({ navigation }) => {
 
         {/* Getting Started Tips */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>💡 Getting Started Tips</Text>
+          <View style={styles.sectionTitleRow}>
+            <Lightbulb size={20} color={colors.primary} strokeWidth={2} />
+            <Text style={styles.sectionTitle}>Getting Started Tips</Text>
+          </View>
           <View style={styles.tipsContainer}>
             <View style={styles.tip}>
               <Text style={styles.tipEmoji}>🎯</Text>
@@ -188,7 +262,9 @@ const EducationScreen = ({ navigation }) => {
               </Text>
             </View>
             <View style={styles.tip}>
-              <Text style={styles.tipEmoji}>⏰</Text>
+              <View style={styles.tipIconWrap}>
+                <Clock size={20} color={colors.success} strokeWidth={2} />
+              </View>
               <Text style={styles.tipText}>
                 Take your time - you can pause and resume any topic
               </Text>
@@ -288,15 +364,26 @@ const EducationScreen = ({ navigation }) => {
     return (
       <SafeAreaView style={styles.topicContainer} edges={['top', 'bottom']}>
         <View style={styles.topicHeader}>
-          <TouchableOpacity onPress={() => setSelectedTopic(null)}>
-            <Text style={styles.backButton}>← Back to Education</Text>
+          <TouchableOpacity onPress={handleEducationComplete}>
+            <Text style={styles.backButton}>
+              {returnTo === 'CurriculumTracker' ? '← Back to Trails' : '← Back to Education'}
+            </Text>
           </TouchableOpacity>
         </View>
 
         <ScrollView style={styles.topicContent}>
-          <Text style={styles.topicLargeEmoji}>{topic.emoji}</Text>
+          <View style={styles.topicHeroIconWrap}>
+            {TOPIC_ICONS[selectedTopic] ? (
+              <Image source={TOPIC_ICONS[selectedTopic]} style={styles.topicHeroIcon} />
+            ) : (
+              <BookOpen size={64} color={colors.primary} strokeWidth={1.5} />
+            )}
+          </View>
           <Text style={styles.topicLargeTitle}>{topic.title}</Text>
-          <Text style={styles.topicEstimatedTime}>⏱️ {topic.estimatedTime}</Text>
+          <View style={styles.topicEstimatedTimeRow}>
+            <Clock size={14} color={colors.textSecondary} strokeWidth={2} />
+            <Text style={styles.topicEstimatedTime}>{topic.estimatedTime}</Text>
+          </View>
 
           {/* Content Sections */}
           {topic.content && topic.content.map((section, index) => (
@@ -309,7 +396,10 @@ const EducationScreen = ({ navigation }) => {
           {/* Key Takeaways */}
           {topic.keyTakeaways && topic.keyTakeaways.length > 0 && (
             <View style={styles.takeawaysContainer}>
-              <Text style={styles.takeawaysTitle}>🎯 Key Takeaways</Text>
+              <View style={styles.takeawaysTitleRow}>
+                <Target size={20} color="#166534" strokeWidth={2} />
+                <Text style={styles.takeawaysTitle}>Key Takeaways</Text>
+              </View>
               {topic.keyTakeaways.map((takeaway, index) => (
                 <View key={index} style={styles.takeawayItem}>
                   <Text style={styles.takeawayBullet}>•</Text>
@@ -324,7 +414,8 @@ const EducationScreen = ({ navigation }) => {
             style={styles.completeButton}
             onPress={handleEducationComplete}
           >
-            <Text style={styles.completeButtonText}>✓ Got It!</Text>
+            <Check size={20} color={colors.textInverse} strokeWidth={2} />
+            <Text style={styles.completeButtonText}>Got It!</Text>
           </TouchableOpacity>
         </ScrollView>
       </SafeAreaView>
@@ -411,6 +502,12 @@ const styles = {
     color: colors.text,
     marginBottom: 16,
   },
+  sectionTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 16,
+  },
   quickStartCard: {
     backgroundColor: '#dbeafe',
     borderRadius: 16,
@@ -458,6 +555,11 @@ const styles = {
     fontSize: 12,
     color: colors.primary,
     fontWeight: '500',
+  },
+  ifsTimeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   mappingCard: {
     backgroundColor: '#d1fae5',
@@ -508,6 +610,11 @@ const styles = {
   mappingTime: {
     fontSize: 12,
     color: colors.textLight,
+  },
+  mappingTimeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   quickStartContent: {
     alignItems: 'center',
@@ -597,8 +704,10 @@ const styles = {
     shadowRadius: 2,
     elevation: 2,
   },
-  topicEmoji: {
-    fontSize: 24,
+  topicCardIcon: {
+    width: 56,
+    height: 56,
+    resizeMode: 'contain',
     marginBottom: 12,
   },
   topicTitle: {
@@ -635,6 +744,10 @@ const styles = {
     marginRight: 12,
     marginTop: 2,
   },
+  tipIconWrap: {
+    marginRight: 12,
+    marginTop: 2,
+  },
   tipText: {
     fontSize: 14,
     color: colors.text,
@@ -660,10 +773,15 @@ const styles = {
     flex: 1,
     padding: 24,
   },
-  topicLargeEmoji: {
-    fontSize: 48,
-    textAlign: 'center',
+  topicHeroIconWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 16,
+  },
+  topicHeroIcon: {
+    width: 140,
+    height: 140,
+    resizeMode: 'contain',
   },
   topicLargeTitle: {
     fontSize: 24,
@@ -713,6 +831,12 @@ const styles = {
     fontSize: 14,
     color: colors.textSecondary,
     textAlign: 'center',
+  },
+  topicEstimatedTimeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
     marginBottom: 24,
   },
   contentSection: {
@@ -738,11 +862,16 @@ const styles = {
     borderWidth: 1,
     borderColor: '#86efac',
   },
+  takeawaysTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 16,
+  },
   takeawaysTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: '#166534',
-    marginBottom: 16,
   },
   takeawayItem: {
     flexDirection: 'row',
@@ -761,10 +890,13 @@ const styles = {
     flex: 1,
   },
   completeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
     backgroundColor: colors.success,
     padding: 16,
     borderRadius: 12,
-    alignItems: 'center',
     marginTop: 16,
     marginBottom: 32,
   },

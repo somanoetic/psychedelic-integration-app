@@ -14,9 +14,25 @@ import {
   Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import {
+  AlertOctagon,
+  FilePen,
+  Sparkles,
+  Brain,
+  GraduationCap,
+  Send,
+} from 'lucide-react-native';
 import conversationalRoutingService from '../lib/conversationalRoutingService';
-import { colors } from '../theme/colors';
+import { colors, gradients } from '../theme/colors';
+
+const QUICK_ACTION_ICON_MAP = {
+  sos: AlertOctagon,
+  'edit-note': FilePen,
+  'auto-awesome': Sparkles,
+  psychology: Brain,
+  school: GraduationCap,
+};
 
 const ConversationalHomeScreen = ({ navigation, user }) => {
   const [userName, setUserName] = useState('friend');
@@ -57,7 +73,7 @@ const ConversationalHomeScreen = ({ navigation, user }) => {
     conversationalRoutingService.reset();
     const greeting = {
       id: Date.now().toString(),
-      text: `Hello${userName !== 'friend' ? ` ${userName}` : ''}! 👋\n\nI'm here to support your journey. What's going on for you today?`,
+      text: `Hello${userName !== 'friend' ? ` ${userName}` : ''}!\n\nI'm here to support your journey. What's going on for you today?`,
       isAI: true,
       timestamp: new Date(),
     };
@@ -136,7 +152,7 @@ const ConversationalHomeScreen = ({ navigation, user }) => {
     const routeMap = {
       triggered_support: 'TriggeredSupport',
       daily_journal: 'Journal',
-      post_session_journal: 'SessionTools', // Will create integration journal
+      post_session_journal: 'SessionsHub', // Routes to the sessions hub
       ifs_chat: 'IFSChat',
       nervous_system_mapping: 'NervousSystemMapping',
       triggers_glimmers: 'TriggersGlimmers',
@@ -172,9 +188,15 @@ const ConversationalHomeScreen = ({ navigation, user }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <LinearGradient
+      colors={gradients.standard}
+      start={gradients.standardStart}
+      end={gradients.standardEnd}
+      style={styles.container}
+    >
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
       <KeyboardAvoidingView
-        style={styles.container}
+        style={styles.safeArea}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={90}
       >
@@ -248,18 +270,21 @@ const ConversationalHomeScreen = ({ navigation, user }) => {
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.quickActionsContent}
             >
-              {quickActions.map((action, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={[styles.quickActionChip, { borderColor: action.color }]}
-                  onPress={() => handleQuickAction(action.text)}
-                >
-                  <MaterialIcons name={action.icon} size={16} color={action.color} />
-                  <Text style={[styles.quickActionText, { color: action.color }]}>
-                    {action.text}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+              {quickActions.map((action, index) => {
+                const Icon = QUICK_ACTION_ICON_MAP[action.icon] || Sparkles;
+                return (
+                  <TouchableOpacity
+                    key={index}
+                    style={[styles.quickActionChip, { borderColor: action.color }]}
+                    onPress={() => handleQuickAction(action.text)}
+                  >
+                    <Icon size={16} color={action.color} strokeWidth={2} />
+                    <Text style={[styles.quickActionText, { color: action.color }]}>
+                      {action.text}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
             </ScrollView>
           </View>
         )}
@@ -284,22 +309,25 @@ const ConversationalHomeScreen = ({ navigation, user }) => {
             onPress={handleSendMessage}
             disabled={!userInput.trim() || isSending}
           >
-            <MaterialIcons
-              name="send"
+            <Send
               size={24}
               color={!userInput.trim() || isSending ? colors.textLight : '#ffffff'}
+              strokeWidth={2}
             />
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb',
+  },
+  safeArea: {
+    flex: 1,
   },
   header: {
     flexDirection: 'row',

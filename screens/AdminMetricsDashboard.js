@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { MaterialIcons } from '@expo/vector-icons';
+import { AlertCircle, ArrowLeft } from 'lucide-react-native';
 import { colors, gradients } from '../theme/colors';
 import metricsService from '../lib/metricsService';
 import userRoleService from '../lib/userRoleService';
@@ -169,7 +169,7 @@ const AdminMetricsDashboard = ({ navigation }) => {
       >
       <SafeAreaView style={styles.container}>
         <View style={styles.errorContainer}>
-          <MaterialIcons name="error-outline" size={48} color={colors.error} />
+          <AlertCircle size={48} color={colors.error} strokeWidth={1.5} />
           <Text style={styles.errorText}>{error}</Text>
           <TouchableOpacity style={styles.retryButton} onPress={loadData}>
             <Text style={styles.retryButtonText}>Retry</Text>
@@ -193,7 +193,7 @@ const AdminMetricsDashboard = ({ navigation }) => {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-          <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+          <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>AI Metrics Dashboard</Text>
         <View style={styles.headerSpacer} />

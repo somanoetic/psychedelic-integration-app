@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { MaterialIcons } from '@expo/vector-icons';
+import { ArrowLeft, Clock, ChevronRight, Lightbulb } from 'lucide-react-native';
 import { colors, gradients, spacing, borderRadius, shadows, typography } from '../theme/colors';
 import { icons } from '../lib/uiIcons';
 
@@ -23,7 +23,6 @@ const options = [
   {
     id: 'progress',
     title: 'Your Progress',
-    emoji: '📈',
     icon: icons.trailProgress,
     description: 'Track your exercise curriculum and see how far you\'ve come',
     estimatedTime: '2 min',
@@ -32,8 +31,7 @@ const options = [
   {
     id: 'exercises',
     title: 'Exercise Library',
-    emoji: '🏃',
-    icon: icons.movement,
+    icon: icons.library,
     description: 'Breathing, grounding, somatic — 160+ guided exercises',
     estimatedTime: '5-15 min',
     route: 'ExerciseLibrary',
@@ -41,7 +39,6 @@ const options = [
   {
     id: 'swiper',
     title: 'Glimmer Swiper',
-    emoji: '🎮',
     icon: icons.glimmerCaptured,
     description: 'Therapeutic swipe game to train your nervous system to notice glimmers',
     estimatedTime: '5 min',
@@ -50,7 +47,6 @@ const options = [
   {
     id: 'grounding',
     title: 'Quick Grounding',
-    emoji: '🌍',
     icon: icons.grounding,
     description: '5-4-3-2-1 sensory grounding and other quick regulation exercises',
     estimatedTime: '3-5 min',
@@ -79,7 +75,7 @@ const PracticeScreen = ({ navigation }) => {
               style={styles.backButton}
               onPress={() => navigation.goBack()}
             >
-              <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+              <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
             </TouchableOpacity>
           </View>
 
@@ -102,25 +98,27 @@ const PracticeScreen = ({ navigation }) => {
                 activeOpacity={0.7}
               >
                 <View style={styles.optionLeft}>
-                  {option.icon ? (
-                    <Image source={option.icon} style={styles.optionIconImage} />
-                  ) : (
-                    <Text style={styles.optionEmoji}>{option.emoji}</Text>
-                  )}
+                  <Image source={option.icon} style={styles.optionIconImage} />
                   <View style={styles.optionText}>
                     <Text style={styles.optionTitle}>{option.title}</Text>
                     <Text style={styles.optionDescription}>{option.description}</Text>
-                    <Text style={styles.optionTime}>⏱️ {option.estimatedTime}</Text>
+                    <View style={styles.optionTimeRow}>
+                      <Clock size={14} color={colors.textLight} strokeWidth={2} />
+                      <Text style={styles.optionTime}>{option.estimatedTime}</Text>
+                    </View>
                   </View>
                 </View>
-                <MaterialIcons name="chevron-right" size={24} color={colors.textSecondary} />
+                <ChevronRight size={24} color={colors.textSecondary} strokeWidth={2} />
               </TouchableOpacity>
             ))}
           </View>
 
           {/* Tip */}
           <View style={styles.tipBox}>
-            <Text style={styles.tipTitle}>💡 Practice Tip</Text>
+            <View style={styles.tipTitleRow}>
+              <Lightbulb size={18} color={colors.primary} strokeWidth={2} />
+              <Text style={styles.tipTitle}>Practice Tip</Text>
+            </View>
             <Text style={styles.tipText}>
               Consistency matters more than intensity. Even 5 minutes of daily practice builds lasting resilience.
             </Text>
@@ -205,10 +203,6 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     marginRight: spacing.md,
   },
-  optionEmoji: {
-    fontSize: 36,
-    marginRight: spacing.md,
-  },
   optionText: {
     flex: 1,
   },
@@ -224,6 +218,11 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     marginBottom: 4,
   },
+  optionTimeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
   optionTime: {
     fontSize: 13,
     color: colors.textLight,
@@ -235,11 +234,16 @@ const styles = StyleSheet.create({
     borderLeftWidth: 4,
     borderLeftColor: colors.primary,
   },
+  tipTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginBottom: spacing.xs,
+  },
   tipTitle: {
     fontSize: 15,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: spacing.xs,
   },
   tipText: {
     fontSize: 14,

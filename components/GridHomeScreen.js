@@ -21,7 +21,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { Image } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Settings } from 'lucide-react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { colors, gradients } from '../theme/colors';
 
@@ -283,8 +283,8 @@ const GridHomeScreen = ({ navigation }) => {
 
   const navigationTiles = [
     { id: 'track', title: 'Track', icon: tileIcons.track, isSubmenu: true, onPress: () => setTrackMenuVisible(true) },
-    { id: 'prepare', title: 'Prepare for a Journey', icon: tileIcons.prepare, route: 'SessionPreparation' },
-    { id: 'process', title: 'Process & Integrate', icon: tileIcons.process, route: 'ProcessIntegrate' },
+    { id: 'prepare', title: 'Prepare for a Journey', icon: tileIcons.prepare, route: 'SessionsHub' },
+    { id: 'process', title: 'Process & Integrate', icon: tileIcons.process, route: 'ProcessIntegratePicker' },
     { id: 'innerwork', title: 'Inner Work', icon: tileIcons.innerwork, route: 'InnerWork' },
     { id: 'practice', title: 'Practice', icon: tileIcons.practice, route: 'Practice' },
     { id: 'philosophy', title: 'Philosophical Talkthroughs', icon: tileIcons.philosophy, route: 'PhilosophicalTalkthroughs' },
@@ -392,7 +392,7 @@ const GridHomeScreen = ({ navigation }) => {
             style={styles.headerButton}
             onPress={() => navigation.navigate('Settings')}
           >
-            <MaterialIcons name="settings" size={26} color={colors.text} />
+            <Settings size={26} color={colors.text} strokeWidth={2} />
           </TouchableOpacity>
 
           <TouchableOpacity

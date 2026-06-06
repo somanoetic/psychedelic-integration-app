@@ -9,7 +9,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Zap, Sparkles, Flame, ChevronRight, Heart, Brain } from 'lucide-react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../lib/supabase';
 import insightsDataService from '../lib/insightsDataService';
@@ -231,12 +231,12 @@ const InsightsScreen = () => {
                 {/* Side-by-side count cards */}
                 <View style={styles.twoCol}>
                   <View style={[styles.countCard, { borderTopColor: colors.error }]}>
-                    <MaterialIcons name="flash-on" size={24} color={colors.error} />
+                    <Zap size={24} color={colors.error} strokeWidth={2} />
                     <Text style={styles.countValue}>{data.triggerGlimmerBalance.triggers}</Text>
                     <Text style={styles.countLabel}>Triggers</Text>
                   </View>
                   <View style={[styles.countCard, { borderTopColor: colors.success }]}>
-                    <MaterialIcons name="auto-awesome" size={24} color={colors.success} />
+                    <Sparkles size={24} color={colors.success} strokeWidth={2} />
                     <Text style={styles.countValue}>{data.triggerGlimmerBalance.glimmers}</Text>
                     <Text style={styles.countLabel}>Glimmers</Text>
                   </View>
@@ -282,7 +282,7 @@ const InsightsScreen = () => {
                       <Text style={styles.habitName}>{habit.name}</Text>
                       {habit.currentStreak > 0 && (
                         <View style={styles.streakBadge}>
-                          <MaterialIcons name="local-fire-department" size={14} color={colors.warning} />
+                          <Flame size={14} color={colors.warning} strokeWidth={2} />
                           <Text style={styles.streakText}>{habit.currentStreak}d</Text>
                         </View>
                       )}
@@ -314,9 +314,16 @@ const InsightsScreen = () => {
   );
 };
 
+const EMPTY_LINK_ICON_MAP = {
+  favorite: Heart,
+  psychology: Brain,
+  'flash-on': Zap,
+  'auto-awesome': Sparkles,
+};
+
 const EmptyState = ({ navigation }) => (
   <View style={styles.emptyContainer}>
-    <MaterialIcons name="insights" size={64} color={colors.lightGray} />
+    <Sparkles size={64} color={colors.lightGray} strokeWidth={1.5} />
     <Text style={styles.emptyTitle}>No patterns yet</Text>
     <Text style={styles.emptySubtitle}>
       Start checking in to see your patterns emerge over time.
@@ -347,13 +354,16 @@ const EmptyState = ({ navigation }) => (
   </View>
 );
 
-const EmptyLink = ({ icon, label, onPress }) => (
-  <TouchableOpacity style={styles.emptyLink} onPress={onPress}>
-    <MaterialIcons name={icon} size={20} color={colors.primary} />
-    <Text style={styles.emptyLinkText}>{label}</Text>
-    <MaterialIcons name="chevron-right" size={20} color={colors.textSecondary} />
-  </TouchableOpacity>
-);
+const EmptyLink = ({ icon, label, onPress }) => {
+  const Icon = EMPTY_LINK_ICON_MAP[icon] || Heart;
+  return (
+    <TouchableOpacity style={styles.emptyLink} onPress={onPress}>
+      <Icon size={20} color={colors.primary} strokeWidth={2} />
+      <Text style={styles.emptyLinkText}>{label}</Text>
+      <ChevronRight size={20} color={colors.textSecondary} strokeWidth={2} />
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
   safeArea: {

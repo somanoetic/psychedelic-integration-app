@@ -10,8 +10,35 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  ArrowLeft,
+  Phone,
+  MessageSquare,
+  Compass,
+  UserSearch,
+  Users,
+  HeartPulse,
+  Flame,
+  FlaskConical,
+  HandHeart,
+  ExternalLink,
+  Info,
+} from 'lucide-react-native';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
+
+// Maps the legacy icon names stored in the resource data
+// to Lucide components.
+const RESOURCE_ICON_MAP = {
+  phone: Phone,
+  textsms: MessageSquare,
+  explore: Compass,
+  'person-search': UserSearch,
+  groups: Users,
+  healing: HeartPulse,
+  'local-fire-department': Flame,
+  science: FlaskConical,
+  'volunteer-activism': HandHeart,
+};
 
 const CRISIS_RESOURCES = [
   {
@@ -99,37 +126,40 @@ const FindSupportScreen = ({ navigation }) => {
     });
   };
 
-  const ResourceCard = ({ item, urgent }) => (
-    <TouchableOpacity
-      style={[styles.resourceCard, urgent && styles.urgentCard]}
-      onPress={() => handleLink(item.action || item.url)}
-      activeOpacity={0.7}
-    >
-      <View style={[styles.resourceIcon, urgent && styles.urgentIcon]}>
-        <MaterialIcons
-          name={item.icon}
-          size={24}
-          color={urgent ? '#dc2626' : colors.primary}
-        />
-      </View>
-      <View style={styles.resourceText}>
-        <Text style={[styles.resourceName, urgent && styles.urgentName]}>
-          {item.name}
-        </Text>
-        <Text style={styles.resourceDescription}>{item.description}</Text>
-        {item.actionLabel && (
-          <Text style={[styles.resourceAction, urgent && styles.urgentAction]}>
-            {item.actionLabel}
+  const ResourceCard = ({ item, urgent }) => {
+    const ResourceIcon = RESOURCE_ICON_MAP[item.icon] || Compass;
+    return (
+      <TouchableOpacity
+        style={[styles.resourceCard, urgent && styles.urgentCard]}
+        onPress={() => handleLink(item.action || item.url)}
+        activeOpacity={0.7}
+      >
+        <View style={[styles.resourceIcon, urgent && styles.urgentIcon]}>
+          <ResourceIcon
+            size={24}
+            color={urgent ? '#dc2626' : colors.primary}
+            strokeWidth={2}
+          />
+        </View>
+        <View style={styles.resourceText}>
+          <Text style={[styles.resourceName, urgent && styles.urgentName]}>
+            {item.name}
           </Text>
-        )}
-      </View>
-      <MaterialIcons
-        name="open-in-new"
-        size={18}
-        color={colors.textLight}
-      />
-    </TouchableOpacity>
-  );
+          <Text style={styles.resourceDescription}>{item.description}</Text>
+          {item.actionLabel && (
+            <Text style={[styles.resourceAction, urgent && styles.urgentAction]}>
+              {item.actionLabel}
+            </Text>
+          )}
+        </View>
+        <ExternalLink
+          size={18}
+          color={colors.textLight}
+          strokeWidth={2}
+        />
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <LinearGradient
@@ -144,7 +174,7 @@ const FindSupportScreen = ({ navigation }) => {
             onPress={() => navigation.goBack()}
             style={styles.backButton}
           >
-            <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+            <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Find Support</Text>
           <View style={styles.backButton} />
@@ -186,7 +216,7 @@ const FindSupportScreen = ({ navigation }) => {
 
           {/* Disclaimer */}
           <View style={styles.disclaimerCard}>
-            <MaterialIcons name="info-outline" size={16} color={colors.textSecondary} />
+            <Info size={16} color={colors.textSecondary} strokeWidth={2} />
             <Text style={styles.disclaimerText}>
               Huxley provides these links as resources. We do not endorse,
               verify, or guarantee any provider. Always verify credentials and

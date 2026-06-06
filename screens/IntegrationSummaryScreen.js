@@ -9,6 +9,7 @@ import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
+  Image,
   ScrollView,
   StyleSheet,
   ActivityIndicator,
@@ -16,7 +17,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import { ArrowLeft, ArrowRight, BookOpenText, Info, CheckCircle2 } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useFocusEffect } from '@react-navigation/native';
 import { supabase } from '../lib/supabase';
@@ -25,6 +26,7 @@ import ifsContextService from '../lib/ifsContextService';
 import { shareAll } from '../lib/therapistShareService';
 import ShareWithTherapistButton from '../components/ShareWithTherapistButton';
 import { colors, gradients, shadows, spacing, borderRadius } from '../theme/colors';
+import { icons } from '../lib/uiIcons';
 
 // ---------------------------------------------------------------------------
 // Config
@@ -44,15 +46,15 @@ const BELIEF_DOMAINS = [
 ];
 
 const NS_STATES = [
-  { key: 'ventral', emoji: '💚', label: 'Safe & Connected' },
-  { key: 'sympathetic', emoji: '⚡', label: 'Fight / Flight' },
-  { key: 'dorsal', emoji: '🫥', label: 'Shutdown / Freeze' },
+  { key: 'ventral', icon: icons.droplet, label: 'Safe & Connected' },
+  { key: 'sympathetic', icon: icons.steam, label: 'Fight / Flight' },
+  { key: 'dorsal', icon: icons.iceberg, label: 'Shutdown / Freeze' },
 ];
 
 const ROLE_CONFIG = {
-  manager: { emoji: '🛡️', label: 'Manager' },
-  firefighter: { emoji: '🔥', label: 'Firefighter' },
-  exile: { emoji: '💔', label: 'Exile' },
+  manager: { icon: icons.manager, label: 'Manager' },
+  firefighter: { icon: icons.firefighter, label: 'Firefighter' },
+  exile: { icon: icons.brokenHeart, label: 'Exile' },
 };
 
 const getScoreColor = (score) => {
@@ -143,10 +145,10 @@ const IntegrationSummaryScreen = ({ navigation }) => {
   // Section renderers
   // ---------------------------------------------------------------------------
 
-  const renderSectionHeader = (emoji, title, date) => (
+  const renderSectionHeader = (iconSource, title, date) => (
     <View style={styles.sectionHeader}>
       <View style={styles.sectionHeaderLeft}>
-        <Text style={styles.sectionEmoji}>{emoji}</Text>
+        <Image source={iconSource} style={styles.sectionIcon} resizeMode="contain" />
         <Text style={styles.sectionTitle}>{title}</Text>
       </View>
       {date ? <Text style={styles.sectionDate}>{formatDate(date)}</Text> : null}
@@ -163,7 +165,7 @@ const IntegrationSummaryScreen = ({ navigation }) => {
 
     return (
       <View style={styles.section}>
-        {renderSectionHeader('💚', 'Nervous System Map')}
+        {renderSectionHeader(icons.nsMap, 'Nervous System Map')}
 
         {/* Meta stats */}
         <View style={styles.metaRow}>
@@ -181,7 +183,7 @@ const IntegrationSummaryScreen = ({ navigation }) => {
           )}
         </View>
 
-        {NS_STATES.map(({ key, emoji, label }) => {
+        {NS_STATES.map(({ key, icon, label }) => {
           const state = p[`${key}_patterns`] || {};
           const items = [
             ...(state.situations || []),
@@ -193,7 +195,10 @@ const IntegrationSummaryScreen = ({ navigation }) => {
 
           return (
             <View key={key} style={styles.subsection}>
-              <Text style={styles.subsectionTitle}>{emoji} {label}</Text>
+              <View style={styles.subsectionTitleRow}>
+                <Image source={icon} style={styles.subsectionTitleIcon} resizeMode="contain" />
+                <Text style={styles.subsectionTitle}>{label}</Text>
+              </View>
               {state.body_sensations?.length > 0 && (
                 <View style={styles.fieldRow}>
                   <Text style={styles.fieldLabel}>Body:</Text>
@@ -239,7 +244,7 @@ const IntegrationSummaryScreen = ({ navigation }) => {
 
     return (
       <View style={styles.section}>
-        {renderSectionHeader('💭', 'Core Beliefs', cb.created_at)}
+        {renderSectionHeader(icons.coreBeliefs, 'Core Beliefs', cb.created_at)}
 
         <View style={styles.avgRow}>
           <Text style={styles.avgLabel}>Overall</Text>
@@ -272,16 +277,21 @@ const IntegrationSummaryScreen = ({ navigation }) => {
 
     return (
       <View style={styles.section}>
-        {renderSectionHeader('🛠️', 'Regulation Toolkit')}
+        {renderSectionHeader(icons.tools, 'Regulation Toolkit')}
         {['ventral', 'sympathetic', 'dorsal'].map(state => {
           const stateData = res[state] || {};
           const cats = allCategories.filter(c => stateData[c]?.length > 0);
           if (!cats.length) return null;
 
-          const stateLabel = { ventral: '💚 Safe & Connected', sympathetic: '⚡ Fight / Flight', dorsal: '🫥 Shutdown / Freeze' }[state];
+          const stateMeta = NS_STATES.find(s => s.key === state);
           return (
             <View key={state} style={styles.subsection}>
-              <Text style={styles.subsectionTitle}>{stateLabel}</Text>
+              <View style={styles.subsectionTitleRow}>
+                {stateMeta ? (
+                  <Image source={stateMeta.icon} style={styles.subsectionTitleIcon} resizeMode="contain" />
+                ) : null}
+                <Text style={styles.subsectionTitle}>{stateMeta?.label || state}</Text>
+              </View>
               {cats.map(cat => (
                 <View key={cat} style={styles.fieldRow}>
                   <Text style={styles.fieldLabel}>{catLabels[cat]}:</Text>
@@ -314,7 +324,7 @@ const IntegrationSummaryScreen = ({ navigation }) => {
 
     return (
       <View style={styles.section}>
-        {renderSectionHeader('⚡', 'Triggers & Glimmers', tg.created_at)}
+        {renderSectionHeader(icons.triggerGlimmerMap, 'Triggers & Glimmers', tg.created_at)}
         {triggers.length > 0 && (
           <View style={styles.subsection}>
             <Text style={styles.subsectionTitle}>Triggers ({triggers.length})</Text>
@@ -349,7 +359,7 @@ const IntegrationSummaryScreen = ({ navigation }) => {
 
     return (
       <View style={styles.section}>
-        {renderSectionHeader('🔮', 'IFS Parts Inventory')}
+        {renderSectionHeader(icons.group, 'IFS Parts Inventory')}
 
         <View style={styles.partsOverview}>
           <Text style={styles.partsOverviewText}>
@@ -358,10 +368,11 @@ const IntegrationSummaryScreen = ({ navigation }) => {
         </View>
 
         {parts.map(part => {
-          const role = ROLE_CONFIG[part.part_role] || { emoji: '❓', label: part.part_role || 'Unknown' };
+          const role = ROLE_CONFIG[part.part_role] || { icon: icons.uncertainState, label: part.part_role || 'Unknown' };
           return (
             <View key={part.id} style={styles.partRow}>
-              <Text style={styles.partEmoji}>{role.emoji}</Text>
+              <Image source={role.icon} style={styles.partIcon} resizeMode="contain" />
+
               <View style={styles.partInfo}>
                 <Text style={styles.partName}>{part.part_name || 'Unnamed'}</Text>
                 <Text style={styles.partDetail}>
@@ -371,7 +382,7 @@ const IntegrationSummaryScreen = ({ navigation }) => {
                 </Text>
               </View>
               {part.unburdened && (
-                <MaterialIcons name="check-circle" size={16} color={colors.success} />
+                <CheckCircle2 size={16} color={colors.success} strokeWidth={2} />
               )}
             </View>
           );
@@ -386,7 +397,7 @@ const IntegrationSummaryScreen = ({ navigation }) => {
 
     return (
       <View style={styles.section}>
-        {renderSectionHeader('📓', 'Recent Journal Themes')}
+        {renderSectionHeader(icons.journal, 'Recent Journal Themes')}
         {journals.map((j, i) => (
           <View key={i} style={styles.journalRow}>
             <Text style={styles.journalDate}>{formatDate(j.created_at)}</Text>
@@ -440,14 +451,14 @@ const IntegrationSummaryScreen = ({ navigation }) => {
             {/* Header */}
             <View style={styles.header}>
               <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+                <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
               </TouchableOpacity>
             </View>
 
             {/* Report header */}
             <View style={styles.reportHeader}>
               <View style={styles.reportBadge}>
-                <MaterialIcons name="auto-stories" size={20} color={colors.primary} />
+                <BookOpenText size={20} color={colors.primary} strokeWidth={2} />
                 <Text style={styles.reportBadgeText}>Personal</Text>
               </View>
               <Text style={styles.reportTitle}>Integration Summary</Text>
@@ -458,7 +469,7 @@ const IntegrationSummaryScreen = ({ navigation }) => {
 
             {/* Disclaimer */}
             <View style={styles.disclaimer}>
-              <MaterialIcons name="info-outline" size={16} color={colors.textSecondary} />
+              <Info size={16} color={colors.textSecondary} strokeWidth={2} />
               <Text style={styles.disclaimerText}>
                 This summary reflects your self-reported experience and AI-guided exploration. It is not a clinical assessment.
               </Text>
@@ -475,7 +486,7 @@ const IntegrationSummaryScreen = ({ navigation }) => {
                   activeOpacity={0.7}
                 >
                   <Text style={styles.startButtonText}>Go to Inner Atlas</Text>
-                  <MaterialIcons name="arrow-forward" size={18} color={colors.textInverse} />
+                  <ArrowRight size={18} color={colors.textInverse} strokeWidth={2} />
                 </TouchableOpacity>
               </View>
             ) : (
@@ -595,7 +606,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-  sectionEmoji: { fontSize: 22 },
+  sectionIcon: { width: 28, height: 28 },
   sectionTitle: { fontSize: 17, fontWeight: '700', color: colors.text },
   sectionDate: { fontSize: 12, color: colors.textLight },
 
@@ -689,7 +700,17 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.offWhite,
     gap: 8,
   },
-  partEmoji: { fontSize: 20 },
+  partIcon: { width: 28, height: 28 },
+  subsectionTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
+  },
+  subsectionTitleIcon: {
+    width: 20,
+    height: 20,
+  },
   partInfo: { flex: 1 },
   partName: { fontSize: 14, fontWeight: '600', color: colors.text },
   partDetail: { fontSize: 12, color: colors.textSecondary, lineHeight: 16 },

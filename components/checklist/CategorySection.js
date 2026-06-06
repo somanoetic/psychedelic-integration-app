@@ -1,8 +1,23 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  Dumbbell,
+  Shield,
+  Flower2,
+  ListChecks,
+  ChevronDown,
+  ChevronUp,
+} from 'lucide-react-native';
 import { colors, spacing, borderRadius } from '../../theme/colors';
 import ChecklistItem from './ChecklistItem';
+
+// Map legacy MaterialIcons names from categoryInfo to Lucide components.
+const CATEGORY_ICON_MAP = {
+  'fitness-center': Dumbbell,
+  shield: Shield,
+  spa: Flower2,
+  checklist: ListChecks,
+};
 
 /**
  * CategorySection - Collapsible group of checklist items by category
@@ -36,6 +51,7 @@ const CategorySection = ({ category, items, onToggleItem, onToggleItemNA, onDele
   };
 
   const info = categoryInfo[category] || categoryInfo.practical;
+  const CategoryIcon = CATEGORY_ICON_MAP[info.icon] || ListChecks;
   // N/A items count toward "done" so the section header reflects items
   // the user has resolved one way or another.
   const completedCount = items.filter(item => item.isChecked || item.isNa).length;
@@ -50,7 +66,7 @@ const CategorySection = ({ category, items, onToggleItem, onToggleItemNA, onDele
         activeOpacity={0.7}
       >
         <View style={styles.headerLeft}>
-          <MaterialIcons name={info.icon} size={24} color={info.color} />
+          <CategoryIcon size={24} color={info.color} strokeWidth={2} />
           <Text style={styles.categoryTitle}>{info.title}</Text>
         </View>
         <View style={styles.headerRight}>
@@ -59,11 +75,11 @@ const CategorySection = ({ category, items, onToggleItem, onToggleItemNA, onDele
               {completedCount}/{totalCount}
             </Text>
           </View>
-          <MaterialIcons
-            name={collapsed ? 'expand-more' : 'expand-less'}
-            size={24}
-            color={colors.textSecondary}
-          />
+          {collapsed ? (
+            <ChevronDown size={24} color={colors.textSecondary} strokeWidth={2} />
+          ) : (
+            <ChevronUp size={24} color={colors.textSecondary} strokeWidth={2} />
+          )}
         </View>
       </TouchableOpacity>
 

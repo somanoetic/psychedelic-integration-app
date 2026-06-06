@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   View,
   Text,
@@ -10,11 +10,63 @@ import {
   Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
-import { colors } from '../theme/colors';
+import { LinearGradient } from 'expo-linear-gradient';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Search,
+  List,
+  Play,
+  User,
+  ChevronRight,
+  Home,
+  X,
+  Grid3x3,
+  Wind,
+  Mountain,
+  Activity,
+  Heart,
+  Users,
+  Sparkles,
+  Flower2,
+  Brain,
+  Lightbulb,
+  Repeat,
+  Dumbbell,
+  GraduationCap,
+  HeartPulse,
+  Gamepad2,
+} from 'lucide-react-native';
+import { colors, gradients } from '../theme/colors';
 import { icons } from '../lib/uiIcons';
 import { exerciseCategories as realCategories, getExercisesByCategory, getAllExercises } from '../content/exercises-comprehensive';
 import contributedExerciseService from '../lib/contributedExerciseService';
+
+const CATEGORY_LUCIDE = {
+  apps: Grid3x3,
+  air: Wind,
+  landscape: Mountain,
+  accessibility: Activity,
+  favorite: Heart,
+  groups: Users,
+  'self-improvement': Sparkles,
+  spa: Flower2,
+  psychology: Brain,
+  lightbulb: Lightbulb,
+  repeat: Repeat,
+  'auto-awesome': Sparkles,
+  'fitness-center': Dumbbell,
+  school: GraduationCap,
+  healing: HeartPulse,
+  'sports-esports': Gamepad2,
+};
+
+const OPTION_ICON_MAP = {
+  search: Search,
+  'view-list': List,
+  'arrow-back': ArrowLeft,
+  home: Home,
+};
 
 const ConversationalExerciseLibrary = ({ navigation, route }) => {
   const [conversationStep, setConversationStep] = useState('initial'); // initial, search, browse, selected, searchResults
@@ -23,6 +75,15 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [fadeAnim] = useState(new Animated.Value(0));
   const [contributedExercises, setContributedExercises] = useState([]);
+  const scrollRef = useRef(null);
+
+  // A single ScrollView is reused across every conversation step, so its
+  // scroll offset would otherwise carry over — e.g. scrolling down to a
+  // category in `browse` and then opening it would land the exercise list
+  // mid-scroll. Reset to the top whenever the step changes.
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ y: 0, animated: false });
+  }, [conversationStep]);
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -93,17 +154,20 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
     </View>
   );
 
-  const renderUserOption = (text, onPress, icon, color = colors.primary) => (
-    <TouchableOpacity
-      style={[styles.responseBubble, { backgroundColor: color }]}
-      onPress={onPress}
-      activeOpacity={0.8}
-    >
-      <MaterialIcons name={icon} size={20} color="#ffffff" style={styles.responseIcon} />
-      <Text style={styles.responseText}>{text}</Text>
-      <MaterialIcons name="arrow-forward" size={16} color="rgba(255,255,255,0.8)" />
-    </TouchableOpacity>
-  );
+  const renderUserOption = (text, onPress, icon, color = colors.primary) => {
+    const Icon = OPTION_ICON_MAP[icon] || List;
+    return (
+      <TouchableOpacity
+        style={[styles.responseBubble, { backgroundColor: color }]}
+        onPress={onPress}
+        activeOpacity={0.8}
+      >
+        <Icon size={20} color="#ffffff" strokeWidth={2} style={styles.responseIcon} />
+        <Text style={styles.responseText}>{text}</Text>
+        <ArrowRight size={16} color="rgba(255,255,255,0.8)" strokeWidth={2} />
+      </TouchableOpacity>
+    );
+  };
 
   const renderInitialStep = () => (
     <>
@@ -192,9 +256,10 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
             <View style={[styles.categoryIcon, { backgroundColor: `${category.color}20` }]}>
               {category.iconImage ? (
                 <Image source={category.iconImage} style={styles.categoryIconImage} />
-              ) : (
-                <MaterialIcons name={category.icon} size={32} color={category.color} />
-              )}
+              ) : (() => {
+                const Icon = CATEGORY_LUCIDE[category.icon] || Grid3x3;
+                return <Icon size={32} color={category.color} strokeWidth={2} />;
+              })()}
             </View>
             <View style={styles.categoryContent}>
               <Text style={styles.categoryName}>{category.name}</Text>
@@ -239,7 +304,7 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
               }}
             >
               <View style={[styles.exerciseIcon, { backgroundColor: `${selectedCategory.color}20` }]}>
-                <MaterialIcons name="play-arrow" size={24} color={selectedCategory.color} />
+                <Play size={24} color={selectedCategory.color} strokeWidth={2} />
               </View>
               <View style={styles.exerciseInfo}>
                 <Text style={styles.exerciseName}>{exercise.title}</Text>
@@ -255,14 +320,14 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
                 )}
                 {exercise.isContributed && (
                   <View style={styles.contributedChip}>
-                    <MaterialIcons name="person-outline" size={11} color={colors.primary} />
+                    <User size={11} color={colors.primary} strokeWidth={2} />
                     <Text style={styles.contributedChipText} numberOfLines={1}>
                       By {exercise.attributionName}
                     </Text>
                   </View>
                 )}
               </View>
-              <MaterialIcons name="chevron-right" size={20} color={colors.textLight} />
+              <ChevronRight size={20} color={colors.textLight} strokeWidth={2} />
             </TouchableOpacity>
           ))}
         </View>
@@ -291,6 +356,31 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
     );
   }, [searchQuery, allExercises]);
 
+  // The header back arrow should retreat one step through the conversation
+  // before exiting the screen, mirroring the in-content "Go back" options.
+  // Otherwise tapping it from a category dumps the user all the way out to
+  // the practice screen.
+  const handleHeaderBack = () => {
+    switch (conversationStep) {
+      case 'selected':
+        setSelectedCategory(null);
+        setConversationStep('browse');
+        break;
+      case 'browse':
+      case 'search':
+        setConversationStep('initial');
+        break;
+      case 'searchResults':
+        setSearchQuery('');
+        setConversationStep('initial');
+        break;
+      case 'initial':
+      default:
+        navigation.goBack();
+        break;
+    }
+  };
+
   const renderSearchResultsStep = () => (
     <>
       {renderHuxleyMessage(
@@ -316,7 +406,7 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
                 }}
               >
                 <View style={[styles.exerciseIcon, { backgroundColor: `${catColor}20` }]}>
-                  <MaterialIcons name="play-arrow" size={24} color={catColor} />
+                  <Play size={24} color={catColor} strokeWidth={2} />
                 </View>
                 <View style={styles.exerciseInfo}>
                   <Text style={styles.exerciseName}>{exercise.title}</Text>
@@ -330,14 +420,14 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
                   )}
                   {exercise.isContributed && (
                     <View style={styles.contributedChip}>
-                      <MaterialIcons name="person-outline" size={11} color={colors.primary} />
+                      <User size={11} color={colors.primary} strokeWidth={2} />
                       <Text style={styles.contributedChipText} numberOfLines={1}>
                         By {exercise.attributionName}
                       </Text>
                     </View>
                   )}
                 </View>
-                <MaterialIcons name="chevron-right" size={20} color={colors.textLight} />
+                <ChevronRight size={20} color={colors.textLight} strokeWidth={2} />
               </TouchableOpacity>
             );
           })}
@@ -353,24 +443,30 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <LinearGradient
+      colors={gradients.standard}
+      start={gradients.standardStart}
+      end={gradients.standardEnd}
+      style={styles.container}
+    >
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+        <TouchableOpacity onPress={handleHeaderBack}>
+          <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
         </TouchableOpacity>
         <Text style={styles.appName}>Exercise Library</Text>
         <TouchableOpacity onPress={() => {
           setSearchQuery('');
           setConversationStep(conversationStep === 'searchResults' ? 'initial' : 'searchResults');
         }}>
-          <MaterialIcons name="search" size={24} color={colors.text} />
+          <Search size={24} color={colors.text} strokeWidth={2} />
         </TouchableOpacity>
       </View>
 
       {conversationStep === 'searchResults' && (
         <View style={styles.searchBarContainer}>
-          <MaterialIcons name="search" size={20} color={colors.textSecondary} />
+          <Search size={20} color={colors.textSecondary} strokeWidth={2} />
           <TextInput
             style={styles.searchBarInput}
             placeholder="Search exercises..."
@@ -382,13 +478,14 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
           />
           {searchQuery.length > 0 && (
             <TouchableOpacity onPress={() => setSearchQuery('')}>
-              <MaterialIcons name="close" size={20} color={colors.textSecondary} />
+              <X size={20} color={colors.textSecondary} strokeWidth={2} />
             </TouchableOpacity>
           )}
         </View>
       )}
 
       <ScrollView
+        ref={scrollRef}
         style={styles.content}
         contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
@@ -401,14 +498,17 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
           {conversationStep === 'searchResults' && renderSearchResultsStep()}
         </Animated.View>
       </ScrollView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f9fafb',
+  },
+  safeArea: {
+    flex: 1,
   },
   header: {
     flexDirection: 'row',

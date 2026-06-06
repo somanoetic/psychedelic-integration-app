@@ -10,7 +10,19 @@ import {
   Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  Heart,
+  Zap,
+  CloudOff,
+  Flower2,
+  Brain,
+  Palette,
+  Footprints,
+  Users,
+  User,
+  ArrowLeft,
+  ArrowRight,
+} from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../lib/supabase';
 import { colors, gradients, shadows, spacing, borderRadius, typography } from '../theme/colors';
@@ -18,7 +30,11 @@ import ShareWithTherapistButton from '../components/ShareWithTherapistButton';
 import { shareRegulatingResources } from '../lib/therapistShareService';
 import { icons } from '../lib/uiIcons';
 
-const STATE_EMOJIS = { ventral: '💚', sympathetic: '⚡', dorsal: '🫥' };
+const STATE_ICONS = {
+  ventral: { Icon: Heart, color: colors.success, fill: colors.success },
+  sympathetic: { Icon: Zap, color: colors.warning },
+  dorsal: { Icon: CloudOff, color: colors.textSecondary },
+};
 const STATE_LABELS = { ventral: 'Safe & Connected', sympathetic: 'Fight / Flight', dorsal: 'Shutdown / Freeze' };
 const STATE_SUBTITLES = { ventral: 'Ventral vagal', sympathetic: 'Sympathetic', dorsal: 'Dorsal vagal' };
 
@@ -33,11 +49,11 @@ const CATEGORY_LABELS = {
 };
 
 const CATEGORY_ICONS = {
-  passive: 'spa',
-  cognitive: 'psychology',
-  creative: 'palette',
-  movement: 'directions-run',
-  connection: 'people',
+  passive: Flower2,
+  cognitive: Brain,
+  creative: Palette,
+  movement: Footprints,
+  connection: Users,
 };
 
 const RegulationToolkitScreen = ({ navigation }) => {
@@ -95,15 +111,18 @@ const RegulationToolkitScreen = ({ navigation }) => {
     </View>
   );
 
-  const renderCategoryGroup = (category, items) => (
-    <View key={category} style={styles.categoryGroup}>
-      <View style={styles.categoryHeader}>
-        <MaterialIcons name={CATEGORY_ICONS[category]} size={14} color={colors.textSecondary} />
-        <Text style={styles.categoryLabel}>{CATEGORY_LABELS[category]}</Text>
+  const renderCategoryGroup = (category, items) => {
+    const CategoryIcon = CATEGORY_ICONS[category];
+    return (
+      <View key={category} style={styles.categoryGroup}>
+        <View style={styles.categoryHeader}>
+          <CategoryIcon size={14} color={colors.textSecondary} strokeWidth={2} />
+          <Text style={styles.categoryLabel}>{CATEGORY_LABELS[category]}</Text>
+        </View>
+        {renderChips(items)}
       </View>
-      {renderChips(items)}
-    </View>
-  );
+    );
+  };
 
   const renderStateCard = (stateKey) => {
     const stateData = resources?.[stateKey] || {};
@@ -113,11 +132,15 @@ const RegulationToolkitScreen = ({ navigation }) => {
     const totalSocial = social.reduce((sum, c) => sum + c.items.length, 0);
     const totalAll = totalIndividual + totalSocial;
 
+    const { Icon: StateIcon, color: stateColor, fill: stateFill } = STATE_ICONS[stateKey];
+
     return (
       <View key={stateKey} style={styles.stateCard}>
         {/* State header row */}
         <View style={styles.stateHeader}>
-          <Text style={styles.stateEmoji}>{STATE_EMOJIS[stateKey]}</Text>
+          <View style={styles.stateIconWrap}>
+            <StateIcon size={28} color={stateColor} fill={stateFill || 'none'} strokeWidth={2} />
+          </View>
           <View style={styles.stateHeaderText}>
             <Text style={styles.stateTitle}>{STATE_LABELS[stateKey]}</Text>
             <Text style={styles.stateSubtitle}>
@@ -134,7 +157,7 @@ const RegulationToolkitScreen = ({ navigation }) => {
             {totalIndividual > 0 && (
               <View style={styles.column}>
                 <View style={styles.columnLabel}>
-                  <MaterialIcons name="person" size={14} color={colors.textSecondary} />
+                  <User size={14} color={colors.textSecondary} strokeWidth={2} />
                   <Text style={styles.columnLabelText}>Individual</Text>
                 </View>
                 {individual.map(({ category, items }) => renderCategoryGroup(category, items))}
@@ -145,7 +168,7 @@ const RegulationToolkitScreen = ({ navigation }) => {
             {totalSocial > 0 && (
               <View style={styles.column}>
                 <View style={styles.columnLabel}>
-                  <MaterialIcons name="people" size={14} color={colors.textSecondary} />
+                  <Users size={14} color={colors.textSecondary} strokeWidth={2} />
                   <Text style={styles.columnLabelText}>Social</Text>
                 </View>
                 {social.map(({ category, items }) => renderCategoryGroup(category, items))}
@@ -186,7 +209,7 @@ const RegulationToolkitScreen = ({ navigation }) => {
                 style={styles.backButton}
                 onPress={() => navigation.goBack()}
               >
-                <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+                <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
               </TouchableOpacity>
             </View>
 
@@ -210,7 +233,7 @@ const RegulationToolkitScreen = ({ navigation }) => {
                   activeOpacity={0.7}
                 >
                   <Text style={styles.startButtonText}>Map Your Resources</Text>
-                  <MaterialIcons name="arrow-forward" size={18} color={colors.textInverse} />
+                  <ArrowRight size={18} color={colors.textInverse} strokeWidth={2} />
                 </TouchableOpacity>
               </View>
             ) : (
@@ -325,8 +348,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  stateEmoji: {
-    fontSize: 36,
+  stateIconWrap: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: colors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
     marginRight: spacing.md,
   },
   stateHeaderText: {

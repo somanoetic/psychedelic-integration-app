@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
   Image,
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { PlusCircle, X, ArrowDown, Heart, ArrowLeft, ArrowRight, Check } from 'lucide-react-native';
 import { supabase } from '../lib/supabase';
 import { icons } from '../lib/uiIcons';
 import { colors } from '../theme/colors';
@@ -280,7 +280,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
             onPress={() => handleAddToList('goals')}
             disabled={!currentInput.trim()}
           >
-            <MaterialIcons name="add-circle" size={24} color={colors.primary} />
+            <PlusCircle size={24} color={colors.primary} strokeWidth={2} />
             <Text style={styles.addButtonText}>Add Goal</Text>
           </TouchableOpacity>
         </View>
@@ -295,7 +295,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
                   onPress={() => handleRemoveFromList('goals', index)}
                   style={styles.removeButton}
                 >
-                  <MaterialIcons name="close" size={20} color="#dc2626" />
+                  <X size={20} color="#dc2626" strokeWidth={2} />
                 </TouchableOpacity>
               </View>
             ))}
@@ -325,7 +325,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
             {responses.goals.map((goal, index) => (
               <View key={index} style={styles.transformItem}>
                 <Text style={styles.transformGoal}>🎯 {goal}</Text>
-                <MaterialIcons name="arrow-downward" size={16} color={colors.textSecondary} />
+                <ArrowDown size={16} color={colors.textSecondary} strokeWidth={2} />
                 <Text style={styles.transformPrompt}>How can you be with this? →</Text>
               </View>
             ))}
@@ -359,7 +359,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
             onPress={() => handleAddToList('intentions')}
             disabled={!currentInput.trim()}
           >
-            <MaterialIcons name="add-circle" size={24} color={colors.success} />
+            <PlusCircle size={24} color={colors.success} strokeWidth={2} />
             <Text style={[styles.addButtonText, { color: colors.success }]}>Add Intention</Text>
           </TouchableOpacity>
         </View>
@@ -374,7 +374,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
                   onPress={() => handleRemoveFromList('intentions', index)}
                   style={styles.removeButton}
                 >
-                  <MaterialIcons name="close" size={20} color="#dc2626" />
+                  <X size={20} color="#dc2626" strokeWidth={2} />
                 </TouchableOpacity>
               </View>
             ))}
@@ -443,7 +443,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
         )}
 
         <View style={styles.blessingBox}>
-          <MaterialIcons name="favorite" size={24} color="#dc2626" />
+          <Heart size={24} color="#dc2626" strokeWidth={2} />
           <Text style={styles.blessingText}>
             May you meet whatever arises with grace, curiosity, and compassion. Trust the wisdom of the journey.
           </Text>
@@ -482,7 +482,7 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={onSkip} style={styles.closeButton}>
-          <MaterialIcons name="close" size={24} color={colors.textSecondary} />
+          <X size={24} color={colors.textSecondary} strokeWidth={2} />
         </TouchableOpacity>
         <View style={styles.headerInfo}>
           <Text style={styles.headerTitle}>Intention Setting</Text>
@@ -514,10 +514,10 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
           onPress={() => setCurrentStep(Math.max(0, currentStep - 1))}
           disabled={currentStep === 0}
         >
-          <MaterialIcons
-            name="arrow-back"
+          <ArrowLeft
             size={20}
             color={currentStep === 0 ? colors.textLight : colors.textSecondary}
+            strokeWidth={2}
           />
           <Text
             style={[
@@ -547,11 +547,11 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
               <Text style={styles.nextButtonText}>
                 {currentStep === steps.length - 1 ? 'Complete' : 'Next'}
               </Text>
-              <MaterialIcons
-                name={currentStep === steps.length - 1 ? 'check' : 'arrow-forward'}
-                size={20}
-                color="#ffffff"
-              />
+              {currentStep === steps.length - 1 ? (
+                <Check size={20} color="#ffffff" strokeWidth={2} />
+              ) : (
+                <ArrowRight size={20} color="#ffffff" strokeWidth={2} />
+              )}
             </>
           )}
         </TouchableOpacity>

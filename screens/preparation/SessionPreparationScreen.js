@@ -8,10 +8,23 @@ import {
   Alert,
   TextInput,
   Image,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+const toTitleCase = (str) =>
+  str.replace(/\b\w/g, (c) => c.toUpperCase());
 import { LinearGradient } from 'expo-linear-gradient';
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle2,
+  ChevronRight,
+  Clock,
+  Lightbulb,
+  Sparkles,
+} from 'lucide-react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '../../lib/supabase';
@@ -25,7 +38,6 @@ const SessionPreparationScreen = ({ navigation, route }) => {
   const [currentSession, setCurrentSession] = useState(sessionData || null);
   const [currentSection, setCurrentSection] = useState('overview');
   const [completedSections, setCompletedSections] = useState([]);
-  const [creatingSession, setCreatingSession] = useState(false);
   // Gate the auto-save effect so it doesn't fire with empty state on the
   // initial render and overwrite previously-saved preparation data.
   const hasLoadedRef = useRef(false);
@@ -53,44 +65,16 @@ const SessionPreparationScreen = ({ navigation, route }) => {
   const [activeParts, setActiveParts] = useState([]);
   const [partsNotes, setPartsNotes] = useState('');
 
-  // Auto-create session if none provided
+  // This screen is always reached from the Prepare for a Journey hub with a
+  // concrete sessionId/sessionData, so it no longer silently creates a session
+  // on mount (that previously produced an unnamed "ghost" session the user
+  // never asked for). New sessions are created deliberately from the hub.
+  // If somehow opened without a session, we just warn rather than fabricate one.
   useEffect(() => {
-    if (!sessionId && !creatingSession) {
-      createNewSession();
+    if (!sessionId) {
+      console.warn('SessionPreparation opened without a sessionId; expected to be reached from the Prepare hub.');
     }
-  }, []);
-
-  const createNewSession = async () => {
-    try {
-      setCreatingSession(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        console.warn('No authenticated user - working offline');
-        setCreatingSession(false);
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from('sessions')
-        .insert({
-          user_id: user.id,
-          title: 'New Session',
-          journey_date: new Date().toISOString().split('T')[0],
-          session_data: { preparation: {} },
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      setSessionId(data.id);
-      setCurrentSession(data);
-      console.log('Auto-created session:', data.id);
-    } catch (err) {
-      console.error('Error creating session:', err);
-    } finally {
-      setCreatingSession(false);
-    }
-  };
+  }, [sessionId]);
 
   // When this screen regains focus (e.g. after returning from the
   // SessionChecklistScreen), check whether the day-of checklist is complete
@@ -196,15 +180,17 @@ const SessionPreparationScreen = ({ navigation, route }) => {
   useEffect(() => {
     if (sessionData) {
       const prep = sessionData.session_data?.preparation || sessionData.preparation || {};
-      // Session info
+      const info = sessionData.session_data?.sessionInfo || {};
+      // Session info — fall back to sessionInfo so data saved via SessionInfoHeader
+      // shows up here too.
       setSessionTitle(sessionData.title || '');
       setJourneyDate(sessionData.journey_date || new Date().toISOString().split('T')[0]);
-      setMedicine(prep.medicine || '');
-      setDosage(prep.dosage || '');
-      setSetting(prep.setting || '');
-      setFacilitator(prep.facilitator || '');
-      setParticipants(prep.participants || '');
-      setSessionContext(prep.sessionContext || '');
+      setMedicine(prep.medicine || info.medicine || '');
+      setDosage(prep.dosage || info.dosage || '');
+      setSetting(prep.setting || info.setting || '');
+      setFacilitator(prep.facilitator || info.facilitator || '');
+      setParticipants(prep.participants || info.participants || '');
+      setSessionContext(prep.sessionContext || info.context || '');
       // Intention
       setCustomIntention(prep.intention || '');
       setSelectedIntentionCategory(prep.intentionCategory || '');
@@ -223,6 +209,41 @@ const SessionPreparationScreen = ({ navigation, route }) => {
     if (!sessionId) return;
 
     try {
+      const currentSessionData = currentSession?.session_data || sessionData?.session_data || {};
+
+      const trimmedMedicine = medicine.trim();
+      const previousMedicine =
+        (currentSessionData?.sessionInfo?.medicine || currentSessionData?.preparation?.medicine || '').trim();
+      const titleWasDefault = currentSessionData?.titleIsDefault === true;
+      const userTouchedTitle = sessionTitle && sessionTitle.trim() && sessionTitle.trim() !== (currentSession?.title || '');
+      const firstMedicineFill = !previousMedicine && !!trimmedMedicine;
+
+      let nextTitle = sessionTitle?.trim() || currentSession?.title || '';
+      let nextTitleIsDefault = currentSessionData?.titleIsDefault;
+
+      // Auto-rename to "[Medicine] Session [N] - [Date]" the first time medicine
+      // is set, unless the user has typed a custom title here.
+      if (firstMedicineFill && titleWasDefault && !userTouchedTitle) {
+        const { count, error: countError } = await supabase
+          .from('sessions')
+          .select('id', { count: 'exact', head: true })
+          .ilike('session_data->sessionInfo->>medicine', trimmedMedicine)
+          .neq('id', sessionId);
+
+        if (!countError) {
+          const sessionNumber = (count || 0) + 1;
+          const dateLabel = new Date(journeyDate).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          });
+          nextTitle = `${toTitleCase(trimmedMedicine)} Session ${sessionNumber} - ${dateLabel}`;
+          nextTitleIsDefault = false;
+        }
+      } else if (userTouchedTitle) {
+        nextTitleIsDefault = false;
+      }
+
       const preparationData = {
         // Session info
         medicine,
@@ -243,22 +264,43 @@ const SessionPreparationScreen = ({ navigation, route }) => {
         completedAt: new Date().toISOString()
       };
 
-      const currentSessionData = currentSession?.session_data || sessionData?.session_data || {};
+      // Mirror to sessionInfo so the SessionInfoHeader edit modal sees the
+      // same data and the auto-rename count works across both paths.
       const updatedSessionData = {
         ...currentSessionData,
-        preparation: preparationData
+        titleIsDefault: nextTitleIsDefault,
+        preparation: preparationData,
+        sessionInfo: {
+          ...(currentSessionData.sessionInfo || {}),
+          medicine,
+          dosage,
+          setting,
+          facilitator,
+          participants,
+          context: sessionContext,
+        },
       };
 
       const updates = { session_data: updatedSessionData };
-      if (sessionTitle && sessionTitle.trim()) updates.title = sessionTitle.trim();
+      if (nextTitle && nextTitle !== currentSession?.title) {
+        updates.title = nextTitle;
+      }
       if (journeyDate) updates.journey_date = journeyDate;
 
-      const { error } = await supabase
+      const { data: updatedRow, error } = await supabase
         .from('sessions')
         .update(updates)
-        .eq('id', sessionId);
+        .eq('id', sessionId)
+        .select()
+        .single();
 
       if (error) throw error;
+      if (updatedRow) {
+        setCurrentSession(updatedRow);
+        if (updatedRow.title !== sessionTitle) {
+          setSessionTitle(updatedRow.title || '');
+        }
+      }
 
       console.log('Preparation data saved successfully');
     } catch (error) {
@@ -444,7 +486,7 @@ const SessionPreparationScreen = ({ navigation, route }) => {
             style={styles.navBackButton}
             onPress={() => navigation.goBack()}
           >
-            <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+            <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
           </TouchableOpacity>
         </View>
 
@@ -500,13 +542,16 @@ const SessionPreparationScreen = ({ navigation, route }) => {
                 <View style={styles.optionText}>
                   <Text style={styles.optionTitle}>{section.title}</Text>
                   <Text style={styles.optionDescription}>{section.description}</Text>
-                  <Text style={styles.optionTime}>⏱️ {section.estimatedTime}</Text>
+                  <View style={styles.optionTimeRow}>
+                    <Clock size={14} color={colors.textLight} strokeWidth={2} />
+                    <Text style={styles.optionTime}>{section.estimatedTime}</Text>
+                  </View>
                 </View>
               </View>
               {completedSections.includes(section.id) ? (
-                <MaterialIcons name="check-circle" size={24} color={colors.success} />
+                <CheckCircle2 size={24} color={colors.success} strokeWidth={2} />
               ) : (
-                <MaterialIcons name="chevron-right" size={24} color={colors.textSecondary} />
+                <ChevronRight size={24} color={colors.textSecondary} strokeWidth={2} />
               )}
             </TouchableOpacity>
           ))}
@@ -564,17 +609,20 @@ const SessionPreparationScreen = ({ navigation, route }) => {
             style={styles.completeButton}
             onPress={() => {
               savePreparationData();
+              // Prep is finished (typically before the journey). Offer a jump
+              // straight into Process & Integrate for those who prepped right
+              // before processing, but default to returning to the Prepare hub.
               Alert.alert(
                 'Preparation Complete!',
-                'You\'re ready for your session. Remember: Trust. Let go. Be open.',
+                'You\'re ready for your session. Remember: Trust. Let go. Be open.\n\nWhen you\'re ready to process afterward, you can come back via Process & Integrate.',
                 [
+                  { text: 'Done', style: 'cancel', onPress: () => navigation.goBack() },
                   {
-                    text: 'Start Session Tools',
-                    onPress: () => navigation.navigate('SessionTools', { sessionId })
-                  },
-                  {
-                    text: 'Return to Session',
-                    onPress: () => navigation.goBack()
+                    text: 'Process & Integrate',
+                    onPress: () =>
+                      navigation.navigate('ProcessIntegrate', {
+                        session: currentSession || sessionData,
+                      })
                   }
                 ]
               );
@@ -586,7 +634,10 @@ const SessionPreparationScreen = ({ navigation, route }) => {
 
         {/* Tip */}
         <View style={styles.tipBox}>
-          <Text style={styles.tipTitle}>💡 Preparation Tip</Text>
+          <View style={styles.tipTitleRow}>
+            <Lightbulb size={18} color={colors.primary} strokeWidth={2} />
+            <Text style={styles.tipTitle}>Preparation Tip</Text>
+          </View>
           <Text style={styles.tipText}>
             Each session is a unique opportunity for healing and growth. Take your time with each step.
           </Text>
@@ -609,7 +660,7 @@ const SessionPreparationScreen = ({ navigation, route }) => {
       >
         <View style={styles.header}>
           <TouchableOpacity style={styles.navBackButton} onPress={() => setCurrentSection('overview')}>
-            <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+            <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
           </TouchableOpacity>
         </View>
 
@@ -663,7 +714,10 @@ const SessionPreparationScreen = ({ navigation, route }) => {
             </View>
 
             <View style={styles.moduleMeta}>
-              <Text style={styles.moduleTime}>⏱️ {module.time}</Text>
+              <View style={styles.moduleTimeRow}>
+                <Clock size={14} color={colors.textLight} strokeWidth={2} />
+                <Text style={styles.moduleTime}>{module.time}</Text>
+              </View>
             </View>
 
             <TouchableOpacity
@@ -673,7 +727,7 @@ const SessionPreparationScreen = ({ navigation, route }) => {
               }}
             >
               <Text style={styles.moduleButtonText}>Review Module</Text>
-              <MaterialIcons name="arrow-forward" size={16} color={colors.white} />
+              <ArrowRight size={16} color={colors.white} strokeWidth={2} />
             </TouchableOpacity>
           </View>
         ))}
@@ -720,7 +774,7 @@ const SessionPreparationScreen = ({ navigation, route }) => {
       >
         <View style={styles.header}>
           <TouchableOpacity style={styles.navBackButton} onPress={() => setCurrentSection('overview')}>
-            <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+            <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
           </TouchableOpacity>
         </View>
 
@@ -781,7 +835,10 @@ const SessionPreparationScreen = ({ navigation, route }) => {
             <Text style={styles.assessmentDomains}>{assessment.domains}</Text>
             <View style={styles.assessmentMeta}>
               <Text style={styles.assessmentMetaText}>📊 {assessment.items} items</Text>
-              <Text style={styles.assessmentMetaText}>⏱️ ~{assessment.time}</Text>
+              <View style={styles.assessmentTimeRow}>
+                <Clock size={14} color={colors.textLight} strokeWidth={2} />
+                <Text style={styles.assessmentMetaText}>~{assessment.time}</Text>
+              </View>
             </View>
             <TouchableOpacity
               style={styles.assessmentButton}
@@ -831,7 +888,7 @@ const SessionPreparationScreen = ({ navigation, route }) => {
       >
         <View style={styles.header}>
           <TouchableOpacity style={styles.navBackButton} onPress={() => setCurrentSection('belief_assessments')}>
-            <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+            <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
           </TouchableOpacity>
         </View>
 
@@ -967,7 +1024,7 @@ const SessionPreparationScreen = ({ navigation, route }) => {
       >
         <View style={styles.header}>
           <TouchableOpacity style={styles.navBackButton} onPress={() => setCurrentSection('overview')}>
-            <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+            <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
           </TouchableOpacity>
         </View>
 
@@ -1081,10 +1138,11 @@ const SessionPreparationScreen = ({ navigation, route }) => {
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
         <View style={styles.header}>
           <TouchableOpacity style={styles.navBackButton} onPress={() => setCurrentSection('overview')}>
-            <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+            <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
           </TouchableOpacity>
         </View>
 
@@ -1103,7 +1161,7 @@ const SessionPreparationScreen = ({ navigation, route }) => {
           style={[styles.primaryButton, { marginBottom: spacing.sm, flexDirection: 'row', alignItems: 'center', gap: 8 }]}
           onPress={() => navigation.navigate('SetIntention', { sessionId, sessionData })}
         >
-          <MaterialIcons name="auto-awesome" size={20} color={colors.white} />
+          <Sparkles size={20} color={colors.white} strokeWidth={2} />
           <Text style={styles.primaryButtonText}>AI-Guided Intention ✨</Text>
         </TouchableOpacity>
 
@@ -1150,7 +1208,7 @@ const SessionPreparationScreen = ({ navigation, route }) => {
       >
         <View style={styles.header}>
           <TouchableOpacity style={styles.navBackButton} onPress={() => setCurrentSection('overview')}>
-            <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+            <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
           </TouchableOpacity>
         </View>
 
@@ -1203,7 +1261,7 @@ const SessionPreparationScreen = ({ navigation, route }) => {
       >
         <View style={styles.header}>
           <TouchableOpacity style={styles.navBackButton} onPress={() => setCurrentSection('overview')}>
-            <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+            <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
           </TouchableOpacity>
         </View>
 
@@ -1264,7 +1322,13 @@ const SessionPreparationScreen = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      {renderCurrentSection()}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
+        {renderCurrentSection()}
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
@@ -1388,6 +1452,11 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     marginBottom: 4,
   },
+  optionTimeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
   optionTime: {
     fontSize: 13,
     color: colors.textLight,
@@ -1455,11 +1524,16 @@ const styles = StyleSheet.create({
     borderLeftColor: colors.primary,
     marginTop: spacing.md,
   },
+  tipTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginBottom: spacing.xs,
+  },
   tipTitle: {
     fontSize: 15,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: spacing.xs,
   },
   tipText: {
     fontSize: 14,
@@ -1508,6 +1582,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: spacing.md,
+  },
+  assessmentTimeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   assessmentMetaText: {
     fontSize: 13,
@@ -1705,6 +1784,11 @@ const styles = StyleSheet.create({
   },
   moduleMeta: {
     marginBottom: spacing.sm,
+  },
+  moduleTimeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   moduleTime: {
     fontSize: 13,

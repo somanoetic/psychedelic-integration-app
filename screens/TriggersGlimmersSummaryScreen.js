@@ -16,7 +16,7 @@ import {
   Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import { ArrowLeft, ArrowRight } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../lib/supabase';
 import { colors, gradients, shadows, spacing, borderRadius, typography } from '../theme/colors';
@@ -25,16 +25,16 @@ import { shareTriggersGlimmers } from '../lib/therapistShareService';
 import { icons } from '../lib/uiIcons';
 
 const TRIGGER_GROUPS = [
-  { key: 'sympathetic_triggers', emoji: '⚡', icon: icons.steam, label: 'Fight / Flight Triggers' },
-  { key: 'dorsal_triggers', emoji: '🫥', icon: icons.iceberg, label: 'Shutdown Triggers' },
-  { key: 'general_triggers', emoji: '🔴', icon: icons.trigger, label: 'General Triggers' },
+  { key: 'sympathetic_triggers', icon: icons.steam, label: 'Fight / Flight Triggers' },
+  { key: 'dorsal_triggers', icon: icons.iceberg, label: 'Shutdown Triggers' },
+  { key: 'general_triggers', icon: icons.trigger, label: 'General Triggers' },
 ];
 
 const GLIMMER_GROUPS = [
-  { key: 'sensory_glimmers', emoji: '✨', icon: icons.observation, label: 'Sensory' },
-  { key: 'relational_glimmers', emoji: '🤝', icon: icons.community, label: 'Relational' },
-  { key: 'activity_glimmers', emoji: '🎨', icon: icons.creativity, label: 'Activities' },
-  { key: 'nature_glimmers', emoji: '🌿', icon: icons.sprout, label: 'Nature' },
+  { key: 'sensory_glimmers', icon: icons.observation, label: 'Sensory' },
+  { key: 'relational_glimmers', icon: icons.community, label: 'Relational' },
+  { key: 'activity_glimmers', icon: icons.creativity, label: 'Activities' },
+  { key: 'nature_glimmers', icon: icons.sprout, label: 'Nature' },
 ];
 
 const TriggersGlimmersSummaryScreen = ({ navigation }) => {
@@ -91,14 +91,14 @@ const TriggersGlimmersSummaryScreen = ({ navigation }) => {
     </View>
   );
 
-  const renderGroupCard = (groups, sectionLabel, sectionEmoji) => {
+  const renderGroupCard = (groups, sectionLabel, sectionIcon) => {
     const nonEmpty = groups.filter(g => data?.[g.key]?.length > 0);
     if (!nonEmpty.length) return null;
 
     return (
       <View style={styles.card}>
         <View style={styles.cardHeader}>
-          <Text style={styles.cardEmoji}>{sectionEmoji}</Text>
+          <Image source={sectionIcon} style={styles.cardIconImage} />
           <View style={styles.cardHeaderText}>
             <Text style={styles.cardTitle}>{sectionLabel}</Text>
           </View>
@@ -106,11 +106,7 @@ const TriggersGlimmersSummaryScreen = ({ navigation }) => {
         {nonEmpty.map(g => (
           <View key={g.key} style={styles.fieldGroup}>
             <View style={styles.fieldHeader}>
-              {g.icon ? (
-                <Image source={g.icon} style={styles.fieldIconImage} />
-              ) : (
-                <Text style={styles.fieldEmoji}>{g.emoji}</Text>
-              )}
+              <Image source={g.icon} style={styles.fieldIconImage} />
               <Text style={styles.fieldLabel}>{g.label}</Text>
               <Text style={styles.fieldCount}>{data[g.key].length}</Text>
             </View>
@@ -142,7 +138,7 @@ const TriggersGlimmersSummaryScreen = ({ navigation }) => {
           >
             <View style={styles.header}>
               <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+                <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
               </TouchableOpacity>
             </View>
 
@@ -164,7 +160,7 @@ const TriggersGlimmersSummaryScreen = ({ navigation }) => {
                   activeOpacity={0.7}
                 >
                   <Text style={styles.startButtonText}>Map Triggers & Glimmers</Text>
-                  <MaterialIcons name="arrow-forward" size={18} color={colors.textInverse} />
+                  <ArrowRight size={18} color={colors.textInverse} strokeWidth={2} />
                 </TouchableOpacity>
               </View>
             ) : (
@@ -184,8 +180,8 @@ const TriggersGlimmersSummaryScreen = ({ navigation }) => {
                 )}
 
                 <View style={styles.cardsContainer}>
-                  {renderGroupCard(TRIGGER_GROUPS, 'Triggers', '🔴')}
-                  {renderGroupCard(GLIMMER_GROUPS, 'Glimmers', '✨')}
+                  {renderGroupCard(TRIGGER_GROUPS, 'Triggers', icons.trigger)}
+                  {renderGroupCard(GLIMMER_GROUPS, 'Glimmers', icons.observation)}
                 </View>
 
                 <ShareWithTherapistButton
@@ -198,7 +194,7 @@ const TriggersGlimmersSummaryScreen = ({ navigation }) => {
                   onPress={() => navigation.navigate('TriggersGlimmers')}
                   activeOpacity={0.7}
                 >
-                  <Text style={styles.tipTitle}>🔄 Update Your Map</Text>
+                  <Text style={styles.tipTitle}>Update Your Map</Text>
                   <Text style={styles.tipText}>
                     As your awareness grows, you'll notice new triggers and discover new glimmers.
                   </Text>

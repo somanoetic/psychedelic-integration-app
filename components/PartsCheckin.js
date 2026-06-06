@@ -18,7 +18,19 @@ import {
   Image,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  ArrowLeft,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  ChevronRight,
+  MessageCircle,
+  Tag,
+  HeartPulse,
+  Activity,
+  Compass,
+  HelpCircle,
+} from 'lucide-react-native';
 import { supabase } from '../lib/supabase';
 import { icons } from '../lib/uiIcons';
 import { colors } from '../theme/colors';
@@ -37,6 +49,13 @@ const INTENSITY_LEVELS = [
   { value: 4, label: 'Strong', color: '#6366f1' },
   { value: 5, label: 'Blended', color: '#4f46e5' },
 ];
+
+const SECTION_ICON_MAP = {
+  'chat-bubble': MessageCircle,
+  label: Tag,
+  healing: HeartPulse,
+  accessibility: Activity,
+};
 
 const PartsCheckin = ({ navigation, route }) => {
   const returnTo = route?.params?.returnTo;
@@ -151,6 +170,8 @@ const PartsCheckin = ({ navigation, route }) => {
   const renderCollapsibleSection = (id, title, icon, value, setValue, placeholder) => {
     const isExpanded = expandedSection === id;
     const hasValue = value.trim().length > 0;
+    const SectionIcon = SECTION_ICON_MAP[icon] || MessageCircle;
+    const ToggleIcon = isExpanded ? ChevronUp : ChevronDown;
 
     return (
       <View style={styles.collapsibleSection}>
@@ -158,16 +179,12 @@ const PartsCheckin = ({ navigation, route }) => {
           style={[styles.sectionHeader, hasValue && styles.sectionHeaderComplete]}
           onPress={() => setExpandedSection(isExpanded ? null : id)}
         >
-          <MaterialIcons name={icon} size={20} color={hasValue ? colors.success : colors.textSecondary} />
+          <SectionIcon size={20} color={hasValue ? colors.success : colors.textSecondary} strokeWidth={2} />
           <Text style={[styles.sectionHeaderText, hasValue && styles.sectionHeaderTextComplete]}>
             {title}
           </Text>
-          {hasValue && <MaterialIcons name="check-circle" size={18} color={colors.success} />}
-          <MaterialIcons
-            name={isExpanded ? 'expand-less' : 'expand-more'}
-            size={24}
-            color={colors.textSecondary}
-          />
+          {hasValue && <CheckCircle2 size={18} color={colors.success} strokeWidth={2} />}
+          <ToggleIcon size={24} color={colors.textSecondary} strokeWidth={2} />
         </TouchableOpacity>
         {isExpanded && (
           <TextInput
@@ -191,7 +208,7 @@ const PartsCheckin = ({ navigation, route }) => {
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+          <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Parts Check-in</Text>
         <View style={{ width: 24 }} />
@@ -308,7 +325,7 @@ const PartsCheckin = ({ navigation, route }) => {
             <ActivityIndicator color="#fff" />
           ) : (
             <>
-              <MaterialIcons name="check-circle" size={20} color="#fff" />
+              <CheckCircle2 size={20} color="#fff" strokeWidth={2} />
               <Text style={styles.saveButtonText}>Save Check-in</Text>
             </>
           )}
@@ -323,11 +340,11 @@ const PartsCheckin = ({ navigation, route }) => {
               return (
                 <View key={checkin.id} style={styles.recentCard}>
                   <View style={styles.recentHeader}>
-                    <MaterialIcons
-                      name={type?.icon || 'help'}
-                      size={20}
-                      color={type?.color || colors.textSecondary}
-                    />
+                    {type?.icon ? (
+                      <Image source={type.icon} style={styles.recentIconImage} />
+                    ) : (
+                      <HelpCircle size={20} color={colors.textSecondary} strokeWidth={2} />
+                    )}
                     <Text style={styles.recentType}>
                       {checkin.part_name || type?.label || 'Unknown'}
                     </Text>
@@ -360,11 +377,11 @@ const PartsCheckin = ({ navigation, route }) => {
           style={styles.deepDiveLink}
           onPress={() => navigation.navigate('IFSChat')}
         >
-          <MaterialIcons name="explore" size={20} color="#8b5cf6" />
+          <Compass size={20} color="#8b5cf6" strokeWidth={2} />
           <Text style={styles.deepDiveLinkText}>
             Want to do deeper parts work? Try the full IFS Parts Work session
           </Text>
-          <MaterialIcons name="chevron-right" size={20} color="#8b5cf6" />
+          <ChevronRight size={20} color="#8b5cf6" strokeWidth={2} />
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -570,6 +587,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     marginBottom: 6,
+  },
+  recentIconImage: {
+    width: 20,
+    height: 20,
+    resizeMode: 'contain',
   },
   recentType: {
     flex: 1,

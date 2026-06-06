@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -7,17 +7,75 @@ import {
   ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import { useFocusEffect } from '@react-navigation/native';
+import {
+  Info,
+  ArrowRight,
+  ArrowLeft,
+  CheckCircle2,
+  Timer,
+  Volume2,
+  VolumeX,
+} from 'lucide-react-native';
 import { colors, shadows, spacing, borderRadius } from '../theme/colors';
 import ShareWithTherapistButton from '../components/ShareWithTherapistButton';
 import { shareExercise } from '../lib/therapistShareService';
 import ContributedContentDisclaimer from '../components/ContributedContentDisclaimer';
+import voiceService from '../lib/voiceService';
 
 const GuidedExerciseScreen = ({ navigation, route }) => {
-  const { exercise, categoryColor } = route.params;
+  const { exercise, categoryColor, returnTo } = route.params;
   const [currentStep, setCurrentStep] = useState(-1); // -1 = instructions view
+  const [voiceOn, setVoiceOn] = useState(false); // OFF by default — user opts in
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const totalSteps = exercise.steps.length;
   const isComplete = currentStep >= totalSteps;
+
+  // Narrate the current step body whenever the step changes (or voice is turned
+  // on mid-exercise). speak() internally stops any in-progress playback first,
+  // so tapping Next while step N is still speaking cleanly cuts to step N+1.
+  // We narrate step bodies only — not the instructions card or step titles.
+  useEffect(() => {
+    if (!voiceOn) return;
+    if (currentStep < 0 || currentStep >= totalSteps) return;
+
+    let cancelled = false;
+    setIsSpeaking(true);
+    voiceService
+      .speak(exercise.steps[currentStep])
+      .catch((e) => {
+        if (__DEV__) console.warn('[GuidedExercise] narration failed:', e);
+      })
+      .finally(() => {
+        if (!cancelled) setIsSpeaking(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [currentStep, voiceOn, totalSteps, exercise.steps]);
+
+  // Stop any narration when leaving the screen so audio doesn't continue
+  // playing on the next screen (the orphaned-playback bug from the chat screen).
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        voiceService.stopSpeaking().catch(() => {});
+      };
+    }, [])
+  );
+
+  const handleToggleVoice = () => {
+    setVoiceOn((prev) => {
+      const next = !prev;
+      if (!next) {
+        // Turning off mid-step: halt playback immediately.
+        voiceService.stopSpeaking().catch(() => {});
+        setIsSpeaking(false);
+      }
+      return next;
+    });
+  };
 
   const handleNext = () => {
     setCurrentStep(prev => prev + 1);
@@ -27,8 +85,16 @@ const GuidedExerciseScreen = ({ navigation, route }) => {
     setCurrentStep(prev => prev - 1);
   };
 
+  // Honor `returnTo` param when the caller wants to return to a specific
+  // screen rather than popping the nav stack. Used by TrailScreen so the
+  // user lands back on the trail (the underlying nav stack can get muddled
+  // when education markers were previously opened in another tab).
   const handleDone = () => {
-    navigation.goBack();
+    if (returnTo) {
+      navigation.navigate(returnTo);
+    } else {
+      navigation.goBack();
+    }
   };
 
   const accentColor = categoryColor || colors.primary;
@@ -60,7 +126,7 @@ const GuidedExerciseScreen = ({ navigation, route }) => {
   const renderInstructions = () => (
     <View style={styles.instructionsCard}>
       <View style={[styles.purposeBadge, { backgroundColor: `${accentColor}15` }]}>
-        <MaterialIcons name="info-outline" size={20} color={accentColor} />
+        <Info size={20} color={accentColor} strokeWidth={2} />
         <Text style={[styles.purposeLabel, { color: accentColor }]}>Purpose</Text>
       </View>
       <Text style={styles.instructionsText}>{exercise.instructions}</Text>
@@ -76,7 +142,7 @@ const GuidedExerciseScreen = ({ navigation, route }) => {
         activeOpacity={0.8}
       >
         <Text style={styles.beginButtonText}>Begin Exercise</Text>
-        <MaterialIcons name="arrow-forward" size={20} color="#fff" />
+        <ArrowRight size={20} color="#fff" strokeWidth={2} />
       </TouchableOpacity>
     </View>
   );
@@ -89,6 +155,12 @@ const GuidedExerciseScreen = ({ navigation, route }) => {
         </Text>
       </View>
       <Text style={styles.stepText}>{exercise.steps[currentStep]}</Text>
+      {voiceOn && isSpeaking && (
+        <View style={styles.speakingIndicator}>
+          <Volume2 size={16} color={accentColor} strokeWidth={2} />
+          <Text style={[styles.speakingText, { color: accentColor }]}>Speaking…</Text>
+        </View>
+      )}
       <View style={styles.navigationButtons}>
         {currentStep > 0 && (
           <TouchableOpacity
@@ -96,7 +168,7 @@ const GuidedExerciseScreen = ({ navigation, route }) => {
             onPress={handlePrevious}
             activeOpacity={0.8}
           >
-            <MaterialIcons name="arrow-back" size={18} color={colors.textSecondary} />
+            <ArrowLeft size={18} color={colors.textSecondary} strokeWidth={2} />
             <Text style={styles.secondaryButtonText}>Previous</Text>
           </TouchableOpacity>
         )}
@@ -112,7 +184,7 @@ const GuidedExerciseScreen = ({ navigation, route }) => {
           <Text style={styles.primaryButtonText}>
             {currentStep < totalSteps - 1 ? 'Next Step' : 'Complete'}
           </Text>
-          <MaterialIcons name="arrow-forward" size={18} color="#fff" />
+          <ArrowRight size={18} color="#fff" strokeWidth={2} />
         </TouchableOpacity>
       </View>
     </View>
@@ -121,7 +193,7 @@ const GuidedExerciseScreen = ({ navigation, route }) => {
   const renderCompletion = () => (
     <View style={styles.completionContainer}>
       <View style={[styles.completionIcon, { backgroundColor: `${accentColor}15` }]}>
-        <MaterialIcons name="check-circle" size={64} color={accentColor} />
+        <CheckCircle2 size={64} color={accentColor} strokeWidth={1.5} />
       </View>
       <Text style={styles.completionTitle}>Exercise Complete</Text>
       <Text style={styles.completionMessage}>
@@ -142,19 +214,31 @@ const GuidedExerciseScreen = ({ navigation, route }) => {
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+        <TouchableOpacity onPress={handleDone} style={styles.backButton}>
+          <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={styles.headerTitle} numberOfLines={1}>{exercise.title}</Text>
           <View style={[styles.durationBadge, { backgroundColor: `${accentColor}15` }]}>
-            <MaterialIcons name="timer" size={14} color={accentColor} />
+            <Timer size={14} color={accentColor} strokeWidth={2} />
             <Text style={[styles.durationText, { color: accentColor }]}>
               {exercise.duration} min
             </Text>
           </View>
         </View>
-        <View style={{ width: 40 }} />
+        <TouchableOpacity
+          onPress={handleToggleVoice}
+          style={styles.voiceButton}
+          accessibilityRole="button"
+          accessibilityLabel={voiceOn ? 'Turn off narration' : 'Turn on narration'}
+          accessibilityState={{ selected: voiceOn }}
+        >
+          {voiceOn ? (
+            <Volume2 size={24} color={accentColor} strokeWidth={2} />
+          ) : (
+            <VolumeX size={24} color={colors.textSecondary} strokeWidth={2} />
+          )}
+        </TouchableOpacity>
       </View>
 
       {renderProgressBar()}
@@ -187,6 +271,12 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.lightGray,
   },
   backButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  voiceButton: {
     width: 40,
     height: 40,
     justifyContent: 'center',
@@ -308,6 +398,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: spacing.xl + spacing.lg,
     paddingHorizontal: spacing.sm,
+  },
+  speakingIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'center',
+    gap: spacing.xs + 2,
+    marginTop: -(spacing.lg + spacing.sm),
+    marginBottom: spacing.lg,
+  },
+  speakingText: {
+    fontSize: 13,
+    fontWeight: '600',
   },
   navigationButtons: {
     flexDirection: 'row',

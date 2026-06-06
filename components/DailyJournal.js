@@ -15,11 +15,30 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { CheckCircle2, ArrowLeft, BookOpenText, Lightbulb, MessageCircle, Pencil, History, Send, Camera, FileText } from 'lucide-react-native';
 import { supabase } from '../lib/supabase';
 import huxleyService from '../lib/huxleyService';
 import { shareJournal } from '../lib/therapistShareService';
-import { colors } from '../theme/colors';
+import { getWorksheet } from '../content/worksheets';
+import { colors, gradients, spacing, borderRadius, shadows, typography } from '../theme/colors';
+
+// Pull a short snippet out of a scan's transcription for the past-entries
+// preview. Worksheet scans store fields as { fields: { id: text } }; free-form
+// scans store { fullText }. Pick the first non-empty value and trim.
+function scanSnippet(entry) {
+  const t = entry?.transcription;
+  if (!t) return '';
+  if (typeof t.fullText === 'string' && t.fullText.trim()) {
+    return t.fullText.trim().slice(0, 160);
+  }
+  if (t.fields && typeof t.fields === 'object') {
+    for (const v of Object.values(t.fields)) {
+      if (typeof v === 'string' && v.trim()) return v.trim().slice(0, 160);
+    }
+  }
+  return '';
+}
 
 /**
  * Daily Journal - Conversational AI-Guided Journaling
@@ -98,15 +117,44 @@ const DailyJournal = ({ onComplete, navigation }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data, error } = await supabase
-        .from('daily_journals')
-        .select('id, title, mood, created_at, raw_text, emotions, themes, insights')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(50);
+      // Load text journal entries and paper scans in parallel. They live in
+      // different tables but render into one chronological list — paper
+      // scans are first-class entries in this stream (FEAT-paper-scan).
+      const [journalsRes, scansRes] = await Promise.all([
+        supabase
+          .from('daily_journals')
+          .select('id, title, mood, created_at, raw_text, emotions, themes, insights')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(50),
+        supabase
+          .from('paper_scans')
+          .select('id, created_at, worksheet_id, worksheet_version, transcription, thematic_notes, therapist_share_enabled, image_storage_path')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(50),
+      ]);
 
-      if (error) throw error;
-      setPastEntries(data || []);
+      if (journalsRes.error) throw journalsRes.error;
+      // Don't hard-fail if scans query errors (e.g. bucket not ready) — just log.
+      if (scansRes.error) {
+        console.warn('[DailyJournal] Failed to load paper scans:', scansRes.error);
+      }
+
+      const textEntries = (journalsRes.data || []).map((e) => ({
+        ...e,
+        _kind: 'text',
+      }));
+      const scanEntries = (scansRes.data || []).map((e) => ({
+        ...e,
+        _kind: 'scan',
+      }));
+
+      const merged = [...textEntries, ...scanEntries].sort(
+        (a, b) => new Date(b.created_at) - new Date(a.created_at),
+      );
+
+      setPastEntries(merged);
       setShowPastEntries(true);
     } catch (error) {
       console.error('Error loading entries:', error);
@@ -443,7 +491,7 @@ Only include fields with clear evidence.`);
           style={styles.doneButton}
           onPress={handleJournalingDone}
         >
-          <MaterialIcons name="check-circle" size={20} color={colors.success} />
+          <CheckCircle2 size={20} color={colors.success} strokeWidth={2} />
           <Text style={styles.doneButtonText}>I'm done journaling</Text>
         </TouchableOpacity>
       );
@@ -455,7 +503,7 @@ Only include fields with clear evidence.`);
           style={styles.doneButton}
           onPress={handleDiscussionDone}
         >
-          <MaterialIcons name="check-circle" size={20} color={colors.success} />
+          <CheckCircle2 size={20} color={colors.success} strokeWidth={2} />
           <Text style={styles.doneButtonText}>Finish discussion</Text>
         </TouchableOpacity>
       );
@@ -464,7 +512,85 @@ Only include fields with clear evidence.`);
     return null;
   };
 
+  // Render helpers for the merged past-entries list. Pulled out for readability —
+  // the list mixes two entry kinds (text journals + paper scans) that look
+  // similar but route to different detail surfaces.
+
+  const renderTextEntry = (entry) => (
+    <TouchableOpacity
+      key={`text-${entry.id}`}
+      style={styles.entryCard}
+      onPress={() => {
+        Alert.alert(
+          entry.title || 'Journal Entry',
+          (entry.raw_text || '').slice(0, 500) + (entry.raw_text?.length > 500 ? '...' : ''),
+          [{ text: 'Close' }]
+        );
+      }}
+    >
+      <View style={styles.entryCardHeader}>
+        <Text style={styles.entryCardTitle} numberOfLines={1}>
+          {entry.title || 'Untitled'}
+        </Text>
+        {entry.mood ? (
+          <Text style={styles.entryCardMood}>{entry.mood}</Text>
+        ) : null}
+      </View>
+      <Text style={styles.entryCardDate}>
+        {new Date(entry.created_at).toLocaleDateString(undefined, {
+          weekday: 'short', month: 'short', day: 'numeric'
+        })}
+      </Text>
+      {entry.themes?.length > 0 && (
+        <View style={styles.entryCardTags}>
+          {entry.themes.slice(0, 3).map((theme, i) => (
+            <Text key={i} style={styles.entryCardTag}>{theme}</Text>
+          ))}
+        </View>
+      )}
+    </TouchableOpacity>
+  );
+
+  const renderScanEntry = (entry, navigation) => {
+    const worksheet = entry.worksheet_id ? getWorksheet(entry.worksheet_id) : null;
+    const title = worksheet?.title || 'Free-form page';
+    const snippet = scanSnippet(entry);
+    return (
+      <TouchableOpacity
+        key={`scan-${entry.id}`}
+        style={styles.entryCard}
+        onPress={() => navigation?.navigate('ScanDetail', { scanId: entry.id })}
+      >
+        <View style={styles.entryCardHeader}>
+          <View style={styles.scanPill}>
+            <Camera size={11} color="#4a6fb8" strokeWidth={2.5} />
+            <Text style={styles.scanPillText}>Paper scan</Text>
+          </View>
+          <Text style={styles.entryCardTitle} numberOfLines={1}>
+            {title}
+          </Text>
+        </View>
+        <Text style={styles.entryCardDate}>
+          {new Date(entry.created_at).toLocaleDateString(undefined, {
+            weekday: 'short', month: 'short', day: 'numeric'
+          })}
+        </Text>
+        {snippet ? (
+          <Text style={styles.scanSnippet} numberOfLines={2}>
+            {snippet}
+          </Text>
+        ) : null}
+      </TouchableOpacity>
+    );
+  };
+
   return (
+    <LinearGradient
+      colors={gradients.standard}
+      start={gradients.standardStart}
+      end={gradients.standardEnd}
+      style={styles.gradientFill}
+    >
     <SafeAreaView style={styles.container} edges={['top']}>
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -476,10 +602,10 @@ Only include fields with clear evidence.`);
         <View style={styles.headerContent}>
           {(phase !== 'choosing' || showPastEntries) && (
             <TouchableOpacity onPress={() => { showPastEntries ? setShowPastEntries(false) : handleBack(); }} style={styles.backButton}>
-              <MaterialIcons name="arrow-back" size={24} color="#6366f1" />
+              <ArrowLeft size={24} color={colors.primary} strokeWidth={2} />
             </TouchableOpacity>
           )}
-          <MaterialIcons name="auto-stories" size={24} color="#6366f1" />
+          <BookOpenText size={24} color={colors.primary} strokeWidth={2} />
           <Text style={styles.headerTitle}>Daily Journal</Text>
         </View>
         <Text style={styles.headerSubtitle}>
@@ -493,50 +619,26 @@ Only include fields with clear evidence.`);
       </View>
 
       {showPastEntries ? (
-        /* Past Entries List */
+        /* Past Entries List — text journals + paper scans, merged chronologically */
         <ScrollView style={styles.messagesContainer} contentContainerStyle={{ padding: 16 }}>
           {pastEntries.length === 0 ? (
             <Text style={styles.emptyText}>No journal entries yet. Start writing!</Text>
           ) : (
-            pastEntries.map((entry) => (
-              <TouchableOpacity
-                key={entry.id}
-                style={styles.entryCard}
-                onPress={() => {
-                  Alert.alert(
-                    entry.title || 'Journal Entry',
-                    (entry.raw_text || '').slice(0, 500) + (entry.raw_text?.length > 500 ? '...' : ''),
-                    [{ text: 'Close' }]
-                  );
-                }}
-              >
-                <View style={styles.entryCardHeader}>
-                  <Text style={styles.entryCardTitle} numberOfLines={1}>
-                    {entry.title || 'Untitled'}
-                  </Text>
-                  {entry.mood ? (
-                    <Text style={styles.entryCardMood}>{entry.mood}</Text>
-                  ) : null}
-                </View>
-                <Text style={styles.entryCardDate}>
-                  {new Date(entry.created_at).toLocaleDateString(undefined, {
-                    weekday: 'short', month: 'short', day: 'numeric'
-                  })}
-                </Text>
-                {entry.themes?.length > 0 && (
-                  <View style={styles.entryCardTags}>
-                    {entry.themes.slice(0, 3).map((theme, i) => (
-                      <Text key={i} style={styles.entryCardTag}>{theme}</Text>
-                    ))}
-                  </View>
-                )}
-              </TouchableOpacity>
-            ))
+            pastEntries.map((entry) =>
+              entry._kind === 'scan'
+                ? renderScanEntry(entry, navigation)
+                : renderTextEntry(entry)
+            )
           )}
         </ScrollView>
       ) : phase === 'choosing' ? (
         /* Mode Selection */
-        <View style={styles.choosingContainer}>
+        <ScrollView
+          style={styles.choosingScroll}
+          contentContainerStyle={styles.choosingContainer}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
           <Image
             source={require('../assets/images/huxley-avatar.png')}
             style={styles.choosingAvatar}
@@ -548,7 +650,7 @@ Only include fields with clear evidence.`);
             style={styles.modeCard}
             onPress={() => handleModeChoice('prompt')}
           >
-            <MaterialIcons name="lightbulb-outline" size={28} color="#6366f1" />
+            <Lightbulb size={28} color={colors.primary} strokeWidth={2} />
             <View style={styles.modeCardContent}>
               <Text style={styles.modeCardTitle}>Give me a prompt</Text>
               <Text style={styles.modeCardDescription}>Get a reflection question to write about</Text>
@@ -559,7 +661,7 @@ Only include fields with clear evidence.`);
             style={styles.modeCard}
             onPress={() => handleModeChoice('feedback')}
           >
-            <MaterialIcons name="forum" size={28} color="#6366f1" />
+            <MessageCircle size={28} color={colors.primary} strokeWidth={2} />
             <View style={styles.modeCardContent}>
               <Text style={styles.modeCardTitle}>I'd like feedback</Text>
               <Text style={styles.modeCardDescription}>Write freely and get reflections from Huxley</Text>
@@ -570,10 +672,32 @@ Only include fields with clear evidence.`);
             style={styles.modeCard}
             onPress={() => handleModeChoice('freewrite')}
           >
-            <MaterialIcons name="edit" size={28} color="#6366f1" />
+            <Pencil size={28} color={colors.primary} strokeWidth={2} />
             <View style={styles.modeCardContent}>
               <Text style={styles.modeCardTitle}>Just write</Text>
               <Text style={styles.modeCardDescription}>Open space to journal on your own</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.modeCard}
+            onPress={() => navigation?.navigate('ScanCapture')}
+          >
+            <Camera size={28} color={colors.primary} strokeWidth={2} />
+            <View style={styles.modeCardContent}>
+              <Text style={styles.modeCardTitle}>Scan a paper page</Text>
+              <Text style={styles.modeCardDescription}>Photograph a handwritten worksheet or journal page</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.modeCard}
+            onPress={() => navigation?.navigate('WorksheetLibrary')}
+          >
+            <FileText size={28} color={colors.primary} strokeWidth={2} />
+            <View style={styles.modeCardContent}>
+              <Text style={styles.modeCardTitle}>Printable worksheets</Text>
+              <Text style={styles.modeCardDescription}>Browse pages you can print and fill out by hand</Text>
             </View>
           </TouchableOpacity>
 
@@ -583,13 +707,13 @@ Only include fields with clear evidence.`);
             disabled={loadingEntries}
           >
             {loadingEntries ? (
-              <ActivityIndicator size="small" color="#6366f1" />
+              <ActivityIndicator size="small" color={colors.primary} />
             ) : (
-              <MaterialIcons name="history" size={20} color="#6366f1" />
+              <History size={20} color={colors.primary} strokeWidth={2} />
             )}
             <Text style={styles.pastEntriesButtonText}>Past Entries</Text>
           </TouchableOpacity>
-        </View>
+        </ScrollView>
       ) : (
         <>
           {/* Messages */}
@@ -611,7 +735,7 @@ Only include fields with clear evidence.`);
                   resizeMode="contain"
                 />
                 <View style={[styles.messageBubble, styles.aiMessage]}>
-                  <ActivityIndicator size="small" color="#6366f1" />
+                  <ActivityIndicator size="small" color={colors.primary} />
                   <Text style={styles.aiMessageText}>Huxley is typing...</Text>
                 </View>
               </View>
@@ -623,6 +747,19 @@ Only include fields with clear evidence.`);
 
           {/* Input Area */}
           <View style={styles.inputContainer}>
+            <TouchableOpacity
+              style={styles.composerScanButton}
+              onPress={() => navigation?.navigate('ScanCapture')}
+              disabled={loading || saving}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              accessibilityLabel="Scan a paper page"
+            >
+              <Camera
+                size={22}
+                color={loading || saving ? '#d1d5db' : colors.primary}
+                strokeWidth={2}
+              />
+            </TouchableOpacity>
             <TextInput
               style={styles.input}
               value={inputText}
@@ -638,10 +775,10 @@ Only include fields with clear evidence.`);
               onPress={sendMessage}
               disabled={!inputText.trim() || loading || saving}
             >
-              <MaterialIcons
-                name="send"
+              <Send
                 size={24}
                 color={inputText.trim() && !loading && !saving ? '#fff' : '#d1d5db'}
+                strokeWidth={2}
               />
             </TouchableOpacity>
           </View>
@@ -651,25 +788,29 @@ Only include fields with clear evidence.`);
       {/* Saving Indicator */}
       {saving && (
         <View style={styles.savingOverlay}>
-          <ActivityIndicator size="large" color="#6366f1" />
+          <ActivityIndicator size="large" color={colors.primary} />
           <Text style={styles.savingText}>Saving your journal...</Text>
         </View>
       )}
     </KeyboardAvoidingView>
     </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
+  gradientFill: {
+    flex: 1,
+  },
   container: {
     flex: 1,
-    backgroundColor: '#F5F1E8'
+    backgroundColor: 'transparent',
   },
   header: {
-    backgroundColor: '#fff',
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.lightGray
+    backgroundColor: 'transparent',
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 16,
   },
   headerContent: {
     flexDirection: 'row',
@@ -682,7 +823,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontFamily: typography.serif,
     color: colors.text,
     marginLeft: 12
   },
@@ -717,7 +858,7 @@ const styles = StyleSheet.create({
   },
   userMessage: {
     alignSelf: 'flex-end',
-    backgroundColor: '#6366f1',
+    backgroundColor: colors.primary,
     borderBottomRightRadius: 4
   },
   aiMessage: {
@@ -760,7 +901,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   primaryButton: {
-    backgroundColor: '#6366f1'
+    backgroundColor: colors.primary
   },
   secondaryButton: {
     backgroundColor: '#f3f4f6',
@@ -820,15 +961,25 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#6366f1',
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center'
+  },
+  composerScanButton: {
+    width: 44,
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 4,
   },
   sendButtonDisabled: {
     backgroundColor: '#f3f4f6'
   },
-  choosingContainer: {
+  choosingScroll: {
     flex: 1,
+  },
+  choosingContainer: {
+    flexGrow: 1,
     padding: 24,
     paddingBottom: 40,
     alignItems: 'center',
@@ -850,12 +1001,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
-    backgroundColor: '#fff',
-    borderRadius: 14,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
     padding: 18,
     marginBottom: 12,
-    borderWidth: 1,
-    borderColor: colors.lightGray
+    ...shadows.soft,
   },
   modeCardContent: {
     marginLeft: 14,
@@ -880,7 +1030,7 @@ const styles = StyleSheet.create({
   },
   pastEntriesButtonText: {
     fontSize: 15,
-    color: '#6366f1',
+    color: colors.primary,
     fontWeight: '600',
     marginLeft: 6,
   },
@@ -891,12 +1041,11 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   entryCard: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
     padding: 16,
     marginBottom: 10,
-    borderWidth: 1,
-    borderColor: colors.lightGray,
+    ...shadows.soft,
   },
   entryCardHeader: {
     flexDirection: 'row',
@@ -913,7 +1062,7 @@ const styles = StyleSheet.create({
   },
   entryCardMood: {
     fontSize: 13,
-    color: '#6366f1',
+    color: colors.primary,
     fontWeight: '500',
   },
   entryCardDate: {
@@ -928,11 +1077,35 @@ const styles = StyleSheet.create({
   },
   entryCardTag: {
     fontSize: 12,
-    color: '#6366f1',
-    backgroundColor: '#eef2ff',
+    color: colors.primary,
+    backgroundColor: 'rgba(93,134,214,0.10)',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 8,
+  },
+  scanPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(93,134,214,0.10)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 999,
+    marginRight: 8,
+  },
+  scanPillText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#4a6fb8',
+    marginLeft: 4,
+    textTransform: 'uppercase',
+    letterSpacing: 0.4,
+  },
+  scanSnippet: {
+    fontSize: 13,
+    color: colors.textSecondary,
+    lineHeight: 18,
+    marginTop: 6,
+    fontStyle: 'italic',
   },
   savingOverlay: {
     position: 'absolute',

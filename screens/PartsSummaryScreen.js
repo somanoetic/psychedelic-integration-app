@@ -17,7 +17,7 @@ import {
   Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import { ArrowLeft, ArrowRight, CheckCircle2, Activity, Shield, Heart, AlertTriangle } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../lib/supabase';
 import ifsContextService from '../lib/ifsContextService';
@@ -34,9 +34,16 @@ const PHASE_CONFIG = {
 };
 
 const ROLE_CONFIG = {
-  manager: { emoji: '🛡️', icon: icons.manager, label: 'Manager' },
-  firefighter: { emoji: '🔥', icon: icons.firefighter, label: 'Firefighter' },
-  exile: { emoji: '💔', icon: icons.brokenHeart, label: 'Exile' },
+  manager: { icon: icons.manager, label: 'Manager' },
+  firefighter: { icon: icons.firefighter, label: 'Firefighter' },
+  exile: { icon: icons.brokenHeart, label: 'Exile' },
+};
+
+const DETAIL_ICON_MAP = {
+  accessibility: Activity,
+  shield: Shield,
+  favorite: Heart,
+  warning: AlertTriangle,
 };
 
 const PartsSummaryScreen = ({ navigation }) => {
@@ -66,7 +73,7 @@ const PartsSummaryScreen = ({ navigation }) => {
   const hasParts = partsData?.allParts?.length > 0;
 
   const renderPartCard = (part) => {
-    const roleConfig = ROLE_CONFIG[part.part_role] || { emoji: '❓', label: part.part_role || 'Unknown' };
+    const roleConfig = ROLE_CONFIG[part.part_role] || { icon: icons.uncertainState, label: part.part_role || 'Unknown' };
     const phaseConfig = PHASE_CONFIG[part.work_phase] || { label: part.work_phase || 'Unknown', color: colors.textLight };
 
     const details = [];
@@ -78,11 +85,7 @@ const PartsSummaryScreen = ({ navigation }) => {
     return (
       <View key={part.id} style={styles.card}>
         <View style={styles.cardHeader}>
-          {roleConfig.icon ? (
-            <Image source={roleConfig.icon} style={styles.cardIconImage} />
-          ) : (
-            <Text style={styles.cardEmoji}>{roleConfig.emoji}</Text>
-          )}
+          <Image source={roleConfig.icon} style={styles.cardIconImage} />
           <View style={styles.cardHeaderText}>
             <Text style={styles.cardTitle}>{part.part_name || 'Unnamed Part'}</Text>
             <Text style={styles.cardSubtitle}>
@@ -97,18 +100,21 @@ const PartsSummaryScreen = ({ navigation }) => {
 
         {details.length > 0 && (
           <View style={styles.detailsList}>
-            {details.map((d, i) => (
-              <View key={i} style={styles.detailRow}>
-                <MaterialIcons name={d.icon} size={14} color={colors.textSecondary} />
-                <Text style={styles.detailText} numberOfLines={2}>{d.text}</Text>
-              </View>
-            ))}
+            {details.map((d, i) => {
+              const DetailIcon = DETAIL_ICON_MAP[d.icon] || Activity;
+              return (
+                <View key={i} style={styles.detailRow}>
+                  <DetailIcon size={14} color={colors.textSecondary} strokeWidth={2} />
+                  <Text style={styles.detailText} numberOfLines={2}>{d.text}</Text>
+                </View>
+              );
+            })}
           </View>
         )}
 
         {part.unburdened && (
           <View style={styles.unburdenedBadge}>
-            <MaterialIcons name="check-circle" size={14} color={colors.success} />
+            <CheckCircle2 size={14} color={colors.success} strokeWidth={2} />
             <Text style={styles.unburdenedText}>Unburdened</Text>
             {part.new_role ? <Text style={styles.newRoleText}>New role: {part.new_role}</Text> : null}
           </View>
@@ -168,7 +174,7 @@ const PartsSummaryScreen = ({ navigation }) => {
           >
             <View style={styles.header}>
               <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+                <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
               </TouchableOpacity>
             </View>
 
@@ -190,7 +196,7 @@ const PartsSummaryScreen = ({ navigation }) => {
                   activeOpacity={0.7}
                 >
                   <Text style={styles.startButtonText}>Begin Parts Work</Text>
-                  <MaterialIcons name="arrow-forward" size={18} color={colors.textInverse} />
+                  <ArrowRight size={18} color={colors.textInverse} strokeWidth={2} />
                 </TouchableOpacity>
               </View>
             ) : (
@@ -211,7 +217,7 @@ const PartsSummaryScreen = ({ navigation }) => {
                   onPress={() => navigation.navigate('IFSChat')}
                   activeOpacity={0.7}
                 >
-                  <Text style={styles.tipTitle}>🔮 Continue Parts Work</Text>
+                  <Text style={styles.tipTitle}>Continue Parts Work</Text>
                   <Text style={styles.tipText}>
                     Each conversation deepens your relationship with your parts. Return anytime to check in or meet new ones.
                   </Text>

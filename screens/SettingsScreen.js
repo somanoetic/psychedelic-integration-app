@@ -8,14 +8,33 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { MaterialIcons } from '@expo/vector-icons';
+import {
+  ShieldCheck,
+  FileText,
+  LifeBuoy,
+  Pencil,
+  Download,
+  LayoutDashboard,
+  UserCheck,
+  MessageSquareCheck,
+  Bug,
+  RefreshCw,
+  LogOut,
+  ChevronRight,
+  ArrowLeft,
+} from 'lucide-react-native';
 import * as Sentry from '@sentry/react-native';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
 import { supabase } from '../lib/supabase';
 import { exportAndShare } from '../lib/dataExportService';
 import userRoleService from '../lib/userRoleService';
+import {
+  DISCLOSURE_STORAGE_KEY,
+  PRACTITIONER_FLAG_KEY,
+} from './NonClinicalDisclosureScreen';
 
 const SettingsScreen = ({ navigation }) => {
   const [exporting, setExporting] = useState(false);
@@ -51,6 +70,47 @@ const SettingsScreen = ({ navigation }) => {
     );
   };
 
+  // DEV-only: clears every gate that keeps the first-launch flow from showing
+  // again (onboarding carousel, non-clinical disclosure, Huxley welcome screen).
+  // After clearing, signing out also returns the user to AuthScreen.
+  const handleResetFirstTimeFlow = () => {
+    Alert.alert(
+      'Reset first-time flow?',
+      'Clears onboarding, disclosure, and Huxley welcome flags. After this you can sign out to also see the auth screen.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Reset & sign out',
+          style: 'destructive',
+          onPress: async () => {
+            await AsyncStorage.multiRemove([
+              'onboarding_completed',
+              DISCLOSURE_STORAGE_KEY,
+              PRACTITIONER_FLAG_KEY,
+              'huxley_welcome_shown',
+            ]);
+            await supabase.auth.signOut();
+          },
+        },
+        {
+          text: 'Reset only',
+          onPress: async () => {
+            await AsyncStorage.multiRemove([
+              'onboarding_completed',
+              DISCLOSURE_STORAGE_KEY,
+              PRACTITIONER_FLAG_KEY,
+              'huxley_welcome_shown',
+            ]);
+            Alert.alert(
+              'Flags cleared',
+              'Restart the app (or sign out) to see the first-time flow.',
+            );
+          },
+        },
+      ],
+    );
+  };
+
   const handleSignOut = () => {
     Alert.alert(
       'Sign Out',
@@ -68,7 +128,7 @@ const SettingsScreen = ({ navigation }) => {
     );
   };
 
-  const SettingsRow = ({ icon, title, subtitle, onPress, danger, loading }) => (
+  const SettingsRow = ({ Icon, title, subtitle, onPress, danger, loading }) => (
     <TouchableOpacity
       style={styles.row}
       onPress={onPress}
@@ -76,7 +136,7 @@ const SettingsScreen = ({ navigation }) => {
       activeOpacity={0.7}
     >
       <View style={[styles.iconContainer, danger && styles.iconContainerDanger]}>
-        <MaterialIcons name={icon} size={22} color={danger ? colors.error : colors.primary} />
+        <Icon size={22} color={danger ? colors.error : colors.primary} strokeWidth={2} />
       </View>
       <View style={styles.rowText}>
         <Text style={[styles.rowTitle, danger && styles.rowTitleDanger]}>{title}</Text>
@@ -85,7 +145,7 @@ const SettingsScreen = ({ navigation }) => {
       {loading ? (
         <ActivityIndicator size="small" color={colors.primary} />
       ) : (
-        <MaterialIcons name="chevron-right" size={22} color={colors.textLight} />
+        <ChevronRight size={22} color={colors.textLight} strokeWidth={2} />
       )}
     </TouchableOpacity>
   );
@@ -95,7 +155,7 @@ const SettingsScreen = ({ navigation }) => {
       <SafeAreaView style={styles.container} edges={['top']}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+            <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Settings</Text>
           <View style={styles.backButton} />
@@ -106,14 +166,14 @@ const SettingsScreen = ({ navigation }) => {
           <Text style={styles.sectionHeader}>Legal</Text>
           <View style={styles.card}>
             <SettingsRow
-              icon="privacy-tip"
+              Icon={ShieldCheck}
               title="Privacy Policy"
               subtitle="How we handle your data"
               onPress={() => navigation.navigate('PrivacyPolicy')}
             />
             <View style={styles.separator} />
             <SettingsRow
-              icon="description"
+              Icon={FileText}
               title="Terms of Service"
               subtitle="Rules for using the app"
               onPress={() => navigation.navigate('TermsOfService')}
@@ -124,7 +184,7 @@ const SettingsScreen = ({ navigation }) => {
           <Text style={styles.sectionHeader}>Support</Text>
           <View style={styles.card}>
             <SettingsRow
-              icon="support-agent"
+              Icon={LifeBuoy}
               title="Find Support"
               subtitle="Crisis lines, therapist directories, and resources"
               onPress={() => navigation.navigate('FindSupport')}
@@ -135,7 +195,7 @@ const SettingsScreen = ({ navigation }) => {
           <Text style={styles.sectionHeader}>Contribute</Text>
           <View style={styles.card}>
             <SettingsRow
-              icon="edit"
+              Icon={Pencil}
               title="Contributor Tools"
               subtitle="Apply to contribute to Huxley's library"
               onPress={() => navigation.navigate('ContributorTools')}
@@ -146,7 +206,7 @@ const SettingsScreen = ({ navigation }) => {
           <Text style={styles.sectionHeader}>Your Data</Text>
           <View style={styles.card}>
             <SettingsRow
-              icon="download"
+              Icon={Download}
               title="Export My Data"
               subtitle="Download all your data as JSON"
               onPress={handleExportData}
@@ -160,21 +220,21 @@ const SettingsScreen = ({ navigation }) => {
               <Text style={styles.sectionHeader}>Admin</Text>
               <View style={styles.card}>
                 <SettingsRow
-                  icon="dashboard"
+                  Icon={LayoutDashboard}
                   title="AI Metrics Dashboard"
                   subtitle="System-level AI service health and cost"
                   onPress={() => navigation.navigate('AdminMetricsDashboard')}
                 />
                 <View style={styles.separator} />
                 <SettingsRow
-                  icon="how-to-reg"
+                  Icon={UserCheck}
                   title="Contributor Applications"
                   subtitle="Review pending contributor applications"
                   onPress={() => navigation.navigate('AdminApplicationReview')}
                 />
                 <View style={styles.separator} />
                 <SettingsRow
-                  icon="rate-review"
+                  Icon={MessageSquareCheck}
                   title="Exercise Submissions"
                   subtitle="Review pending contributed exercises"
                   onPress={() => navigation.navigate('AdminContentReview')}
@@ -189,11 +249,22 @@ const SettingsScreen = ({ navigation }) => {
               <Text style={styles.sectionHeader}>Diagnostics</Text>
               <View style={styles.card}>
                 <SettingsRow
-                  icon="bug-report"
+                  Icon={Bug}
                   title="Trigger Test Exception"
                   subtitle="Reports a tagged error to Sentry to verify capture"
                   onPress={handleTriggerTestException}
                 />
+                {__DEV__ && (
+                  <>
+                    <View style={styles.separator} />
+                    <SettingsRow
+                      Icon={RefreshCw}
+                      title="Reset First-Time Flow (DEV)"
+                      subtitle="Clears onboarding, disclosure, and welcome flags"
+                      onPress={handleResetFirstTimeFlow}
+                    />
+                  </>
+                )}
               </View>
             </>
           )}
@@ -202,7 +273,7 @@ const SettingsScreen = ({ navigation }) => {
           <Text style={styles.sectionHeader}>Account</Text>
           <View style={styles.card}>
             <SettingsRow
-              icon="logout"
+              Icon={LogOut}
               title="Sign Out"
               danger
               onPress={handleSignOut}

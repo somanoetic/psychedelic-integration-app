@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { MaterialIcons } from '@expo/vector-icons';
+import { ArrowLeft, ChevronRight } from 'lucide-react-native';
 import { colors, gradients, spacing, borderRadius, shadows, typography } from '../theme/colors';
 import { icons } from '../lib/uiIcons';
 import { talkthroughTopics } from '../content/philosophicalTalkthroughs';
@@ -41,7 +41,7 @@ const PhilosophicalTalkthroughsHubScreen = ({ navigation }) => {
               style={styles.backButton}
               onPress={() => navigation.goBack()}
             >
-              <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+              <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
             </TouchableOpacity>
           </View>
 
@@ -75,7 +75,7 @@ const PhilosophicalTalkthroughsHubScreen = ({ navigation }) => {
                     <Text style={styles.optionTime}>{'\u23F1\uFE0F'} {topic.estimatedTime}</Text>
                   </View>
                 </View>
-                <MaterialIcons name="chevron-right" size={24} color={colors.textSecondary} />
+                <ChevronRight size={24} color={colors.textSecondary} strokeWidth={2} />
               </TouchableOpacity>
             ))}
           </View>
