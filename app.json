@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Huxley",
+    "name": "Multitudes",
     "slug": "psychedelic-integration-app",
     "version": "1.2.0",
     "orientation": "portrait",
@@ -21,6 +21,9 @@
       },
       "config": {
         "usesNonExemptEncryption": false
+      },
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Multitudes uses your microphone to let you talk with Huxley during voice sessions. Audio is sent to our secure server for transcription and is not stored after your session."
       }
     },
     "android": {
@@ -30,7 +33,10 @@
         "backgroundColor": "#F5F1E8"
       },
       "runtimeVersion": "1.2.0",
-      "softwareKeyboardLayoutMode": "resize"
+      "softwareKeyboardLayoutMode": "resize",
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -56,6 +62,12 @@
           "url": "https://sentry.io/",
           "project": "huxley",
           "organization": "somanoetic-labs"
+        }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Multitudes uses your microphone to let you talk with Huxley during voice sessions."
         }
       ]
     ]

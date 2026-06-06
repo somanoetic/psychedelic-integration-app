@@ -1,10 +1,11 @@
 import React from 'react';
 import { ScrollView, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { ArrowLeft } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, spacing, borderRadius, typography } from '../theme/colors';
+import { TOS_LAST_UPDATED_DISPLAY } from '../lib/legal/tosVersion';
 
-const LAST_UPDATED = 'May 12, 2026';
+const LAST_UPDATED = TOS_LAST_UPDATED_DISPLAY;
 
 const Section = ({ title, children }) => (
   <View style={styles.section}>
@@ -34,7 +35,7 @@ const PrivacyPolicyScreen = ({ navigation }) => {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <MaterialIcons name="arrow-back" size={24} color={colors.text} />
+          <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Privacy Policy</Text>
         <View style={styles.backButton} />

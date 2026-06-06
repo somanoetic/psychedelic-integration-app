@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Info } from 'lucide-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { colors, gradients, spacing, borderRadius, typography } from '../theme/colors';
 
@@ -57,7 +57,7 @@ const NonClinicalDisclosureScreen = ({ onAcknowledge }) => {
           contentContainerStyle={styles.scrollContent}
         >
           <View style={styles.iconWrap}>
-            <MaterialIcons name="info-outline" size={40} color={colors.primary} />
+            <Info size={40} color={colors.primary} strokeWidth={2} />
           </View>
 
           <Text style={styles.title}>Before you begin</Text>

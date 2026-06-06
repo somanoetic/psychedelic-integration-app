@@ -2,7 +2,7 @@ import 'dotenv/config';
 
 export default {
   "expo": {
-    "name": "Huxley",
+    "name": "Multitudes",
     "slug": "psychedelic-integration-app",
     "version": "1.2.0",
     "orientation": "portrait",
@@ -23,6 +23,11 @@ export default {
       },
       "config": {
         "usesNonExemptEncryption": false
+      },
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Multitudes uses your microphone to let you talk with Huxley during voice sessions. Audio is sent to our secure server for transcription and is not stored after your session.",
+        "NSCameraUsageDescription": "Multitudes uses your camera to scan handwritten worksheets and journal pages so the app can save and reflect on what you wrote.",
+        "NSPhotoLibraryUsageDescription": "Multitudes can pick a previously taken photo of a worksheet or journal page from your library to add to your reflections."
       }
     },
     "android": {
@@ -32,7 +37,11 @@ export default {
         "backgroundColor": "#F5F1E8"
       },
       "runtimeVersion": "1.2.0",
-      "softwareKeyboardLayoutMode": "resize"
+      "softwareKeyboardLayoutMode": "resize",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.CAMERA"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -52,7 +61,20 @@ export default {
     },
     "plugins": [
       "expo-secure-store",
-      "expo-font"
+      "expo-font",
+      "expo-mail-composer",
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Multitudes uses your microphone to let you talk with Huxley during voice sessions."
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Multitudes uses your camera to scan handwritten worksheets and journal pages."
+        }
+      ]
     ]
   }
 };

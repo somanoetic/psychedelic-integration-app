@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy — Multitudes</title>
+    <meta name="description" content="How Multitudes handles your data. A consumer wellness companion, not a medical service.">
+    <meta name="robots" content="index, follow">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
+    <link rel="shortcut icon" href="/favicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
+    <link rel="manifest" href="/favicon/site.webmanifest" />
+</head>
+<body class="legal-page">
+    <header class="legal-header">
+        <div class="container">
+            <a href="/" class="legal-back">&larr; Back to home</a>
+        </div>
+    </header>
+
+    <main>
+        <article class="legal-article">
+            <header class="legal-article-header">
+                <h1>Privacy Policy</h1>
+                <p class="legal-last-updated">Last updated: May 13, 2026</p>
+            </header>
+
+            <p>Multitudes ("the App") is operated by Alleviation Therapeutics ("we", "us", "our"). We are committed to protecting the privacy and security of your personal information. This policy explains what data we collect, how we use it, and your rights.</p>
+
+            <p>Multitudes is a self-directed wellness and educational tool. The information you record in the App is personal wellness data — not a clinical record. Because of how personal that data is, we treat it with strong technical safeguards and minimal third-party sharing, and we are transparent about exactly what those safeguards are and aren't (see Section 2 below).</p>
+
+            <h2>1. Not a HIPAA-Covered Service</h2>
+            <p>Multitudes is a consumer wellness and educational app. It is not a covered entity, business associate, or healthcare provider under the U.S. Health Insurance Portability and Accountability Act ("HIPAA"), and the data you record in the App is not Protected Health Information ("PHI") in the HIPAA sense.</p>
+            <ul>
+                <li>We do not deliver medical, psychiatric, or therapeutic treatment through the App</li>
+                <li>We do not bill insurance and do not maintain a clinical chart for you</li>
+                <li>No therapist or clinician sees your in-app content through Multitudes — there is no provider portal, no client roster, and no in-app handoff to a treatment provider</li>
+                <li>If you choose to share an Integration Summary with a therapist via the OS share sheet, that delivery happens entirely outside Multitudes; whatever the therapist stores after receiving it is governed by their own privacy obligations, not ours</li>
+            </ul>
+            <p>Your wellness data is still treated as sensitive personal information and protected by the safeguards described below — but we want you to know, before you decide what to record, that those protections come from our consumer privacy practices and applicable consumer privacy laws (such as CCPA and, where applicable, GDPR), not from HIPAA.</p>
+
+            <h2>2. Information We Collect</h2>
+
+            <h3>Account Information</h3>
+            <ul>
+                <li>Email address (used for authentication)</li>
+                <li>Password (encrypted by our authentication provider; we never see or store your plaintext password)</li>
+            </ul>
+
+            <h3>Personal Wellness &amp; Reflection Data</h3>
+            <p>The core purpose of the App is to help you process and integrate experiences. When you use the App, you may choose to record:</p>
+            <ul>
+                <li>Journal entries and session reflections</li>
+                <li>Intentions you set before sessions</li>
+                <li>Nervous system state observations (polyvagal check-ins)</li>
+                <li>Internal Family Systems (IFS) parts notes</li>
+                <li>Trigger and glimmer logs</li>
+                <li>Habit tracking and exercise completions</li>
+                <li>Core beliefs assessments</li>
+                <li>Active imagination session notes</li>
+                <li>Conversations with Huxley, our AI integration guide inside Multitudes</li>
+            </ul>
+
+            <h3>Usage &amp; Technical Data</h3>
+            <ul>
+                <li>AI interaction metrics (response times, token counts, error rates) — used to maintain service quality</li>
+                <li>These metrics are automatically deleted after 90 days</li>
+                <li>We do not collect device IDs, advertising identifiers, location data, contacts, photos, or any other device sensors</li>
+            </ul>
+
+            <h2>3. How We Use Your Data</h2>
+            <ul>
+                <li>To provide the App's core features: journaling, AI conversations, nervous system tracking, and integration tools</li>
+                <li>To personalize your AI interactions — the App uses your past context (with your permission) to provide more relevant guidance</li>
+                <li>To maintain and improve service quality through aggregated, anonymized usage metrics</li>
+                <li>To authenticate your identity and secure your account</li>
+            </ul>
+            <p>We do not use your data for advertising, profiling, or any purpose unrelated to providing you with integration support.</p>
+
+            <h2>4. AI Processing &amp; Third-Party Data Sharing</h2>
+            <p>When you interact with Huxley (our AI guide) or other AI-powered features, your messages are sent to Anthropic (the company behind Claude) for processing. This is necessary to generate personalized responses.</p>
+
+            <h3>What is sent to Anthropic:</h3>
+            <ul>
+                <li>The text of your messages in AI conversations</li>
+                <li>Relevant context from your recent interactions (to provide continuity)</li>
+                <li>Your current nervous system state and session context (to tailor responses appropriately)</li>
+            </ul>
+
+            <h3>What Anthropic does NOT receive:</h3>
+            <ul>
+                <li>Your email address or account credentials</li>
+                <li>Your full journal or session history</li>
+                <li>Any data beyond what is needed for the current conversation</li>
+            </ul>
+
+            <p>Anthropic's API usage policy states that data sent through their API is not used to train their models. For details, see <a href="https://anthropic.com/privacy" target="_blank" rel="noopener">anthropic.com/privacy</a>.</p>
+
+            <h2>5. Where Your Data Is Stored</h2>
+            <ul>
+                <li>Cloud database: Your account and wellness data are stored in our Supabase-hosted PostgreSQL database, encrypted at rest and in transit (TLS/SSL)</li>
+                <li>Local device: Some data (preferences, cached conversations) is stored on your device using AsyncStorage</li>
+                <li>For certain features (like intentions), you can choose to keep data local-only and not sync it to the cloud</li>
+            </ul>
+
+            <h2>6. Data Security</h2>
+            <p>We implement the following security measures:</p>
+            <ul>
+                <li>Row-level security (RLS) on every database table — your data is isolated from other users at the database level</li>
+                <li>All data transmitted over HTTPS/TLS encryption</li>
+                <li>Authentication managed by Supabase Auth with industry-standard password hashing</li>
+                <li>API keys and secrets stored server-side, not in the app</li>
+                <li>Regular security audits of our codebase</li>
+            </ul>
+            <p>No system is 100% secure. If you believe your account has been compromised, contact us immediately.</p>
+
+            <h2>7. Your Rights</h2>
+            <p>You have the right to:</p>
+            <ul>
+                <li>Access your data — all your data is visible to you within the App</li>
+                <li>Delete your data — you can delete individual entries (journals, intentions, sessions) at any time. Deleting your account removes all associated data</li>
+                <li>Export your data — contact us to request a full export of your data</li>
+                <li>Withdraw consent — you can stop using AI features or switch to local-only storage at any time</li>
+                <li>Correct your data — you can edit any entries you've created</li>
+            </ul>
+            <p>If you are in the European Economic Area (EEA), you have additional rights under GDPR including the right to data portability and the right to lodge a complaint with a supervisory authority.</p>
+
+            <h2>8. Data Retention</h2>
+            <ul>
+                <li>Your wellness and reflection data is retained as long as your account is active</li>
+                <li>AI usage metrics are automatically deleted after 90 days</li>
+                <li>Deleting your account permanently removes all your data from our servers</li>
+                <li>Some anonymized, aggregated statistics (e.g., total app usage counts) may be retained after account deletion as they cannot be linked back to you</li>
+            </ul>
+
+            <h2>9. Age Requirement</h2>
+            <p>Multitudes is intended for adults aged 18 and older. We do not knowingly collect data from anyone under 18. If you believe a minor has created an account, please contact us and we will delete the account.</p>
+
+            <h2>10. Third-Party Services</h2>
+            <p>We use the following third-party services:</p>
+            <ul>
+                <li>Supabase — database hosting and authentication (<a href="https://supabase.com/privacy" target="_blank" rel="noopener">supabase.com/privacy</a>)</li>
+                <li>Anthropic — AI language model processing (<a href="https://anthropic.com/privacy" target="_blank" rel="noopener">anthropic.com/privacy</a>)</li>
+            </ul>
+            <p>We do not sell, rent, or share your personal data with any other third parties. We do not use analytics trackers, advertising networks, or social media SDKs.</p>
+
+            <h2>11. Changes to This Policy</h2>
+            <p>We may update this policy from time to time. If we make material changes, we will notify you through the App before the changes take effect. Your continued use of the App after changes constitutes acceptance of the updated policy.</p>
+
+            <h2>12. Contact Us</h2>
+            <p>If you have questions about this privacy policy or your data, contact us at:</p>
+            <p>
+                Alleviation Therapeutics<br>
+                Email: <a href="mailto:privacy@somanoetic.com">privacy@somanoetic.com</a>
+            </p>
+        </article>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <span class="wordmark">Multitudes</span>
+                    <p>A wellness companion for the days around your journey.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>About</h4>
+                    <a href="/#approach">Our approach</a>
+                    <a href="mailto:hello@multitudesapp.io">Contact</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Legal</h4>
+                    <a href="/privacy.html">Privacy</a>
+                    <a href="/terms.html">Terms</a>
+                </div>
+                <div class="footer-links">
+                    <h4>In crisis?</h4>
+                    <a href="tel:988">988 Suicide &amp; Crisis Lifeline (US)</a>
+                    <a href="https://findahelpline.com" target="_blank" rel="noopener">findahelpline.com (international)</a>
+                </div>
+            </div>
+            <div class="footer-meta">
+                <p>&copy; 2026 Alleviation Therapeutics. Multitudes&trade; is a wellness companion, not medical care.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

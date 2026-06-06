@@ -455,6 +455,115 @@ section {
     color: #9CA3AF;
 }
 
+/* ============ LEGAL PAGES (privacy.html, terms.html) ============ */
+.legal-page {
+    background: var(--cream);
+}
+
+.legal-header {
+    padding: 1.5rem 0;
+    border-bottom: 1px solid var(--border);
+    background: var(--white);
+}
+
+.legal-back {
+    display: inline-block;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.9375rem;
+    transition: color 0.15s ease;
+}
+
+.legal-back:hover {
+    color: var(--primary);
+}
+
+.legal-article {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 5rem;
+}
+
+.legal-article-header {
+    margin-bottom: 3rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.legal-article h1 {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: 2.5rem;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--charcoal);
+    margin-bottom: 0.75rem;
+}
+
+.legal-last-updated {
+    font-size: 0.9375rem;
+    color: var(--text-light);
+    font-style: italic;
+}
+
+.legal-article h2 {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: 1.5rem;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    color: var(--charcoal);
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.legal-article h3 {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 1.0625rem;
+    color: var(--charcoal);
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.legal-article p {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--charcoal);
+    margin-bottom: 1.125rem;
+}
+
+.legal-article ul {
+    list-style: none;
+    margin-bottom: 1.5rem;
+    padding-left: 0;
+}
+
+.legal-article ul li {
+    position: relative;
+    padding-left: 1.5rem;
+    margin-bottom: 0.625rem;
+    line-height: 1.65;
+    color: var(--charcoal);
+    font-size: 1rem;
+}
+
+.legal-article ul li::before {
+    content: '';
+    position: absolute;
+    left: 0.25rem;
+    top: 0.65em;
+    width: 6px;
+    height: 6px;
+    background: var(--primary);
+    border-radius: 50%;
+}
+
+.legal-article a {
+    color: var(--primary);
+    text-decoration: underline;
+}
+
 /* ============ DESKTOP ============ */
 @media (min-width: 768px) {
     body { font-size: 18px; }
