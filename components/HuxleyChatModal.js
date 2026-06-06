@@ -1,62 +1,47 @@
 /**
  * Huxley Chat Modal
  *
- * Pop-up chat interface with Huxley that can route to features
+ * Pop-up chat interface with Huxley that can route to features.
+ * Conversation surface delegated to <ChatConversation> — this file owns
+ * the modal shell (backdrop, slide-up animation, header, quick actions).
  */
 
-import { useState, useRef, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  Modal,
-  TouchableOpacity,
-  TextInput,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-  Keyboard,
   Animated,
   Image,
-  ActivityIndicator,
+  KeyboardAvoidingView,
+  Modal,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { X } from 'lucide-react-native';
 import { colors } from '../theme/colors';
 import { icons } from '../lib/uiIcons';
 import conversationalRoutingService from '../lib/conversationalRoutingService';
-import FormattedText from './FormattedText';
+import { ChatConversation } from './chat';
 
 const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
   const [messages, setMessages] = useState([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const scrollViewRef = useRef(null);
   const slideAnim = useRef(new Animated.Value(0)).current;
   const insets = useSafeAreaInsets();
 
-  // Scroll to bottom when keyboard opens
-  useEffect(() => {
-    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
-    const sub = Keyboard.addListener(showEvent, () => {
-      setTimeout(() => {
-        scrollViewRef.current?.scrollToEnd({ animated: true });
-      }, 150);
-    });
-    return () => sub.remove();
-  }, []);
-
   useEffect(() => {
     if (visible) {
-      // Reset messages when opening
       setMessages([
         {
           id: 'welcome',
           role: 'assistant',
-          content: "Need help finding something? I can guide you to the right tool, or tap the chat button for a deeper conversation.",
+          content:
+            "Need help finding something? I can guide you to the right tool, or tap the chat button for a deeper conversation.",
         },
       ]);
-      // Animate in
       Animated.spring(slideAnim, {
         toValue: 1,
         useNativeDriver: true,
@@ -68,13 +53,14 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
     }
   }, [visible]);
 
-  const handleSend = async () => {
-    if (!inputText.trim() || isLoading) return;
+  const handleSend = async (text) => {
+    const trimmed = text.trim();
+    if (!trimmed || isLoading) return;
 
     const userMessage = {
       id: Date.now().toString(),
       role: 'user',
-      content: inputText.trim(),
+      content: trimmed,
     };
 
     setMessages((prev) => [...prev, userMessage]);
@@ -82,20 +68,17 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
     setIsLoading(true);
 
     try {
-      // Use conversational routing service to determine intent
-      const response = await conversationalRoutingService.routeMessage(inputText.trim());
-
-      const assistantMessage = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: response.message,
-        suggestedRoute: response.route,
-        routeLabel: response.routeLabel,
-      };
-
-      setMessages((prev) => [...prev, assistantMessage]);
-
-      // If there's a suggested route, show it as a button
+      const response = await conversationalRoutingService.routeMessage(trimmed);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: response.message,
+          suggestedRoute: response.route,
+          routeLabel: response.routeLabel,
+        },
+      ]);
     } catch (error) {
       console.error('Huxley chat error:', error);
       setMessages((prev) => [
@@ -103,7 +86,8 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
         {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content: "I'm having trouble connecting right now. Would you like to explore the app yourself, or try again in a moment?",
+          content:
+            "I'm having trouble connecting right now. Would you like to explore the app yourself, or try again in a moment?",
         },
       ]);
     } finally {
@@ -128,6 +112,56 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
     { label: 'Full Chat', route: 'HuxleyChat', emoji: '💬', icon: icons.chat },
   ];
 
+  const renderHeader = () => (
+    <View style={styles.header}>
+      <View style={styles.headerLeft}>
+        <Image
+          source={require('../assets/images/huxley-avatar.png')}
+          style={styles.huxleyAvatar}
+          resizeMode="contain"
+        />
+        <Text style={styles.headerTitle}>Quick Help</Text>
+      </View>
+      <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+        <X size={24} color={colors.textSecondary} strokeWidth={2} />
+      </TouchableOpacity>
+    </View>
+  );
+
+  const renderQuickActions = () => (
+    <View style={styles.quickActions}>
+      {quickActions.map((action) => (
+        <TouchableOpacity
+          key={action.route}
+          style={styles.quickActionButton}
+          onPress={() => handleRoutePress(action.route)}
+        >
+          {action.icon ? (
+            <Image source={action.icon} style={styles.quickActionIconImage} />
+          ) : (
+            <Text style={styles.quickActionEmoji}>{action.emoji}</Text>
+          )}
+          <Text style={styles.quickActionText}>{action.label}</Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+
+  // Inline route-button below an assistant message that suggests navigation.
+  const renderRouteButton = (message) => {
+    if (!message.suggestedRoute) return null;
+    return (
+      <TouchableOpacity
+        style={styles.routeButton}
+        onPress={() => handleRoutePress(message.suggestedRoute)}
+      >
+        <Text style={styles.routeButtonText}>
+          Go to {message.routeLabel || message.suggestedRoute} →
+        </Text>
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <Modal
       visible={visible}
@@ -148,6 +182,7 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
           style={[
             styles.modalContent,
             {
+              paddingBottom: Math.max(insets.bottom, 12),
               transform: [
                 {
                   translateY: slideAnim.interpolate({
@@ -159,127 +194,18 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
             },
           ]}
         >
-          {/* Header */}
-          <View style={styles.header}>
-            <View style={styles.headerLeft}>
-              <Image
-                source={require('../assets/images/huxley-avatar.png')}
-                style={styles.huxleyAvatar}
-                resizeMode="contain"
-              />
-              <Text style={styles.headerTitle}>Quick Help</Text>
-            </View>
-            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <MaterialIcons name="close" size={24} color={colors.textSecondary} />
-            </TouchableOpacity>
-          </View>
-
-          {/* Messages */}
-          <ScrollView
-            ref={scrollViewRef}
-            style={styles.messagesContainer}
-            contentContainerStyle={styles.messagesContent}
-            onContentSizeChange={() => scrollViewRef.current?.scrollToEnd()}
-          >
-            {messages.map((message) => (
-              <View
-                key={message.id}
-                style={[
-                  styles.messageRow,
-                  message.role === 'user' ? styles.userRow : styles.assistantRow,
-                ]}
-              >
-                {message.role === 'assistant' && (
-                  <Image
-                    source={require('../assets/images/huxley-avatar.png')}
-                    style={styles.messageAvatar}
-                    resizeMode="contain"
-                  />
-                )}
-                <View
-                  style={[
-                    styles.messageBubble,
-                    message.role === 'user' ? styles.userBubble : styles.assistantBubble,
-                  ]}
-                >
-                  <FormattedText
-                    style={[
-                      styles.messageText,
-                      message.role === 'user' ? styles.userText : styles.assistantText,
-                    ]}
-                  >
-                    {message.content}
-                  </FormattedText>
-                  {message.suggestedRoute && (
-                    <TouchableOpacity
-                      style={styles.routeButton}
-                      onPress={() => handleRoutePress(message.suggestedRoute)}
-                    >
-                      <Text style={styles.routeButtonText}>
-                        Go to {message.routeLabel || message.suggestedRoute} →
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-              </View>
-            ))}
-            {isLoading && (
-              <View style={[styles.messageRow, styles.assistantRow]}>
-                <Image
-                  source={require('../assets/images/huxley-avatar.png')}
-                  style={styles.messageAvatar}
-                  resizeMode="contain"
-                />
-                <View style={[styles.messageBubble, styles.assistantBubble]}>
-                  <ActivityIndicator size="small" color={colors.primary} />
-                  <Text style={styles.typingText}>Huxley is typing...</Text>
-                </View>
-              </View>
-            )}
-          </ScrollView>
-
-          {/* Quick Actions */}
-          <View style={styles.quickActions}>
-            {quickActions.map((action) => (
-              <TouchableOpacity
-                key={action.route}
-                style={styles.quickActionButton}
-                onPress={() => handleRoutePress(action.route)}
-              >
-                {action.icon ? (
-                  <Image source={action.icon} style={styles.quickActionIconImage} />
-                ) : (
-                  <Text style={styles.quickActionEmoji}>{action.emoji}</Text>
-                )}
-                <Text style={styles.quickActionText}>{action.label}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          {/* Input */}
-          <View style={[styles.inputContainer, { paddingBottom: Math.max(insets.bottom, 12) + 12 }]}>
-            <TextInput
-              style={styles.input}
-              value={inputText}
-              onChangeText={setInputText}
-              placeholder="Ask Huxley anything..."
-              placeholderTextColor={colors.textSecondary}
-              multiline
-              maxLength={500}
-              onSubmitEditing={handleSend}
-            />
-            <TouchableOpacity
-              style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}
-              onPress={handleSend}
-              disabled={!inputText.trim() || isLoading}
-            >
-              <MaterialIcons
-                name="send"
-                size={24}
-                color={inputText.trim() ? '#fff' : colors.textSecondary}
-              />
-            </TouchableOpacity>
-          </View>
+          <ChatConversation
+            messages={messages}
+            isTyping={isLoading}
+            onSend={handleSend}
+            inputText={inputText}
+            onInputTextChange={setInputText}
+            inputPlaceholder="Ask Huxley anything..."
+            inputDisabled={isLoading}
+            header={renderHeader()}
+            belowMessages={renderQuickActions()}
+            renderMessageExtras={renderRouteButton}
+          />
         </Animated.View>
       </KeyboardAvoidingView>
     </Modal>
@@ -333,62 +259,7 @@ const styles = StyleSheet.create({
   closeButton: {
     padding: 8,
   },
-  messagesContainer: {
-    flex: 1,
-  },
-  messagesContent: {
-    padding: 16,
-  },
-  messageRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 12,
-  },
-  assistantRow: {
-    justifyContent: 'flex-start',
-  },
-  userRow: {
-    justifyContent: 'flex-end',
-    flexDirection: 'row-reverse',
-  },
-  messageAvatar: {
-    width: 36,
-    height: 36,
-    marginRight: 8,
-    marginTop: 4,
-  },
-  typingText: {
-    fontSize: 14,
-    color: colors.textSecondary,
-    fontStyle: 'italic',
-    marginTop: 4,
-  },
-  messageBubble: {
-    padding: 12,
-    borderRadius: 16,
-  },
-  userBubble: {
-    maxWidth: '75%',
-    alignSelf: 'flex-end',
-    backgroundColor: colors.primary,
-  },
-  assistantBubble: {
-    flex: 1,
-    alignSelf: 'flex-start',
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-  },
-  messageText: {
-    fontSize: 16,
-    lineHeight: 22,
-  },
-  userText: {
-    color: '#fff',
-  },
-  assistantText: {
-    color: colors.text,
-  },
   routeButton: {
-    marginTop: 8,
     paddingVertical: 8,
     paddingHorizontal: 12,
     backgroundColor: colors.primary,
@@ -425,35 +296,6 @@ const styles = StyleSheet.create({
   quickActionText: {
     fontSize: 12,
     color: colors.textSecondary,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    padding: 12,
-    borderTopWidth: 1,
-    borderTopColor: colors.lightGray,
-  },
-  input: {
-    flex: 1,
-    backgroundColor: '#F5F5F5',
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    fontSize: 16,
-    maxHeight: 100,
-    color: colors.text,
-  },
-  sendButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: 8,
-  },
-  sendButtonDisabled: {
-    backgroundColor: '#E0E0E0',
   },
 });
 

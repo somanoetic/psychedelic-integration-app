@@ -7,6 +7,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import {
+  Animated,
   View,
   Text,
   StyleSheet,
@@ -21,12 +22,31 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { MaterialIcons } from '@expo/vector-icons';
+import { Send, ChevronDown } from 'lucide-react-native';
 import { colors, gradients } from '../theme/colors';
+import { icons } from '../lib/uiIcons';
 import conversationalRoutingService from '../lib/conversationalRoutingService';
+import huxleyService from '../lib/huxleyService';
+import { useHuxleyChat } from '../contexts/HuxleyChatContext';
 import HuxleyWelcomeScreen from './HuxleyWelcomeScreen';
 import FormattedText from './FormattedText';
+import HuxleyVoiceController from './HuxleyVoiceController';
+
+// Routes where seeding a recent-context handoff into huxleyService is useful.
+// MainTabs / Learn are navigation hubs, not Huxley conversations, so skip them.
+const HANDOFF_ROUTES = new Set([
+  'TriggeredSupport',
+  'Journal',
+  'ExperienceMapping',
+  'IFSChat',
+  'NervousSystemMapping',
+  'TriggersGlimmers',
+  'RegulatingResources',
+  'CoreBeliefs',
+  'SessionPreparation',
+]);
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -144,11 +164,6 @@ const TypewriterText = ({ text, onComplete, speed = 30, style }) => {
   );
 };
 
-// Track state globally (persists across navigations)
-let hasShownWelcome = false;
-let persistedMessages = [];
-let hasInitializedChat = false;
-
 // Strip markdown formatting from AI messages (safety net)
 const cleanMarkdown = (text) => {
   if (!text) return '';
@@ -156,50 +171,169 @@ const cleanMarkdown = (text) => {
 };
 
 const HuxleyChatScreen = ({ navigation }) => {
-  const [messages, setMessages] = useState(persistedMessages);
+  const {
+    messages,
+    setMessages,
+    welcomeShown,
+    setWelcomeShown,
+    voiceMode,
+    setVoiceMode,
+    markChatInitialized,
+    isChatInitialized,
+  } = useHuxleyChat();
+
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [currentTypingIndex, setCurrentTypingIndex] = useState(-1);
   const [showQuickReplies, setShowQuickReplies] = useState(false);
-  const [inputEnabled, setInputEnabled] = useState(persistedMessages.length > 0);
-  const [showWelcome, setShowWelcome] = useState(!hasShownWelcome);
+  const [inputEnabled, setInputEnabled] = useState(messages.length > 0);
+  const [showWelcome, setShowWelcome] = useState(!welcomeShown);
   const scrollViewRef = useRef(null);
   const messageQueue = useRef([]);
   const isProcessingQueue = useRef(false);
   const insets = useSafeAreaInsets();
+
+  // Smart auto-scroll: only stick to bottom when the user is already near it.
+  // If they've scrolled up to read history, new messages won't yank them back.
+  const isNearBottomRef = useRef(true);
+  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+  const handleScroll = useCallback((e) => {
+    const { contentOffset, contentSize, layoutMeasurement } = e.nativeEvent;
+    const distanceFromBottom = contentSize.height - (contentOffset.y + layoutMeasurement.height);
+    const nearBottom = distanceFromBottom < 80;
+    isNearBottomRef.current = nearBottom;
+    setShowScrollToBottom(prev => (prev === nearBottom ? !nearBottom : prev));
+  }, []);
+  const handleContentSizeChange = useCallback(() => {
+    if (isNearBottomRef.current) {
+      // Unanimated: typewriter fires this every ~30ms per character, and
+      // animated scrolls don't complete fast enough to keep up — the result
+      // was that we lagged behind the actual content bottom while Huxley
+      // typed. Snap-to-bottom is invisible character-to-character but keeps
+      // the view pinned to the latest content reliably.
+      scrollViewRef.current?.scrollToEnd({ animated: false });
+    }
+  }, []);
+  const scrollToBottom = useCallback(() => {
+    isNearBottomRef.current = true;
+    setShowScrollToBottom(false);
+    scrollViewRef.current?.scrollToEnd({ animated: true });
+  }, []);
 
   // Scroll to bottom when keyboard opens
   useEffect(() => {
     const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
     const sub = Keyboard.addListener(showEvent, () => {
       setTimeout(() => {
+        isNearBottomRef.current = true;
         scrollViewRef.current?.scrollToEnd({ animated: true });
       }, 150);
     });
     return () => sub.remove();
   }, []);
 
-  // Load welcome screen state from AsyncStorage on mount
+  // Keyboard avoidance, per platform (mirrors components/chat/ChatConversation.js):
+  //
+  // iOS — KeyboardAvoidingView behavior="padding" works correctly, so we keep it.
+  //
+  // Android — KAV behavior="height"/"padding" left a residual gap (≈ nav-bar
+  // inset) on dismiss because the KAV measures the keyboard frame from the
+  // screen bottom but sits inside the wrapping <SafeAreaView edges={['bottom']}>
+  // which already reserves that inset, so the padding never collapsed to 0.
+  // Instead we drive bottom padding ourselves from the real keyboard height.
+  // We pad by the FULL keyboard height: when the keyboard opens the soft
+  // nav-bar inset collapses (the keyboard takes that space), so subtracting
+  // insets.bottom under-pads and lets the keyboard cover the input. On dismiss
+  // the height goes to 0 and the padding collapses cleanly — no gap.
+  const useOwnKav = Platform.OS === 'ios';
+  const keyboardPad = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (Platform.OS !== 'android') return;
+    const onShow = (e) => {
+      const kbHeight = e?.endCoordinates?.height ?? 0;
+      keyboardPad.setValue(kbHeight);
+    };
+    const onHide = () => keyboardPad.setValue(0);
+    const showSub = Keyboard.addListener('keyboardDidShow', onShow);
+    const hideSub = Keyboard.addListener('keyboardDidHide', onHide);
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, [keyboardPad]);
+
+  // Tracks when the user last interacted with this screen. Used by the
+  // return-to-chat acknowledgment below to decide whether enough time has
+  // passed to warrant a "welcome back" beat (we don't want to acknowledge a
+  // 2-second tab switch). Persists across navigations in the ref because
+  // the chat screen stays mounted in the stack.
+  const lastBlurAtRef = useRef(null);
+  const RETURN_ACK_THRESHOLD_MS = 30 * 1000; // 30s gone away → worth acknowledging
+
+  // Turn voice mode OFF when the chat screen loses focus (e.g. Huxley routes
+  // to Session Preparation, user navigates back out to tabs, etc.). Without
+  // this, the orphaned voice controller keeps the mic open in the background
+  // — which is both a privacy concern (recording when the user isn't on a
+  // voice-enabled screen) and surfaces ghost transcripts attributed to the
+  // user (Whisper hallucinating on muffled ambient audio while the user is
+  // doing something else).
+  //
+  // The user can re-toggle voice mode when they come back to this screen.
+  useFocusEffect(
+    useCallback(() => {
+      // On re-focus: if the user was away long enough, append a gentle
+      // acknowledgment so Huxley doesn't just sit there with the last message
+      // frozen. This is a passive bubble — no quick replies, no question —
+      // an opening for the user to continue if they want.
+      if (lastBlurAtRef.current && messages.length > 0) {
+        const awayMs = Date.now() - lastBlurAtRef.current;
+        if (awayMs >= RETURN_ACK_THRESHOLD_MS) {
+          const ackText = "Hey, you're back. Want to keep going or start with something new?";
+          conversationalRoutingService.seedAssistantGreeting(ackText);
+          queueMessage(
+            {
+              id: `welcome-back-${Date.now()}`,
+              role: 'assistant',
+              content: ackText,
+              isTyping: true,
+            },
+            300,
+          );
+        }
+        lastBlurAtRef.current = null;
+      }
+      return () => {
+        // On blur: force voice off and stamp the blur time.
+        setVoiceMode(false);
+        lastBlurAtRef.current = Date.now();
+      };
+      // queueMessage is stable enough — we intentionally don't depend on
+      // messages.length here because it'd re-run on every new message.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [setVoiceMode]),
+  );
+
+  // Load welcome screen state from AsyncStorage on mount.
+  // When the user has already seen the full HuxleyWelcomeScreen ("Hi, I'm Huxley..."),
+  // the chat greeting drops the self-introduction so we don't re-introduce him every launch.
   useEffect(() => {
     AsyncStorage.getItem('huxley_welcome_shown').then(value => {
       if (value === 'true') {
-        hasShownWelcome = true;
+        setWelcomeShown(true);
         setShowWelcome(false);
-        // If welcome was already shown, start chat if needed
-        if (!hasInitializedChat && persistedMessages.length === 0) {
-          hasInitializedChat = true;
-          startGreetingSequence();
+        if (!isChatInitialized() && messages.length === 0) {
+          markChatInitialized();
+          startGreetingSequence({ returning: true });
         }
       }
     });
+    // Messages length is intentionally not a dependency — we only check it once on mount.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Persist messages to module-level variable when they change
-  useEffect(() => {
-    persistedMessages = messages;
-  }, [messages]);
-
-  // Process message queue sequentially
+  // Process message queue sequentially.
+  // In voice mode we skip the typewriter (text appears at once so TTS playback
+  // stays in sync), so the per-message dwell time collapses to a small fixed beat.
   const processQueue = useCallback(async () => {
     if (isProcessingQueue.current || messageQueue.current.length === 0) return;
 
@@ -212,21 +346,25 @@ const HuxleyChatScreen = ({ navigation }) => {
         await new Promise(resolve => setTimeout(resolve, delay));
       }
 
-      setMessages(prev => [...prev, { ...message, isTyping: true }]);
+      // In voice mode, isTyping=false means "show full text immediately."
+      // In text mode, isTyping=true triggers the typewriter render path.
+      const useTypewriter = !voiceMode;
+      setMessages(prev => [...prev, { ...message, isTyping: useTypewriter }]);
       setCurrentTypingIndex(prev => prev + 1);
 
-      // Wait for typewriter to complete (estimate based on text length)
-      const typingDuration = message.content.length * 15 + 500;
-      await new Promise(resolve => setTimeout(resolve, typingDuration));
+      const dwell = useTypewriter
+        ? message.content.length * 15 + 500
+        : 250;
+      await new Promise(resolve => setTimeout(resolve, dwell));
 
-      // Mark message as complete
-      setMessages(prev =>
-        prev.map((m, i) =>
-          i === prev.length - 1 ? { ...m, isTyping: false } : m
-        )
-      );
+      if (useTypewriter) {
+        setMessages(prev =>
+          prev.map((m, i) =>
+            i === prev.length - 1 ? { ...m, isTyping: false } : m
+          )
+        );
+      }
 
-      // Show quick replies if this message has them
       if (message.quickReplies) {
         setShowQuickReplies(true);
         setInputEnabled(true);
@@ -234,7 +372,7 @@ const HuxleyChatScreen = ({ navigation }) => {
     }
 
     isProcessingQueue.current = false;
-  }, []);
+  }, [voiceMode, setMessages]);
 
   // Queue a message to be displayed
   const queueMessage = (message, delay = 0) => {
@@ -244,34 +382,41 @@ const HuxleyChatScreen = ({ navigation }) => {
 
   // Handle welcome completion and start chat greeting
   const handleWelcomeComplete = useCallback(() => {
-    hasShownWelcome = true;
+    setWelcomeShown(true);
     setShowWelcome(false);
     AsyncStorage.setItem('huxley_welcome_shown', 'true');
 
-    // Start the greeting messages after welcome is dismissed
-    if (!hasInitializedChat) {
-      hasInitializedChat = true;
-      startGreetingSequence();
+    // First launch: HuxleyWelcomeScreen just introduced him, so the chat
+    // greeting skips the re-introduction and goes straight to the question.
+    if (!isChatInitialized()) {
+      markChatInitialized();
+      startGreetingSequence({ returning: false });
     }
-  }, []);
+  }, [setWelcomeShown, isChatInitialized, markChatInitialized]);
 
-  // Start greeting sequence
-  const startGreetingSequence = () => {
+  // Start greeting sequence.
+  // HuxleyWelcomeScreen handles the "Hi, I'm Huxley" introduction on first launch only;
+  // chat greetings never re-introduce him — they just open the conversation.
+  const startGreetingSequence = ({ returning } = { returning: false }) => {
+    const opener = returning ? "Welcome back." : "Hey there 👋";
+    const question = "What would you like to focus on today?";
+
+    // Seed the routing service so it knows this greeting already happened.
+    // Otherwise the user's first reply arrives at the router as a cold turn 1
+    // and the router responds with its own greeting on top of ours.
+    conversationalRoutingService.seedAssistantGreeting(opener);
+    conversationalRoutingService.seedAssistantGreeting(question);
+
     const greetings = [
       {
         id: 'welcome-1',
         role: 'assistant',
-        content: "Hey there... I'm Huxley.",
+        content: opener,
       },
       {
         id: 'welcome-2',
         role: 'assistant',
-        content: "I'm here to support you on your journey.",
-      },
-      {
-        id: 'welcome-3',
-        role: 'assistant',
-        content: "What would you like to focus on today?",
+        content: question,
         quickReplies: [
           { label: "Explore the app", value: "navigate_MainTabs" },
           { label: "Prepare for a session", value: "navigate_SessionPreparation" },
@@ -289,13 +434,15 @@ const HuxleyChatScreen = ({ navigation }) => {
     }, 500);
   };
 
-  // If welcome was already shown but no messages yet (fresh return), start greeting
+  // If welcome was already shown but no messages yet (fresh return), start greeting.
+  // Reads from context state set by the AsyncStorage-loading effect above.
   useEffect(() => {
-    if (hasShownWelcome && !hasInitializedChat && persistedMessages.length === 0) {
-      hasInitializedChat = true;
-      startGreetingSequence();
+    if (welcomeShown && !isChatInitialized() && messages.length === 0) {
+      markChatInitialized();
+      startGreetingSequence({ returning: true });
     }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [welcomeShown]);
 
   const handleMessageComplete = (index) => {
     setMessages(prev =>
@@ -322,14 +469,19 @@ const HuxleyChatScreen = ({ navigation }) => {
     setIsTyping(true);
 
     setTimeout(() => {
-      scrollViewRef.current?.scrollToEnd({ animated: true });
+      if (isNearBottomRef.current) {
+        scrollViewRef.current?.scrollToEnd({ animated: true });
+      }
     }, 100);
 
     try {
       const response = await conversationalRoutingService.routeMessage(text.trim());
 
-      // Small delay before Huxley responds
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Small delay before Huxley responds — feels warmer in text mode,
+      // but in voice mode it just adds dead air before TTS speaks, so skip it.
+      if (!voiceMode) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
 
       setIsTyping(false);
 
@@ -375,6 +527,15 @@ const HuxleyChatScreen = ({ navigation }) => {
 
     if (reply.value.startsWith('navigate_')) {
       const route = reply.value.replace('navigate_', '');
+
+      // Hand off recent routing turns to huxleyService so the destination mode
+      // greets with continuity instead of starting cold. Only for routes that
+      // actually use huxleyService (the conversational modes).
+      if (HANDOFF_ROUTES.has(route)) {
+        const recent = conversationalRoutingService.getRecentContextSummary(3);
+        if (recent) huxleyService.acceptHandoff(recent);
+      }
+
       if (route === 'Learn') {
         navigation.navigate('MainTabs', { screen: 'Learn' });
       } else {
@@ -477,6 +638,31 @@ const HuxleyChatScreen = ({ navigation }) => {
     );
   }
 
+  // Most-recent assistant message — handed to the voice controller so it
+  // knows when there's a new response to speak. Looks backward from the end
+  // so we ignore in-flight user bubbles or the thinking indicator.
+  const latestAssistant = (() => {
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].role === 'assistant') return messages[i];
+    }
+    return null;
+  })();
+
+  // iOS uses a real KeyboardAvoidingView; Android uses a plain Animated.View
+  // whose paddingBottom we animate from the measured keyboard height (effect
+  // above). See the long comment near that effect for why.
+  const KeyboardWrapper = useOwnKav ? KeyboardAvoidingView : Animated.View;
+  const keyboardWrapperProps = useOwnKav
+    ? {
+        behavior: 'padding',
+        style: styles.keyboardView,
+        // Forced to 0: the wrapping SafeAreaView owns the bottom inset.
+        keyboardVerticalOffset: 0,
+      }
+    : {
+        style: [styles.keyboardView, { paddingBottom: keyboardPad }],
+      };
+
   return (
     <LinearGradient
       colors={gradients.standard}
@@ -485,68 +671,113 @@ const HuxleyChatScreen = ({ navigation }) => {
       style={styles.container}
     >
       <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.keyboardView}
-          keyboardVerticalOffset={0}
-        >
+        <KeyboardWrapper {...keyboardWrapperProps}>
           {/* Header */}
           <View style={styles.header}>
             <TouchableOpacity
               style={styles.menuButton}
               onPress={() => navigation.navigate('MainTabs')}
             >
-              <MaterialIcons name="apps" size={28} color={colors.text} />
+              <Image source={icons.home} style={styles.homeIcon} />
             </TouchableOpacity>
 
-            {/* Debug: Screen name */}
-            {__DEV__ && (
-              <Text style={styles.debugScreenName}>HuxleyChatScreen</Text>
-            )}
+            {/* Voice conversation toggle paused 2026-06-02 — the turn-based
+                Whisper + VAD architecture doesn't clear the "talking to a
+                guide IRL" bar for therapeutic conversation. Plumbing is
+                preserved (HuxleyVoiceController, voiceService, edge functions)
+                but the entry point is hidden. Narration-only voice (Huxley
+                reading guided exercises) is being pursued instead — see
+                context/features/voice-conversation-phase1.md. */}
           </View>
 
           {/* Messages */}
-          <ScrollView
-            ref={scrollViewRef}
-            style={styles.messagesContainer}
-            contentContainerStyle={styles.messagesContent}
-            showsVerticalScrollIndicator={false}
-            onContentSizeChange={() => scrollViewRef.current?.scrollToEnd({ animated: true })}
-          >
-            {messages.map(renderMessage)}
-            {renderThinkingIndicator()}
-            <View style={styles.bottomPadding} />
-          </ScrollView>
+          <View style={styles.messagesWrapper}>
+            <ScrollView
+              ref={scrollViewRef}
+              style={styles.messagesContainer}
+              contentContainerStyle={styles.messagesContent}
+              showsVerticalScrollIndicator={false}
+              onScroll={handleScroll}
+              scrollEventThrottle={16}
+              onContentSizeChange={handleContentSizeChange}
+            >
+              {messages.map(renderMessage)}
+              {renderThinkingIndicator()}
+              {/* In voice mode the status pill sits ~bottom:90 (≈130px above
+                  the screen bottom). Without extra padding, the last bubble
+                  scrolls behind the pill and stays hidden. Adds breathing
+                  room above the pill rather than letting content slide under it. */}
+              <View style={voiceMode ? styles.voiceBottomPadding : styles.bottomPadding} />
+            </ScrollView>
+            {showScrollToBottom && (
+              <TouchableOpacity
+                style={styles.scrollToBottomButton}
+                onPress={scrollToBottom}
+                activeOpacity={0.85}
+                accessibilityLabel="Scroll to latest message"
+              >
+                <ChevronDown size={22} color="#fff" strokeWidth={2.5} />
+              </TouchableOpacity>
+            )}
+          </View>
 
           {/* Quick Replies */}
           {renderQuickReplies()}
 
-          {/* Input */}
-          <View style={styles.inputContainer}>
-            <TextInput
-              style={styles.input}
-              value={inputText}
-              onChangeText={setInputText}
-              placeholder="Type a message..."
-              placeholderTextColor={colors.textSecondary}
-              multiline
-              maxLength={500}
-              editable={inputEnabled || messages.length > 0}
-              onSubmitEditing={() => handleSend()}
-            />
-            <TouchableOpacity
-              style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}
-              onPress={() => handleSend()}
-              disabled={!inputText.trim() || isTyping}
-            >
-              <MaterialIcons
-                name="send"
-                size={24}
-                color={inputText.trim() ? '#fff' : colors.textSecondary}
+          {/* Input — hidden in voice mode; voice controller drives the loop instead */}
+          {!voiceMode && (
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.input}
+                value={inputText}
+                onChangeText={setInputText}
+                placeholder="Type a message..."
+                placeholderTextColor={colors.textSecondary}
+                multiline
+                maxLength={500}
+                editable={inputEnabled || messages.length > 0}
+                onSubmitEditing={() => handleSend()}
               />
-            </TouchableOpacity>
-          </View>
-        </KeyboardAvoidingView>
+              <TouchableOpacity
+                style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}
+                onPress={() => handleSend()}
+                disabled={!inputText.trim() || isTyping}
+              >
+                <Send
+                  size={24}
+                  color={inputText.trim() ? '#fff' : colors.textSecondary}
+                  strokeWidth={2}
+                />
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {/* Voice mode overlay + recorder lifecycle */}
+          <HuxleyVoiceController
+            voiceMode={voiceMode}
+            onTranscript={(t) => handleSend(t)}
+            lastAssistantText={latestAssistant?.content}
+            lastAssistantId={latestAssistant?.id}
+            onSpeakingEnd={() => {
+              // In voice mode, the user can't tap "Go to X" — when Huxley
+              // says he'll take them somewhere, that verbal cue is the
+              // navigation. After Huxley finishes speaking, auto-navigate
+              // if the last response carried a route.
+              if (!voiceMode) return;
+              const route = latestAssistant?.suggestedRoute;
+              if (!route) return;
+              if (HANDOFF_ROUTES.has(route)) {
+                const recent = conversationalRoutingService.getRecentContextSummary(3);
+                if (recent) huxleyService.acceptHandoff(recent);
+              }
+              if (route === 'Learn') {
+                navigation.navigate('MainTabs', { screen: 'Learn' });
+              } else {
+                navigation.navigate(route);
+              }
+            }}
+          />
+        </KeyboardWrapper>
       </SafeAreaView>
     </LinearGradient>
   );
@@ -573,16 +804,50 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 12,
   },
-  debugScreenName: {
-    fontSize: 10,
-    color: 'rgba(0,0,0,0.4)',
-    fontFamily: 'monospace',
+  voiceToggle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderWidth: 2,
+    borderColor: colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  voiceToggleActive: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  homeIcon: {
+    width: 44,
+    height: 44,
+    resizeMode: 'contain',
+  },
+  messagesWrapper: {
+    flex: 1,
+    position: 'relative',
   },
   messagesContainer: {
     flex: 1,
   },
   messagesContent: {
     padding: 20,
+  },
+  scrollToBottomButton: {
+    position: 'absolute',
+    bottom: 16,
+    alignSelf: 'center',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
   },
   messageContainer: {
     marginBottom: 20,
@@ -697,6 +962,10 @@ const styles = StyleSheet.create({
   },
   bottomPadding: {
     height: 20,
+  },
+  voiceBottomPadding: {
+    // pill at bottom:90 + pill height (~44) + comfortable air = 160px clear
+    height: 160,
   },
 });
 
