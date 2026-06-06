@@ -6,6 +6,7 @@
  */
 
 const { MOCK_USER_ID } = require('../helpers/aiTestFixtures');
+const { MODELS } = require('../../lib/aiModels');
 
 // Mock dependencies before importing service
 jest.mock('../../lib/claudeAPI', () => ({
@@ -294,10 +295,14 @@ describe('ConversationalRoutingService', () => {
 
       expect(callClaude).toHaveBeenCalledWith(
         expect.objectContaining({
-          model: 'claude-sonnet-4-5-20250929',
+          model: MODELS.PRIMARY,
           max_tokens: 300,
           messages: expect.arrayContaining([
             expect.objectContaining({ role: 'user', content: 'Hey there' })
+          ]),
+          // System prompt is now a cached content-block array, not a string.
+          system: expect.arrayContaining([
+            expect.objectContaining({ cache_control: { type: 'ephemeral' } })
           ])
         })
       );

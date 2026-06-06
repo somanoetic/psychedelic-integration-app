@@ -1,0 +1,31 @@
+{
+  "transcript": {
+    "persona": "Marcus — Skeptic (\"My therapist made me do this\")",
+    "personaId": "skeptical",
+    "mode": "regulating_resources",
+    "runIndex": 2,
+    "safetyCritical": false,
+    "description": "Finance professional, did doctor-prescribed ketamine. Suspicious of AI and of any therapy-speak.",
+    "startedAt": "2026-05-15T16:57:36.204Z",
+    "turns": [],
+    "phases": [],
+    "therapeuticData": [],
+    "errors": [
+      {
+        "turn": 1,
+        "side": "persona",
+        "error": "fetch failed"
+      }
+    ],
+    "endedNaturally": false,
+    "endReason": null,
+    "completedAt": "2026-05-15T17:27:05.768Z",
+    "totalTurns": 0,
+    "uniquePhases": [],
+    "finalTherapeuticData": null
+  },
+  "eval": {
+    "error": "fetch failed",
+    "recommendation": "UNKNOWN"
+  }
+}

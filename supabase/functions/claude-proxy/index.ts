@@ -21,15 +21,36 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 const RATE_LIMIT_PER_DAY = 100;
 const RATE_LIMIT_WINDOW_MS = 24 * 60 * 60 * 1000; // 24 hours
 
+// A message content can be either a plain string (text-only conversations) or
+// an array of typed content blocks (text + image, used by the paper-scan
+// vision flow). The proxy is content-agnostic — it spreads the request body to
+// Claude as-is — so this widened type just documents what callers may send.
+type CacheControl = { type: 'ephemeral' };
+
+type ContentBlock =
+  | { type: 'text'; text: string; cache_control?: CacheControl }
+  | {
+      type: 'image';
+      source:
+        | { type: 'base64'; media_type: string; data: string }
+        | { type: 'url'; url: string };
+    };
+
+// `system` may be a plain string OR an array of text blocks. The array form lets
+// callers attach `cache_control: {type:'ephemeral'}` to a stable prefix block so
+// Anthropic caches it across turns. The proxy spreads the body through verbatim,
+// so both forms reach Claude untouched.
+type SystemPrompt = string | Array<{ type: 'text'; text: string; cache_control?: CacheControl }>;
+
 interface ClaudeRequest {
   model: string;
   max_tokens: number;
   messages: Array<{
     role: 'user' | 'assistant';
-    content: string;
+    content: string | ContentBlock[];
   }>;
   temperature?: number;
-  system?: string;
+  system?: SystemPrompt;
   stream?: boolean;
 }
 
@@ -105,8 +126,10 @@ serve(async (req: Request) => {
       return jsonResponse({ error: 'Invalid request: missing model or messages' }, 400);
     }
 
-    // Enforce token limits to prevent abuse
-    const maxTokens = Math.min(requestBody.max_tokens || 1024, 4096);
+    // Enforce token limits to prevent abuse. Ceiling is generous enough for
+    // multi-field paper-scan interpretations (worksheet transcription + per-
+    // field extraction + thematic notes) while still bounding cost per call.
+    const maxTokens = Math.min(requestBody.max_tokens || 1024, 8192);
 
     // 4. CALL CLAUDE API
     const claudeResponse = await fetch('https://api.anthropic.com/v1/messages', {
@@ -158,7 +181,11 @@ serve(async (req: Request) => {
         cost_estimate: calculateCost(requestBody.model, claudeData.usage),
         metadata: {
           endpoint: 'messages',
-          system_prompt_length: requestBody.system?.length || 0,
+          system_prompt_length: systemPromptLength(requestBody.system),
+          // Prompt-cache accounting (present once cache_control breakpoints are
+          // used). Lets us audit hit rate from api_usage_logs without a client.
+          cache_read_input_tokens: claudeData.usage?.cache_read_input_tokens || 0,
+          cache_creation_input_tokens: claudeData.usage?.cache_creation_input_tokens || 0,
         },
       });
 
@@ -179,6 +206,14 @@ serve(async (req: Request) => {
     }, 500);
   }
 });
+
+// Character length of the system prompt regardless of whether it arrived as a
+// plain string or as cache_control-tagged text blocks. Used only for logging.
+function systemPromptLength(system: SystemPrompt | undefined): number {
+  if (!system) return 0;
+  if (typeof system === 'string') return system.length;
+  return system.reduce((sum, block) => sum + (block.text?.length || 0), 0);
+}
 
 function jsonResponse(data: any, status: number) {
   return new Response(JSON.stringify(data), {

@@ -135,7 +135,7 @@ if (IS_LIVE) {
               'content-type': 'application/json',
             },
             body: JSON.stringify({
-              model: options.model || 'claude-sonnet-4-20250514',
+              model: options.model || require('../../lib/aiModels').DEFAULT_MODEL,
               max_tokens: options.maxTokens || 1024,
               messages,
               temperature: options.temperature ?? 0.7,
