@@ -1,11 +1,18 @@
 # Features In Progress
 
 **File Size Limit:** 300 lines
-**Last Updated:** 2026-03-03
+**Last Updated:** 2026-05-15
 
 ---
 
 ## Active Development
+
+### Voice Conversation with Huxley (Phase 1 plumbing complete)
+**Status:** Phase 1 plumbing in — STT/TTS edge functions + client voiceService. Phase 2 UI wiring next.
+**See:** [voice-conversation-phase1.md](voice-conversation-phase1.md)
+**Started:** 2026-05-15
+
+
 
 ### FEAT-205 + FEAT-206: RAG Knowledge Base (Combined)
 **Priority:** High

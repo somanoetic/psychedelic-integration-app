@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Paper Scan Flow — Multitudes Mockup</title>
+<style>
+  :root {
+    --primary: #5d86d6;
+    --primary-dark: #4a6fb8;
+    --primary-light: #7a9ee0;
+    --cream: #F5F5F5;
+    --warm-1: #fbffdf;
+    --warm-2: #7794b6;
+    --charcoal: #3A3A3A;
+    --text-secondary: #6B7280;
+    --text-light: #9CA3AF;
+    --border: #E5E5E5;
+    --sage: #8B9D83;
+    --golden: #E6B17E;
+    --shadow-soft: 0 2px 8px rgba(0,0,0,0.06);
+    --shadow-med: 0 4px 16px rgba(0,0,0,0.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #f7f3e8 0%, #e8eef5 100%);
+    color: var(--charcoal);
+    padding: 40px 20px 80px;
+    min-height: 100vh;
+  }
+  .page-header {
+    max-width: 1400px;
+    margin: 0 auto 40px;
+    text-align: center;
+  }
+  .page-header h1 {
+    font-family: Georgia, serif;
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .page-header p {
+    color: var(--text-secondary);
+    font-size: 15px;
+  }
+  .screens {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 32px;
+    max-width: 1500px;
+    margin: 0 auto;
+  }
+  .screen-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .screen-label {
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  .screen-label .step {
+    display: inline-block;
+    background: var(--primary);
+    color: white;
+    border-radius: 999px;
+    padding: 2px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .screen-label .title {
+    font-weight: 600;
+    font-size: 15px;
+  }
+  .screen-label .sub {
+    color: var(--text-secondary);
+    font-size: 13px;
+    margin-top: 2px;
+    max-width: 320px;
+  }
+  .phone {
+    width: 340px;
+    height: 720px;
+    background: var(--cream);
+    border-radius: 36px;
+    border: 8px solid #1f1f1f;
+    overflow: hidden;
+    position: relative;
+    box-shadow: var(--shadow-med);
+    display: flex;
+    flex-direction: column;
+  }
+  .status-bar {
+    height: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--charcoal);
+    background: var(--cream);
+    flex-shrink: 0;
+  }
+  .nav-bar {
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    background: var(--cream);
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+    flex-shrink: 0;
+  }
+  .nav-title { font-weight: 600; font-size: 17px; }
+  .nav-icon {
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--primary);
+    font-size: 20px;
+  }
+  .scroll-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    background: var(--cream);
+  }
+
+  /* ============ SCREEN 1: JOURNAL STREAM ============ */
+  .stream-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 16px;
+  }
+  .stream-header h2 {
+    font-family: Georgia, serif;
+    font-size: 22px;
+    font-weight: 700;
+  }
+  .stream-header .date {
+    font-size: 12px;
+    color: var(--text-light);
+  }
+  .entry-card {
+    background: white;
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow-soft);
+  }
+  .entry-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+  .entry-meta .pill {
+    background: rgba(93,134,214,0.1);
+    color: var(--primary-dark);
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .entry-card.text-entry p {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--charcoal);
+  }
+  .composer {
+    background: white;
+    border-radius: 18px;
+    padding: 12px 14px;
+    margin-top: 8px;
+    box-shadow: var(--shadow-soft);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .composer .input {
+    flex: 1;
+    color: var(--text-light);
+    font-size: 14px;
+  }
+  .composer-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    background: rgba(93,134,214,0.1);
+    color: var(--primary);
+  }
+  .composer-btn.highlight {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 2px 8px rgba(93,134,214,0.35);
+  }
+
+  /* ============ SCREEN 2: CAPTURE ============ */
+  .capture-screen {
+    flex: 1;
+    background: #0a0a0a;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .capture-header {
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    color: white;
+    flex-shrink: 0;
+  }
+  .capture-header .icon {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  .capture-viewport {
+    flex: 1;
+    position: relative;
+    background: #1a1a1a;
+    overflow: hidden;
+  }
+  .paper-page {
+    position: absolute;
+    top: 40px; left: 30px; right: 30px; bottom: 100px;
+    background: #fdf8ea;
+    transform: perspective(800px) rotateX(4deg) rotateY(-3deg);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    padding: 18px 16px;
+    overflow: hidden;
+  }
+  .paper-page .pg-title {
+    font-family: Georgia, serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #5a4a3a;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+  .paper-page .pg-field {
+    margin-bottom: 10px;
+  }
+  .paper-page .pg-label {
+    font-size: 9px;
+    color: #7a6a5a;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .pg-handwriting {
+    font-family: "Bradley Hand", "Comic Sans MS", cursive;
+    font-size: 11px;
+    line-height: 1.4;
+    color: #2b3a4a;
+  }
+  .paper-page .glyph {
+    position: absolute;
+    bottom: 8px; right: 10px;
+    width: 18px; height: 18px;
+    border: 1.2px solid #8a7a6a;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 7px;
+    color: #5a4a3a;
+    font-weight: 700;
+  }
+  .edge-frame {
+    position: absolute;
+    top: 36px; left: 26px; right: 26px; bottom: 96px;
+    border: 2px solid #6dd58c;
+    transform: perspective(800px) rotateX(4deg) rotateY(-3deg);
+    pointer-events: none;
+    box-shadow: 0 0 0 9999px rgba(0,0,0,0.25);
+  }
+  .edge-frame::before, .edge-frame::after,
+  .edge-frame > .c1, .edge-frame > .c2 {
+    content: '';
+    position: absolute;
+    width: 18px; height: 18px;
+    border: 3px solid #6dd58c;
+  }
+  .edge-frame::before { top: -3px; left: -3px; border-right: none; border-bottom: none; }
+  .edge-frame::after { top: -3px; right: -3px; border-left: none; border-bottom: none; }
+  .edge-frame .c1 { bottom: -3px; left: -3px; border-right: none; border-top: none; }
+  .edge-frame .c2 { bottom: -3px; right: -3px; border-left: none; border-top: none; }
+  .detect-label {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(109,213,140,0.95);
+    color: #0a3a1a;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    z-index: 5;
+  }
+  .capture-controls {
+    position: absolute;
+    bottom: 16px;
+    left: 0; right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 24px;
+  }
+  .capture-btn {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: white;
+    border: 4px solid rgba(255,255,255,0.4);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  }
+  .capture-side {
+    color: white;
+    font-size: 11px;
+    text-align: center;
+    opacity: 0.9;
+  }
+  .capture-side .icon-box {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.15);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 4px;
+    font-size: 16px;
+  }
+
+  /* ============ SCREEN 3: INTERPRETATION REVIEW ============ */
+  .review-header {
+    padding: 4px 0 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 14px;
+  }
+  .review-header h2 {
+    font-family: Georgia, serif;
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .review-header .sub {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+  .review-header .glyph-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(139,157,131,0.15);
+    color: #4a6a4a;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-top: 6px;
+  }
+  .scan-thumb {
+    width: 100%;
+    height: 180px;
+    background: linear-gradient(135deg, #fdf8ea 0%, #f3e6c8 100%);
+    border-radius: 10px;
+    margin-bottom: 14px;
+    position: relative;
+    box-shadow: var(--shadow-soft);
+    padding: 14px;
+    overflow: hidden;
+  }
+  .scan-thumb .pg-title {
+    font-family: Georgia, serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: #5a4a3a;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+  .scan-thumb .pg-row {
+    margin-bottom: 6px;
+  }
+  .scan-thumb .pg-row .lbl {
+    font-size: 8px;
+    color: #7a6a5a;
+    font-weight: 600;
+    margin-bottom: 1px;
+  }
+  .scan-thumb .pg-row .hw {
+    font-family: "Bradley Hand", "Comic Sans MS", cursive;
+    font-size: 10px;
+    color: #2b3a4a;
+  }
+  .scan-thumb .glyph {
+    position: absolute;
+    bottom: 6px; right: 8px;
+    width: 14px; height: 14px;
+    border: 1px solid #8a7a6a;
+    border-radius: 2px;
+    font-size: 6px;
+    text-align: center;
+    line-height: 14px;
+    color: #5a4a3a;
+    font-weight: 700;
+  }
+  .interp-section {
+    margin-bottom: 12px;
+  }
+  .interp-section .heading {
+    font-size: 11px;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .interp-field {
+    background: white;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    box-shadow: var(--shadow-soft);
+  }
+  .interp-field .field-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .interp-field .field-text {
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--charcoal);
+  }
+  .interp-field .edit-link {
+    font-size: 11px;
+    color: var(--primary);
+    margin-top: 4px;
+    display: inline-block;
+  }
+  .save-bar {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    gap: 8px;
+    margin: 8px -16px -16px;
+    padding: 12px 16px 16px;
+    background: var(--cream);
+    border-top: 1px solid rgba(0,0,0,0.04);
+  }
+  .save-bar .secondary {
+    flex: 0 0 auto;
+    background: white;
+    color: var(--primary);
+    border: 1px solid var(--border);
+    padding: 12px 14px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 13px;
+  }
+  .save-bar .primary {
+    flex: 1;
+    background: var(--primary);
+    color: white;
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(93,134,214,0.35);
+  }
+
+  /* ============ SCREEN 4: SAVED IN STREAM ============ */
+  .entry-card.scan-entry .scan-preview {
+    width: 100%;
+    height: 140px;
+    background: linear-gradient(135deg, #fdf8ea 0%, #f3e6c8 100%);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+  .scan-preview .pg-title-mini {
+    font-family: Georgia, serif;
+    font-size: 10px;
+    font-weight: 700;
+    color: #5a4a3a;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+  .scan-preview .pg-row { margin-bottom: 4px; }
+  .scan-preview .pg-row .lbl {
+    font-size: 7px;
+    color: #7a6a5a;
+    font-weight: 600;
+  }
+  .scan-preview .pg-row .hw {
+    font-family: "Bradley Hand", "Comic Sans MS", cursive;
+    font-size: 9px;
+    color: #2b3a4a;
+  }
+  .scan-preview .corner-tag {
+    position: absolute;
+    top: 6px; right: 6px;
+    background: rgba(255,255,255,0.85);
+    padding: 2px 6px;
+    border-radius: 999px;
+    font-size: 9px;
+    color: var(--primary-dark);
+    font-weight: 600;
+  }
+  .scan-snippet {
+    font-size: 12px;
+    color: var(--charcoal);
+    line-height: 1.45;
+    font-style: italic;
+  }
+  .scan-actions {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .scan-actions .act {
+    flex: 1;
+    background: rgba(93,134,214,0.08);
+    color: var(--primary-dark);
+    padding: 6px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+  }
+  .scan-actions .act.therapist {
+    background: rgba(139,157,131,0.15);
+    color: #4a6a4a;
+  }
+
+  /* ============ NOTES ============ */
+  .design-notes {
+    max-width: 1400px;
+    margin: 60px auto 0;
+    background: white;
+    border-radius: 16px;
+    padding: 28px 32px;
+    box-shadow: var(--shadow-soft);
+  }
+  .design-notes h2 {
+    font-family: Georgia, serif;
+    font-size: 22px;
+    margin-bottom: 12px;
+  }
+  .design-notes h3 {
+    font-size: 15px;
+    margin-top: 18px;
+    margin-bottom: 6px;
+    color: var(--primary-dark);
+  }
+  .design-notes p, .design-notes li {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--charcoal);
+  }
+  .design-notes ul { padding-left: 20px; }
+  .design-notes code {
+    background: var(--cream);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Paper Scan Flow</h1>
+  <p>Multitudes — handwritten exercises + Claude vision integration</p>
+</div>
+
+<div class="screens">
+
+  <!-- ============ SCREEN 1: ENTRY POINT ============ -->
+  <div class="screen-wrap">
+    <div class="screen-label">
+      <div class="step">1</div>
+      <div class="title">Entry point: journal stream</div>
+      <div class="sub">Inline camera button next to text composer. Paper is just another kind of entry.</div>
+    </div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>● ●●●</span></div>
+      <div class="nav-bar">
+        <div class="nav-icon">‹</div>
+        <div class="nav-title">Today</div>
+        <div class="nav-icon">⋯</div>
+      </div>
+      <div class="scroll-area">
+        <div class="stream-header">
+          <h2>Reflections</h2>
+          <div class="date">Tue · May 20</div>
+        </div>
+
+        <div class="entry-card text-entry">
+          <div class="entry-meta">
+            <span class="pill">Journal</span>
+            <span>7:14 am</span>
+          </div>
+          <p>Woke up gentler than yesterday. Noticed the manager part trying to plan the whole day before my feet hit the floor — I thanked it and made coffee instead.</p>
+        </div>
+
+        <div class="entry-card text-entry">
+          <div class="entry-meta">
+            <span class="pill">Body check-in</span>
+            <span>8:02 am</span>
+          </div>
+          <p>Chest soft. Jaw tight. Belly neutral. Holding a slow exhale.</p>
+        </div>
+
+        <div class="composer">
+          <div class="composer-btn">✎</div>
+          <div class="input">Write or scan a page…</div>
+          <div class="composer-btn highlight" title="Scan a page">⊞</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SCREEN 2: CAPTURE ============ -->
+  <div class="screen-wrap">
+    <div class="screen-label">
+      <div class="step">2</div>
+      <div class="title">Capture: auto edge-detection</div>
+      <div class="sub">Doc-scanner finds page edges, corrects perspective. Glyph in corner identifies worksheet.</div>
+    </div>
+    <div class="phone">
+      <div class="status-bar" style="background:#0a0a0a; color: white;"><span>9:41</span><span>● ●●●</span></div>
+      <div class="capture-screen">
+        <div class="capture-header">
+          <div class="icon">✕</div>
+          <div style="font-size: 14px; font-weight: 600;">Scan a page</div>
+          <div class="icon">⚡</div>
+        </div>
+        <div class="capture-viewport">
+          <div class="paper-page">
+            <div class="pg-title">Post-Session Integration</div>
+            <div class="pg-field">
+              <div class="pg-label">DATE</div>
+              <div class="pg-handwriting">May 19, 2026</div>
+            </div>
+            <div class="pg-field">
+              <div class="pg-label">WHAT DID I NOTICE IN MY BODY?</div>
+              <div class="pg-handwriting">Warmth in chest, slow and pulsing. Shoulders dropped about halfway through.</div>
+            </div>
+            <div class="pg-field">
+              <div class="pg-label">PARTS THAT SHOWED UP</div>
+              <div class="pg-handwriting">The young one. Quieter manager.</div>
+            </div>
+            <div class="pg-field">
+              <div class="pg-label">ONE THING I'M TAKING WITH ME</div>
+              <div class="pg-handwriting">Slower mornings are allowed.</div>
+            </div>
+            <div class="glyph">M</div>
+          </div>
+          <div class="edge-frame">
+            <div class="c1"></div><div class="c2"></div>
+          </div>
+          <div class="detect-label">✓ Page detected</div>
+        </div>
+        <div class="capture-controls">
+          <div class="capture-side">
+            <div class="icon-box">⊡</div>
+            Library
+          </div>
+          <div class="capture-btn"></div>
+          <div class="capture-side">
+            <div class="icon-box">⟲</div>
+            Flash
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SCREEN 3: INTERPRETATION REVIEW ============ -->
+  <div class="screen-wrap">
+    <div class="screen-label">
+      <div class="step">3</div>
+      <div class="title">Review: side-by-side</div>
+      <div class="sub">Your page + what Claude read, field by field. Tap any field to correct.</div>
+    </div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span>● ●●●</span></div>
+      <div class="nav-bar">
+        <div class="nav-icon">‹</div>
+        <div class="nav-title">Review scan</div>
+        <div class="nav-icon">⋯</div>
+      </div>
+      <div class="scroll-area">
+        <div class="review-header">
+          <h2>Post-Session Integration</h2>
+          <div class="sub">Scanned just now</div>
+          <span class="glyph-pill">⊞ Recognized: MT-PSI-v1</span>
+        </div>
+
+        <div class="scan-thumb">
+          <div class="pg-title">Post-Session Integration</div>
+          <div class="pg-row">
+            <div class="lbl">DATE</div>
+            <div class="hw">May 19, 2026</div>
+          </div>
+          <div class="pg-row">
+            <div class="lbl">BODY</div>
+            <div class="hw">Warmth in chest, slow and pulsing. Shoulders dropped halfway.</div>
+          </div>
+          <div class="pg-row">
+            <div class="lbl">PARTS</div>
+            <div class="hw">The young one. Quieter manager.</div>
+          </div>
+          <div class="pg-row">
+            <div class="lbl">TAKING WITH ME</div>
+            <div class="hw">Slower mornings are allowed.</div>
+          </div>
+          <div class="glyph">M</div>
+        </div>
+
+        <div class="interp-section">
+          <div class="heading">What I read in your page</div>
+          <div class="interp-field">
+            <div class="field-label">Date</div>
+            <div class="field-text">May 19, 2026</div>
+          </div>
+          <div class="interp-field">
+            <div class="field-label">What did I notice in my body?</div>
+            <div class="field-text">Warmth in chest, slow and pulsing. Shoulders dropped about halfway through.</div>
+            <span class="edit-link">Edit transcription</span>
+          </div>
+          <div class="interp-field">
+            <div class="field-label">Parts that showed up</div>
+            <div class="field-text">The young one. Quieter manager.</div>
+          </div>
+          <div class="interp-field">
+            <div class="field-label">One thing I'm taking with me</div>
+            <div class="field-text">Slower mornings are allowed.</div>
+          </div>
+        </div>
+
+        <div class="save-bar">
+          <div class="secondary">Re-scan</div>
+          <div class="primary">Save to journal</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SCREEN 4: SAVED IN STREAM ============ -->
+  <div class="screen-wrap">
+    <div class="screen-label">
+      <div class="step">4</div>
+      <div class="title">Saved: in the stream</div>
+      <div class="sub">Scan now lives alongside text entries. Therapist-share on by default.</div>
+    </div>
+    <div class="phone">
+      <div class="status-bar"><span>9:42</span><span>● ●●●</span></div>
+      <div class="nav-bar">
+        <div class="nav-icon">‹</div>
+        <div class="nav-title">Today</div>
+        <div class="nav-icon">⋯</div>
+      </div>
+      <div class="scroll-area">
+        <div class="stream-header">
+          <h2>Reflections</h2>
+          <div class="date">Tue · May 20</div>
+        </div>
+
+        <div class="entry-card scan-entry">
+          <div class="entry-meta">
+            <span class="pill">Paper scan</span>
+            <span>Post-Session Integration · just now</span>
+          </div>
+          <div class="scan-preview">
+            <div class="corner-tag">⊞ MT-PSI</div>
+            <div class="pg-title-mini">Post-Session Integration</div>
+            <div class="pg-row">
+              <div class="lbl">BODY</div>
+              <div class="hw">Warmth in chest, slow and pulsing.</div>
+            </div>
+            <div class="pg-row">
+              <div class="lbl">PARTS</div>
+              <div class="hw">The young one. Quieter manager.</div>
+            </div>
+            <div class="pg-row">
+              <div class="lbl">TAKING WITH ME</div>
+              <div class="hw">Slower mornings are allowed.</div>
+            </div>
+          </div>
+          <div class="scan-snippet">"Slower mornings are allowed."</div>
+          <div class="scan-actions">
+            <div class="act">View full</div>
+            <div class="act">Reflect with Huxley</div>
+            <div class="act therapist">✓ Therapist share</div>
+          </div>
+        </div>
+
+        <div class="entry-card text-entry">
+          <div class="entry-meta">
+            <span class="pill">Journal</span>
+            <span>7:14 am</span>
+          </div>
+          <p>Woke up gentler than yesterday. Noticed the manager part trying to plan the whole day before my feet hit the floor — I thanked it and made coffee instead.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="design-notes">
+  <h2>Design notes</h2>
+
+  <h3>Free-form variant (not pictured)</h3>
+  <p>When the user scans a page with no glyph, the Review screen falls back to: (a) a worksheet picker at the top — "Which page is this?" with options + "Free-form page", and (b) if free-form, a single <code>Transcription</code> block instead of named fields, plus a <code>Thematic notes</code> block underneath with light observations about parts/body/themes. Honors the no-judgment-snapshot pattern.</p>
+
+  <h3>Glyph behavior</h3>
+  <ul>
+    <li>Small mark (~14–18px on the printed page), bottom-right corner.</li>
+    <li>Encodes <code>MT-{worksheet-id}-v{n}</code>. Versioned so changing a worksheet doesn't break older scans.</li>
+    <li>Same mark in the in-app PDF generator and on pages of the future purchased journal.</li>
+    <li>If Claude can't read the glyph (cut off, smudged, taken from old printout) → fall back to manual worksheet picker.</li>
+  </ul>
+
+  <h3>Edit-transcription affordance</h3>
+  <p>Tapping any field's "Edit transcription" link opens an inline editor with the raw Claude output. User can correct misreads before saving. Corrected values are what get persisted + sent to the therapist. The original image is always kept untouched alongside.</p>
+
+  <h3>Therapist-share toggle</h3>
+  <p>Default ON (sage chip with check). Tapping it once flips to "Private" — single-tap opt-out per scan. No dialog, no friction. Chip color shifts to muted gray when off.</p>
+
+  <h3>What's net-new in the codebase</h3>
+  <ul>
+    <li>New dependencies: <code>expo-camera</code>, <code>expo-image-manipulator</code>, a doc-scanner (e.g. <code>react-native-document-scanner-plugin</code>), <code>expo-print</code> for PDF generation. Requires a dev build — not Expo Go.</li>
+    <li>New Supabase Storage bucket: <code>paper-scans</code> with per-user RLS.</li>
+    <li>New entry type in journal/session schema (<code>type='paper_scan'</code> + image_storage_path + worksheet_id + transcription_json + thematic_notes).</li>
+    <li>New worksheet config directory: <code>content/worksheets/*.js</code>.</li>
+    <li>New mode in <code>lib/huxleyService.js</code>: <code>paper_scan_interpretation</code>.</li>
+    <li>Vision message support added to <code>lib/claudeProxyService.js</code> and its edge function.</li>
+  </ul>
+
+  <h3>Out of scope for v1</h3>
+  <ul>
+    <li>Multi-page scans (one image = one entry for now).</li>
+    <li>OCR-style searchable transcript across all scans (defer until library grows).</li>
+    <li>"Reflect with Huxley" deep-dive on a scan — surfaced as an action button but the actual conversational flow reuses existing Huxley modes; no new conversational work for v1.</li>
+  </ul>
+</div>
+
+</body>
+</html>

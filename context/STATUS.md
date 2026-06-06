@@ -30,6 +30,11 @@
 ### What's Blocked 🚫
 - None currently
 
+### Recently Resolved P0s 🚨 (2026-05-13)
+- **BUG-312** ✅ — Huxley silently returning mode fallback strings as if they were real AI responses on API errors. Fix: `huxleyService.chat()` now retries transient errors (3 attempts, exponential backoff) and **throws** on persistent failure; orphaned user-turn rolled back to prevent duplicates on retry; `_getFallback()` deleted. Callers' existing `try/catch + Alert` flow now actually fires. Verified BAD→STRONG on trauma_resurfacing and spiritual_bypasser.
+- **BUG-313** ✅ — IFS / regulating_resources mode framework overriding crisis protocol after user declined 988. Fix: session-scoped `crisisDetected` latch in `HuxleyService` triggered by `critical`-priority scenario detection; once set, the crisis protocol is always injected for the rest of the session along with an explicit override directive that suspends mode-specific phase advancement. Also added fabrication-prevention rule to `HUXLEY_IDENTITY`. Verified 6/6 BAD→STRONG on suicidal_crisis × {ifs, regulating_resources} × {1,2,3}.
+- **Persona matrix testing infrastructure now in place** — `__tests__/e2e/personaMatrix.test.js` drives 10 AI-personas × 6 modes × 3 runs = 180 conversations with auto-eval. Re-runnable as a regression suite for any conversation-related change.
+
 ### Recently Completed (Mar–Apr 2026) ✅
 - BUG-114, BUG-206, BUG-214 — Set Intention flow fixes
 - BUG-215 through BUG-219 — Experience Processing UX, Huxley avatar, intention conversation depth, follow-up typing

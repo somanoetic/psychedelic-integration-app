@@ -147,6 +147,11 @@ Key points about implementing this decision.
 - Decision: Position Huxley as a non-HIPAA consumer wellness/educational tool. User data is sensitive personal data, not PHI. Standard vendor tiers (Supabase, Anthropic, OpenAI, Sentry) — no BAAs required.
 - [View ADR →](2026-05-05-hipaa-posture.md)
 
+**ADR-010: Separate Web Admin Dashboard** (2026-06-02)
+- Status: Accepted
+- Decision: Build admin analytics (starting with cost-per-user) as a separate web app reading the same Supabase project, not as screens in the consumer RN app. Same web property later hosts web subscription checkout.
+- [View ADR →](2026-06-02-web-admin-dashboard.md)
+
 ---
 
 ## ADR Naming Convention

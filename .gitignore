@@ -70,3 +70,8 @@ supabase/.temp/
 test-api-keys.js
 
 .env.local
+
+# Large binary archives (extracted folders are committed; the zips are redundant)
+design/**/*.zip
+# Trademark-search spreadsheets (large, not needed in repo)
+marketing/*.xlsx

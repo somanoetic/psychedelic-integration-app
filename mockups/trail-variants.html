@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1400, initial-scale=1.0">
+<title>Multitudes — Trail Variants</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --primary: #5d86d6;
+    --primary-dark: #4a6fb8;
+    --primary-light: #7a9ee0;
+    --text: #3A3A3A;
+    --text-secondary: #6B7280;
+    --text-light: #9CA3AF;
+    --background: #F5F5F5;
+    --surface: #FFFFFF;
+    --gradient-start: #fbffdf;
+    --gradient-end: #7794b6;
+
+    --track-regulating: #5d86d6;   /* calm blue (brand primary) */
+    --track-parts:      #ec4899;   /* warm pink */
+    --track-belief:     #eab308;   /* lantern amber */
+    --track-somatic:    #f59e0b;   /* warm ochre */
+    --track-integration: #8b5cf6;  /* soft violet */
+
+    --stone-engaged: #8b7355;       /* polished wet-stone */
+    --stone-unvisited: #c9bfae;     /* matte dry-stone */
+    --lantern-lit: #f5c97a;
+    --lantern-glow: rgba(245, 201, 122, 0.4);
+    --lantern-dim: #8b8470;
+    --waymarker-wood: #8b6f47;
+    --waymarker-faded: #c2b39a;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #e8e4d8;
+    min-height: 100vh;
+    padding: 32px;
+    color: var(--text);
+  }
+
+  .page-header {
+    max-width: 1400px;
+    margin: 0 auto 24px;
+    text-align: center;
+  }
+  .page-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .page-header p {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  .lab-strip {
+    max-width: 1400px;
+    margin: 0 auto 24px;
+    background: #fff;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .lab-strip strong { color: var(--text); }
+
+  .variants {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .variant {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .variant-label {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+  }
+  .variant-label .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #fff;
+    margin-right: 6px;
+    color: var(--text);
+  }
+
+  .phone-frame {
+    width: 414px;
+    min-height: 896px;
+    background: linear-gradient(to bottom, var(--gradient-start) 0%, #e8dcc4 35%, #c9b896 65%, var(--gradient-end) 100%);
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+    position: relative;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 56px 20px 12px;
+  }
+  .header-back {
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    border: none; background: rgba(255,255,255,0.4);
+    border-radius: 10px; color: var(--text);
+    font-size: 18px; cursor: pointer;
+  }
+  .header-title {
+    font-size: 16px; font-weight: 600;
+  }
+  .header-spacer { width: 36px; }
+
+  .intro {
+    padding: 4px 28px 16px;
+    text-align: center;
+  }
+  .intro h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .intro p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* ───────── Track picker (shared across variants) ───────── */
+  .track-strip {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 8px 20px 16px;
+  }
+  .track-chip {
+    flex-shrink: 0;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.55);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    white-space: nowrap;
+  }
+  .track-chip.active {
+    background: #fff;
+    border-color: var(--track-regulating);
+    color: var(--track-regulating);
+  }
+  .track-chip .dot {
+    display: inline-block;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  /* ───────── Trail canvas (shared) ───────── */
+  .trail-canvas {
+    position: relative;
+    height: 560px;
+    margin: 0 16px;
+    padding: 12px 0;
+  }
+
+  .trail-path {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+  }
+
+  .marker {
+    position: absolute;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .marker:hover { transform: scale(1.06); }
+  .marker-label {
+    position: absolute;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    background: rgba(255,255,255,0.85);
+    padding: 3px 8px;
+    border-radius: 8px;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .marker-subtitle {
+    position: absolute;
+    font-size: 10px;
+    color: var(--text-secondary);
+    background: rgba(255,255,255,0.7);
+    padding: 1px 6px;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  /* ───────── Variant A — STONES ───────── */
+  .stone {
+    width: 56px; height: 44px;
+    border-radius: 50%;
+  }
+  .stone.engaged {
+    background: radial-gradient(ellipse at 30% 25%, #b09578 0%, var(--stone-engaged) 55%, #5a4733 100%);
+    box-shadow:
+      inset 0 -3px 6px rgba(0,0,0,0.3),
+      inset 0 2px 4px rgba(255,255,255,0.4),
+      0 4px 8px rgba(0,0,0,0.2);
+  }
+  .stone.unvisited {
+    background: radial-gradient(ellipse at 30% 25%, #e0d7c5 0%, var(--stone-unvisited) 60%, #9a8d76 100%);
+    box-shadow:
+      inset 0 -2px 4px rgba(0,0,0,0.15),
+      0 2px 4px rgba(0,0,0,0.1);
+    opacity: 0.85;
+  }
+
+  /* ───────── Variant B — LANTERNS ───────── */
+  .lantern {
+    width: 28px; height: 38px;
+    position: relative;
+  }
+  .lantern .hook {
+    position: absolute;
+    top: -8px; left: 50%;
+    transform: translateX(-50%);
+    width: 2px; height: 10px;
+    background: #6b5b3c;
+  }
+  .lantern .body {
+    position: absolute;
+    top: 4px; left: 0;
+    width: 28px; height: 30px;
+    border-radius: 4px 4px 6px 6px;
+    border: 1.5px solid #6b5b3c;
+  }
+  .lantern.lit::before {
+    content: '';
+    position: absolute;
+    top: -8px; left: -16px;
+    width: 60px; height: 60px;
+    background: radial-gradient(circle, var(--lantern-glow) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .lantern.lit .body {
+    background: linear-gradient(to bottom, #ffe19c, var(--lantern-lit) 80%);
+    box-shadow: 0 0 12px var(--lantern-lit);
+  }
+  .lantern.dim .body {
+    background: rgba(139, 132, 112, 0.4);
+  }
+
+  /* ───────── Variant C — WAY-MARKERS (cairns) ───────── */
+  .cairn {
+    width: 30px; height: 42px;
+    position: relative;
+  }
+  .cairn .rock {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 40% 40% 30% 30%;
+  }
+  .cairn .rock-1 { bottom: 0; width: 30px; height: 14px; }
+  .cairn .rock-2 { bottom: 12px; width: 24px; height: 13px; }
+  .cairn .rock-3 { bottom: 23px; width: 18px; height: 12px; }
+  .cairn.engaged .rock {
+    background: linear-gradient(to bottom, #a8896a, var(--waymarker-wood));
+    box-shadow: 0 2px 3px rgba(0,0,0,0.25), inset 0 1px 1px rgba(255,255,255,0.3);
+  }
+  .cairn.unvisited .rock {
+    background: linear-gradient(to bottom, #d4c4a8, var(--waymarker-faded));
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    opacity: 0.85;
+  }
+
+  /* ───────── Bottom legend (per variant) ───────── */
+  .legend {
+    margin: 0 20px 16px;
+    background: rgba(255,255,255,0.55);
+    border-radius: 14px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+  .legend .row { display: flex; align-items: center; gap: 10px; margin: 4px 0; }
+  .legend .swatch { flex-shrink: 0; }
+
+  /* ───────── Footer hint ───────── */
+  .footer-hint {
+    padding: 0 24px 32px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+
+  /* ───────── Skip-ahead nudge modal (shown in variant 1 only as illustration) ───────── */
+  .nudge {
+    position: absolute;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 340px;
+    background: #fff;
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+    text-align: center;
+  }
+  .nudge h3 { font-size: 15px; margin-bottom: 6px; }
+  .nudge p { font-size: 13px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 14px; }
+  .nudge .actions { display: flex; gap: 8px; }
+  .nudge button {
+    flex: 1; padding: 10px; border-radius: 10px;
+    border: none; font-family: inherit; font-size: 13px; font-weight: 600;
+    cursor: pointer;
+  }
+  .nudge .secondary {
+    background: #f0eee9; color: var(--text);
+  }
+  .nudge .primary {
+    background: var(--primary); color: #fff;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Multitudes — Trail (3 metaphor variants)</h1>
+  <p>Regulating track shown in all three. Lit/engaged markers = the user has been there. Same data, three visual languages.</p>
+</div>
+
+<div class="lab-strip">
+  <strong>Layout key.</strong> Each phone shows the Regulating track. The trail curves down the screen with 6 markers (3 engaged, 3 unvisited). Track-strip at top lets the user switch to Parts / Belief / Somatic / Integration. Tapping a later marker triggers the soft-nudge modal (illustrated in variant A). No streaks, no day-counts, no "you haven't visited in X" — the trail is just there.
+</div>
+
+<div class="variants">
+
+  <!-- ════════════ VARIANT A — STONES ════════════ -->
+  <div class="variant">
+    <div class="variant-label"><span class="tag">A</span>Stones along a path</div>
+    <div class="phone-frame">
+
+      <div class="header">
+        <button class="header-back">‹</button>
+        <div class="header-title">Your trails</div>
+        <div class="header-spacer"></div>
+      </div>
+
+      <div class="intro">
+        <h2>What's alive right now?</h2>
+        <p>Pick a path. Nothing here is required —<br>the trail is always here when you return.</p>
+      </div>
+
+      <div class="track-strip">
+        <div class="track-chip active"><span class="dot" style="background: var(--track-regulating)"></span>Regulating</div>
+        <div class="track-chip"><span class="dot" style="background: var(--track-parts)"></span>Parts</div>
+        <div class="track-chip"><span class="dot" style="background: var(--track-belief)"></span>Belief</div>
+        <div class="track-chip"><span class="dot" style="background: var(--track-somatic)"></span>Somatic</div>
+        <div class="track-chip"><span class="dot" style="background: var(--track-integration)"></span>Integration</div>
+      </div>
+
+      <div class="trail-canvas">
+        <svg class="trail-path" viewBox="0 0 380 540" preserveAspectRatio="none">
+          <path d="M 80 30 Q 220 70 180 140 Q 130 220 250 270 Q 340 320 220 380 Q 100 430 200 510"
+                stroke="#8b7355" stroke-width="3" stroke-dasharray="2 6" fill="none" opacity="0.45"/>
+        </svg>
+
+        <!-- Marker 1: engaged -->
+        <div class="marker" style="top: 10px; left: 50px;">
+          <div class="stone engaged"></div>
+        </div>
+        <div class="marker-label" style="top: 20px; left: 120px;">Notice your state</div>
+        <div class="marker-subtitle" style="top: 38px; left: 120px;">Nervous System Check-in</div>
+
+        <!-- Marker 2: engaged -->
+        <div class="marker" style="top: 110px; left: 200px;">
+          <div class="stone engaged"></div>
+        </div>
+        <div class="marker-label" style="top: 90px; left: 70px;">Extended exhale</div>
+        <div class="marker-subtitle" style="top: 108px; left: 70px;">Breath · 3 min</div>
+
+        <!-- Marker 3: engaged -->
+        <div class="marker" style="top: 215px; left: 100px;">
+          <div class="stone engaged"></div>
+        </div>
+        <div class="marker-label" style="top: 225px; left: 170px;">The three states</div>
+        <div class="marker-subtitle" style="top: 243px; left: 170px;">Learn · 5 min</div>
+
+        <!-- Marker 4: unvisited (the next stone) -->
+        <div class="marker" style="top: 295px; left: 240px;">
+          <div class="stone unvisited"></div>
+        </div>
+        <div class="marker-label" style="top: 310px; left: 130px;">Map your states</div>
+        <div class="marker-subtitle" style="top: 328px; left: 130px;">Conversational · 10 min</div>
+
+        <!-- Marker 5: unvisited -->
+        <div class="marker" style="top: 395px; left: 120px;">
+          <div class="stone unvisited"></div>
+        </div>
+        <div class="marker-label" style="top: 408px; left: 190px;">Glimmers</div>
+        <div class="marker-subtitle" style="top: 426px; left: 190px;">Practice · 5 min</div>
+
+        <!-- Marker 6: unvisited -->
+        <div class="marker" style="top: 495px; left: 200px;">
+          <div class="stone unvisited"></div>
+        </div>
+        <div class="marker-label" style="top: 508px; left: 80px;">Your toolkit</div>
+        <div class="marker-subtitle" style="top: 526px; left: 80px;">Reflect · open-ended</div>
+      </div>
+
+      <div class="legend">
+        <div class="row">
+          <div class="swatch stone engaged" style="width: 24px; height: 18px;"></div>
+          <span><strong>Engaged.</strong> You've been here.</span>
+        </div>
+        <div class="row">
+          <div class="swatch stone unvisited" style="width: 24px; height: 18px;"></div>
+          <span><strong>Unvisited.</strong> Waiting whenever you want.</span>
+        </div>
+      </div>
+
+      <!-- soft-nudge illustration -->
+      <div class="nudge" style="display: none;">
+        <h3>You're skipping ahead.</h3>
+        <p>You might want to start with <strong>Notice your state</strong> first — but you're free to go wherever you need.</p>
+        <div class="actions">
+          <button class="secondary">Go back</button>
+          <button class="primary">Go anyway</button>
+        </div>
+      </div>
+
+      <div class="footer-hint">river-stones · weathered + polished where you've sat</div>
+    </div>
+  </div>
+
+  <!-- ════════════ VARIANT B — LANTERNS ════════════ -->
+  <div class="variant">
+    <div class="variant-label"><span class="tag">B</span>Lanterns on a path</div>
+    <div class="phone-frame" style="background: linear-gradient(to bottom, #2a3548 0%, #3a4a68 30%, #5a6b85 70%, #8a9bb5 100%);">
+
+      <div class="header">
+        <button class="header-back" style="background: rgba(255,255,255,0.15); color: #fff;">‹</button>
+        <div class="header-title" style="color: #fff;">Your trails</div>
+        <div class="header-spacer"></div>
+      </div>
+
+      <div class="intro">
+        <h2 style="color: #fff;">What's alive right now?</h2>
+        <p style="color: rgba(255,255,255,0.75);">Pick a path. Nothing here is required —<br>the trail is always here when you return.</p>
+      </div>
+
+      <div class="track-strip">
+        <div class="track-chip active" style="background: #fff;"><span class="dot" style="background: var(--track-regulating)"></span>Regulating</div>
+        <div class="track-chip" style="background: rgba(255,255,255,0.2); color: #fff;"><span class="dot" style="background: var(--track-parts)"></span>Parts</div>
+        <div class="track-chip" style="background: rgba(255,255,255,0.2); color: #fff;"><span class="dot" style="background: var(--track-belief)"></span>Belief</div>
+        <div class="track-chip" style="background: rgba(255,255,255,0.2); color: #fff;"><span class="dot" style="background: var(--track-somatic)"></span>Somatic</div>
+        <div class="track-chip" style="background: rgba(255,255,255,0.2); color: #fff;"><span class="dot" style="background: var(--track-integration)"></span>Integration</div>
+      </div>
+
+      <div class="trail-canvas">
+        <svg class="trail-path" viewBox="0 0 380 540" preserveAspectRatio="none">
+          <path d="M 80 30 Q 220 70 180 140 Q 130 220 250 270 Q 340 320 220 380 Q 100 430 200 510"
+                stroke="rgba(255,255,255,0.3)" stroke-width="2" stroke-dasharray="3 6" fill="none"/>
+        </svg>
+
+        <div class="marker" style="top: 10px; left: 64px;">
+          <div class="lantern lit"><div class="hook"></div><div class="body"></div></div>
+        </div>
+        <div class="marker-label" style="top: 20px; left: 120px; background: rgba(255,255,255,0.92);">Notice your state</div>
+        <div class="marker-subtitle" style="top: 38px; left: 120px;">Nervous System Check-in</div>
+
+        <div class="marker" style="top: 110px; left: 214px;">
+          <div class="lantern lit"><div class="hook"></div><div class="body"></div></div>
+        </div>
+        <div class="marker-label" style="top: 90px; left: 84px; background: rgba(255,255,255,0.92);">Extended exhale</div>
+        <div class="marker-subtitle" style="top: 108px; left: 84px;">Breath · 3 min</div>
+
+        <div class="marker" style="top: 215px; left: 114px;">
+          <div class="lantern lit"><div class="hook"></div><div class="body"></div></div>
+        </div>
+        <div class="marker-label" style="top: 225px; left: 170px; background: rgba(255,255,255,0.92);">The three states</div>
+        <div class="marker-subtitle" style="top: 243px; left: 170px;">Learn · 5 min</div>
+
+        <div class="marker" style="top: 295px; left: 254px;">
+          <div class="lantern dim"><div class="hook"></div><div class="body"></div></div>
+        </div>
+        <div class="marker-label" style="top: 310px; left: 130px; background: rgba(255,255,255,0.92);">Map your states</div>
+        <div class="marker-subtitle" style="top: 328px; left: 130px;">Conversational · 10 min</div>
+
+        <div class="marker" style="top: 395px; left: 134px;">
+          <div class="lantern dim"><div class="hook"></div><div class="body"></div></div>
+        </div>
+        <div class="marker-label" style="top: 408px; left: 190px; background: rgba(255,255,255,0.92);">Glimmers</div>
+        <div class="marker-subtitle" style="top: 426px; left: 190px;">Practice · 5 min</div>
+
+        <div class="marker" style="top: 495px; left: 214px;">
+          <div class="lantern dim"><div class="hook"></div><div class="body"></div></div>
+        </div>
+        <div class="marker-label" style="top: 508px; left: 80px; background: rgba(255,255,255,0.92);">Your toolkit</div>
+        <div class="marker-subtitle" style="top: 526px; left: 80px;">Reflect · open-ended</div>
+      </div>
+
+      <div class="legend" style="background: rgba(255,255,255,0.15); color: #fff;">
+        <div class="row">
+          <div style="width: 18px; height: 22px; position: relative;">
+            <div class="lantern lit" style="transform: scale(0.6); transform-origin: top left;"><div class="hook"></div><div class="body"></div></div>
+          </div>
+          <span><strong>Lit.</strong> You've been here.</span>
+        </div>
+        <div class="row">
+          <div style="width: 18px; height: 22px; position: relative;">
+            <div class="lantern dim" style="transform: scale(0.6); transform-origin: top left;"><div class="hook"></div><div class="body"></div></div>
+          </div>
+          <span><strong>Dim.</strong> Waiting whenever you want.</span>
+        </div>
+      </div>
+
+      <div class="footer-hint" style="color: rgba(255,255,255,0.55);">nighttime path · lanterns light where you've walked</div>
+    </div>
+  </div>
+
+  <!-- ════════════ VARIANT C — WAY-MARKERS / CAIRNS ════════════ -->
+  <div class="variant">
+    <div class="variant-label"><span class="tag">C</span>Way-markers (cairns)</div>
+    <div class="phone-frame">
+
+      <div class="header">
+        <button class="header-back">‹</button>
+        <div class="header-title">Your trails</div>
+        <div class="header-spacer"></div>
+      </div>
+
+      <div class="intro">
+        <h2>What's alive right now?</h2>
+        <p>Pick a path. Nothing here is required —<br>the trail is always here when you return.</p>
+      </div>
+
+      <div class="track-strip">
+        <div class="track-chip active"><span class="dot" style="background: var(--track-regulating)"></span>Regulating</div>
+        <div class="track-chip"><span class="dot" style="background: var(--track-parts)"></span>Parts</div>
+        <div class="track-chip"><span class="dot" style="background: var(--track-belief)"></span>Belief</div>
+        <div class="track-chip"><span class="dot" style="background: var(--track-somatic)"></span>Somatic</div>
+        <div class="track-chip"><span class="dot" style="background: var(--track-integration)"></span>Integration</div>
+      </div>
+
+      <div class="trail-canvas">
+        <svg class="trail-path" viewBox="0 0 380 540" preserveAspectRatio="none">
+          <path d="M 80 30 Q 220 70 180 140 Q 130 220 250 270 Q 340 320 220 380 Q 100 430 200 510"
+                stroke="#8b6f47" stroke-width="3" stroke-dasharray="1 5" fill="none" opacity="0.5"/>
+        </svg>
+
+        <div class="marker" style="top: 6px; left: 62px;">
+          <div class="cairn engaged">
+            <div class="rock rock-1"></div>
+            <div class="rock rock-2"></div>
+            <div class="rock rock-3"></div>
+          </div>
+        </div>
+        <div class="marker-label" style="top: 20px; left: 120px;">Notice your state</div>
+        <div class="marker-subtitle" style="top: 38px; left: 120px;">Nervous System Check-in</div>
+
+        <div class="marker" style="top: 102px; left: 212px;">
+          <div class="cairn engaged">
+            <div class="rock rock-1"></div>
+            <div class="rock rock-2"></div>
+            <div class="rock rock-3"></div>
+          </div>
+        </div>
+        <div class="marker-label" style="top: 90px; left: 84px;">Extended exhale</div>
+        <div class="marker-subtitle" style="top: 108px; left: 84px;">Breath · 3 min</div>
+
+        <div class="marker" style="top: 209px; left: 112px;">
+          <div class="cairn engaged">
+            <div class="rock rock-1"></div>
+            <div class="rock rock-2"></div>
+            <div class="rock rock-3"></div>
+          </div>
+        </div>
+        <div class="marker-label" style="top: 225px; left: 170px;">The three states</div>
+        <div class="marker-subtitle" style="top: 243px; left: 170px;">Learn · 5 min</div>
+
+        <div class="marker" style="top: 287px; left: 252px;">
+          <div class="cairn unvisited">
+            <div class="rock rock-1"></div>
+            <div class="rock rock-2"></div>
+            <div class="rock rock-3"></div>
+          </div>
+        </div>
+        <div class="marker-label" style="top: 310px; left: 130px;">Map your states</div>
+        <div class="marker-subtitle" style="top: 328px; left: 130px;">Conversational · 10 min</div>
+
+        <div class="marker" style="top: 387px; left: 132px;">
+          <div class="cairn unvisited">
+            <div class="rock rock-1"></div>
+            <div class="rock rock-2"></div>
+            <div class="rock rock-3"></div>
+          </div>
+        </div>
+        <div class="marker-label" style="top: 408px; left: 190px;">Glimmers</div>
+        <div class="marker-subtitle" style="top: 426px; left: 190px;">Practice · 5 min</div>
+
+        <div class="marker" style="top: 487px; left: 212px;">
+          <div class="cairn unvisited">
+            <div class="rock rock-1"></div>
+            <div class="rock rock-2"></div>
+            <div class="rock rock-3"></div>
+          </div>
+        </div>
+        <div class="marker-label" style="top: 508px; left: 80px;">Your toolkit</div>
+        <div class="marker-subtitle" style="top: 526px; left: 80px;">Reflect · open-ended</div>
+      </div>
+
+      <div class="legend">
+        <div class="row">
+          <div style="width: 22px; height: 28px; position: relative;">
+            <div class="cairn engaged" style="transform: scale(0.65); transform-origin: top left;">
+              <div class="rock rock-1"></div><div class="rock rock-2"></div><div class="rock rock-3"></div>
+            </div>
+          </div>
+          <span><strong>Cairn standing.</strong> You've been here.</span>
+        </div>
+        <div class="row">
+          <div style="width: 22px; height: 28px; position: relative;">
+            <div class="cairn unvisited" style="transform: scale(0.65); transform-origin: top left;">
+              <div class="rock rock-1"></div><div class="rock rock-2"></div><div class="rock rock-3"></div>
+            </div>
+          </div>
+          <span><strong>Cairn waiting.</strong> Whenever you want.</span>
+        </div>
+      </div>
+
+      <div class="footer-hint">hiker's trail · cairns mark where you've walked</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Toggle the soft-nudge modal in variant A so you can see it
+  // (uncomment the next line to preview the nudge)
+  // document.querySelector('.nudge').style.display = 'block';
+</script>
+
+</body>
+</html>

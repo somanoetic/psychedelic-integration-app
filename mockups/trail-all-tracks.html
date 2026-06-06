@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=2200, initial-scale=1.0">
+<title>Multitudes — All 5 Trails</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --text: #3A3A3A;
+    --text-secondary: #6B7280;
+    --ink: #5b4a3a;
+    --ink-soft: #8a7560;
+    --cream-top: #faf3e3;
+    --cream-mid: #f0e6d0;
+    --cream-warm: #e6d4b0;
+
+    --track-regulating:  #5d86d6;
+    --track-parts:       #c97394;
+    --track-belief:      #d9a14a;
+    --track-somatic:     #c98a5b;
+    --track-integration: #8b80b8;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #ebe4d3;
+    min-height: 100vh;
+    padding: 32px 20px;
+    color: var(--text);
+  }
+
+  .page-header {
+    max-width: 2160px; margin: 0 auto 16px;
+    text-align: center;
+  }
+  .page-header h1 { font-size: 26px; font-weight: 700; margin-bottom: 4px; }
+  .page-header p  { font-size: 13px; color: var(--text-secondary); }
+
+  .lab-strip {
+    max-width: 2160px; margin: 0 auto 24px;
+    background: #fff;
+    padding: 14px 20px;
+    border-radius: 10px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .lab-strip strong { color: var(--text); }
+  .lab-strip code { background: #f0eee9; padding: 1px 5px; border-radius: 3px; font-size: 11px; }
+
+  .trails-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 18px;
+    max-width: 2160px;
+    margin: 0 auto;
+  }
+
+  .trail-card {
+    display: flex; flex-direction: column;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 18%, var(--cream-top) 0%, var(--cream-mid) 55%, var(--cream-warm) 100%);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    position: relative;
+    min-height: 1100px;
+  }
+
+  .trail-card::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.36, 0 0 0 0 0.29, 0 0 0 0 0.23, 0 0 0 0.05 0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+    opacity: 0.35;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+
+  .track-head {
+    padding: 22px 20px 8px;
+    position: relative; z-index: 2;
+    border-bottom: 1px dashed rgba(91, 74, 58, 0.2);
+  }
+  .track-head .name {
+    font-family: 'Caveat', cursive;
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1;
+  }
+  .track-head .dot {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  .track-head .desc {
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+  .track-head .intro {
+    font-family: 'Caveat', cursive;
+    font-size: 17px;
+    color: var(--ink);
+    margin-top: 10px;
+    font-style: italic;
+    line-height: 1.2;
+  }
+  .track-head .count {
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .trail-canvas {
+    position: relative;
+    flex: 1;
+    margin: 0 8px;
+    padding: 16px 0 20px;
+    z-index: 2;
+  }
+
+  .trail-path {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .marker {
+    position: absolute;
+    z-index: 3;
+    width: 56px; height: 56px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .marker img { width: 56px; height: 56px; object-fit: contain; }
+
+  .marker-label {
+    position: absolute;
+    font-size: 11px; font-weight: 600;
+    color: var(--ink);
+    background: rgba(255,251,240,0.9);
+    padding: 2px 7px; border-radius: 7px;
+    white-space: nowrap; pointer-events: none;
+    z-index: 4;
+    box-shadow: 0 1px 2px rgba(91, 74, 58, 0.08);
+  }
+  .marker-subtitle {
+    position: absolute;
+    font-size: 9.5px; color: var(--ink-soft);
+    background: rgba(255,251,240,0.7);
+    padding: 1px 6px; border-radius: 5px;
+    white-space: nowrap; pointer-events: none;
+    z-index: 4;
+  }
+
+  /* type badges (small letter on the right of subtitle) */
+  .marker-type {
+    display: inline-block;
+    margin-left: 4px;
+    padding: 0 4px;
+    border-radius: 3px;
+    font-size: 8.5px;
+    font-weight: 700;
+    color: #fff;
+    vertical-align: middle;
+  }
+  .t-exercise      { background: #8b9a6f; }
+  .t-education     { background: #6f8aa3; }
+  .t-conversational{ background: #b07d8f; }
+  .t-tool          { background: #a37d52; }
+
+  .legend-strip {
+    max-width: 2160px;
+    margin: 24px auto 0;
+    background: #fff;
+    padding: 12px 18px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 22px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    flex-wrap: wrap;
+  }
+  .legend-strip .item { display: flex; align-items: center; gap: 6px; }
+  .legend-strip .swatch { width: 14px; height: 14px; border-radius: 3px; }
+  .legend-strip img.icon-swatch { width: 26px; height: 26px; object-fit: contain; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Multitudes — All 5 Trails (v1 curation preview)</h1>
+  <p>Static preview of <code>content/tracks.js</code>. Showing all 5 themed tracks side-by-side with their markers.</p>
+</div>
+
+<div class="lab-strip">
+  <strong>What you're looking at.</strong> All 5 v1 tracks rendered as cairn trails. All markers shown as <code>rubble.png</code> (not started) since this is a fresh preview — in the real app, engaged markers become <code>balance.png</code>. Type badge on each subtitle: <span class="marker-type t-exercise">EX</span> exercise, <span class="marker-type t-education">ED</span> education, <span class="marker-type t-conversational">CO</span> conversational flow, <span class="marker-type t-tool">TL</span> built-in tool. Trail order matches the markers array in <code>tracks.js</code>.
+</div>
+
+<div class="trails-row">
+
+  <!-- ═══════════ REGULATING ═══════════ -->
+  <div class="trail-card">
+    <div class="track-head">
+      <div class="name"><span class="dot" style="background: var(--track-regulating)"></span>Regulating</div>
+      <div class="desc">Building the floor — noticing your state, breath, and the felt sense of safety.</div>
+      <div class="intro">"Before integration, regulation."</div>
+      <div class="count">8 markers</div>
+    </div>
+    <div class="trail-canvas">
+      <svg class="trail-path" viewBox="0 0 280 850" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="pw1" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#d4b88a" stop-opacity="0.4"/>
+            <stop offset="100%" stop-color="#b8966a" stop-opacity="0.28"/>
+          </linearGradient>
+        </defs>
+        <path d="M 60 30 Q 180 70 130 140 Q 80 220 200 280 Q 260 340 140 410 Q 60 480 180 540 Q 240 600 110 680 Q 60 740 180 820"
+              stroke="url(#pw1)" stroke-width="28" stroke-linecap="round" fill="none"/>
+        <path d="M 60 30 Q 180 70 130 140 Q 80 220 200 280 Q 260 340 140 410 Q 60 480 180 540 Q 240 600 110 680 Q 60 740 180 820"
+              stroke="#5b4a3a" stroke-width="1.5" stroke-dasharray="2 5" fill="none" opacity="0.5"/>
+      </svg>
+
+      <div class="marker" style="top: 0px; left: 32px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 12px; left: 92px;">Notice your state</div>
+      <div class="marker-subtitle" style="top: 28px; left: 92px;">2 min<span class="marker-type t-tool">TL</span></div>
+
+      <div class="marker" style="top: 88px; left: 130px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 78px; left: 12px;">The three states</div>
+      <div class="marker-subtitle" style="top: 94px; left: 12px;">5 min<span class="marker-type t-education">ED</span></div>
+
+      <div class="marker" style="top: 172px; left: 48px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 184px; left: 108px;">Extended exhale</div>
+      <div class="marker-subtitle" style="top: 200px; left: 108px;">3 min<span class="marker-type t-exercise">EX</span></div>
+
+      <div class="marker" style="top: 258px; left: 180px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 272px; left: 60px;">Notice and name</div>
+      <div class="marker-subtitle" style="top: 288px; left: 60px;">3 min<span class="marker-type t-exercise">EX</span></div>
+
+      <div class="marker" style="top: 364px; left: 116px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 378px; left: 12px;">Map your states</div>
+      <div class="marker-subtitle" style="top: 394px; left: 12px;">10 min<span class="marker-type t-conversational">CO</span></div>
+
+      <div class="marker" style="top: 456px; left: 60px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 472px; left: 120px;">Ventral anchors</div>
+      <div class="marker-subtitle" style="top: 488px; left: 120px;">5 min<span class="marker-type t-exercise">EX</span></div>
+
+      <div class="marker" style="top: 596px; left: 160px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 612px; left: 40px;">Glimmers</div>
+      <div class="marker-subtitle" style="top: 628px; left: 40px;">4 min<span class="marker-type t-education">ED</span></div>
+
+      <div class="marker" style="top: 768px; left: 132px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 782px; left: 12px;">Your toolkit</div>
+      <div class="marker-subtitle" style="top: 798px; left: 12px;">open<span class="marker-type t-tool">TL</span></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ PARTS ═══════════ -->
+  <div class="trail-card">
+    <div class="track-head">
+      <div class="name"><span class="dot" style="background: var(--track-parts)"></span>Parts</div>
+      <div class="desc">Meeting the inner system — managers, firefighters, exiles, and the Self.</div>
+      <div class="intro">"Many of you. All with reasons."</div>
+      <div class="count">8 markers</div>
+    </div>
+    <div class="trail-canvas">
+      <svg class="trail-path" viewBox="0 0 280 850" preserveAspectRatio="none">
+        <path d="M 60 30 Q 180 70 130 140 Q 80 220 200 280 Q 260 340 140 410 Q 60 480 180 540 Q 240 600 110 680 Q 60 740 180 820"
+              stroke="url(#pw1)" stroke-width="28" stroke-linecap="round" fill="none"/>
+        <path d="M 60 30 Q 180 70 130 140 Q 80 220 200 280 Q 260 340 140 410 Q 60 480 180 540 Q 240 600 110 680 Q 60 740 180 820"
+              stroke="#5b4a3a" stroke-width="1.5" stroke-dasharray="2 5" fill="none" opacity="0.5"/>
+      </svg>
+
+      <div class="marker" style="top: 0px; left: 32px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 12px; left: 92px;">What is IFS?</div>
+      <div class="marker-subtitle" style="top: 28px; left: 92px;">8 min<span class="marker-type t-education">ED</span></div>
+
+      <div class="marker" style="top: 88px; left: 130px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 78px; left: 12px;">Parts check-in</div>
+      <div class="marker-subtitle" style="top: 94px; left: 12px;">5 min<span class="marker-type t-exercise">EX</span></div>
+
+      <div class="marker" style="top: 172px; left: 48px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 184px; left: 108px;">Parts inventory</div>
+      <div class="marker-subtitle" style="top: 200px; left: 108px;">15 min<span class="marker-type t-tool">TL</span></div>
+
+      <div class="marker" style="top: 258px; left: 180px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 272px; left: 76px;">The Six F's</div>
+      <div class="marker-subtitle" style="top: 288px; left: 76px;">15 min<span class="marker-type t-exercise">EX</span></div>
+
+      <div class="marker" style="top: 364px; left: 116px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 378px; left: 12px;">Guided session</div>
+      <div class="marker-subtitle" style="top: 394px; left: 12px;">15–20 min<span class="marker-type t-education">ED</span></div>
+
+      <div class="marker" style="top: 456px; left: 60px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 472px; left: 120px;">Protector thanks</div>
+      <div class="marker-subtitle" style="top: 488px; left: 120px;">8 min<span class="marker-type t-exercise">EX</span></div>
+
+      <div class="marker" style="top: 596px; left: 160px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 612px; left: 40px;">Unblending</div>
+      <div class="marker-subtitle" style="top: 628px; left: 40px;">7 min<span class="marker-type t-exercise">EX</span></div>
+
+      <div class="marker" style="top: 768px; left: 132px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 782px; left: 12px;">Daily meditation</div>
+      <div class="marker-subtitle" style="top: 798px; left: 12px;">10 min<span class="marker-type t-exercise">EX</span></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ BELIEF ═══════════ -->
+  <div class="trail-card">
+    <div class="track-head">
+      <div class="name"><span class="dot" style="background: var(--track-belief)"></span>Belief</div>
+      <div class="desc">Looking at the rules you've been living by — and which ones still serve.</div>
+      <div class="intro">"Some of what feels like truth is an old prediction."</div>
+      <div class="count">7 markers</div>
+    </div>
+    <div class="trail-canvas">
+      <svg class="trail-path" viewBox="0 0 280 850" preserveAspectRatio="none">
+        <path d="M 60 30 Q 180 70 130 140 Q 80 220 200 280 Q 260 340 140 410 Q 60 480 180 540 Q 240 600 110 680 Q 60 740 180 820"
+              stroke="url(#pw1)" stroke-width="28" stroke-linecap="round" fill="none"/>
+        <path d="M 60 30 Q 180 70 130 140 Q 80 220 200 280 Q 260 340 140 410 Q 60 480 180 540 Q 240 600 110 680 Q 60 740 180 820"
+              stroke="#5b4a3a" stroke-width="1.5" stroke-dasharray="2 5" fill="none" opacity="0.5"/>
+      </svg>
+
+      <div class="marker" style="top: 0px; left: 32px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 12px; left: 92px;">Core beliefs</div>
+      <div class="marker-subtitle" style="top: 28px; left: 92px;">9 min<span class="marker-type t-education">ED</span></div>
+
+      <div class="marker" style="top: 100px; left: 130px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 88px; left: 12px;">Beliefs inventory</div>
+      <div class="marker-subtitle" style="top: 104px; left: 12px;">20 min<span class="marker-type t-tool">TL</span></div>
+
+      <div class="marker" style="top: 220px; left: 48px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 234px; left: 108px;">Distortions</div>
+      <div class="marker-subtitle" style="top: 250px; left: 108px;">8 min<span class="marker-type t-education">ED</span></div>
+
+      <div class="marker" style="top: 340px; left: 180px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 354px; left: 60px;">Spot distortions</div>
+      <div class="marker-subtitle" style="top: 370px; left: 60px;">7 min<span class="marker-type t-exercise">EX</span></div>
+
+      <div class="marker" style="top: 470px; left: 116px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 484px; left: 12px;">Downward arrow</div>
+      <div class="marker-subtitle" style="top: 500px; left: 12px;">12 min<span class="marker-type t-exercise">EX</span></div>
+
+      <div class="marker" style="top: 596px; left: 160px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 612px; left: 40px;">Defusion</div>
+      <div class="marker-subtitle" style="top: 628px; left: 40px;">8 min<span class="marker-type t-exercise">EX</span></div>
+
+      <div class="marker" style="top: 768px; left: 132px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 782px; left: 12px;">Belief experiment</div>
+      <div class="marker-subtitle" style="top: 798px; left: 12px;">open<span class="marker-type t-exercise">EX</span></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ SOMATIC ═══════════ -->
+  <div class="trail-card">
+    <div class="track-head">
+      <div class="name"><span class="dot" style="background: var(--track-somatic)"></span>Somatic</div>
+      <div class="desc">The body as the first place anything is known.</div>
+      <div class="intro">"Before the words, the sensation."</div>
+      <div class="count">8 markers</div>
+    </div>
+    <div class="trail-canvas">
+      <svg class="trail-path" viewBox="0 0 280 850" preserveAspectRatio="none">
+        <path d="M 60 30 Q 180 70 130 140 Q 80 220 200 280 Q 260 340 140 410 Q 60 480 180 540 Q 240 600 110 680 Q 60 740 180 820"
+              stroke="url(#pw1)" stroke-width="28" stroke-linecap="round" fill="none"/>
+        <path d="M 60 30 Q 180 70 130 140 Q 80 220 200 280 Q 260 340 140 410 Q 60 480 180 540 Q 240 600 110 680 Q 60 740 180 820"
+              stroke="#5b4a3a" stroke-width="1.5" stroke-dasharray="2 5" fill="none" opacity="0.5"/>
+      </svg>
+
+      <div class="marker" style="top: 0px; left: 32px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 12px; left: 92px;">Somatic basics</div>
+      <div class="marker-subtitle" style="top: 28px; left: 92px;">7 min<span class="marker-type t-education">ED</span></div>
+
+      <div class="marker" style="top: 88px; left: 130px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 78px; left: 12px;">Body scan</div>
+      <div class="marker-subtitle" style="top: 94px; left: 12px;">10 min<span class="marker-type t-exercise">EX</span></div>
+
+      <div class="marker" style="top: 172px; left: 48px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 184px; left: 108px;">Body language</div>
+      <div class="marker-subtitle" style="top: 200px; left: 108px;">8 min<span class="marker-type t-exercise">EX</span></div>
+
+      <div class="marker" style="top: 258px; left: 180px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 272px; left: 76px;">Pendulation</div>
+      <div class="marker-subtitle" style="top: 288px; left: 76px;">10 min<span class="marker-type t-exercise">EX</span></div>
+
+      <div class="marker" style="top: 364px; left: 116px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 378px; left: 12px;">Self-havening</div>
+      <div class="marker-subtitle" style="top: 394px; left: 12px;">5 min<span class="marker-type t-exercise">EX</span></div>
+
+      <div class="marker" style="top: 456px; left: 60px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 472px; left: 120px;">Constructive rest</div>
+      <div class="marker-subtitle" style="top: 488px; left: 120px;">10 min<span class="marker-type t-exercise">EX</span></div>
+
+      <div class="marker" style="top: 596px; left: 160px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 612px; left: 40px;">Discharge</div>
+      <div class="marker-subtitle" style="top: 628px; left: 40px;">8 min<span class="marker-type t-exercise">EX</span></div>
+
+      <div class="marker" style="top: 768px; left: 132px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 782px; left: 12px;">Sensory language</div>
+      <div class="marker-subtitle" style="top: 798px; left: 12px;">6 min<span class="marker-type t-exercise">EX</span></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ INTEGRATION ═══════════ -->
+  <div class="trail-card">
+    <div class="track-head">
+      <div class="name"><span class="dot" style="background: var(--track-integration)"></span>Integration</div>
+      <div class="desc">The arc around a session — from preparation to insight to action.</div>
+      <div class="intro">"An experience isn't integrated by remembering it — by becoming it."</div>
+      <div class="count">8 markers</div>
+    </div>
+    <div class="trail-canvas">
+      <svg class="trail-path" viewBox="0 0 280 850" preserveAspectRatio="none">
+        <path d="M 60 30 Q 180 70 130 140 Q 80 220 200 280 Q 260 340 140 410 Q 60 480 180 540 Q 240 600 110 680 Q 60 740 180 820"
+              stroke="url(#pw1)" stroke-width="28" stroke-linecap="round" fill="none"/>
+        <path d="M 60 30 Q 180 70 130 140 Q 80 220 200 280 Q 260 340 140 410 Q 60 480 180 540 Q 240 600 110 680 Q 60 740 180 820"
+              stroke="#5b4a3a" stroke-width="1.5" stroke-dasharray="2 5" fill="none" opacity="0.5"/>
+      </svg>
+
+      <div class="marker" style="top: 0px; left: 32px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 12px; left: 92px;">What is integration?</div>
+      <div class="marker-subtitle" style="top: 28px; left: 92px;">7 min<span class="marker-type t-education">ED</span></div>
+
+      <div class="marker" style="top: 88px; left: 130px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 78px; left: 12px;">Set an intention</div>
+      <div class="marker-subtitle" style="top: 94px; left: 12px;">10 min<span class="marker-type t-conversational">CO</span></div>
+
+      <div class="marker" style="top: 172px; left: 48px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 184px; left: 108px;">Body check-in</div>
+      <div class="marker-subtitle" style="top: 200px; left: 108px;">8 min<span class="marker-type t-exercise">EX</span></div>
+
+      <div class="marker" style="top: 258px; left: 180px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 272px; left: 60px;">Integration journal</div>
+      <div class="marker-subtitle" style="top: 288px; left: 60px;">15 min<span class="marker-type t-exercise">EX</span></div>
+
+      <div class="marker" style="top: 364px; left: 116px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 378px; left: 12px;">Johnson's 4 steps</div>
+      <div class="marker-subtitle" style="top: 394px; left: 12px;">10 min<span class="marker-type t-education">ED</span></div>
+
+      <div class="marker" style="top: 456px; left: 60px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 472px; left: 120px;">Symbol mapping</div>
+      <div class="marker-subtitle" style="top: 488px; left: 120px;">12 min<span class="marker-type t-exercise">EX</span></div>
+
+      <div class="marker" style="top: 596px; left: 160px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 612px; left: 40px;">Insight → action</div>
+      <div class="marker-subtitle" style="top: 628px; left: 40px;">10 min<span class="marker-type t-exercise">EX</span></div>
+
+      <div class="marker" style="top: 768px; left: 132px;"><img src="../assets/images/icons/rubble.png" alt=""></div>
+      <div class="marker-label" style="top: 782px; left: 12px;">Daily commitment</div>
+      <div class="marker-subtitle" style="top: 798px; left: 12px;">8 min<span class="marker-type t-exercise">EX</span></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="legend-strip">
+  <div class="item">
+    <img class="icon-swatch" src="../assets/images/icons/rubble.png" alt="">
+    <span>Not started</span>
+  </div>
+  <div class="item">
+    <img class="icon-swatch" src="../assets/images/icons/balance.png" alt="">
+    <span>Engaged (not shown in preview)</span>
+  </div>
+  <div class="item"><span class="marker-type t-exercise">EX</span>&nbsp;Exercise</div>
+  <div class="item"><span class="marker-type t-education">ED</span>&nbsp;Education</div>
+  <div class="item"><span class="marker-type t-conversational">CO</span>&nbsp;Conversational</div>
+  <div class="item"><span class="marker-type t-tool">TL</span>&nbsp;Tool</div>
+</div>
+
+</body>
+</html>

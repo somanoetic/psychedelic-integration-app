@@ -1,0 +1,15 @@
+# Project Log
+
+## 2026-06-06 — Finished the chat keyboard fix + confirmed caching saves money
+
+Closed out two things that were waiting on a real-device check. First, the keyboard fix: the main Huxley chat screen had its own copy of the old keyboard handling, so we ported the same fix the conversation screens already had. On the device, the text box was getting partly hidden behind the keyboard, so we corrected how much it lifts — it now sits fully above the keyboard on both the main chat and the conversation screens, and there's no leftover gap when the keyboard closes. Second, while testing we watched the dev logs confirm the prompt caching from earlier is genuinely working — Huxley's long instructions are being reused from cache on every follow-up message instead of being re-billed. Both fixes are tested on a real Android device but not yet committed.
+
+We did the work the earlier audit pointed to: turning on prompt caching so Huxley's long, repeated instructions aren't re-billed on every message. The trick was to split each prompt into a stable part (cached and reused) and a per-message part (the fresh research snippets and safety checks), and move the changing part into the user's message instead of the instructions. This now covers both Huxley's main chat and the routing/triage chat, and the proxy and server function were wired up to support it and to log how often the cache is hitting. Tests pass; the one piece still outstanding is confirming on a real device that the cache is actually saving money (you'll see it in the dev logs after two quick back-to-back messages).
+
+## 2026-06-05 — Fixed the chat keyboard gap
+
+Fixed the long-standing bug where, on the conversation screens, a blank space was left below the text box after you closed the keyboard (and the box sometimes floated or got covered). The root cause was the keyboard-handling code fighting with Android's own screen-resizing, leaving leftover padding. We rewrote it so the text box now sits correctly at rest, clears the keyboard when typing, and snaps back with no gap when the keyboard closes. The change is in one shared component, so it covers all the conversation screens at once — but it still needs a real-device check, and the main Huxley chat screen uses its own separate keyboard code that may need the same fix.
+
+## 2026-06-05 — Checked which AI prompts can be cached
+
+We looked at whether Huxley's behind-the-scenes instructions stay the same enough between messages to safely turn on prompt caching (a cost-saver). The short answer: not yet, for the two parts of the app that matter. Huxley's main chat and the routing/triage chat both mix in stuff that changes with every message — the freshly-pulled research snippets and the message-specific safety checks — right in the middle of the instructions, which defeats caching. To make caching pay off, that changing material needs to move into the user's message instead. No code was changed; this was an audit only, with a clear list of what to fix.

@@ -107,6 +107,66 @@ As a user in distress, I need crisis resources reachable within 2 taps from anyw
 
 ---
 
+## High Priority — Monetization Track (added 2026-06-02)
+
+> Driven by the business plan (`context/business/BUSINESS-PLAN.md`). Sequenced AFTER prompt
+> caching (`context/features/prompt-caching-prompts.md`), which is the highest-ROI first move.
+
+### FEAT-501: Entitlement Layer + Metered Paywall
+**Priority:** High
+**Status:** Planned (future work)
+**Estimated Effort:** Large (1–2 weeks, excl. store review)
+**Spec:** `context/features/monetization-paywall.md`
+
+**User Story:**
+As the founder, I need a subscription/entitlement system so users can pay for premium, and a
+metered free tier for Huxley so free-tier AI cost doesn't sink the business.
+
+**Requirements:**
+- [ ] `lib/entitlementService.js` mirroring the `userRoleService` cache pattern (`isPremium()`,
+      `getEntitlement()`, `refresh()`); admins/contributors granted premium implicitly
+- [ ] RevenueCat integration (`react-native-purchases`) as cross-platform subscription source
+- [ ] `<PremiumGate>` chokepoint component + `screens/PaywallScreen.js` (plans, trial,
+      restore-purchases)
+- [ ] Apply gates to premium surfaces per spec §3 (Huxley, full library, insights, summaries)
+- [ ] **Metered Huxley:** per-user free message counter → graceful paywall (not error) after
+      the free allowance (~10 msgs, tunable). Decision logged 2026-06-02 in spec §3.
+- [ ] Server mirror: RevenueCat webhook → Supabase `subscriptions` table; server checks
+      entitlement before spending Anthropic tokens
+- [ ] B2B-Lite premium-code redemption hook (see `context/business/b2b-path.md` §5)
+
+**Dependencies:** Prompt caching (margin), BUG-308 (legal review before charging)
+**Blocks:** All revenue
+
+---
+
+### FEAT-502: Education Content → Public Web Articles (SEO foundation)
+**Priority:** High (start early — SEO has 6–12mo lag)
+**Status:** Planned (future work)
+**Estimated Effort:** Medium, ongoing
+**Refs:** `context/business/distribution.md` §3 Tier 2; memory project_feature_education_surface
+
+**User Story:**
+As the founder, I want the journal/education content published as public web articles so the
+niche audience can find Multitudes via search, and so the same content feeds the in-app
+education surface and B2B credibility material.
+
+**Requirements:**
+- [ ] Source from `content/education.js`, `content/worksheets/edu-*.js`, journal chapters 1–14
+- [ ] Publish on the web property (same one as ADR-010 web admin + future checkout)
+- [ ] **ADR-009 language guardrail applies:** wellness/reflection framing only — no
+      "treatment/therapy/clinical/cure/diagnose" claims in public SEO content
+- [ ] Google Search Console + basic analytics set up once
+- [ ] Light one-time ASO pass on app listing keywords ("psychedelic integration", "ketamine
+      integration", "trip integration journal") — low-competition exact terms
+- [ ] Triple-use: write once → SEO + in-app education surface + B2B material
+
+**Dependencies:** Web property exists (shared with ADR-010)
+**Note:** Foundational SEO only. Defer keyword-chasing/backlinks/paid SEO tools until traffic
++ conversion data exist. Tier-1 relationships remain the faster path to first users.
+
+---
+
 ## Medium Priority — Deferred from Earlier Phases
 
 ### FEAT-202: Enhanced UX Layouts
@@ -174,5 +234,6 @@ These can be removed after 30-day archive window.
 
 ---
 
-**Current Count:** 9 features planned (5 production-readiness, 4 deferred), 5 recently completed
+**Current Count:** 11 features planned (5 production-readiness, 2 monetization, 4 deferred), 5 recently completed
 **File Status:** Under 300-line limit
+**5XX = monetization track** (added 2026-06-02)

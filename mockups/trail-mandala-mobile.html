@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multitudes — Mandala Trail (mobile)</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --text: #3A3A3A;
+    --text-secondary: #6B7280;
+    --ink: #5b4a3a;
+    --ink-soft: #8a7560;
+    --cream-top: #faf3e3;
+    --cream-mid: #f0e6d0;
+    --cream-warm: #e6d4b0;
+
+    --track-regulating:  #5d86d6;
+    --track-parts:       #c97394;
+    --track-belief:      #d9a14a;
+    --track-somatic:     #c98a5b;
+    --track-integration: #8b80b8;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #ebe4d3;
+    min-height: 100vh;
+    padding: 32px 20px;
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .page-header {
+    width: 100%;
+    max-width: 900px;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  .page-header h1 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+  .page-header p  { font-size: 13px; color: var(--text-secondary); }
+
+  .lab-strip {
+    max-width: 900px;
+    margin-bottom: 24px;
+    background: #fff;
+    padding: 14px 20px;
+    border-radius: 10px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .lab-strip strong { color: var(--text); }
+  .lab-strip code { background: #f0eee9; padding: 1px 5px; border-radius: 3px; font-size: 11px; }
+
+  /* Two phone frames side-by-side: overview + zoomed branch */
+  .phones {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .phone-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .phone-col .col-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+  }
+  .phone-col .col-label .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #fff;
+    margin-right: 6px;
+    color: var(--text);
+  }
+
+  .phone-frame {
+    width: 414px;
+    height: 896px;
+    background:
+      radial-gradient(ellipse 90% 70% at 50% 60%, var(--cream-top) 0%, var(--cream-mid) 55%, var(--cream-warm) 100%);
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+    position: relative;
+  }
+  .phone-frame::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.36, 0 0 0 0 0.29, 0 0 0 0 0.23, 0 0 0 0.05 0'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+    opacity: 0.4;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 56px 20px 4px;
+    position: relative; z-index: 5;
+  }
+  .header-back {
+    width: 36px; height: 36px;
+    display: flex; align-items: center; justify-content: center;
+    border: none; background: rgba(255,255,255,0.5);
+    border-radius: 10px; color: var(--ink);
+    font-size: 18px; cursor: pointer;
+  }
+  .header-title { font-size: 15px; font-weight: 600; color: var(--ink); }
+  .header-spacer { width: 36px; }
+
+  .intro {
+    text-align: center;
+    padding: 4px 24px 4px;
+    position: relative; z-index: 5;
+  }
+  .intro h2 {
+    font-family: 'Caveat', cursive;
+    font-size: 26px; font-weight: 700; color: var(--ink);
+    margin-bottom: 2px;
+    line-height: 1.05;
+  }
+  .intro p { font-size: 12px; color: var(--ink-soft); }
+
+  /* ─── Mandala canvas (mobile) ─── */
+  .mandala {
+    position: absolute;
+    top: 130px; bottom: 60px;
+    left: 0; right: 0;
+    z-index: 3;
+  }
+  .mandala-svg {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+  }
+
+  /* Marker on mobile — smaller */
+  .marker {
+    position: absolute;
+    width: 38px; height: 38px;
+    transform: translate(-50%, -50%);
+    z-index: 4;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .marker:hover { transform: translate(-50%, -50%) scale(1.1); }
+  .marker img { width: 100%; height: 100%; object-fit: contain; }
+  .marker .track-dot {
+    position: absolute;
+    top: -2px; right: -2px;
+    width: 11px; height: 11px;
+    border-radius: 50%;
+    border: 1.5px solid #fff;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.2);
+  }
+
+  /* On overview, labels only on branch tips (not on every marker — too noisy at 414px) */
+  .branch-label {
+    position: absolute;
+    transform: translate(-50%, 0);
+    font-family: 'Caveat', cursive;
+    font-size: 18px;
+    font-weight: 700;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  /* Trunk markers DO get labels (they're the entry-point) */
+  .trunk-label {
+    position: absolute;
+    transform: translate(0, -50%);
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--ink);
+    background: rgba(255,251,240,0.92);
+    padding: 2px 6px;
+    border-radius: 5px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 5;
+    box-shadow: 0 1px 2px rgba(91,74,58,0.08);
+  }
+
+  /* ─── ZOOMED-IN BRANCH styles ─── */
+  .marker-label {
+    position: absolute;
+    transform: translate(-50%, 0);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink);
+    background: rgba(255,251,240,0.92);
+    padding: 2px 7px;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 5;
+    box-shadow: 0 1px 2px rgba(91,74,58,0.1);
+  }
+  .marker-subtitle {
+    position: absolute;
+    transform: translate(-50%, 0);
+    font-size: 9.5px;
+    color: var(--ink-soft);
+    background: rgba(255,251,240,0.7);
+    padding: 1px 6px;
+    border-radius: 5px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  /* Other-branch fade overlay for zoom view */
+  .faded { opacity: 0.18; }
+
+  .branch-header {
+    position: absolute;
+    top: 100px;
+    left: 0; right: 0;
+    z-index: 6;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .branch-header .back-overview {
+    font-size: 12px;
+    color: var(--ink);
+    background: rgba(255,251,240,0.9);
+    padding: 6px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    border: 1px solid rgba(91,74,58,0.15);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .branch-header .branch-name {
+    font-family: 'Caveat', cursive;
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  .footer-strip {
+    position: absolute;
+    bottom: 16px; left: 0; right: 0;
+    text-align: center;
+    z-index: 5;
+    padding: 0 24px;
+  }
+  .footer-strip .hint {
+    color: var(--ink-soft);
+    font-family: 'Caveat', cursive;
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  .footer-strip .legend {
+    display: inline-flex;
+    gap: 12px;
+    background: rgba(255,251,240,0.7);
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 10px;
+    color: var(--ink-soft);
+    align-items: center;
+  }
+  .footer-strip .legend .dashed {
+    display: inline-block;
+    width: 20px;
+    border-top: 1.5px dashed var(--ink-soft);
+    vertical-align: middle;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Multitudes — Mandala Trail (mobile, 414×896)</h1>
+  <p>The lotus on a real phone screen. Overview + zoomed-in branch shown side-by-side.</p>
+</div>
+
+<div class="lab-strip">
+  <strong>What you're looking at.</strong> Left = the overview screen (lotus visible, all 5 branches + dashed concept-arcs). Right = what happens when user taps the Parts branch (in RN this animates: other branches fade to ~18% opacity, chosen branch scales up, marker labels reveal). On overview, only branch tips and trunk markers get labels — full marker labels appear only after zoom-in to avoid 414px-wide clutter. <strong>I added more dashed connections per your note</strong> — now 10 inter-marker arcs (up from 7). Lotus framing matches Multitudes brand (many petals, one center).
+</div>
+
+<div class="phones">
+
+  <!-- ═════════════════ OVERVIEW (mobile) ═════════════════ -->
+  <div class="phone-col">
+    <div class="col-label"><span class="tag">A</span>Overview — the lotus</div>
+    <div class="phone-frame">
+
+      <div class="header">
+        <div class="header-spacer"></div>
+        <div class="header-title">Your trails</div>
+        <div class="header-spacer"></div>
+      </div>
+
+      <div class="intro">
+        <h2>What's alive right now?</h2>
+        <p>Start at the base. Pick a petal when one calls.</p>
+      </div>
+
+      <div class="mandala">
+        <svg class="mandala-svg" viewBox="0 0 414 706" preserveAspectRatio="xMidYMid meet">
+
+          <defs>
+            <linearGradient id="trunkWash" x1="0" y1="1" x2="0" y2="0">
+              <stop offset="0%" stop-color="#b8966a" stop-opacity="0.4"/>
+              <stop offset="100%" stop-color="#d4b88a" stop-opacity="0.35"/>
+            </linearGradient>
+            <linearGradient id="branchWash" x1="0" y1="1" x2="0" y2="0">
+              <stop offset="0%" stop-color="#d4b88a" stop-opacity="0.35"/>
+              <stop offset="100%" stop-color="#c5a778" stop-opacity="0.25"/>
+            </linearGradient>
+          </defs>
+
+          <!-- TRUNK (3 markers, bottom-center) -->
+          <path d="M 207 700 L 207 510" stroke="url(#trunkWash)" stroke-width="26" stroke-linecap="round" fill="none"/>
+          <path d="M 207 700 L 207 510" stroke="#5b4a3a" stroke-width="1.5" stroke-dasharray="2 5" fill="none" opacity="0.5"/>
+
+          <!-- Fork point (207, 510). 5 branches fan upward. -->
+          <!-- Tighter spread for 414px viewport: branches at roughly -55deg, -28deg, 0deg, +28deg, +55deg -->
+
+          <!-- BRANCH 1: REGULATING (far left) -->
+          <path d="M 207 510 Q 150 430 110 340 Q 80 250 70 150 Q 65 70 75 20"
+                stroke="url(#branchWash)" stroke-width="20" stroke-linecap="round" fill="none"/>
+          <path d="M 207 510 Q 150 430 110 340 Q 80 250 70 150 Q 65 70 75 20"
+                stroke="#5b4a3a" stroke-width="1.2" stroke-dasharray="2 4" fill="none" opacity="0.5"/>
+
+          <!-- BRANCH 2: PARTS -->
+          <path d="M 207 510 Q 185 430 165 340 Q 150 250 145 150 Q 142 70 148 20"
+                stroke="url(#branchWash)" stroke-width="20" stroke-linecap="round" fill="none"/>
+          <path d="M 207 510 Q 185 430 165 340 Q 150 250 145 150 Q 142 70 148 20"
+                stroke="#5b4a3a" stroke-width="1.2" stroke-dasharray="2 4" fill="none" opacity="0.5"/>
+
+          <!-- BRANCH 3: INTEGRATION (center) -->
+          <path d="M 207 510 L 207 20"
+                stroke="url(#branchWash)" stroke-width="20" stroke-linecap="round" fill="none"/>
+          <path d="M 207 510 L 207 20"
+                stroke="#5b4a3a" stroke-width="1.2" stroke-dasharray="2 4" fill="none" opacity="0.5"/>
+
+          <!-- BRANCH 4: BELIEF -->
+          <path d="M 207 510 Q 229 430 249 340 Q 264 250 269 150 Q 272 70 266 20"
+                stroke="url(#branchWash)" stroke-width="20" stroke-linecap="round" fill="none"/>
+          <path d="M 207 510 Q 229 430 249 340 Q 264 250 269 150 Q 272 70 266 20"
+                stroke="#5b4a3a" stroke-width="1.2" stroke-dasharray="2 4" fill="none" opacity="0.5"/>
+
+          <!-- BRANCH 5: SOMATIC (far right) -->
+          <path d="M 207 510 Q 264 430 304 340 Q 334 250 344 150 Q 349 70 339 20"
+                stroke="url(#branchWash)" stroke-width="20" stroke-linecap="round" fill="none"/>
+          <path d="M 207 510 Q 264 430 304 340 Q 334 250 344 150 Q 349 70 339 20"
+                stroke="#5b4a3a" stroke-width="1.2" stroke-dasharray="2 4" fill="none" opacity="0.5"/>
+
+          <!-- ═════════ Dashed concept connections (10 total) ═════════ -->
+
+          <!-- 1. Map your states (Regulating) ↔ Parts check-in (Parts) -->
+          <path d="M 100 280 Q 130 270 158 285" stroke="#8b7355" stroke-width="1.2" stroke-dasharray="2.5 3.5" fill="none" opacity="0.6"/>
+
+          <!-- 2. Notice & name (Regulating) ↔ Body language (Somatic) — spans wide -->
+          <path d="M 118 380 Q 207 420 295 380" stroke="#8b7355" stroke-width="1.2" stroke-dasharray="2.5 3.5" fill="none" opacity="0.5"/>
+
+          <!-- 3. Parts inventory (Parts) ↔ Beliefs inventory (Belief) -->
+          <path d="M 152 140 Q 207 110 262 140" stroke="#8b7355" stroke-width="1.2" stroke-dasharray="2.5 3.5" fill="none" opacity="0.6"/>
+
+          <!-- 4. Six F's (Parts) ↔ Downward arrow (Belief) -->
+          <path d="M 160 280 Q 207 310 254 280" stroke="#8b7355" stroke-width="1.2" stroke-dasharray="2.5 3.5" fill="none" opacity="0.55"/>
+
+          <!-- 5. Ventral anchors (Regulating) ↔ Constructive rest (Somatic) — wide overarching arc -->
+          <path d="M 80 145 Q 207 65 335 145" stroke="#8b7355" stroke-width="1.2" stroke-dasharray="2.5 3.5" fill="none" opacity="0.45"/>
+
+          <!-- 6. Integration journal (Integration) ↔ Downward arrow (Belief) -->
+          <path d="M 207 280 Q 230 275 254 280" stroke="#8b7355" stroke-width="1.2" stroke-dasharray="2.5 3.5" fill="none" opacity="0.5"/>
+
+          <!-- 7. Integration journal (Integration) ↔ Six F's (Parts) -->
+          <path d="M 207 280 Q 184 275 160 280" stroke="#8b7355" stroke-width="1.2" stroke-dasharray="2.5 3.5" fill="none" opacity="0.5"/>
+
+          <!-- 8. Set intention (Integration) ↔ Parts check-in (Parts) -->
+          <path d="M 207 380 Q 183 380 162 380" stroke="#8b7355" stroke-width="1.2" stroke-dasharray="2.5 3.5" fill="none" opacity="0.5"/>
+
+          <!-- 9. Set intention (Integration) ↔ Body language (Somatic) -->
+          <path d="M 207 380 Q 250 380 296 380" stroke="#8b7355" stroke-width="1.2" stroke-dasharray="2.5 3.5" fill="none" opacity="0.5"/>
+
+          <!-- 10. Glimmers (Regulating) ↔ Sensory language (Somatic) — across the top -->
+          <path d="M 74 50 Q 207 0 338 50" stroke="#8b7355" stroke-width="1.2" stroke-dasharray="2.5 3.5" fill="none" opacity="0.4"/>
+
+        </svg>
+
+        <!-- TRUNK markers (3, bottom-center) -->
+        <!-- Position via % of mandala container (414 wide × 706 tall in svg, displayed at container size) -->
+        <div class="marker" style="left: 50%; top: 99%;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-regulating);"></div></div>
+        <div class="trunk-label" style="left: 56%; top: 99%;">Notice your state</div>
+
+        <div class="marker" style="left: 50%; top: 86%;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-regulating);"></div></div>
+        <div class="trunk-label" style="left: 56%; top: 86%;">The three states</div>
+
+        <div class="marker" style="left: 50%; top: 75%;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-regulating);"></div></div>
+        <div class="trunk-label" style="left: 56%; top: 75%;">Extended exhale</div>
+
+        <!-- BRANCH 1: REGULATING (4 markers up the petal) -->
+        <div class="marker" style="left: 28.5%; top: 54%;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-regulating);"></div></div>
+        <div class="marker" style="left: 24%; top: 40%;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-regulating);"></div></div>
+        <div class="marker" style="left: 17%; top: 21%;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-regulating);"></div></div>
+        <div class="marker" style="left: 18%; top: 7%;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-regulating);"></div></div>
+        <div class="branch-label" style="left: 18%; top: -2%; color: var(--track-regulating);">Regulating</div>
+
+        <!-- BRANCH 2: PARTS (4 markers) -->
+        <div class="marker" style="left: 40%; top: 54%;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-parts);"></div></div>
+        <div class="marker" style="left: 38.6%; top: 40%;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-parts);"></div></div>
+        <div class="marker" style="left: 35%; top: 21%;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-parts);"></div></div>
+        <div class="marker" style="left: 35.7%; top: 7%;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-parts);"></div></div>
+        <div class="branch-label" style="left: 36%; top: -2%; color: var(--track-parts);">Parts</div>
+
+        <!-- BRANCH 3: INTEGRATION (5 markers) -->
+        <div class="marker" style="left: 50%; top: 61%;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-integration);"></div></div>
+        <div class="marker" style="left: 50%; top: 54%;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-integration);"></div></div>
+        <div class="marker" style="left: 50%; top: 40%;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-integration);"></div></div>
+        <div class="marker" style="left: 50%; top: 21%;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-integration);"></div></div>
+        <div class="marker" style="left: 50%; top: 7%;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-integration);"></div></div>
+        <div class="branch-label" style="left: 50%; top: -2%; color: var(--track-integration);">Integration</div>
+
+        <!-- BRANCH 4: BELIEF (4 markers) -->
+        <div class="marker" style="left: 60%; top: 54%;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-belief);"></div></div>
+        <div class="marker" style="left: 61.4%; top: 40%;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-belief);"></div></div>
+        <div class="marker" style="left: 65%; top: 21%;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-belief);"></div></div>
+        <div class="marker" style="left: 64.3%; top: 7%;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-belief);"></div></div>
+        <div class="branch-label" style="left: 64%; top: -2%; color: var(--track-belief);">Belief</div>
+
+        <!-- BRANCH 5: SOMATIC (4 markers) -->
+        <div class="marker" style="left: 71.5%; top: 54%;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-somatic);"></div></div>
+        <div class="marker" style="left: 76%; top: 40%;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-somatic);"></div></div>
+        <div class="marker" style="left: 83%; top: 21%;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-somatic);"></div></div>
+        <div class="marker" style="left: 82%; top: 7%;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-somatic);"></div></div>
+        <div class="branch-label" style="left: 82%; top: -2%; color: var(--track-somatic);">Somatic</div>
+
+      </div>
+
+      <div class="footer-strip">
+        <div class="hint">tap a petal · the trail is always here</div>
+        <div class="legend">
+          <span><span class="dashed"></span>&nbsp; concept link</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═════════════════ ZOOMED: PARTS BRANCH ═════════════════ -->
+  <div class="phone-col">
+    <div class="col-label"><span class="tag">B</span>Zoomed — Parts (after tap)</div>
+    <div class="phone-frame">
+
+      <div class="branch-header">
+        <div class="back-overview">‹ overview</div>
+        <div class="branch-name" style="color: var(--track-parts);">Parts</div>
+        <div style="width: 80px;"></div>
+      </div>
+
+      <div class="mandala" style="top: 145px;">
+        <svg class="mandala-svg" viewBox="0 0 414 686" preserveAspectRatio="xMidYMid meet">
+
+          <defs>
+            <linearGradient id="trunkWash2" x1="0" y1="1" x2="0" y2="0">
+              <stop offset="0%" stop-color="#b8966a" stop-opacity="0.4"/>
+              <stop offset="100%" stop-color="#d4b88a" stop-opacity="0.35"/>
+            </linearGradient>
+            <linearGradient id="branchWash2" x1="0" y1="1" x2="0" y2="0">
+              <stop offset="0%" stop-color="#d4b88a" stop-opacity="0.45"/>
+              <stop offset="100%" stop-color="#c5a778" stop-opacity="0.35"/>
+            </linearGradient>
+          </defs>
+
+          <!-- FADED other branches (low opacity, no markers shown for clarity) -->
+          <g opacity="0.18">
+            <!-- Regulating petal -->
+            <path d="M 207 680 Q 150 600 110 510 Q 80 420 70 320 Q 65 240 75 190"
+                  stroke="#5b4a3a" stroke-width="1" stroke-dasharray="2 4" fill="none"/>
+            <!-- Integration -->
+            <path d="M 207 680 L 207 190" stroke="#5b4a3a" stroke-width="1" stroke-dasharray="2 4" fill="none"/>
+            <!-- Belief -->
+            <path d="M 207 680 Q 229 600 249 510 Q 264 420 269 320 Q 272 240 266 190"
+                  stroke="#5b4a3a" stroke-width="1" stroke-dasharray="2 4" fill="none"/>
+            <!-- Somatic -->
+            <path d="M 207 680 Q 264 600 304 510 Q 334 420 344 320 Q 349 240 339 190"
+                  stroke="#5b4a3a" stroke-width="1" stroke-dasharray="2 4" fill="none"/>
+          </g>
+
+          <!-- ZOOMED PARTS BRANCH — scaled up, centered -->
+          <!-- Now occupies most of the screen: trunk at bottom, single petal expanding -->
+          <path d="M 207 680 Q 207 600 207 510" stroke="url(#trunkWash2)" stroke-width="26" stroke-linecap="round" fill="none"/>
+
+          <!-- Parts petal, scaled larger and pulled to center -->
+          <path d="M 207 510 Q 207 440 197 360 Q 192 270 190 170 Q 192 80 207 30"
+                stroke="url(#branchWash2)" stroke-width="28" stroke-linecap="round" fill="none"/>
+          <path d="M 207 510 Q 207 440 197 360 Q 192 270 190 170 Q 192 80 207 30"
+                stroke="#5b4a3a" stroke-width="1.5" stroke-dasharray="2 5" fill="none" opacity="0.6"/>
+
+        </svg>
+
+        <!-- Trunk markers (3, dim because they're not "in" Parts) -->
+        <div class="marker" style="left: 50%; top: 99%; opacity: 0.5;"><img src="../assets/images/icons/balance.png" alt=""><div class="track-dot" style="background: var(--track-regulating);"></div></div>
+        <div class="marker" style="left: 50%; top: 88%; opacity: 0.5;"><img src="../assets/images/icons/balance.png" alt=""><div class="track-dot" style="background: var(--track-regulating);"></div></div>
+        <div class="marker" style="left: 50%; top: 77%; opacity: 0.5;"><img src="../assets/images/icons/balance.png" alt=""><div class="track-dot" style="background: var(--track-regulating);"></div></div>
+
+        <!-- PARTS branch markers (now at full size + labels), 8 total -->
+        <div class="marker" style="left: 50%; top: 65%; width: 56px; height: 56px;"><img src="../assets/images/icons/balance.png" alt=""><div class="track-dot" style="background: var(--track-parts);"></div></div>
+        <div class="marker-label" style="left: 50%; top: 73%;">What is IFS?</div>
+        <div class="marker-subtitle" style="left: 50%; top: 76%;">Learn · 8 min</div>
+
+        <div class="marker" style="left: 49%; top: 54%; width: 56px; height: 56px;"><img src="../assets/images/icons/balance.png" alt=""><div class="track-dot" style="background: var(--track-parts);"></div></div>
+        <div class="marker-label" style="left: 49%; top: 62%;">Parts check-in</div>
+        <div class="marker-subtitle" style="left: 49%; top: 65%;">IFS · 5 min</div>
+
+        <div class="marker" style="left: 47.8%; top: 43%; width: 56px; height: 56px;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-parts);"></div></div>
+        <div class="marker-label" style="left: 47.8%; top: 51%;">Parts inventory</div>
+        <div class="marker-subtitle" style="left: 47.8%; top: 54%;">Tool · 15 min</div>
+
+        <div class="marker" style="left: 46.8%; top: 32%; width: 56px; height: 56px;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-parts);"></div></div>
+        <div class="marker-label" style="left: 46.8%; top: 40%;">The Six F's</div>
+        <div class="marker-subtitle" style="left: 46.8%; top: 43%;">IFS · 15 min</div>
+
+        <div class="marker" style="left: 46.4%; top: 22%; width: 56px; height: 56px;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-parts);"></div></div>
+        <div class="marker-label" style="left: 46.4%; top: 30%;">Guided session</div>
+        <div class="marker-subtitle" style="left: 46.4%; top: 33%;">15–20 min</div>
+
+        <div class="marker" style="left: 46.8%; top: 13%; width: 56px; height: 56px;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-parts);"></div></div>
+        <div class="marker-label" style="left: 46.8%; top: 21%;">Protector thanks</div>
+        <div class="marker-subtitle" style="left: 46.8%; top: 24%;">IFS · 8 min</div>
+
+        <div class="marker" style="left: 48%; top: 4%; width: 56px; height: 56px;"><img src="../assets/images/icons/rubble.png" alt=""><div class="track-dot" style="background: var(--track-parts);"></div></div>
+        <div class="marker-label" style="left: 48%; top: 12%;">Unblending</div>
+        <div class="marker-subtitle" style="left: 48%; top: 15%;">IFS · 7 min</div>
+
+      </div>
+
+      <div class="footer-strip">
+        <div class="hint">tap a stone to begin · or return to the overview</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
