@@ -49,12 +49,14 @@ CREATE TABLE IF NOT EXISTS document_chunks (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- IVFFlat index for fast cosine similarity search (~14K vectors, 20 lists)
--- Rule of thumb: lists = sqrt(row_count). 20 lists suits datasets up to ~50K rows.
--- Note: REINDEX after full ingestion for optimal performance
+-- IVFFlat index for fast cosine similarity search (~21.6K vectors after full ingest)
+-- Rule of thumb: lists = sqrt(row_count). sqrt(21648) ≈ 147, so 150 lists.
+-- IMPORTANT: IVFFlat centroids are computed at CREATE/REINDEX time from existing
+-- rows. After bulk ingestion run `REINDEX INDEX idx_document_chunks_embedding;`
+-- so the centroids reflect the real data distribution (see BUG-317).
 CREATE INDEX idx_document_chunks_embedding ON document_chunks
   USING ivfflat (embedding vector_cosine_ops)
-  WITH (lists = 20);
+  WITH (lists = 150);
 
 -- Index for document lookups and category-scoped search
 CREATE INDEX idx_document_chunks_document_id ON document_chunks(document_id);
@@ -85,6 +87,7 @@ RETURNS TABLE (
 )
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET ivfflat.probes = 10
 AS $$
 BEGIN
   RETURN QUERY
