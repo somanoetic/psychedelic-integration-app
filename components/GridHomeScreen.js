@@ -65,8 +65,6 @@ import SubMenuModal from './SubMenuModal';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const TILE_GAP = 16;
 const TILE_WIDTH = (SCREEN_WIDTH - 48 - TILE_GAP) / 2;
-const WIDGET_GAP = 8;
-const WIDGET_WIDTH = (SCREEN_WIDTH - 48 - WIDGET_GAP * 2) / 3;
 
 const NS_COLORS = {
   ventral: { dot: colors.success, bg: '#d1fae5', label: 'Safe & Social' },
@@ -77,12 +75,13 @@ const NS_COLORS = {
 
 // --- Reusable helper components (extractable to components/ui/ later) ---
 
-const GlassCard = ({ children, style }) => {
+const GlassCard = ({ children, style, overlayStyle }) => {
   const cardStyle = [styles.glassCardBase, style];
+  const innerStyle = [styles.glassOverlay, overlayStyle];
   if (Platform.OS === 'ios') {
     return (
       <BlurView intensity={40} tint="light" style={cardStyle}>
-        <View style={styles.glassOverlay}>{children}</View>
+        <View style={innerStyle}>{children}</View>
       </BlurView>
     );
   }
@@ -91,7 +90,7 @@ const GlassCard = ({ children, style }) => {
       colors={['rgba(255,255,255,0.75)', 'rgba(255,255,255,0.45)']}
       style={cardStyle}
     >
-      <View style={styles.glassOverlay}>{children}</View>
+      <View style={innerStyle}>{children}</View>
     </LinearGradient>
   );
 };
@@ -220,35 +219,19 @@ const GridHomeScreen = ({ navigation }) => {
   const greetingOpacity = useRef(new Animated.Value(0)).current;
   const widget1Opacity = useRef(new Animated.Value(0)).current;
   const widget1TransY = useRef(new Animated.Value(20)).current;
-  const widget2Opacity = useRef(new Animated.Value(0)).current;
-  const widget2TransY = useRef(new Animated.Value(20)).current;
-  const widget3Opacity = useRef(new Animated.Value(0)).current;
-  const widget3TransY = useRef(new Animated.Value(20)).current;
   const tilesOpacity = useRef(new Animated.Value(0)).current;
   const tilesTranslateY = useRef(new Animated.Value(30)).current;
 
   const runEntrance = () => {
     greetingOpacity.setValue(0);
     widget1Opacity.setValue(0); widget1TransY.setValue(20);
-    widget2Opacity.setValue(0); widget2TransY.setValue(20);
-    widget3Opacity.setValue(0); widget3TransY.setValue(20);
     tilesOpacity.setValue(0); tilesTranslateY.setValue(30);
 
     Animated.sequence([
       Animated.timing(greetingOpacity, { toValue: 1, duration: 300, useNativeDriver: true }),
-      Animated.stagger(100, [
-        Animated.parallel([
-          Animated.timing(widget1Opacity, { toValue: 1, duration: 350, useNativeDriver: true }),
-          Animated.timing(widget1TransY, { toValue: 0, duration: 350, useNativeDriver: true }),
-        ]),
-        Animated.parallel([
-          Animated.timing(widget2Opacity, { toValue: 1, duration: 350, useNativeDriver: true }),
-          Animated.timing(widget2TransY, { toValue: 0, duration: 350, useNativeDriver: true }),
-        ]),
-        Animated.parallel([
-          Animated.timing(widget3Opacity, { toValue: 1, duration: 350, useNativeDriver: true }),
-          Animated.timing(widget3TransY, { toValue: 0, duration: 350, useNativeDriver: true }),
-        ]),
+      Animated.parallel([
+        Animated.timing(widget1Opacity, { toValue: 1, duration: 350, useNativeDriver: true }),
+        Animated.timing(widget1TransY, { toValue: 0, duration: 350, useNativeDriver: true }),
       ]),
       Animated.parallel([
         Animated.timing(tilesOpacity, { toValue: 1, duration: 400, useNativeDriver: true }),
@@ -282,7 +265,6 @@ const GridHomeScreen = ({ navigation }) => {
   ];
 
   const navigationTiles = [
-    { id: 'track', title: 'Track', icon: tileIcons.track, isSubmenu: true, onPress: () => setTrackMenuVisible(true) },
     { id: 'prepare', title: 'Prepare for a Journey', icon: tileIcons.prepare, route: 'SessionsHub' },
     { id: 'process', title: 'Process & Integrate', icon: tileIcons.process, route: 'ProcessIntegratePicker' },
     { id: 'innerwork', title: 'Inner Work', icon: tileIcons.innerwork, route: 'InnerWork' },
@@ -298,76 +280,108 @@ const GridHomeScreen = ({ navigation }) => {
     }
   };
 
-  // --- Widget renderers ---
+  // --- Track block ---
 
-  const renderNSWidget = () => {
-    if (dashboardLoading) {
-      return <ActivityIndicator size="small" color={colors.primary} />;
-    }
+  // The five Track indicators, in the same order as the Track submenu. Each
+  // derives a short read-only status from dashboardData (value when present,
+  // muted dash when empty). Tapping anywhere on the block opens the modal;
+  // the indicators themselves are not individually tappable.
+  const buildTrackIndicators = () => {
     const ns = dashboardData?.nsCheckin;
-    if (!ns) {
-      return (
-        <TouchableOpacity onPress={() => navigation.navigate('NervousSystemCheckin')} style={styles.widgetTouchable}>
-          <Image source={uiIcons.nsMixed} style={[styles.widgetIcon, styles.widgetIconMuted]} />
-          <Text style={styles.widgetEmptyText}>Check in</Text>
-        </TouchableOpacity>
-      );
-    }
-    const config = NS_COLORS[ns.ns_state] || NS_COLORS.mixed;
-    const icon = NS_ICONS[ns.ns_state] || NS_ICONS.mixed;
-    return (
-      <TouchableOpacity onPress={() => navigation.navigate('NervousSystemCheckin')} style={styles.widgetTouchable}>
-        <Image source={icon} style={styles.widgetIcon} />
-        <Text style={styles.widgetValue} numberOfLines={1}>{config.label}</Text>
-        <Text style={styles.widgetLabel}>{timeAgo(ns.created_at)}</Text>
-      </TouchableOpacity>
-    );
-  };
-
-  const renderHabitsWidget = () => {
-    if (dashboardLoading) {
-      return <ActivityIndicator size="small" color={colors.primary} />;
-    }
-    const habits = dashboardData?.habitProgress;
-    if (!habits || habits.total === 0) {
-      return (
-        <TouchableOpacity onPress={() => navigation.navigate('HabitTracker')} style={styles.widgetTouchable}>
-          <Image source={uiIcons.habits} style={[styles.widgetIcon, styles.widgetIconMuted]} />
-          <Text style={styles.widgetEmptyText}>Add habits</Text>
-        </TouchableOpacity>
-      );
-    }
-    return (
-      <TouchableOpacity onPress={() => navigation.navigate('HabitTracker')} style={styles.widgetTouchable}>
-        <Image source={uiIcons.habits} style={styles.widgetIcon} />
-        <Text style={styles.widgetValue}>{habits.completed}/{habits.total}</Text>
-        <Text style={styles.widgetLabel}>habits today</Text>
-      </TouchableOpacity>
-    );
-  };
-
-  const renderGlimmersWidget = () => {
-    if (dashboardLoading) {
-      return <ActivityIndicator size="small" color={colors.primary} />;
-    }
     const glimmers = dashboardData?.glimmerCount;
-    const count = glimmers?.count ?? 0;
-    if (count === 0) {
-      return (
-        <TouchableOpacity onPress={() => navigation.navigate('GlimmerTracker')} style={styles.widgetTouchable}>
-          <Image source={uiIcons.glimmers} style={[styles.widgetIcon, styles.widgetIconMuted]} />
-          <Text style={styles.widgetEmptyText}>Log one</Text>
-        </TouchableOpacity>
-      );
-    }
-    return (
-      <TouchableOpacity onPress={() => navigation.navigate('GlimmerTracker')} style={styles.widgetTouchable}>
-        <Image source={uiIcons.glimmers} style={styles.widgetIcon} />
-        <Text style={styles.widgetValue}>{count}</Text>
-        <Text style={styles.widgetLabel}>this week</Text>
-      </TouchableOpacity>
-    );
+    const trigger = dashboardData?.lastTrigger;
+    const parts = dashboardData?.lastParts;
+    const habits = dashboardData?.habitProgress;
+
+    const glimmerCount = glimmers?.count ?? 0;
+
+    return [
+      {
+        id: 'nervous',
+        label: 'Nervous',
+        icon: ns ? (NS_ICONS[ns.ns_state] || NS_ICONS.mixed) : uiIcons.nsMixed,
+        status: ns ? timeAgo(ns.created_at) : '—',
+        active: !!ns,
+      },
+      {
+        id: 'glimmer',
+        label: 'Glimmer',
+        icon: uiIcons.subGlimmer,
+        // The glimmer art sits small inside lots of transparent padding, so
+        // scale it up to match the other icons' visual weight.
+        iconScale: 1.5,
+        status: glimmerCount > 0 ? `${glimmerCount} this wk` : '—',
+        active: glimmerCount > 0,
+      },
+      {
+        id: 'trigger',
+        label: 'Trigger',
+        icon: uiIcons.subTrigger,
+        iconScale: 1.25,
+        status: trigger ? timeAgo(trigger.created_at) : '—',
+        active: !!trigger,
+      },
+      {
+        id: 'parts',
+        label: 'Parts',
+        icon: uiIcons.subParts,
+        status: parts ? timeAgo(parts.created_at) : '—',
+        active: !!parts,
+      },
+      {
+        id: 'habits',
+        label: 'Habits',
+        icon: uiIcons.subHabits,
+        status: habits && habits.total > 0 ? `${habits.completed}/${habits.total}` : '—',
+        active: !!(habits && habits.total > 0),
+      },
+    ];
   };
+
+  const renderTrackBlock = () => (
+    <TouchableOpacity
+      activeOpacity={0.9}
+      onPress={() => setTrackMenuVisible(true)}
+    >
+      <GlassCard style={styles.trackCard} overlayStyle={styles.trackOverlay}>
+        <View style={styles.trackHeaderRow}>
+          <Image source={tileIcons.track} style={styles.trackHeaderIcon} />
+          <View style={styles.trackHeaderText}>
+            <Text style={styles.trackTitle}>Track</Text>
+            <Text style={styles.trackSubtitle}>Check in & log a moment</Text>
+          </View>
+        </View>
+
+        {dashboardLoading ? (
+          <View style={styles.trackLoading}>
+            <ActivityIndicator size="small" color={colors.primary} />
+          </View>
+        ) : (
+          <View style={styles.trackIndicatorRow}>
+            {buildTrackIndicators().map((ind) => (
+              <View key={ind.id} style={styles.indicator}>
+                <Image
+                  source={ind.icon}
+                  style={[
+                    styles.indicatorIcon,
+                    ind.iconScale ? { transform: [{ scale: ind.iconScale }] } : null,
+                    !ind.active && styles.indicatorIconMuted,
+                  ]}
+                />
+                <Text style={styles.indicatorLabel} numberOfLines={1}>{ind.label}</Text>
+                <Text
+                  style={[styles.indicatorStatus, !ind.active && styles.indicatorStatusMuted]}
+                  numberOfLines={1}
+                >
+                  {ind.status}
+                </Text>
+              </View>
+            ))}
+          </View>
+        )}
+      </GlassCard>
+    </TouchableOpacity>
+  );
 
   const { greeting, context, subtext } = getGreetingContent(dashboardData);
 
@@ -415,24 +429,14 @@ const GridHomeScreen = ({ navigation }) => {
             <Text style={styles.greetingSubtext}>{subtext}</Text>
           </Animated.View>
 
-          {/* Dashboard Widgets */}
-          <View style={styles.dashboardRow}>
-            <Animated.View style={{ opacity: widget1Opacity, transform: [{ translateY: widget1TransY }] }}>
-              <GlassCard style={styles.dashboardCard}>
-                {renderNSWidget()}
-              </GlassCard>
-            </Animated.View>
-            <Animated.View style={{ opacity: widget2Opacity, transform: [{ translateY: widget2TransY }] }}>
-              <GlassCard style={styles.dashboardCard}>
-                {renderHabitsWidget()}
-              </GlassCard>
-            </Animated.View>
-            <Animated.View style={{ opacity: widget3Opacity, transform: [{ translateY: widget3TransY }] }}>
-              <GlassCard style={styles.dashboardCard}>
-                {renderGlimmersWidget()}
-              </GlassCard>
-            </Animated.View>
-          </View>
+          {/* Track block (replaces the old NS/Habits/Glimmer widgets +
+              the Track grid tile) */}
+          <Animated.View style={[
+            styles.trackBlockContainer,
+            { opacity: widget1Opacity, transform: [{ translateY: widget1TransY }] },
+          ]}>
+            {renderTrackBlock()}
+          </Animated.View>
 
           {/* Navigation Tiles */}
           <Animated.View style={[
@@ -557,69 +561,98 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
-  // Dashboard
-  dashboardRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 24,
-  },
-  dashboardCard: {
-    width: WIDGET_WIDTH,
-    height: 160,
-  },
-  widgetTouchable: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-  },
-  nsDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginBottom: 6,
-  },
   headerIcon: {
     width: 56,
     height: 56,
     resizeMode: 'contain',
   },
-  widgetIcon: {
+
+  // Track block
+  trackBlockContainer: {
+    marginBottom: 24,
+  },
+  trackCard: {
+    borderRadius: 20,
+    borderWidth: 0,
+    shadowColor: 'transparent',
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    shadowOffset: { width: 0, height: 0 },
+    elevation: 0,
+  },
+  trackOverlay: {
+    padding: 0,
+    alignItems: 'stretch',
+    justifyContent: 'flex-start',
+    backgroundColor: 'rgba(255, 255, 255, 0.55)',
+  },
+  trackHeaderRow: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingTop: 18,
+    paddingBottom: 14,
+  },
+  trackHeaderIcon: {
     width: 88,
     height: 88,
     resizeMode: 'contain',
-    marginBottom: 2,
+    marginBottom: 6,
   },
-  widgetIconMuted: {
-    opacity: 0.45,
+  trackHeaderText: {
+    alignItems: 'center',
   },
-  widgetValue: {
-    fontSize: 13,
-    fontWeight: '600',
+  trackTitle: {
+    fontSize: 22,
+    fontWeight: '700',
     color: colors.text,
     textAlign: 'center',
   },
-  widgetValueLarge: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: colors.text,
-    marginBottom: 2,
-  },
-  ringText: {
+  trackSubtitle: {
     fontSize: 13,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  widgetLabel: {
-    fontSize: 11,
     color: colors.textSecondary,
-    marginTop: 4,
+    marginTop: 2,
     textAlign: 'center',
   },
-  widgetEmptyText: {
-    fontSize: 12,
-    color: colors.primary,
+  trackLoading: {
+    paddingVertical: 24,
+    alignItems: 'center',
+  },
+  trackIndicatorRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 12,
+    paddingBottom: 20,
+    paddingTop: 4,
+  },
+  indicator: {
+    flex: 1,
+    alignItems: 'center',
+    paddingHorizontal: 2,
+  },
+  indicatorIcon: {
+    width: 64,
+    height: 64,
+    resizeMode: 'contain',
+    marginBottom: 4,
+  },
+  indicatorIconMuted: {
+    opacity: 0.4,
+  },
+  indicatorLabel: {
+    fontSize: 11,
     fontWeight: '600',
-    marginTop: 4,
+    color: colors.text,
+    textAlign: 'center',
+  },
+  indicatorStatus: {
+    fontSize: 10,
+    color: colors.textSecondary,
+    textAlign: 'center',
+    marginTop: 1,
+  },
+  indicatorStatusMuted: {
+    color: colors.textLight,
   },
 
   // Navigation Tiles
