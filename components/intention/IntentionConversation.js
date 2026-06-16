@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   Bookmark,
   CheckCircle2,
@@ -73,6 +74,7 @@ const IntentionConversation = ({
   const [messageText, setMessageText] = useState('');
   const [isUserTyping, setIsUserTyping] = useState(false);
   const typingTimeoutRef = useRef(null);
+  const insets = useSafeAreaInsets();
 
   useEffect(() => {
     return () => {
@@ -194,9 +196,10 @@ const IntentionConversation = ({
     </View>
   ) : null;
 
-  // SetIntentionScreen owns the gradient + KeyboardAvoidingView at the parent
-  // level. We render ChatConversation directly so the gradient flows from the
-  // screen's header straight through the chat without any opaque seams.
+  // SetIntentionScreen owns the gradient and renders this component full-bleed
+  // (NOT wrapped in its KeyboardAvoidingView), so ChatConversation owns keyboard
+  // avoidance here — the same device-verified per-platform pattern every other
+  // chat uses. The gradient still flows from the screen header through the chat.
   return (
     <ChatConversation
       messages={toChatMessages(conversationHistory)}
@@ -213,7 +216,7 @@ const IntentionConversation = ({
       header={renderHeader()}
       toast={charCounterToast}
       renderMessageExtras={renderMessageExtras}
-      disableKeyboardAvoiding
+      extraBottomInset={insets.bottom}
     />
   );
 };

@@ -761,29 +761,33 @@ const SetIntentionScreen = ({ navigation, route }) => {
           </View>
         )}
 
-        {/* Main Content. Conversation mode runs full-bleed (its own input row
-            owns inset spacing). Other modes render inside a ScrollView. */}
-        <KeyboardAvoidingView
-          style={styles.keyboardAvoid}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-        >
-          {mode === 'conversation' ? (
-            renderContent()
-          ) : mode === 'templates' || mode === 'draft' ? (
-            <View style={styles.modeContainer}>{renderContent()}</View>
-          ) : (
-            <ScrollView
-              ref={scrollViewRef}
-              style={styles.scrollContainer}
-              contentContainerStyle={styles.scrollContent}
-              showsVerticalScrollIndicator={false}
-              keyboardShouldPersistTaps="handled"
-            >
-              {renderContent()}
-            </ScrollView>
-          )}
-        </KeyboardAvoidingView>
+        {/* Main Content. Conversation mode runs full-bleed and owns its OWN
+            keyboard avoidance (ChatConversation's per-platform pattern), so it
+            is rendered OUTSIDE the KeyboardAvoidingView to avoid double-adjusting
+            on Android. Other modes render inside the KAV. */}
+        {mode === 'conversation' ? (
+          renderContent()
+        ) : (
+          <KeyboardAvoidingView
+            style={styles.keyboardAvoid}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+          >
+            {mode === 'templates' || mode === 'draft' ? (
+              <View style={styles.modeContainer}>{renderContent()}</View>
+            ) : (
+              <ScrollView
+                ref={scrollViewRef}
+                style={styles.scrollContainer}
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
+              >
+                {renderContent()}
+              </ScrollView>
+            )}
+          </KeyboardAvoidingView>
+        )}
       </SafeAreaView>
     </LinearGradient>
   );

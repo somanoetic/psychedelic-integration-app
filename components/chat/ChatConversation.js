@@ -74,6 +74,12 @@ const ChatConversation = ({
   // (e.g. SetIntentionScreen → IntentionConversation), nesting another KAV
   // produces broken layout. Setting this true renders a plain View instead.
   disableKeyboardAvoiding = false,
+  // Extra bottom padding added to the input row. Most screens wrap the chat in
+  // a <SafeAreaView edges={['bottom']}> that already reserves the nav-bar inset,
+  // so they leave this 0. Screens that wrap with edges={['top']} only (e.g.
+  // SetIntentionScreen) must pass insets.bottom here, or the input row slides
+  // behind the nav bar.
+  extraBottomInset = 0,
 }) => {
   const {
     scrollViewRef,
@@ -207,7 +213,14 @@ const ChatConversation = ({
       {inputReplacement}
 
       {showInputRow && (
-        <View style={styles.inputContainer}>
+        <View
+          style={[
+            styles.inputContainer,
+            extraBottomInset > 0 && {
+              paddingBottom: INPUT_BASE_PADDING_BOTTOM + extraBottomInset,
+            },
+          ]}
+        >
           <TextInput
             style={styles.input}
             value={inputText}
@@ -239,6 +252,9 @@ const ChatConversation = ({
     </Wrapper>
   );
 };
+
+// Base bottom padding of the input row, before any extraBottomInset is added.
+const INPUT_BASE_PADDING_BOTTOM = Platform.OS === 'ios' ? 16 : 12;
 
 const styles = StyleSheet.create({
   keyboardView: {
@@ -278,7 +294,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    paddingBottom: Platform.OS === 'ios' ? 16 : 12,
+    paddingBottom: INPUT_BASE_PADDING_BOTTOM,
   },
   input: {
     flex: 1,
