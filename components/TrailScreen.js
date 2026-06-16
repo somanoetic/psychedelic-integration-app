@@ -1024,9 +1024,9 @@ const TrailScreen = ({ navigation }) => {
         });
       }
     } else if (type === 'education') {
-      navigation.navigate('MainTabs', {
-        screen: 'Learn',
-        params: { selectedTopicId: refId, returnTo: 'CurriculumTracker' },
+      navigation.navigate('Learn', {
+        selectedTopicId: refId,
+        returnTo: 'CurriculumTracker',
       });
     } else if (type === 'conversational' || type === 'tool') {
       navigation.navigate(refId);

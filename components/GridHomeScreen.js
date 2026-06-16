@@ -30,9 +30,11 @@ const tileIcons = {
   track: require('../assets/images/icons/track2.png'),
   prepare: require('../assets/images/icons/map_refined.png'),
   process: require('../assets/images/icons/puzzle.png'),
+  history: require('../assets/images/icons/history.png'),
   innerwork: require('../assets/images/icons/inner_work.png'),
   practice: require('../assets/images/icons/integration_cycle.png'),
   philosophy: require('../assets/images/icons/philosophical.png'),
+  learn: require('../assets/images/icons/education_progress.png'),
 };
 
 // Header / widget / submenu icons (v2 — illustrated set)
@@ -95,7 +97,7 @@ const GlassCard = ({ children, style, overlayStyle }) => {
   );
 };
 
-const PressableTile = ({ onPress, style, children }) => {
+const PressableTile = ({ onPress, style, innerStyle, children }) => {
   const scaleAnim = useRef(new Animated.Value(1)).current;
   return (
     <Animated.View style={[style, { transform: [{ scale: scaleAnim }] }]}>
@@ -104,7 +106,7 @@ const PressableTile = ({ onPress, style, children }) => {
         onPressIn={() => Animated.spring(scaleAnim, { toValue: 0.95, useNativeDriver: true }).start()}
         onPressOut={() => Animated.spring(scaleAnim, { toValue: 1, friction: 3, tension: 40, useNativeDriver: true }).start()}
         activeOpacity={0.9}
-        style={styles.tileInner}
+        style={innerStyle || styles.tileInner}
       >
         {children}
       </TouchableOpacity>
@@ -264,12 +266,20 @@ const GridHomeScreen = ({ navigation }) => {
     { id: 'habits', title: 'Habit Tracker', description: 'Track your daily practices', icon: uiIcons.subHabits, route: 'HabitTracker' },
   ];
 
+  // Layout: two paired rows bracketing a full-width History band.
+  //   Prepare | Process
+  //        History (wide)
+  //   Inner Work | Practice
+  //   Philosophical | Learn
+  // History + Learn moved here from the (now 3-tab) bottom bar.
   const navigationTiles = [
     { id: 'prepare', title: 'Prepare for a Journey', icon: tileIcons.prepare, route: 'SessionsHub' },
     { id: 'process', title: 'Process & Integrate', icon: tileIcons.process, route: 'ProcessIntegratePicker' },
+    { id: 'history', title: 'History', icon: tileIcons.history, route: 'History', wide: true },
     { id: 'innerwork', title: 'Inner Work', icon: tileIcons.innerwork, route: 'InnerWork' },
     { id: 'practice', title: 'Practice', icon: tileIcons.practice, route: 'Practice' },
     { id: 'philosophy', title: 'Philosophical Talkthroughs', icon: tileIcons.philosophy, route: 'PhilosophicalTalkthroughs' },
+    { id: 'learn', title: 'Learn', icon: tileIcons.learn, route: 'Learn' },
   ];
 
   const handleTilePress = (tile) => {
@@ -447,10 +457,11 @@ const GridHomeScreen = ({ navigation }) => {
               <PressableTile
                 key={tile.id}
                 onPress={() => handleTilePress(tile)}
-                style={styles.tile}
+                style={tile.wide ? styles.tileWide : styles.tile}
+                innerStyle={tile.wide ? styles.tileInnerWide : undefined}
               >
-                <Image source={tile.icon} style={styles.tileIcon} />
-                <Text style={styles.tileTitle}>{tile.title}</Text>
+                <Image source={tile.icon} style={tile.wide ? styles.tileIconWide : styles.tileIcon} />
+                <Text style={tile.wide ? styles.tileTitleWide : styles.tileTitle}>{tile.title}</Text>
               </PressableTile>
             ))}
           </Animated.View>
@@ -693,6 +704,46 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   tileTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.text,
+    textAlign: 'center',
+  },
+
+  // Full-width tile (History) — a horizontal band between the paired rows.
+  tileWide: {
+    width: '100%',
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    borderRadius: 20,
+    marginBottom: TILE_GAP,
+    minHeight: 96,
+    overflow: 'hidden',
+    ...(Platform.OS === 'ios'
+      ? {
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+        }
+      : {
+          borderWidth: 1,
+          borderColor: 'rgba(0, 0, 0, 0.06)',
+        }),
+  },
+  tileInnerWide: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+  },
+  tileIconWide: {
+    width: 160,
+    height: 160,
+    resizeMode: 'contain',
+    marginBottom: 4,
+  },
+  tileTitleWide: {
     fontSize: 13,
     fontWeight: '600',
     color: colors.text,

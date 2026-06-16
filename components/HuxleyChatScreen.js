@@ -536,11 +536,7 @@ const HuxleyChatScreen = ({ navigation }) => {
         if (recent) huxleyService.acceptHandoff(recent);
       }
 
-      if (route === 'Learn') {
-        navigation.navigate('MainTabs', { screen: 'Learn' });
-      } else {
-        navigation.navigate(route);
-      }
+      navigation.navigate(route);
       return;
     }
 
@@ -770,11 +766,7 @@ const HuxleyChatScreen = ({ navigation }) => {
                 const recent = conversationalRoutingService.getRecentContextSummary(3);
                 if (recent) huxleyService.acceptHandoff(recent);
               }
-              if (route === 'Learn') {
-                navigation.navigate('MainTabs', { screen: 'Learn' });
-              } else {
-                navigation.navigate(route);
-              }
+              navigation.navigate(route);
             }}
           />
         </KeyboardWrapper>

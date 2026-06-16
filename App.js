@@ -1,4 +1,4 @@
-import { Home, Pencil, GraduationCap, Compass, History } from 'lucide-react-native';
+import { Home, Pencil, Compass } from 'lucide-react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -139,9 +139,7 @@ const MainTabs = () => {
           const TAB_ICONS = {
             Home,
             Journal: Pencil,
-            Learn: GraduationCap,
             Atlas: Compass,
-            History,
           };
           const Icon = TAB_ICONS[route.name] || Home;
           return <Icon size={size} color={color} strokeWidth={focused ? 2.25 : 1.75} />;
@@ -176,19 +174,9 @@ const MainTabs = () => {
         options={{ title: 'Journal' }}
       />
       <Tab.Screen
-        name="Learn"
-        component={EducationScreen}
-        options={{ title: 'Learn' }}
-      />
-      <Tab.Screen
         name="Atlas"
         component={InnerAtlasScreen}
         options={{ title: 'Inner Atlas' }}
-      />
-      <Tab.Screen
-        name="History"
-        component={ConversationalAllSessions}
-        options={{ title: 'History' }}
       />
     </Tab.Navigator>
   );
@@ -398,6 +386,18 @@ function App() {
             <>
               <Stack.Screen name="HuxleyChat" component={HuxleyChatScreen} />
               <Stack.Screen name="MainTabs" component={MainTabs} />
+              {/* Moved out of the bottom tab bar (now Home / Journal / Inner Atlas);
+                  reached from home-screen tiles and in-app navigate() calls */}
+              <Stack.Screen
+                name="Learn"
+                component={EducationScreen}
+                options={{ headerShown: false, title: 'Learn' }}
+              />
+              <Stack.Screen
+                name="History"
+                component={ConversationalAllSessions}
+                options={{ headerShown: false, title: 'History' }}
+              />
               {/* Dual Mode Conversation Screens */}
               <Stack.Screen
                 name="ProcessIntegratePicker"
