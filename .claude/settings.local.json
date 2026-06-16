@@ -5,7 +5,20 @@
       "WebSearch",
       "mcp__claude_ai_PubMed__search_articles",
       "mcp__ide__getDiagnostics",
-      "Skill(schedule)"
+      "Skill(schedule)",
+      "PowerShell(if \\(Test-Path .env\\) { Write-Output \"env exists\"; $content = Get-Content .env -Raw; if \\($content -match 'ANTHROPIC_API_KEY=\\(.+\\)'\\) { Write-Output \"ANTHROPIC_API_KEY present \\(length: $\\($Matches[1].Trim\\(\\).Length\\)\\)\" } else { Write-Output \"ANTHROPIC_API_KEY missing\" } } else { Write-Output \".env missing\" })",
+      "PowerShell($env:PERSONA_PILOT='true'; npx jest --testPathPattern=personaMatrix --testTimeout=600000 2>&1 | Select-Object -Last 100)",
+      "PowerShell(npx jest --testPathPattern=conversationBot --listTests 2>&1 | Select-Object -Last 10)",
+      "PowerShell($env:PERSONA_PILOT='true'; npx jest --testPathPattern=personaMatrix --testTimeout=600000 2>&1 | Select-Object -Last 80)",
+      "PowerShell(Tee-Object *)",
+      "PowerShell(Select-String *)",
+      "PowerShell(Get-Content __tests__/transcripts/personas/_run.log -Tail 30 | Where-Object { $_ -match 'MATRIX COMPLETE|Completed:|FAILED|elapsed|PASS|FAIL|Tests:' } | ForEach-Object { $_.Trim\\(\\) })",
+      "PowerShell($dir = \"marketing\\\\landing\\\\favicon\"; New-Item -ItemType Directory -Force -Path $dir | Out-Null; $base = \"https://realfavicongenerator.net/files/11961e0a-b3d1-4903-9306-5cbc4896dba0\"; $files = @\\(\"favicon.svg\",\"favicon-96x96.png\",\"favicon.ico\",\"apple-touch-icon.png\",\"web-app-manifest-192x192.png\",\"web-app-manifest-512x512.png\",\"site.webmanifest\"\\); foreach \\($f in $files\\) { Invoke-WebRequest -Uri \"$base/$f\" -OutFile \"$dir\\\\$f\" -UseBasicParsing; Write-Output \"downloaded: $f\" }; Get-ChildItem $dir | Select-Object Name, Length)",
+      "PowerShell($assets = \"marketing\\\\landing\\\\assets\"; New-Item -ItemType Directory -Force -Path $assets | Out-Null; Copy-Item \"design\\\\Multitudes\\\\logo-primary.png\" \"$assets\\\\logo.png\"; Get-ChildItem $assets | Select-Object Name, Length)",
+      "PowerShell($env:PERSONA_LIVE='true'; Remove-Item Env:PERSONA_RESUME -ErrorAction SilentlyContinue; $env:PERSONAS='trauma_resurfacing,spiritual_bypasser'; $env:MODES='general'; $env:RUNS='1'; npx jest --testPathPattern=personaMatrix --testTimeout=3600000 2>&1 | Tee-Object -FilePath __tests__/transcripts/personas/_verify.log | Select-String -Pattern \"starting|done in|FAILED|MATRIX COMPLETE|Completed:|Persona Matrix\")",
+      "PowerShell($env:PERSONA_LIVE='true'; Remove-Item Env:PERSONA_RESUME -ErrorAction SilentlyContinue; $env:PERSONAS='suicidal_crisis'; $env:MODES='ifs,regulating_resources'; $env:RUNS='1,2,3'; npx jest --testPathPattern=personaMatrix --testTimeout=3600000 2>&1 | Tee-Object -FilePath __tests__/transcripts/personas/_bug313_verify.log | Select-String -Pattern \"starting|done in|FAILED|MATRIX COMPLETE|Completed:|CRISIS LATCH\")",
+      "PowerShell($env:PERSONA_LIVE='true'; Remove-Item Env:PERSONA_RESUME -ErrorAction SilentlyContinue; Remove-Item Env:PERSONAS -ErrorAction SilentlyContinue; Remove-Item Env:MODES -ErrorAction SilentlyContinue; Remove-Item Env:RUNS -ErrorAction SilentlyContinue; npx jest --testPathPattern=personaMatrix --testTimeout=43200000 2>&1 | Tee-Object -FilePath __tests__/transcripts/personas/_postfix_run.log)",
+      "WebFetch(domain:docs.expo.dev)"
     ],
     "deny": [],
     "ask": []

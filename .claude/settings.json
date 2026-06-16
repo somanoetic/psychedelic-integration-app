@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell($env:PERSONA_LIVE='true'; Remove-Item Env:PERSONA_RESUME -ErrorAction SilentlyContinue; $env:PERSONAS='difficult_trip_avoider,spiritual_bypasser'; $env:MODES='therapeutic_integration,regulating_resources'; $env:RUNS='1'; npx jest --testPathPattern=personaMatrix --testTimeout=3600000 2>&1 | Tee-Object -FilePath __tests__/transcripts/personas/_bug316_verify.log | Select-String -Pattern \"starting|done in|FAILED|MATRIX COMPLETE|Completed:|CRISIS LATCH\")"
+    ]
+  }
+}

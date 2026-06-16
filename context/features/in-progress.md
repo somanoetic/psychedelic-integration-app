@@ -1,23 +1,28 @@
 # Features In Progress
 
 **File Size Limit:** 300 lines
-**Last Updated:** 2026-05-15
+**Last Updated:** 2026-06-16
 
 ---
 
 ## Active Development
 
-### Voice Conversation with Huxley (Phase 1 plumbing complete)
-**Status:** Phase 1 plumbing in — STT/TTS edge functions + client voiceService. Phase 2 UI wiring next.
+### Voice Conversation with Huxley — PAUSED (pivoted to narration-only)
+**Status:** ⏸️ PAUSED 2026-06-02. Phase 1 (plumbing) + Phase 2 (chat integration + full voice loop)
+both BUILT (per voice-conversation-phase1.md), but turn-based STT couldn't clear the "guide IRL"
+bar, so the conversational voice path was shelved. Pivoted to **narration-only** — Huxley reads
+exercise steps aloud in `screens/GuidedExerciseScreen.js` via `voiceService.speak()` (built, not
+yet device-verified). Edge functions (`whisper-transcribe`, `elevenlabs-tts`) + `lib/voiceService.js`
+exist. Do NOT restart conversational Phase 2; if revisited, use streaming STT.
 **See:** [voice-conversation-phase1.md](voice-conversation-phase1.md)
-**Started:** 2026-05-15
+**Started:** 2026-05-15 · **Paused:** 2026-06-02
 
 
 
-### FEAT-205 + FEAT-206: RAG Knowledge Base (Combined)
+### FEAT-205 + FEAT-206: RAG Knowledge Base (Combined) ✅ DEPLOYED
 **Priority:** High
-**Status:** Code complete, deploying this week
-**Target:** Completed code 2026-02-25, deploying Mar 3-9
+**Status:** ✅ DEPLOYED & LIVE — verified 2026-06-16 (move to Recently Completed)
+**Target:** Code complete 2026-02-25; deployed/ingested ~Feb 25
 **Assigned:** Claude AI
 
 **Code Complete:**
@@ -31,14 +36,30 @@
 - [x] 19 unit tests (all passing)
 - [x] ADR-008 documented
 
-**Remaining deployment steps:**
-- [ ] Run `python scripts/extract_all_pdfs.py` to extract remaining ~85 PDFs
-- [ ] Run `python scripts/chunk_documents.py` to generate chunks
-- [ ] Run `supabase db push` to apply migration
-- [ ] Set `OPENAI_API_KEY` secret: `supabase secrets set OPENAI_API_KEY=sk-...`
-- [ ] Deploy edge function: `supabase functions deploy embeddings`
-- [ ] Run `python scripts/ingest_to_supabase.py` to embed + store (~$0.20, ~30-60 min)
-- [ ] REINDEX the IVFFlat index after ingestion
+**Deployment — VERIFIED LIVE (2026-06-16):**
+- [x] Extract + chunk: `scripts/chunked_documents.jsonl` = 21,166 chunks / 281 source docs
+- [x] Migration applied — `knowledge_documents` + `document_chunks` tables exist in live Supabase
+- [x] `OPENAI_API_KEY` set as a **Supabase secret** (NOT in local `.env` — see note)
+- [x] `embeddings` edge function deployed — `search` action returns 200 with relevant results
+- [x] Ingestion + embeddings done — live counts: **281 docs / 21,648 chunks**, embeddings populated (1536-dim)
+- [x] Vector search verified end-to-end — semantically relevant, ranked results across 5 test queries
+
+**Verification evidence (2026-06-16):**
+- Live `document_chunks` count = 21,648 (vs 21,166 in the chunk file — ~2% drift, likely a re-run)
+- Sample query "how do I work with a part that feels protective" → correct IFS protector-part chunk
+- 5 timed queries all returned 5 results in ~0.9–1.4s (incl. OpenAI query-embedding round-trip)
+
+**⚠️ Open follow-ups (do NOT block "deployed" status):**
+- **IVFFlat index likely under-tuned.** Migration sets `lists = 20` (sized for ~14K vectors); actual
+  corpus is 21,648 → rule-of-thumb target is `lists ≈ sqrt(21,648) ≈ 150`. The schema's `CREATE INDEX`
+  also runs on an *empty* table, so unless a REINDEX ran post-ingestion the centroids were built on zero
+  rows. **Cannot confirm REINDEX from outside the DB.** Fix: in Supabase SQL editor, `DROP INDEX
+  idx_document_chunks_embedding; CREATE INDEX ... WITH (lists = 150);` (~30s). Tracked as a new low-pri item.
+- **`OPENAI_API_KEY` missing from local `.env`** — production works (key is a Supabase secret), but
+  re-running `scripts/ingest_to_supabase.py` locally will fail until the key is added locally.
+- **Encoding artifacts in chunks** — smart quotes / some Unicode render as `�` (PDF-extraction encoding).
+  Cosmetic; doesn't affect retrieval. Improve extraction encoding if clean source text is ever surfaced to users.
+- `extracted_documents.jsonl` (step-1 intermediate) no longer on disk — only final chunk file remains. Re-extract if needed.
 
 ---
 
