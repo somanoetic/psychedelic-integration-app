@@ -20,7 +20,7 @@ import {
   Lightbulb,
 } from 'lucide-react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
+import { colors, gradients, spacing, borderRadius, shadows, typography } from '../theme/colors';
 import { useSessionChecklist } from '../useSessionChecklist';
 import ChecklistHeader from '../components/checklist/ChecklistHeader';
 import ChecklistItemsList from '../components/checklist/ChecklistItemsList';
@@ -119,25 +119,35 @@ const SessionChecklistScreen = ({ navigation, route }) => {
     return success;
   };
 
+  // Plain back-arrow header, matching the Sessions hub (dark icon on the
+  // soft gradient backdrop — no heavy gradient bar).
+  const renderBackHeader = () => (
+    <View style={styles.headerRow}>
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}
+      >
+        <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
+      </TouchableOpacity>
+    </View>
+  );
+
   // Loading state
   if (loading && !checklist) {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
-        <LinearGradient colors={gradients.warm} start={{ x: 1.0, y: 0.0 }} end={{ x: 0.0, y: 1.0 }} style={styles.headerGradient}>
-          <View style={styles.headerRow}>
-            <TouchableOpacity
-              style={styles.backButton}
-              onPress={() => navigation.goBack()}
-            >
-              <ArrowLeft size={24} color={colors.textInverse} strokeWidth={2} />
-            </TouchableOpacity>
-            <Text style={styles.headerTitle}>Session Checklist</Text>
+        <LinearGradient
+          colors={gradients.standard}
+          start={gradients.standardStart}
+          end={gradients.standardEnd}
+          style={styles.gradientFill}
+        >
+          {renderBackHeader()}
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={colors.primary} />
+            <Text style={styles.loadingText}>Loading checklist...</Text>
           </View>
         </LinearGradient>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
-          <Text style={styles.loadingText}>Loading checklist...</Text>
-        </View>
       </SafeAreaView>
     );
   }
@@ -146,26 +156,23 @@ const SessionChecklistScreen = ({ navigation, route }) => {
   if (error && !checklist) {
     return (
       <SafeAreaView style={styles.container} edges={['top']}>
-        <LinearGradient colors={gradients.warm} start={{ x: 1.0, y: 0.0 }} end={{ x: 0.0, y: 1.0 }} style={styles.headerGradient}>
-          <View style={styles.headerRow}>
-            <TouchableOpacity
-              style={styles.backButton}
-              onPress={() => navigation.goBack()}
-            >
-              <ArrowLeft size={24} color={colors.textInverse} strokeWidth={2} />
+        <LinearGradient
+          colors={gradients.standard}
+          start={gradients.standardStart}
+          end={gradients.standardEnd}
+          style={styles.gradientFill}
+        >
+          {renderBackHeader()}
+          <View style={styles.errorContainer}>
+            <AlertCircle size={64} color={colors.error} strokeWidth={1.5} />
+            <Text style={styles.errorTitle}>Failed to Load</Text>
+            <Text style={styles.errorText}>{error}</Text>
+            <TouchableOpacity style={styles.retryButton} onPress={retry}>
+              <RefreshCw size={20} color={colors.textInverse} strokeWidth={2} />
+              <Text style={styles.retryButtonText}>Try Again</Text>
             </TouchableOpacity>
-            <Text style={styles.headerTitle}>Session Checklist</Text>
           </View>
         </LinearGradient>
-        <View style={styles.errorContainer}>
-          <AlertCircle size={64} color={colors.error} strokeWidth={1.5} />
-          <Text style={styles.errorTitle}>Failed to Load</Text>
-          <Text style={styles.errorText}>{error}</Text>
-          <TouchableOpacity style={styles.retryButton} onPress={retry}>
-            <RefreshCw size={20} color={colors.textInverse} strokeWidth={2} />
-            <Text style={styles.retryButtonText}>Try Again</Text>
-          </TouchableOpacity>
-        </View>
       </SafeAreaView>
     );
   }
@@ -175,21 +182,13 @@ const SessionChecklistScreen = ({ navigation, route }) => {
       style={[styles.container, { paddingBottom: insets.bottom }]}
       edges={['top']}
     >
-      {/* Header */}
-      <LinearGradient colors={gradients.warm} style={styles.headerGradient}>
-        <View style={styles.headerRow}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
-            <ArrowLeft size={24} color={colors.textInverse} strokeWidth={2} />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Session Checklist</Text>
-        </View>
-        {sessionData?.title && (
-          <Text style={styles.heroSubtitle}>{sessionData.title}</Text>
-        )}
-      </LinearGradient>
+      <LinearGradient
+        colors={gradients.standard}
+        start={gradients.standardStart}
+        end={gradients.standardEnd}
+        style={styles.gradientFill}
+      >
+      {renderBackHeader()}
 
       {/* Error banner */}
       {error && (
@@ -204,6 +203,14 @@ const SessionChecklistScreen = ({ navigation, route }) => {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.content}>
+          {/* Hero title */}
+          <View style={styles.hero}>
+            <Text style={styles.heroTitle}>Session Checklist</Text>
+            {sessionData?.title && (
+              <Text style={styles.heroSubtitle}>{sessionData.title}</Text>
+            )}
+          </View>
+
           {/* Progress header */}
           <ChecklistHeader
             checklist={checklist}
@@ -275,6 +282,7 @@ const SessionChecklistScreen = ({ navigation, route }) => {
           </View>
         </View>
       </ScrollView>
+      </LinearGradient>
 
       {/* Add item modal */}
       <AddItemModal
@@ -290,41 +298,37 @@ const SessionChecklistScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
-  headerGradient: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    paddingTop: spacing.sm,
+  gradientFill: {
+    flex: 1,
   },
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: colors.textInverse,
-    flex: 1,
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.sm,
   },
   backButton: {
-    marginRight: spacing.sm,
-    padding: 4,
+    padding: spacing.sm,
+    borderRadius: borderRadius.sm,
+    minWidth: 44,
+    minHeight: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  hero: {
+    marginBottom: spacing.lg,
   },
   heroTitle: {
     fontSize: 28,
-    fontWeight: 'bold',
-    color: colors.textInverse,
-    textAlign: 'center',
+    fontFamily: typography.serif,
+    color: colors.text,
     marginBottom: spacing.xs,
-    marginTop: spacing.sm,
   },
   heroSubtitle: {
-    fontSize: 14,
-    color: colors.textInverse,
-    opacity: 0.9,
-    marginLeft: 40,
-    marginTop: 2,
+    fontSize: 15,
+    color: colors.textSecondary,
+    lineHeight: 22,
   },
   scrollContainer: {
     flex: 1,

@@ -1,13 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { CloudOff, CheckCircle2 } from 'lucide-react-native';
-import { colors, gradients, spacing, borderRadius, shadows } from '../../theme/colors';
+import { colors, spacing, borderRadius, shadows } from '../../theme/colors';
 
 /**
  * ChecklistHeader - Progress display for checklist
  *
- * Shows completion count, progress bar, and sync status.
+ * Shows completion count, progress bar, and sync status. Rendered as a clean
+ * white card to match the Sessions hub aesthetic (no gradient).
  */
 const ChecklistHeader = ({ checklist, syncing, offline }) => {
   if (!checklist) return null;
@@ -16,23 +16,20 @@ const ChecklistHeader = ({ checklist, syncing, offline }) => {
 
   return (
     <View style={styles.container}>
-      <LinearGradient
-        colors={gradients.warm}
-        style={styles.gradient}
-      >
+      <View style={styles.card}>
         <View style={styles.content}>
           {/* Progress text */}
           <View style={styles.textRow}>
             <Text style={styles.title}>Preparation Progress</Text>
             {syncing && (
               <View style={styles.syncIndicator}>
-                <ActivityIndicator size="small" color={colors.textInverse} />
+                <ActivityIndicator size="small" color={colors.primary} />
                 <Text style={styles.syncText}>Syncing...</Text>
               </View>
             )}
             {offline && !syncing && (
               <View style={styles.offlineIndicator}>
-                <CloudOff size={16} color={colors.textInverse} strokeWidth={2} />
+                <CloudOff size={16} color={colors.textSecondary} strokeWidth={2} />
                 <Text style={styles.offlineText}>Offline</Text>
               </View>
             )}
@@ -64,7 +61,7 @@ const ChecklistHeader = ({ checklist, syncing, offline }) => {
             </View>
           )}
         </View>
-      </LinearGradient>
+      </View>
     </View>
   );
 };
@@ -73,10 +70,11 @@ const styles = StyleSheet.create({
   container: {
     marginBottom: spacing.md,
   },
-  gradient: {
+  card: {
+    backgroundColor: colors.surface,
     borderRadius: borderRadius.lg,
     overflow: 'hidden',
-    ...shadows.medium,
+    ...shadows.soft,
   },
   content: {
     padding: spacing.lg,
@@ -88,9 +86,9 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
-    color: colors.textInverse,
+    color: colors.text,
   },
   syncIndicator: {
     flexDirection: 'row',
@@ -99,27 +97,25 @@ const styles = StyleSheet.create({
   },
   syncText: {
     fontSize: 12,
-    color: colors.textInverse,
-    opacity: 0.9,
+    color: colors.textSecondary,
   },
   offlineIndicator: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: colors.backgroundAlt,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
     borderRadius: borderRadius.sm,
   },
   offlineText: {
     fontSize: 12,
-    color: colors.textInverse,
+    color: colors.textSecondary,
     fontWeight: '600',
   },
   count: {
-    fontSize: 16,
-    color: colors.textInverse,
-    opacity: 0.95,
+    fontSize: 15,
+    color: colors.textSecondary,
     marginBottom: spacing.md,
   },
   progressBarContainer: {
@@ -130,7 +126,7 @@ const styles = StyleSheet.create({
   progressBarBackground: {
     flex: 1,
     height: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    backgroundColor: colors.backgroundAlt,
     borderRadius: borderRadius.full,
     overflow: 'hidden',
   },
@@ -142,7 +138,7 @@ const styles = StyleSheet.create({
   percentage: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: colors.textInverse,
+    color: colors.text,
     minWidth: 45,
     textAlign: 'right',
   },
@@ -151,7 +147,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
     marginTop: spacing.md,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.backgroundAlt,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
     borderRadius: borderRadius.md,

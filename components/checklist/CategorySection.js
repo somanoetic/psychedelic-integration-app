@@ -8,7 +8,7 @@ import {
   ChevronDown,
   ChevronUp,
 } from 'lucide-react-native';
-import { colors, spacing, borderRadius } from '../../theme/colors';
+import { colors, spacing, borderRadius, shadows } from '../../theme/colors';
 import ChecklistItem from './ChecklistItem';
 
 // Map legacy MaterialIcons names from categoryInfo to Lucide components.
@@ -111,10 +111,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: spacing.md,
-    paddingHorizontal: spacing.sm,
-    backgroundColor: colors.background,
+    paddingHorizontal: spacing.md,
+    backgroundColor: colors.surface,
     borderRadius: borderRadius.md,
     marginBottom: spacing.sm,
+    ...shadows.soft,
   },
   headerLeft: {
     flexDirection: 'row',
