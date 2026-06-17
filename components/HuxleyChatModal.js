@@ -182,6 +182,15 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
     );
   };
 
+  // How far to lift the sheet. On Android the soft-nav inset collapses into
+  // the keyboard when it opens, so padding by the FULL reported keyboard
+  // height over-lifts by ~insets.bottom and leaves a gap above the keyboard;
+  // subtract the inset there. iOS reports the frame without that overlap.
+  const keyboardOffset =
+    keyboardHeight > 0
+      ? Math.max(keyboardHeight - (Platform.OS === 'android' ? insets.bottom : 0), 0)
+      : 0;
+
   return (
     <Modal
       visible={visible}
@@ -199,7 +208,7 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
           sheet) shrinks the available region, so the sheet's percentage
           maxHeight stays correct and can't overflow the top of the screen.
           See memory project-chat-keyboard-gap-android. */}
-      <View style={[styles.modalContainer, { paddingBottom: keyboardHeight }]}>
+      <View style={[styles.modalContainer, { paddingBottom: keyboardOffset }]}>
         <TouchableOpacity
           style={styles.backdrop}
           activeOpacity={1}
