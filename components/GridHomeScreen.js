@@ -31,7 +31,7 @@ const tileIcons = {
   prepare: require('../assets/images/icons/map_refined.png'),
   process: require('../assets/images/icons/puzzle.png'),
   journal: require('../assets/images/icons/journal_refined.png'),
-  innerAtlas: require('../assets/images/icons/folded_map.png'),
+  innerAtlas: require('../assets/images/icons/atlas.png'),
   history: require('../assets/images/icons/history.png'),
   innerwork: require('../assets/images/icons/inner_work.png'),
   practice: require('../assets/images/icons/integration_cycle.png'),
