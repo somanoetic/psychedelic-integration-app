@@ -62,8 +62,6 @@ const NS_ICONS = {
   mixed: uiIcons.nsMixed,
 };
 import { fetchDashboardData } from '../lib/dashboardService';
-import SubMenuModal from './SubMenuModal';
-import { withTrackIcons } from '../lib/trackOptions';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const TILE_GAP = 16;
@@ -213,7 +211,6 @@ function timeAgo(dateStr) {
 // --- Main component ---
 
 const GridHomeScreen = ({ navigation }) => {
-  const [trackMenuVisible, setTrackMenuVisible] = useState(false);
   const [dashboardData, setDashboardData] = useState(null);
   const [dashboardLoading, setDashboardLoading] = useState(true);
 
@@ -257,15 +254,6 @@ const GridHomeScreen = ({ navigation }) => {
     }, [])
   );
 
-  // Track Hub options — shared list (lib/trackOptions) + this screen's icons.
-  const trackOptions = withTrackIcons({
-    nervous: uiIcons.subNervous,
-    glimmer: uiIcons.subGlimmer,
-    trigger: uiIcons.subTrigger,
-    parts: uiIcons.subParts,
-    habits: uiIcons.subHabits,
-  });
-
   // Layout: paired square rows bracketing a full-width History band.
   //   Prepare | Process
   //   Journal | Inner Atlas
@@ -296,10 +284,10 @@ const GridHomeScreen = ({ navigation }) => {
 
   // --- Track block ---
 
-  // The five Track indicators, in the same order as the Track submenu. Each
-  // derives a short read-only status from dashboardData (value when present,
-  // muted dash when empty). Tapping anywhere on the block opens the modal;
-  // the indicators themselves are not individually tappable.
+  // The five Track indicators, in the same order as the Track hub. Each derives
+  // a short read-only status from dashboardData (value when present, muted dash
+  // when empty) and carries its tracker `route` so it can be tapped straight
+  // through. The block header taps through to the full Track hub instead.
   const buildTrackIndicators = () => {
     const ns = dashboardData?.nsCheckin;
     const glimmers = dashboardData?.glimmerCount;
@@ -316,6 +304,7 @@ const GridHomeScreen = ({ navigation }) => {
         icon: ns ? (NS_ICONS[ns.ns_state] || NS_ICONS.mixed) : uiIcons.nsMixed,
         status: ns ? timeAgo(ns.created_at) : '—',
         active: !!ns,
+        route: 'NervousSystemCheckin',
       },
       {
         id: 'glimmer',
@@ -326,6 +315,7 @@ const GridHomeScreen = ({ navigation }) => {
         iconScale: 1.5,
         status: glimmerCount > 0 ? `${glimmerCount} this wk` : '—',
         active: glimmerCount > 0,
+        route: 'GlimmerTracker',
       },
       {
         id: 'trigger',
@@ -334,6 +324,7 @@ const GridHomeScreen = ({ navigation }) => {
         iconScale: 1.25,
         status: trigger ? timeAgo(trigger.created_at) : '—',
         active: !!trigger,
+        route: 'TriggerTracker',
       },
       {
         id: 'parts',
@@ -341,6 +332,7 @@ const GridHomeScreen = ({ navigation }) => {
         icon: uiIcons.subParts,
         status: parts ? timeAgo(parts.created_at) : '—',
         active: !!parts,
+        route: 'PartsCheckin',
       },
       {
         id: 'habits',
@@ -348,53 +340,60 @@ const GridHomeScreen = ({ navigation }) => {
         icon: uiIcons.subHabits,
         status: habits && habits.total > 0 ? `${habits.completed}/${habits.total}` : '—',
         active: !!(habits && habits.total > 0),
+        route: 'HabitTracker',
       },
     ];
   };
 
+  // The block header opens the full Track hub; each indicator taps straight
+  // through to its own tracker. (No longer one big touchable / submenu modal.)
   const renderTrackBlock = () => (
-    <TouchableOpacity
-      activeOpacity={0.9}
-      onPress={() => setTrackMenuVisible(true)}
-    >
-      <GlassCard style={styles.trackCard} overlayStyle={styles.trackOverlay}>
-        <View style={styles.trackHeaderRow}>
-          <Image source={tileIcons.track} style={styles.trackHeaderIcon} />
-          <View style={styles.trackHeaderText}>
-            <Text style={styles.trackTitle}>Track</Text>
-            <Text style={styles.trackSubtitle}>Check in & log a moment</Text>
-          </View>
+    <GlassCard style={styles.trackCard} overlayStyle={styles.trackOverlay}>
+      <TouchableOpacity
+        style={styles.trackHeaderRow}
+        activeOpacity={0.85}
+        onPress={() => navigation.navigate('TrackHub')}
+      >
+        <Image source={tileIcons.track} style={styles.trackHeaderIcon} />
+        <View style={styles.trackHeaderText}>
+          <Text style={styles.trackTitle}>Track</Text>
+          <Text style={styles.trackSubtitle}>Check in & log a moment</Text>
         </View>
+      </TouchableOpacity>
 
-        {dashboardLoading ? (
-          <View style={styles.trackLoading}>
-            <ActivityIndicator size="small" color={colors.primary} />
-          </View>
-        ) : (
-          <View style={styles.trackIndicatorRow}>
-            {buildTrackIndicators().map((ind) => (
-              <View key={ind.id} style={styles.indicator}>
-                <Image
-                  source={ind.icon}
-                  style={[
-                    styles.indicatorIcon,
-                    ind.iconScale ? { transform: [{ scale: ind.iconScale }] } : null,
-                    !ind.active && styles.indicatorIconMuted,
-                  ]}
-                />
-                <Text style={styles.indicatorLabel} numberOfLines={1}>{ind.label}</Text>
-                <Text
-                  style={[styles.indicatorStatus, !ind.active && styles.indicatorStatusMuted]}
-                  numberOfLines={1}
-                >
-                  {ind.status}
-                </Text>
-              </View>
-            ))}
-          </View>
-        )}
-      </GlassCard>
-    </TouchableOpacity>
+      {dashboardLoading ? (
+        <View style={styles.trackLoading}>
+          <ActivityIndicator size="small" color={colors.primary} />
+        </View>
+      ) : (
+        <View style={styles.trackIndicatorRow}>
+          {buildTrackIndicators().map((ind) => (
+            <TouchableOpacity
+              key={ind.id}
+              style={styles.indicator}
+              activeOpacity={0.7}
+              onPress={() => navigation.navigate(ind.route)}
+            >
+              <Image
+                source={ind.icon}
+                style={[
+                  styles.indicatorIcon,
+                  ind.iconScale ? { transform: [{ scale: ind.iconScale }] } : null,
+                  !ind.active && styles.indicatorIconMuted,
+                ]}
+              />
+              <Text style={styles.indicatorLabel} numberOfLines={1}>{ind.label}</Text>
+              <Text
+                style={[styles.indicatorStatus, !ind.active && styles.indicatorStatusMuted]}
+                numberOfLines={1}
+              >
+                {ind.status}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      )}
+    </GlassCard>
   );
 
   const { greeting, context, subtext } = getGreetingContent(dashboardData);
@@ -464,7 +463,18 @@ const GridHomeScreen = ({ navigation }) => {
                 style={tile.wide ? styles.tileWide : styles.tile}
                 innerStyle={tile.wide ? styles.tileInnerWide : undefined}
               >
-                <Image source={tile.icon} style={tile.wide ? styles.tileIconWide : styles.tileIcon} />
+                <Image
+                  source={tile.icon}
+                  style={
+                    tile.wide
+                      ? styles.tileIconWide
+                      : tile.id === 'process'
+                      ? styles.tileIconProcess
+                      : tile.id === 'innerAtlas'
+                      ? styles.tileIconInnerAtlas
+                      : styles.tileIcon
+                  }
+                />
                 <Text style={tile.wide ? styles.tileTitleWide : styles.tileTitle}>{tile.title}</Text>
               </PressableTile>
             ))}
@@ -474,16 +484,8 @@ const GridHomeScreen = ({ navigation }) => {
         </ScrollView>
 
         {/* The Huxley FAB + chat modal are now mounted globally over the
-            navigator (see components/GlobalHuxleyFab.js in App.js). */}
-
-        {/* Track SubMenu */}
-        <SubMenuModal
-          visible={trackMenuVisible}
-          onClose={() => setTrackMenuVisible(false)}
-          title="Track"
-          options={trackOptions}
-          onSelect={(route, params) => navigation.navigate(route, params)}
-        />
+            navigator (see components/GlobalHuxleyFab.js in App.js). The Track
+            block's header + indicators navigate directly (no submenu modal). */}
       </SafeAreaView>
     </LinearGradient>
   );
@@ -601,8 +603,8 @@ const styles = StyleSheet.create({
     paddingBottom: 14,
   },
   trackHeaderIcon: {
-    width: 88,
-    height: 88,
+    width: 160,
+    height: 160,
     resizeMode: 'contain',
     marginBottom: 6,
   },
@@ -696,6 +698,20 @@ const styles = StyleSheet.create({
   tileIcon: {
     width: 160,
     height: 160,
+    resizeMode: 'contain',
+    marginBottom: 4,
+  },
+  // Process & Integrate — 10% smaller than the base tile icon.
+  tileIconProcess: {
+    width: 144,
+    height: 144,
+    resizeMode: 'contain',
+    marginBottom: 4,
+  },
+  // Inner Atlas — 20% smaller than the base tile icon.
+  tileIconInnerAtlas: {
+    width: 128,
+    height: 128,
     resizeMode: 'contain',
     marginBottom: 4,
   },

@@ -12,8 +12,8 @@
  * NavigationContainer ref (the overlay lives outside any screen, so it has no
  * navigation prop of its own).
  *
- * Owns the Huxley chat modal and the Track submenu so they're reachable from
- * anywhere the FAB is visible.
+ * Owns the Huxley chat modal so it's reachable anywhere the FAB is visible;
+ * Journal/Track/Home navigate to their screens.
  */
 
 import { useRef, useState } from 'react';
@@ -32,8 +32,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Home as HomeIcon, Pencil, Compass, X } from 'lucide-react-native';
 import { colors } from '../theme/colors';
 import HuxleyChatModal from './HuxleyChatModal';
-import SubMenuModal from './SubMenuModal';
-import { withTrackIcons } from '../lib/trackOptions';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -43,28 +41,16 @@ const ACTION_GAP = 14;       // spacing between stacked actions
 const EDGE_PEEK = 14;        // how much of the tab pokes out when tucked
 const DRAG_HIDE_THRESHOLD = 60; // px of rightward drag to trigger tuck
 
-// Track submenu icons (the FAB has no screen-level icon map of its own).
-const TRACK_ICONS = {
-  nervous: require('../assets/images/icons/body_scan_2.png'),
-  glimmer: require('../assets/images/icons/glimmer_medium.png'),
-  trigger: require('../assets/images/icons/trigger2.png'),
-  parts: require('../assets/images/icons/roles.png'),
-  habits: require('../assets/images/icons/checklist.png'),
-};
-
 const GlobalHuxleyFab = ({ navigationRef }) => {
   const insets = useSafeAreaInsets();
   const [expanded, setExpanded] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [huxleyVisible, setHuxleyVisible] = useState(false);
-  const [trackVisible, setTrackVisible] = useState(false);
 
   // Radial fan animation (0 = collapsed, 1 = fanned out).
   const fan = useRef(new Animated.Value(0)).current;
   // Horizontal tuck offset: 0 = resting, positive = slid toward the edge.
   const tuckX = useRef(new Animated.Value(0)).current;
-
-  const trackOptions = withTrackIcons(TRACK_ICONS);
 
   const navigate = (route, params) => {
     if (navigationRef?.isReady()) navigationRef.navigate(route, params);
@@ -137,7 +123,7 @@ const GlobalHuxleyFab = ({ navigationRef }) => {
   const actions = [
     { key: 'huxley', label: 'Huxley', buttonStyle: styles.actionButtonSpill, render: <Image source={require('../assets/images/huxley-avatar.png')} style={styles.huxleyAvatar} resizeMode="contain" />, onPress: () => setHuxleyVisible(true) },
     { key: 'journal', label: 'Journal', render: <Pencil size={24} color={colors.primary} strokeWidth={2} />, onPress: () => navigate('Journal') },
-    { key: 'track', label: 'Track', render: <Compass size={24} color={colors.primary} strokeWidth={2} />, onPress: () => setTrackVisible(true) },
+    { key: 'track', label: 'Track', render: <Compass size={24} color={colors.primary} strokeWidth={2} />, onPress: () => navigate('TrackHub') },
     { key: 'home', label: 'Home', render: <HomeIcon size={24} color={colors.primary} strokeWidth={2} />, onPress: () => navigate('Home') },
   ];
 
@@ -226,21 +212,13 @@ const GlobalHuxleyFab = ({ navigationRef }) => {
         )}
       </Animated.View>
 
-      {/* Huxley chat modal — navigation shim forwards to the container ref. */}
+      {/* Huxley chat modal — navigation shim forwards to the container ref.
+          Track now navigates to the TrackHub screen (no submenu modal). */}
       <HuxleyChatModal
         visible={huxleyVisible}
         onClose={() => setHuxleyVisible(false)}
         onNavigate={navigate}
         navigation={{ navigate }}
-      />
-
-      {/* Track submenu */}
-      <SubMenuModal
-        visible={trackVisible}
-        onClose={() => setTrackVisible(false)}
-        title="Track"
-        options={trackOptions}
-        onSelect={(route, params) => navigate(route, params)}
       />
     </>
   );

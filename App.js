@@ -40,6 +40,7 @@ import EnhancedConversationScreen from './screens/EnhancedConversationScreen';
 import EducationScreen from './screens/EducationScreen';
 import ConversationalHomeScreen from './components/ConversationalHomeScreen';
 import GridHomeScreen from './components/GridHomeScreen';
+import TrackHubScreen from './screens/TrackHubScreen';
 import GlobalHuxleyFab from './components/GlobalHuxleyFab';
 import HuxleyChatScreen from './components/HuxleyChatScreen';
 import { HuxleyChatProvider } from './contexts/HuxleyChatContext';
@@ -352,6 +353,11 @@ function App() {
                   flat Stack screens reached from home-screen tiles, the global
                   Huxley launcher, and in-app navigate() calls. */}
               <Stack.Screen name="Home" component={GridHomeScreen} />
+              <Stack.Screen
+                name="TrackHub"
+                component={TrackHubScreen}
+                options={{ headerShown: false, title: 'Track' }}
+              />
               <Stack.Screen
                 name="Journal"
                 component={DailyJournal}
