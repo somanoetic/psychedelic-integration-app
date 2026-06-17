@@ -28,6 +28,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Home as HomeIcon, Pencil, Compass, X } from 'lucide-react-native';
 import { colors } from '../theme/colors';
 import HuxleyChatModal from './HuxleyChatModal';
@@ -52,6 +53,7 @@ const TRACK_ICONS = {
 };
 
 const GlobalHuxleyFab = ({ navigationRef }) => {
+  const insets = useSafeAreaInsets();
   const [expanded, setExpanded] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [huxleyVisible, setHuxleyVisible] = useState(false);
@@ -144,7 +146,12 @@ const GlobalHuxleyFab = ({ navigationRef }) => {
       )}
 
       <Animated.View
-        style={[styles.root, { transform: [{ translateX: tuckX }] }]}
+        style={[
+          styles.root,
+          // Lift above the device's bottom safe-area / gesture bar so the
+          // circle isn't clipped on gesture-nav devices.
+          { bottom: insets.bottom + 24, transform: [{ translateX: tuckX }] },
+        ]}
         pointerEvents="box-none"
       >
         {/* Tucked tab: tap to pop back out. */}
@@ -239,7 +246,7 @@ const styles = StyleSheet.create({
   root: {
     position: 'absolute',
     right: 20,
-    bottom: 36,
+    // `bottom` is set dynamically from the safe-area inset (see render).
     zIndex: 1000,
   },
   stack: {
@@ -259,12 +266,13 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 6,
     elevation: 8,
-    overflow: 'hidden',
+    // Let Huxley spill out the top of the circle (matches the old FAB look).
+    overflow: 'visible',
   },
   fabImage: {
-    width: FAB_SIZE + 36,
-    height: FAB_SIZE + 36,
-    marginBottom: 8,
+    width: FAB_SIZE + 46,
+    height: FAB_SIZE + 46,
+    marginBottom: 12,
   },
   action: {
     position: 'absolute',
