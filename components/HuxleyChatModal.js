@@ -9,7 +9,6 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   Animated,
-  Dimensions,
   Image,
   Keyboard,
   Modal,
@@ -38,24 +37,16 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
   // participate in the host activity's adjustResize. So the inner
   // ChatConversation's "pad the content and let the window shrink" strategy
   // has nothing to push against — the keyboard just overlaps the bottom-anchored
-  // sheet. We lift the whole sheet ourselves and tell ChatConversation to stand
-  // down (disableKeyboardAvoiding).
+  // sheet. We lift the whole sheet by the keyboard height ourselves and tell
+  // ChatConversation to stand down (disableKeyboardAvoiding).
   //
-  // We measure the keyboard's ACTUAL on-screen occupancy as
-  // (screenHeight - endCoordinates.screenY) rather than endCoordinates.height.
-  // height includes/excludes the soft-nav inset inconsistently across devices;
-  // the screenY top edge is exact, so this sidesteps the inset question and
-  // lands the sheet flush on the keyboard.
+  // endCoordinates.height is the keyboard height. (screenH - screenY) over-lifts
+  // — screenY is in a window space that excludes the status bar, so it overshot
+  // by ~the status-bar height and left a big gap. Use height directly.
   useEffect(() => {
     const showEvt = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
     const hideEvt = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
-    const onShow = (e) => {
-      const end = e?.endCoordinates;
-      if (!end) return;
-      const screenH = Dimensions.get('screen').height;
-      const occupied = Math.max(screenH - end.screenY, 0);
-      setKeyboardHeight(occupied);
-    };
+    const onShow = (e) => setKeyboardHeight(e?.endCoordinates?.height ?? 0);
     const onHide = () => setKeyboardHeight(0);
     const showSub = Keyboard.addListener(showEvt, onShow);
     const hideSub = Keyboard.addListener(hideEvt, onHide);
@@ -192,8 +183,6 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
     );
   };
 
-  // keyboardHeight is already the exact on-screen occupancy (measured from the
-  // keyboard's top edge), so lift the sheet by it directly — no inset math.
   const keyboardOffset = keyboardHeight;
 
   return (
@@ -202,6 +191,10 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
       animationType="none"
       transparent={true}
       onRequestClose={onClose}
+      // Span the full screen (incl. status bar) so the flex:1 container's
+      // height equals the real screen height — otherwise the keyboard's
+      // coordinate space and the container's don't match and the lift is off.
+      statusBarTranslucent
     >
       {/* Keyboard handling for a Modal: unlike the SafeAreaView screens, a
           Modal renders in its own window and does NOT participate in the host
@@ -209,9 +202,9 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
           (double-adjusts) nor ChatConversation's pad-the-content strategy works
           here. Instead we own it: ChatConversation stands down
           (disableKeyboardAvoiding) and we lift the sheet by padding the
-          CONTAINER by the keyboard height. Padding the container (not the
-          sheet) shrinks the available region, so the sheet's percentage
-          maxHeight stays correct and can't overflow the top of the screen.
+          CONTAINER by the keyboard height (endCoordinates.height). Padding the
+          container (not the sheet) shrinks the available region, so the sheet's
+          percentage maxHeight stays correct and can't overflow the top.
           See memory project-chat-keyboard-gap-android. */}
       <View style={[styles.modalContainer, { paddingBottom: keyboardOffset }]}>
         <TouchableOpacity
