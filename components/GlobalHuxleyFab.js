@@ -37,7 +37,7 @@ import { withTrackIcons } from '../lib/trackOptions';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const FAB_SIZE = 64;
+const FAB_SIZE = 76;
 const ACTION_SIZE = 52;
 const ACTION_GAP = 14;       // spacing between stacked actions
 const EDGE_PEEK = 14;        // how much of the tab pokes out when tucked
@@ -270,9 +270,9 @@ const styles = StyleSheet.create({
     overflow: 'visible',
   },
   fabImage: {
-    width: FAB_SIZE + 46,
-    height: FAB_SIZE + 46,
-    marginBottom: 12,
+    width: FAB_SIZE + 30,
+    height: FAB_SIZE + 30,
+    marginBottom: 10,
   },
   action: {
     position: 'absolute',
