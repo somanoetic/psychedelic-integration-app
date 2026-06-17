@@ -131,8 +131,11 @@ const GlobalHuxleyFab = ({ navigationRef }) => {
   };
 
   // Radial actions, nearest-to-FAB first. They stack vertically above the FAB.
+  // The Huxley action mirrors the main FAB: its avatar spills out the top of
+  // the circle (buttonStyle adds overflow:'visible'), so it doesn't get clipped
+  // inside the smaller action circle like the lucide-icon actions do.
   const actions = [
-    { key: 'huxley', label: 'Huxley', render: <Image source={require('../assets/images/huxley-avatar.png')} style={styles.huxleyAvatar} resizeMode="contain" />, onPress: () => setHuxleyVisible(true) },
+    { key: 'huxley', label: 'Huxley', buttonStyle: styles.actionButtonSpill, render: <Image source={require('../assets/images/huxley-avatar.png')} style={styles.huxleyAvatar} resizeMode="contain" />, onPress: () => setHuxleyVisible(true) },
     { key: 'journal', label: 'Journal', render: <Pencil size={24} color={colors.primary} strokeWidth={2} />, onPress: () => navigate('Journal') },
     { key: 'track', label: 'Track', render: <Compass size={24} color={colors.primary} strokeWidth={2} />, onPress: () => setTrackVisible(true) },
     { key: 'home', label: 'Home', render: <HomeIcon size={24} color={colors.primary} strokeWidth={2} />, onPress: () => navigate('Home') },
@@ -185,7 +188,7 @@ const GlobalHuxleyFab = ({ navigationRef }) => {
                 >
                   <Text style={styles.actionLabel}>{action.label}</Text>
                   <TouchableOpacity
-                    style={styles.actionButton}
+                    style={[styles.actionButton, action.buttonStyle]}
                     activeOpacity={0.85}
                     onPress={() => runAction(action.onPress)}
                   >
@@ -308,10 +311,15 @@ const styles = StyleSheet.create({
     elevation: 6,
     overflow: 'hidden',
   },
+  // Huxley action: let the avatar spill out the top of its circle, mirroring
+  // the main FAB (so it isn't clipped inside the smaller action circle).
+  actionButtonSpill: {
+    overflow: 'visible',
+  },
   huxleyAvatar: {
-    width: ACTION_SIZE + 28,
-    height: ACTION_SIZE + 28,
-    marginBottom: 6,
+    width: ACTION_SIZE + 20,
+    height: ACTION_SIZE + 20,
+    marginBottom: 8,
   },
   // Tucked-away peeking tab
   tuckTab: {
