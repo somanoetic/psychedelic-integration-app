@@ -10,9 +10,7 @@ import { useEffect, useRef, useState } from 'react';
 import {
   Animated,
   Image,
-  KeyboardAvoidingView,
   Modal,
-  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -169,10 +167,12 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
       transparent={true}
       onRequestClose={onClose}
     >
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.modalContainer}
-      >
+      {/* No KeyboardAvoidingView here: the inner <ChatConversation> owns
+          keyboard avoidance on both platforms (iOS KAV / Android full-height
+          padding listener). Wrapping it in another KAV double-adjusted and
+          left the input gapped/covered. See memory
+          project-chat-keyboard-gap-android. */}
+      <View style={styles.modalContainer}>
         <TouchableOpacity
           style={styles.backdrop}
           activeOpacity={1}
@@ -207,7 +207,7 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
             renderMessageExtras={renderRouteButton}
           />
         </Animated.View>
-      </KeyboardAvoidingView>
+      </View>
     </Modal>
   );
 };
