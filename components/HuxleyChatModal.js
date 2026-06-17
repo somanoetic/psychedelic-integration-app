@@ -13,6 +13,7 @@ import {
   Keyboard,
   Modal,
   Platform,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -183,7 +184,12 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
     );
   };
 
-  const keyboardOffset = keyboardHeight;
+  // statusBarTranslucent made the flex:1 container span the full screen
+  // (incl. the status bar), so padding by the full keyboard height floats the
+  // flex-end sheet up by ~the status-bar height. Subtract it back out on
+  // Android (where the keyboard lives in this taller window).
+  const statusBarH = Platform.OS === 'android' ? (StatusBar.currentHeight ?? 0) : 0;
+  const keyboardOffset = keyboardHeight > 0 ? Math.max(keyboardHeight - statusBarH, 0) : 0;
 
   return (
     <Modal
