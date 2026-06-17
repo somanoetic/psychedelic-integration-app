@@ -168,20 +168,25 @@ const GlobalHuxleyFab = ({ navigationRef }) => {
           </TouchableOpacity>
         ) : (
           <View style={styles.stack} pointerEvents="box-none">
-            {/* Radial actions */}
+            {/* Radial actions. Each is laid out at its FINAL resting position
+                (static `bottom`) so its touch target matches where it's drawn —
+                animating via transform alone leaves the hit box down at the FAB
+                on Android, so taps fall through to the backdrop. We only animate
+                opacity + a small pop-up translate for feel. */}
             {actions.map((action, i) => {
-              const offset = -(FAB_SIZE / 2 + ACTION_SIZE / 2 + ACTION_GAP) - i * (ACTION_SIZE + ACTION_GAP);
+              const restBottom = FAB_SIZE / 2 + ACTION_SIZE / 2 + ACTION_GAP + i * (ACTION_SIZE + ACTION_GAP);
               return (
                 <Animated.View
                   key={action.key}
                   pointerEvents={expanded ? 'auto' : 'none'}
                   style={[
                     styles.action,
+                    { bottom: restBottom },
                     {
                       opacity: fan,
                       transform: [
-                        { translateY: fan.interpolate({ inputRange: [0, 1], outputRange: [0, offset] }) },
-                        { scale: fan },
+                        { translateY: fan.interpolate({ inputRange: [0, 1], outputRange: [12, 0] }) },
+                        { scale: fan.interpolate({ inputRange: [0, 1], outputRange: [0.6, 1] }) },
                       ],
                     },
                   ]}
@@ -279,7 +284,9 @@ const styles = StyleSheet.create({
   },
   action: {
     position: 'absolute',
-    bottom: 0,
+    // `bottom` is set dynamically per index (see render). Center the action
+    // circle horizontally under the (wider) FAB.
+    right: (FAB_SIZE - ACTION_SIZE) / 2,
     flexDirection: 'row',
     alignItems: 'center',
   },
