@@ -10,7 +10,9 @@ import { useEffect, useRef, useState } from 'react';
 import {
   Animated,
   Image,
+  Keyboard,
   Modal,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -29,6 +31,26 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const slideAnim = useRef(new Animated.Value(0)).current;
   const insets = useSafeAreaInsets();
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+
+  // This is a Modal, which on Android renders in its own window that does NOT
+  // participate in the host activity's adjustResize. So the inner
+  // ChatConversation's "pad the content and let the window shrink" strategy
+  // has nothing to push against — the keyboard just overlaps the bottom-anchored
+  // sheet. We lift the whole sheet by the keyboard height ourselves and tell
+  // ChatConversation to stand down (disableKeyboardAvoiding).
+  useEffect(() => {
+    const showEvt = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const hideEvt = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
+    const onShow = (e) => setKeyboardHeight(e?.endCoordinates?.height ?? 0);
+    const onHide = () => setKeyboardHeight(0);
+    const showSub = Keyboard.addListener(showEvt, onShow);
+    const hideSub = Keyboard.addListener(hideEvt, onHide);
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   useEffect(() => {
     if (visible) {
@@ -167,12 +189,17 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
       transparent={true}
       onRequestClose={onClose}
     >
-      {/* No KeyboardAvoidingView here: the inner <ChatConversation> owns
-          keyboard avoidance on both platforms (iOS KAV / Android full-height
-          padding listener). Wrapping it in another KAV double-adjusted and
-          left the input gapped/covered. See memory
-          project-chat-keyboard-gap-android. */}
-      <View style={styles.modalContainer}>
+      {/* Keyboard handling for a Modal: unlike the SafeAreaView screens, a
+          Modal renders in its own window and does NOT participate in the host
+          activity's adjustResize, so neither a wrapping KeyboardAvoidingView
+          (double-adjusts) nor ChatConversation's pad-the-content strategy works
+          here. Instead we own it: ChatConversation stands down
+          (disableKeyboardAvoiding) and we lift the sheet by padding the
+          CONTAINER by the keyboard height. Padding the container (not the
+          sheet) shrinks the available region, so the sheet's percentage
+          maxHeight stays correct and can't overflow the top of the screen.
+          See memory project-chat-keyboard-gap-android. */}
+      <View style={[styles.modalContainer, { paddingBottom: keyboardHeight }]}>
         <TouchableOpacity
           style={styles.backdrop}
           activeOpacity={1}
@@ -182,7 +209,7 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
           style={[
             styles.modalContent,
             {
-              paddingBottom: Math.max(insets.bottom, 12),
+              paddingBottom: keyboardHeight > 0 ? 0 : Math.max(insets.bottom, 12),
               transform: [
                 {
                   translateY: slideAnim.interpolate({
@@ -202,6 +229,7 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
             onInputTextChange={setInputText}
             inputPlaceholder="Ask Huxley anything..."
             inputDisabled={isLoading}
+            disableKeyboardAvoiding
             header={renderHeader()}
             belowMessages={renderQuickActions()}
             renderMessageExtras={renderRouteButton}
