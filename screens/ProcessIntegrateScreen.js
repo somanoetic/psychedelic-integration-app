@@ -79,9 +79,8 @@ const ProcessIntegrateScreen = ({ navigation, route }) => {
       icon: icons.journal,
       description: 'Free-form journaling to capture thoughts, feelings, and realizations',
       estimatedTime: '10-20 min',
-      // The single Supabase-backed Journal (nav tab), not a per-session copy.
-      route: 'MainTabs',
-      params: { screen: 'Journal' },
+      // The single Supabase-backed Journal (flat Stack route), not a per-session copy.
+      route: 'Journal',
     },
   ];
 

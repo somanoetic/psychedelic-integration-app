@@ -245,7 +245,7 @@ const ConversationalTriggeredSupport = ({ navigation }) => {
           navigation.navigate('IFSChat');
         }, 'psychology', colors.primary)}
         {renderUserOption('Journal my feelings', () => {
-          navigation.navigate('MainTabs', { screen: 'Journal' });
+          navigation.navigate('Journal');
         }, 'edit-note', '#06b6d4')}
         {renderUserOption('Browse exercises', () => {
           navigation.navigate('ExerciseLibrary');

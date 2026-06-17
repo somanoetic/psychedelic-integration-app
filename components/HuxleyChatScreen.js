@@ -35,7 +35,7 @@ import FormattedText from './FormattedText';
 import HuxleyVoiceController from './HuxleyVoiceController';
 
 // Routes where seeding a recent-context handoff into huxleyService is useful.
-// MainTabs / Learn are navigation hubs, not Huxley conversations, so skip them.
+// Home / Learn are navigation hubs, not Huxley conversations, so skip them.
 const HANDOFF_ROUTES = new Set([
   'TriggeredSupport',
   'Journal',
@@ -418,7 +418,7 @@ const HuxleyChatScreen = ({ navigation }) => {
         role: 'assistant',
         content: question,
         quickReplies: [
-          { label: "Explore the app", value: "navigate_MainTabs" },
+          { label: "Explore the app", value: "navigate_Home" },
           { label: "Prepare for a session", value: "navigate_SessionPreparation" },
           { label: "Process an experience", value: "navigate_ExperienceMapping" },
           { label: "Learn something new", value: "navigate_Learn" },
@@ -541,7 +541,7 @@ const HuxleyChatScreen = ({ navigation }) => {
     }
 
     if (reply.value === 'show_menu' || reply.value === 'show_tools') {
-      navigation.navigate('MainTabs');
+      navigation.navigate('Home');
       return;
     }
 
@@ -672,7 +672,7 @@ const HuxleyChatScreen = ({ navigation }) => {
           <View style={styles.header}>
             <TouchableOpacity
               style={styles.menuButton}
-              onPress={() => navigation.navigate('MainTabs')}
+              onPress={() => navigation.navigate('Home')}
             >
               <Image source={icons.home} style={styles.homeIcon} />
             </TouchableOpacity>

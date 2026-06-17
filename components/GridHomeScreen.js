@@ -30,6 +30,8 @@ const tileIcons = {
   track: require('../assets/images/icons/track2.png'),
   prepare: require('../assets/images/icons/map_refined.png'),
   process: require('../assets/images/icons/puzzle.png'),
+  journal: require('../assets/images/icons/journal_refined.png'),
+  innerAtlas: require('../assets/images/icons/folded_map.png'),
   history: require('../assets/images/icons/history.png'),
   innerwork: require('../assets/images/icons/inner_work.png'),
   practice: require('../assets/images/icons/integration_cycle.png'),
@@ -266,15 +268,19 @@ const GridHomeScreen = ({ navigation }) => {
     { id: 'habits', title: 'Habit Tracker', description: 'Track your daily practices', icon: uiIcons.subHabits, route: 'HabitTracker' },
   ];
 
-  // Layout: two paired rows bracketing a full-width History band.
+  // Layout: paired square rows bracketing a full-width History band.
   //   Prepare | Process
+  //   Journal | Inner Atlas
   //        History (wide)
   //   Inner Work | Practice
   //   Philosophical | Learn
-  // History + Learn moved here from the (now 3-tab) bottom bar.
+  // Journal + Inner Atlas (and earlier History + Learn) moved here when the
+  // bottom tab bar was removed; the home grid is now the sole nav surface.
   const navigationTiles = [
     { id: 'prepare', title: 'Prepare for a Journey', icon: tileIcons.prepare, route: 'SessionsHub' },
     { id: 'process', title: 'Process & Integrate', icon: tileIcons.process, route: 'ProcessIntegratePicker' },
+    { id: 'journal', title: 'Journal', icon: tileIcons.journal, route: 'Journal' },
+    { id: 'innerAtlas', title: 'Inner Atlas', icon: tileIcons.innerAtlas, route: 'Atlas' },
     { id: 'history', title: 'History', icon: tileIcons.history, route: 'History', wide: true },
     { id: 'innerwork', title: 'Inner Work', icon: tileIcons.innerwork, route: 'InnerWork' },
     { id: 'practice', title: 'Practice', icon: tileIcons.practice, route: 'Practice' },

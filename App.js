@@ -1,11 +1,9 @@
-import { Home, Pencil, Compass } from 'lucide-react-native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Platform, StatusBar, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
-import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFonts, Fraunces_700Bold } from '@expo-google-fonts/fraunces';
 
@@ -124,63 +122,6 @@ if (config.sentryDsn) {
 }
 
 const Stack = createStackNavigator();
-const Tab = createBottomTabNavigator();
-
-// Tab Navigator for authenticated users
-const MainTabs = () => {
-  const insets = useSafeAreaInsets();
-  // Use the actual safe area inset from the device
-  const bottomInset = insets.bottom;
-
-  return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => {
-          const TAB_ICONS = {
-            Home,
-            Journal: Pencil,
-            Atlas: Compass,
-          };
-          const Icon = TAB_ICONS[route.name] || Home;
-          return <Icon size={size} color={color} strokeWidth={focused ? 2.25 : 1.75} />;
-        },
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textSecondary,
-        headerShown: false,
-        tabBarStyle: {
-          height: 60 + bottomInset,
-          paddingBottom: bottomInset,
-          paddingTop: 8,
-          backgroundColor: 'rgba(255, 255, 255, 0.6)',
-          borderTopColor: 'rgba(255, 255, 255, 0.3)',
-          borderTopWidth: 1,
-          elevation: 0,
-        },
-        tabBarLabelStyle: {
-          paddingBottom: 4,
-          fontSize: 12,
-          fontWeight: '600',
-        },
-      })}
-    >
-      <Tab.Screen
-        name="Home"
-        component={GridHomeScreen}
-        options={{ title: 'Home' }}
-      />
-      <Tab.Screen
-        name="Journal"
-        component={DailyJournal}
-        options={{ title: 'Journal' }}
-      />
-      <Tab.Screen
-        name="Atlas"
-        component={InnerAtlasScreen}
-        options={{ title: 'Inner Atlas' }}
-      />
-    </Tab.Navigator>
-  );
-};
 
 // Main App Component with debug logging
 function App() {
@@ -381,12 +322,25 @@ function App() {
         <ThemedAlertHost />
         <HuxleyChatProvider>
         <NavigationContainer>
-          <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={(session && session.user) || bypassAuth ? (bypassAuth ? 'MainTabs' : 'HuxleyChat') : 'Auth'}>
+          <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={(session && session.user) || bypassAuth ? (bypassAuth ? 'Home' : 'HuxleyChat') : 'Auth'}>
             {(session && session.user) || bypassAuth ? (
             <>
               <Stack.Screen name="HuxleyChat" component={HuxleyChatScreen} />
-              <Stack.Screen name="MainTabs" component={MainTabs} />
-              {/* Moved out of the bottom tab bar (now Home / Journal / Inner Atlas);
+              {/* Bottom tab bar removed: Home, Journal, and Inner Atlas are now
+                  flat Stack screens reached from home-screen tiles, the global
+                  Huxley launcher, and in-app navigate() calls. */}
+              <Stack.Screen name="Home" component={GridHomeScreen} />
+              <Stack.Screen
+                name="Journal"
+                component={DailyJournal}
+                options={{ headerShown: false, title: 'Journal' }}
+              />
+              <Stack.Screen
+                name="Atlas"
+                component={InnerAtlasScreen}
+                options={{ headerShown: false, title: 'Inner Atlas' }}
+              />
+              {/* Previously moved out of the bottom tab bar;
                   reached from home-screen tiles and in-app navigate() calls */}
               <Stack.Screen
                 name="Learn"
