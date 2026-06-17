@@ -35,6 +35,7 @@ import { supabase } from '../lib/supabase';
 import polyvagalContextService from '../lib/polyvagalContextService';
 import { icons } from '../lib/uiIcons';
 import { colors } from '../theme/colors';
+import { showThemedAlert } from './ThemedAlert';
 
 const NS_STATES = [
   { id: 'ventral', label: 'Safe & Social', icon: icons.droplet, color: colors.success, description: 'Calm, connected, present, open' },
@@ -139,14 +140,15 @@ const NervousSystemCheckin = ({ navigation, route }) => {
         context: context.trim(),
       }).catch(err => console.warn('Pattern update failed:', err));
 
-      Alert.alert(
+      showThemedAlert(
         'Checked In',
         'Your nervous system state has been logged. Tracking your states builds self-awareness and helps you notice patterns over time.',
-        [{ text: 'OK', onPress: () => {
+        [{ text: 'Done', onPress: () => {
           if (returnTo) {
             navigation.goBack();
             return;
           }
+          // Reset form, then return home
           setNsState(null);
           setIntensity(3);
           setBodyFeeling('');
@@ -154,8 +156,9 @@ const NervousSystemCheckin = ({ navigation, route }) => {
           setContext('');
           setWhatMightHelp('');
           setExpandedSection('body');
-          loadRecentCheckins();
-        }}]
+          navigation.navigate('Home');
+        }}],
+        { variant: 'success' }
       );
     } catch (error) {
       console.error('Error saving NS check-in:', error);

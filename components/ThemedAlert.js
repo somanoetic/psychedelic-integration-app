@@ -8,6 +8,7 @@ import {
   Pressable,
   Alert as RNAlert,
 } from 'react-native';
+import { CheckCircle2 } from 'lucide-react-native';
 import { colors, spacing, borderRadius, shadows } from '../theme/colors';
 
 /**
@@ -54,10 +55,12 @@ const subscribe = (fn) => {
 };
 
 /**
- * Show a themed alert programmatically. Same signature as Alert.alert.
+ * Show a themed alert programmatically. Same signature as Alert.alert, with an
+ * optional 4th `options` argument for themed-only extras:
+ *   { variant: 'success' } — shows a celebratory check badge above the title.
  */
-export const showThemedAlert = (title, message, buttons) => {
-  dispatch({ title, message, buttons });
+export const showThemedAlert = (title, message, buttons, options) => {
+  dispatch({ title, message, buttons, variant: options?.variant });
 };
 
 /**
@@ -75,7 +78,7 @@ export const installThemedAlert = () => {
 
 // --- visual component --------------------------------------------------------
 
-const ThemedAlertView = ({ visible, title, message, buttons, onClose }) => {
+const ThemedAlertView = ({ visible, title, message, buttons, variant, onClose }) => {
   const safeButtons = (buttons && buttons.length > 0)
     ? buttons
     : [{ text: 'OK' }];
@@ -94,6 +97,11 @@ const ThemedAlertView = ({ visible, title, message, buttons, onClose }) => {
           onPress={(e) => e?.stopPropagation && e.stopPropagation()}
         >
           <View style={styles.card}>
+            {variant === 'success' ? (
+              <View style={styles.successBadge}>
+                <CheckCircle2 size={32} color={colors.success} strokeWidth={2.2} />
+              </View>
+            ) : null}
             {title ? <Text style={styles.title}>{title}</Text> : null}
             {message ? <Text style={styles.message}>{message}</Text> : null}
 
@@ -187,6 +195,7 @@ export const ThemedAlertHost = () => {
       title={state.title}
       message={state.message}
       buttons={state.buttons}
+      variant={state.variant}
       onClose={close}
     />
   );
@@ -210,8 +219,8 @@ export const useThemedAlert = () => {
     if (next) setState({ ...next, visible: true });
   }, []);
 
-  const alert = useCallback((title, message, buttons) => {
-    queueRef.current.push({ title, message, buttons });
+  const alert = useCallback((title, message, buttons, options) => {
+    queueRef.current.push({ title, message, buttons, variant: options?.variant });
     setState((current) => {
       if (current.visible) return current;
       const next = queueRef.current.shift();
@@ -232,6 +241,7 @@ export const useThemedAlert = () => {
       title={state.title}
       message={state.message}
       buttons={state.buttons}
+      variant={state.variant}
       onClose={close}
     />
   );
@@ -256,6 +266,16 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.lg,
     padding: spacing.lg,
     ...shadows.medium,
+  },
+  successBadge: {
+    alignSelf: 'center',
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: 'rgba(123, 157, 111, 0.14)', // colors.success @ ~14%
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.md,
   },
   title: {
     fontSize: 19,

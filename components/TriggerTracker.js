@@ -47,6 +47,7 @@ const SECTION_ICON_MAP = {
 import { supabase } from '../lib/supabase';
 import { icons } from '../lib/uiIcons';
 import { colors } from '../theme/colors';
+import { showThemedAlert } from './ThemedAlert';
 
 const TRIGGER_TYPES = [
   { id: 'sympathetic', label: 'Fight/Flight', icon: icons.steam, color: colors.error, description: 'Racing heart, anxiety, anger, panic' },
@@ -143,11 +144,11 @@ const TriggerTracker = ({ navigation }) => {
 
       if (error) throw error;
 
-      Alert.alert(
+      showThemedAlert(
         'Logged',
         'Your trigger has been recorded. Tracking patterns helps build awareness and identify what helps you regulate.',
-        [{ text: 'OK', onPress: () => {
-          // Reset form
+        [{ text: 'Done', onPress: () => {
+          // Reset form, then return home
           setTriggerType(null);
           setIntensity(3);
           setCause('');
@@ -157,8 +158,9 @@ const TriggerTracker = ({ navigation }) => {
           setCopingUsed('');
           setCurrentState('');
           setExpandedSection('cause');
-          loadRecentTriggers();
-        }}]
+          navigation.navigate('Home');
+        }}],
+        { variant: 'success' }
       );
     } catch (error) {
       console.error('Error saving trigger:', error);

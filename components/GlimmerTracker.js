@@ -41,6 +41,7 @@ const SECTION_ICON_MAP = {
 import { supabase } from '../lib/supabase';
 import { icons } from '../lib/uiIcons';
 import { colors } from '../theme/colors';
+import { showThemedAlert } from './ThemedAlert';
 
 const GLIMMER_TYPES = [
   { id: 'sensory', label: 'Sensory', icon: icons.sensation, color: colors.primary, description: 'Sight, sound, smell, taste, touch' },
@@ -131,11 +132,11 @@ const GlimmerTracker = ({ navigation }) => {
 
       if (error) throw error;
 
-      Alert.alert(
+      showThemedAlert(
         'Captured! ✨',
         'Your glimmer has been saved. Noticing these moments trains your nervous system to find more of them.',
-        [{ text: 'OK', onPress: () => {
-          // Reset form
+        [{ text: 'Done', onPress: () => {
+          // Reset form, then return home
           setGlimmerType(null);
           setFeltShift(3);
           setDescription('');
@@ -143,8 +144,9 @@ const GlimmerTracker = ({ navigation }) => {
           setContext('');
           setWhatMadeItSpecial('');
           setExpandedSection('description');
-          loadRecentGlimmers();
-        }}]
+          navigation.navigate('Home');
+        }}],
+        { variant: 'success' }
       );
     } catch (error) {
       console.error('Error saving glimmer:', error);

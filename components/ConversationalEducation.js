@@ -9,7 +9,7 @@ import {
   Dimensions,
   Image,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   ArrowLeft,
@@ -53,6 +53,7 @@ import { colors, gradients } from '../theme/colors';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics }) => {
+  const insets = useSafeAreaInsets();
   const [conversationStep, setConversationStep] = useState('greeting'); // greeting, categories, topic_selection
 
   const educationCategories = [
@@ -497,7 +498,10 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
       {/* Content */}
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingBottom: 32 + insets.bottom },
+        ]}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.messagesContainer}>

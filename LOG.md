@@ -1,5 +1,13 @@
 # Project Log
 
+## 2026-06-17 — Prettier log confirmations and fixed a cut-off learning page
+
+Two fixes today. First, when you log a moment in any of the trackers (nervous system, glimmer, trigger, parts), the little "saved" pop-up now has a softer, on-brand look with a green check, and tapping its button takes you back to the home screen instead of just sitting on the form. Second, the Learning Hub sub-pages (Self-Discovery Tools, Body/Brain & Healing, and the rest) were cutting off the bottom tile on the device — added proper spacing at the bottom so the last tile clears the screen edge. The first batch was confirmed working on your device; the learning-page fix is in but worth a final glance.
+
+## 2026-06-16 — Sharpened the AI library and reworked the home screen
+
+Two things. First, the quick win from the audit: the research library's search index was under-sized for how much got loaded, so we rebuilt it on the real data and widened how much it scans per question — Huxley should now surface more of its best matches. That's live in the database and committed. Second, the home screen: there were five tiles, which left an awkward gap, so we restructured the whole thing. The bottom menu bar is now down to three (Home, Journal, Inner Atlas), and Learn and History moved up to become tiles. The grid now reads cleanly — two tiles, a full-width History band, then two more rows — with a new History icon. It's committed and pushed but hasn't been checked on a real device yet, so the tile taps (especially Learn and History) are worth a look.
+
 ## 2026-06-16 — Audited the backlog; found the knowledge base is actually live
 
 You suspected a lot of the open to-do items were already finished, and you were right. We went through everything the tracker still listed as "open" and checked it against the real code. Three items were already done and just never closed out, and several others were finished in the code with only account or app-store steps left for you. The big one: the AI knowledge base (the research library Huxley draws on) was marked as "not deployed yet," but it's fully live — over 21,000 passages from 281 books and documents are loaded and searchable, and a test question pulled back exactly the right material. The one real caveat is that its search index looks under-sized for how much got loaded, so it may be missing some of its best matches; a quick 30-second fix in the database dashboard would sharpen it. We updated the tracker to reflect all of this.

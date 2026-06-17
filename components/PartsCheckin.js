@@ -34,6 +34,7 @@ import {
 import { supabase } from '../lib/supabase';
 import { icons } from '../lib/uiIcons';
 import { colors } from '../theme/colors';
+import { showThemedAlert } from './ThemedAlert';
 
 const PART_TYPES = [
   { id: 'protector', label: 'Manager', icon: icons.manager, color: colors.primary, description: 'Managing, controlling, keeping safe' },
@@ -130,14 +131,15 @@ const PartsCheckin = ({ navigation, route }) => {
 
       if (error) throw error;
 
-      Alert.alert(
+      showThemedAlert(
         'Checked In',
         'Your parts check-in has been saved. Noticing which parts are active builds Self-leadership and helps you respond with compassion.',
-        [{ text: 'OK', onPress: () => {
+        [{ text: 'Done', onPress: () => {
           if (returnTo) {
             navigation.goBack();
             return;
           }
+          // Reset form, then return home
           setPartType(null);
           setIntensity(3);
           setPartName('');
@@ -145,8 +147,9 @@ const PartsCheckin = ({ navigation, route }) => {
           setWhatItNeeds('');
           setBodyLocation('');
           setExpandedSection('saying');
-          loadRecentCheckins();
-        }}]
+          navigation.navigate('Home');
+        }}],
+        { variant: 'success' }
       );
     } catch (error) {
       console.error('Error saving parts check-in:', error);
