@@ -701,17 +701,19 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     marginBottom: 4,
   },
-  // Process & Integrate — 10% smaller than the base tile icon.
+  // Process & Integrate — art 10% smaller, but keep the full 160 box HEIGHT so
+  // the title baseline stays aligned with the other tiles (resizeMode:contain
+  // centers the smaller art vertically in the same box).
   tileIconProcess: {
     width: 144,
-    height: 144,
+    height: 160,
     resizeMode: 'contain',
     marginBottom: 4,
   },
-  // Inner Atlas — 20% smaller than the base tile icon.
+  // Inner Atlas — art 20% smaller, same full-height box for title alignment.
   tileIconInnerAtlas: {
     width: 128,
-    height: 128,
+    height: 160,
     resizeMode: 'contain',
     marginBottom: 4,
   },

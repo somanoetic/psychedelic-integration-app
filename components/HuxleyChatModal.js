@@ -9,6 +9,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   Animated,
+  Dimensions,
   Image,
   Keyboard,
   Modal,
@@ -37,12 +38,24 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
   // participate in the host activity's adjustResize. So the inner
   // ChatConversation's "pad the content and let the window shrink" strategy
   // has nothing to push against — the keyboard just overlaps the bottom-anchored
-  // sheet. We lift the whole sheet by the keyboard height ourselves and tell
-  // ChatConversation to stand down (disableKeyboardAvoiding).
+  // sheet. We lift the whole sheet ourselves and tell ChatConversation to stand
+  // down (disableKeyboardAvoiding).
+  //
+  // We measure the keyboard's ACTUAL on-screen occupancy as
+  // (screenHeight - endCoordinates.screenY) rather than endCoordinates.height.
+  // height includes/excludes the soft-nav inset inconsistently across devices;
+  // the screenY top edge is exact, so this sidesteps the inset question and
+  // lands the sheet flush on the keyboard.
   useEffect(() => {
     const showEvt = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
     const hideEvt = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
-    const onShow = (e) => setKeyboardHeight(e?.endCoordinates?.height ?? 0);
+    const onShow = (e) => {
+      const end = e?.endCoordinates;
+      if (!end) return;
+      const screenH = Dimensions.get('screen').height;
+      const occupied = Math.max(screenH - end.screenY, 0);
+      setKeyboardHeight(occupied);
+    };
     const onHide = () => setKeyboardHeight(0);
     const showSub = Keyboard.addListener(showEvt, onShow);
     const hideSub = Keyboard.addListener(hideEvt, onHide);
@@ -116,14 +129,11 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
   };
 
   const handleRoutePress = (route) => {
+    // Navigate FIRST, then close. Closing first dismisses the modal to reveal
+    // whatever's underneath (usually Home, since the FAB is global) for the
+    // duration of the timeout — a visible flash — before the nav lands.
+    navigation.navigate(route === 'Education' ? 'Education' : route);
     onClose();
-    setTimeout(() => {
-      if (route === 'Education') {
-        navigation.navigate('Education');
-      } else {
-        navigation.navigate(route);
-      }
-    }, 300);
   };
 
   const quickActions = [
@@ -182,14 +192,9 @@ const HuxleyChatModal = ({ visible, onClose, onNavigate, navigation }) => {
     );
   };
 
-  // How far to lift the sheet. On Android the soft-nav inset collapses into
-  // the keyboard when it opens, so padding by the FULL reported keyboard
-  // height over-lifts by ~insets.bottom and leaves a gap above the keyboard;
-  // subtract the inset there. iOS reports the frame without that overlap.
-  const keyboardOffset =
-    keyboardHeight > 0
-      ? Math.max(keyboardHeight - (Platform.OS === 'android' ? insets.bottom : 0), 0)
-      : 0;
+  // keyboardHeight is already the exact on-screen occupancy (measured from the
+  // keyboard's top edge), so lift the sheet by it directly — no inset math.
+  const keyboardOffset = keyboardHeight;
 
   return (
     <Modal
