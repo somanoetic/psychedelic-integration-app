@@ -62,9 +62,8 @@ const NS_ICONS = {
   mixed: uiIcons.nsMixed,
 };
 import { fetchDashboardData } from '../lib/dashboardService';
-import FloatingHuxleyButton from './FloatingHuxleyButton';
-import HuxleyChatModal from './HuxleyChatModal';
 import SubMenuModal from './SubMenuModal';
+import { withTrackIcons } from '../lib/trackOptions';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const TILE_GAP = 16;
@@ -214,7 +213,6 @@ function timeAgo(dateStr) {
 // --- Main component ---
 
 const GridHomeScreen = ({ navigation }) => {
-  const [huxleyModalVisible, setHuxleyModalVisible] = useState(false);
   const [trackMenuVisible, setTrackMenuVisible] = useState(false);
   const [dashboardData, setDashboardData] = useState(null);
   const [dashboardLoading, setDashboardLoading] = useState(true);
@@ -259,14 +257,14 @@ const GridHomeScreen = ({ navigation }) => {
     }, [])
   );
 
-  // Track Hub options
-  const trackOptions = [
-    { id: 'nervous', title: 'Nervous System Check-in', description: 'How is your nervous system right now?', icon: uiIcons.subNervous, route: 'NervousSystemCheckin' },
-    { id: 'glimmer', title: 'Glimmer Tracker', description: 'Log a positive moment', icon: uiIcons.subGlimmer, route: 'GlimmerTracker' },
-    { id: 'trigger', title: 'Trigger Tracker', description: 'Log when you were triggered', icon: uiIcons.subTrigger, route: 'TriggerTracker' },
-    { id: 'parts', title: 'Parts Check-in', description: 'Check in with your inner parts', icon: uiIcons.subParts, route: 'PartsCheckin' },
-    { id: 'habits', title: 'Habit Tracker', description: 'Track your daily practices', icon: uiIcons.subHabits, route: 'HabitTracker' },
-  ];
+  // Track Hub options — shared list (lib/trackOptions) + this screen's icons.
+  const trackOptions = withTrackIcons({
+    nervous: uiIcons.subNervous,
+    glimmer: uiIcons.subGlimmer,
+    trigger: uiIcons.subTrigger,
+    parts: uiIcons.subParts,
+    habits: uiIcons.subHabits,
+  });
 
   // Layout: paired square rows bracketing a full-width History band.
   //   Prepare | Process
@@ -475,16 +473,8 @@ const GridHomeScreen = ({ navigation }) => {
           <View style={styles.bottomSpacer} />
         </ScrollView>
 
-        {/* Floating Huxley Button */}
-        <FloatingHuxleyButton onPress={() => setHuxleyModalVisible(true)} />
-
-        {/* Huxley Chat Modal */}
-        <HuxleyChatModal
-          visible={huxleyModalVisible}
-          onClose={() => setHuxleyModalVisible(false)}
-          onNavigate={(route, params) => navigation.navigate(route, params)}
-          navigation={navigation}
-        />
+        {/* The Huxley FAB + chat modal are now mounted globally over the
+            navigator (see components/GlobalHuxleyFab.js in App.js). */}
 
         {/* Track SubMenu */}
         <SubMenuModal

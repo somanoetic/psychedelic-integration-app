@@ -1,4 +1,4 @@
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Platform, StatusBar, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
@@ -40,6 +40,7 @@ import EnhancedConversationScreen from './screens/EnhancedConversationScreen';
 import EducationScreen from './screens/EducationScreen';
 import ConversationalHomeScreen from './components/ConversationalHomeScreen';
 import GridHomeScreen from './components/GridHomeScreen';
+import GlobalHuxleyFab from './components/GlobalHuxleyFab';
 import HuxleyChatScreen from './components/HuxleyChatScreen';
 import { HuxleyChatProvider } from './contexts/HuxleyChatContext';
 import AllSessionsScreen from './screens/AllSessionsScreen';
@@ -123,6 +124,22 @@ if (config.sentryDsn) {
 
 const Stack = createStackNavigator();
 
+// Shared ref so the global Huxley FAB (mounted outside any screen) can drive
+// navigation and so we can read the active route to decide where it shows.
+const navigationRef = createNavigationContainerRef();
+
+// Screens where the global FAB should NOT appear: the full Huxley chat (the FAB
+// is redundant there) and the pre-auth / gate screens.
+const FAB_HIDDEN_ROUTES = new Set([
+  'HuxleyChat',
+  'Auth',
+  'Onboarding',
+  'NonClinicalDisclosure',
+  'TermsOfService',
+  'PrivacyPolicy',
+  'NetworkTest',
+]);
+
 // Main App Component with debug logging
 function App() {
   const [fontsLoaded] = useFonts({ Fraunces_700Bold });
@@ -135,6 +152,7 @@ function App() {
   const [disclosureAcknowledged, setDisclosureAcknowledged] = useState(false);
   const [checkingDisclosure, setCheckingDisclosure] = useState(true);
   const [showSplash, setShowSplash] = useState(false); // Splash disabled
+  const [activeRoute, setActiveRoute] = useState(null); // current top route name
 
   useEffect(() => {
     checkOnboardingStatus();
@@ -321,7 +339,11 @@ function App() {
       <PaperProvider theme={paperTheme}>
         <ThemedAlertHost />
         <HuxleyChatProvider>
-        <NavigationContainer>
+        <NavigationContainer
+          ref={navigationRef}
+          onReady={() => setActiveRoute(navigationRef.getCurrentRoute()?.name ?? null)}
+          onStateChange={() => setActiveRoute(navigationRef.getCurrentRoute()?.name ?? null)}
+        >
           <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName={(session && session.user) || bypassAuth ? (bypassAuth ? 'Home' : 'HuxleyChat') : 'Auth'}>
             {(session && session.user) || bypassAuth ? (
             <>
@@ -807,6 +829,11 @@ function App() {
             </>
           )}
         </Stack.Navigator>
+        {/* Global Huxley launcher — floats over every authed screen except
+            the full chat + pre-auth gates (see FAB_HIDDEN_ROUTES). */}
+        {((session && session.user) || bypassAuth) && !FAB_HIDDEN_ROUTES.has(activeRoute) && (
+          <GlobalHuxleyFab navigationRef={navigationRef} />
+        )}
       </NavigationContainer>
       </HuxleyChatProvider>
     </PaperProvider>
