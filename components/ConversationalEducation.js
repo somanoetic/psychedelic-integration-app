@@ -41,8 +41,12 @@ const TOPIC_ICONS = {
   brain_and_healing: icons.dna,
   building_habits: icons.integration,
   cognitive_patterns: icons.thoughtCloud,
+  nervous_system_safety: icons.nsMap,
   trauma_understanding: icons.repairedHeart,
+  mind_body_pain: icons.sensation,
   attachment_styles: icons.community,
+  emotional_learning_change: icons.integrationCycle,
+  mind_brain_relationships: icons.interconnectedness,
   harm_reduction: icons.guidance,
   contemplative_practices: icons.meditate,
   psychedelic_preparation: icons.newBeginning,
@@ -82,7 +86,7 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
       color: colors.error,
       iconImg: icons.lungs,
       description: 'How your body and brain process experiences and support healing',
-      topics: ['somatic_awareness', 'brain_and_healing', 'trauma_understanding', 'attachment_styles']
+      topics: ['somatic_awareness', 'brain_and_healing', 'nervous_system_safety', 'trauma_understanding', 'mind_body_pain', 'attachment_styles', 'emotional_learning_change', 'mind_brain_relationships']
     },
     {
       id: 'tools_and_practices',
@@ -173,14 +177,20 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
     },
     somatic_awareness: {
       title: 'Somatic Awareness & the Body',
-      description: 'Learn to read your body\'s signals and use body-based tools',
-      time: '10 minutes',
+      description: 'How your body holds your story, and how to listen with curiosity',
+      time: '11 minutes',
       color: colors.error
     },
     brain_and_healing: {
       title: 'Your Brain on Healing',
-      description: 'How neuroscience explains why integration works',
-      time: '10 minutes',
+      description: 'Two ways of understanding emotion — evolved circuits and constructed meaning',
+      time: '12 minutes',
+      color: colors.error
+    },
+    nervous_system_safety: {
+      title: 'Your Nervous System & Safety',
+      description: 'A polyvagal-informed map of your three states and the way back to safety',
+      time: '11 minutes',
       color: colors.error
     },
     building_habits: {
@@ -197,14 +207,32 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
     },
     trauma_understanding: {
       title: 'Understanding Trauma',
-      description: 'What trauma is and how integration supports healing',
-      time: '10 minutes',
+      description: 'Trauma is the wound inside you, not the event — and wounds can heal',
+      time: '11 minutes',
+      color: colors.error
+    },
+    mind_body_pain: {
+      title: 'The Mind-Body Connection & Chronic Pain',
+      description: 'How some chronic pain becomes a learned brain pattern (after medical evaluation)',
+      time: '12 minutes',
       color: colors.error
     },
     attachment_styles: {
       title: 'Attachment & Relationships',
-      description: 'How your attachment patterns shape your inner world',
-      time: '9 minutes',
+      description: 'How your earliest bonds shaped you — and how those patterns can change',
+      time: '11 minutes',
+      color: colors.error
+    },
+    emotional_learning_change: {
+      title: 'How Emotional Learnings Change',
+      description: 'The brain\'s own process for updating deep emotional learnings',
+      time: '12 minutes',
+      color: colors.error
+    },
+    mind_brain_relationships: {
+      title: 'Mind, Brain & Relationships',
+      description: 'Dan Siegel\'s interpersonal neurobiology — integration and connection',
+      time: '12 minutes',
       color: colors.error
     },
     harm_reduction: {
@@ -378,8 +406,12 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
         <Text style={styles.topicsLabel}>Body, Brain & Healing:</Text>
         {renderTopicCard('somatic_awareness')}
         {renderTopicCard('brain_and_healing')}
+        {renderTopicCard('nervous_system_safety')}
         {renderTopicCard('trauma_understanding')}
+        {renderTopicCard('mind_body_pain')}
         {renderTopicCard('attachment_styles')}
+        {renderTopicCard('emotional_learning_change')}
+        {renderTopicCard('mind_brain_relationships')}
       </View>
 
     </>
@@ -439,7 +471,7 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
         >
           <Library size={32} color="#6366f1" strokeWidth={2} />
           <View style={styles.allTopicsContent}>
-            <Text style={styles.allTopicsTitle}>Browse All 21 Topics</Text>
+            <Text style={styles.allTopicsTitle}>Browse All 25 Topics</Text>
             <Text style={styles.allTopicsDescription}>
               View the complete education library with detailed theory and practice lessons
             </Text>

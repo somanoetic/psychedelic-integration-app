@@ -703,154 +703,196 @@ Remember: Symbols are bridges between unconscious wisdom and conscious understan
   {
     id: 'somatic_awareness',
     title: 'Somatic Awareness & the Body',
-    description: 'Learn to read your body\'s signals and use body-based tools for healing',
+    description: 'How your body holds your story, and how to listen to it with curiosity',
     emoji: '🫁',
-    estimatedTime: '10 minutes',
+    estimatedTime: '11 minutes',
     content: [
       {
-        title: 'Why the Body Matters',
-        text: `Trauma and intense experiences live in the body, not just the mind. Sensorimotor Psychotherapy recognizes that physical patterns — posture, tension, breathing, movement — both reflect and sustain unresolved experiences.
+        title: 'Your Body Holds Your Story',
+        text: `Your body and mind aren't two separate things. The way you hold yourself — your posture, your breath, the places you carry tension — is a kind of memory. Sensorimotor Psychotherapy calls this procedural learning: physical habits you developed to adapt to what you lived through.
 
-Your body is constantly sending signals: gut feelings, tension patterns, changes in breathing, energy shifts. Learning to read these signals gives you a direct line to your inner world.`
+As Pat Ogden puts it, the body reveals "a lifetime of joys, sorrows, and challenges" in its patterns of tension, movement, gesture, and breath. These habits aren't faults — they're intelligent adaptations.
+
+That's why the body can tell a story words can't reach. When something is hard to put into language, your body has often already been speaking it.`
       },
       {
-        title: 'Body Awareness Basics',
-        text: `Start by simply noticing without trying to change anything:
+        title: 'Your Nervous System\'s Safety Detector',
+        text: `Beneath your awareness, your nervous system is constantly scanning — is this safe, or dangerous? Stephen Porges named this automatic scan neuroception: your body's capacity to detect whether the environment is safe, risky, or threatening, faster than conscious thought.
 
-• **Scan from head to feet** — Where do you feel tension? Openness? Numbness?
-• **Notice your breathing** — Is it shallow or deep? Fast or slow? Where does it move?
-• **Feel your posture** — Are you collapsed? Braced? Open?
-• **Track sensations** — Tingling, warmth, pressure, tightness, spaciousness
+After difficult experiences, this detector can become miscalibrated. Sensorimotor Psychotherapy describes how "reminders of past threat cause a neuroception of danger even when the current environment is safe." Your body sounds the alarm at things that are no longer dangerous.
 
-This isn't about fixing — it's about listening. Your body has wisdom that your thinking mind may not access directly.`
+This is worth holding gently: your body's signals carry real information, but that information can be outdated. Part of healing is helping the detector update.`
       },
       {
-        title: 'The Window of Tolerance',
-        text: `Your "window of tolerance" is the zone where you can experience sensations and emotions without becoming overwhelmed (hyperarousal) or shutting down (hypoarousal).
+        title: 'Reading Your Body\'s Language',
+        text: `Your tension, posture, breath, and gaze form a kind of narrative — but the goal isn't to interpret it like a code. It's to notice it with curiosity.
 
-**Above the window (hyperarousal):**
-• Racing heart, rapid breathing
-• Muscle tension, clenched jaw
-• Feeling flooded or panicked
+Start by simply paying attention, without trying to change anything:
 
-**Below the window (hypoarousal):**
-• Numbness, heaviness
-• Foggy thinking, disconnection
-• Feeling flat or collapsed
+• **Scan from head to feet** — where is there tension? Openness? Numbness?
+• **Notice your breathing** — shallow or deep? Where does it move?
+• **Feel your posture** — collapsed? Braced? Open?
+• **Track sensations** — tingling, warmth, pressure, tightness, spaciousness
 
-**Inside the window:**
-• You can feel without being overwhelmed
-• Sensations flow and change
-• You stay present and connected
-
-Integration work is most effective when you stay within or near the edges of your window.`
+The stance that matters most is befriending: meeting what you find with openness rather than judgment. As the Somatic Psychotherapy Toolbox puts it, "encourage curiosity more than solutions."`
       },
       {
-        title: 'Somatic Resources',
-        text: `These body-based practices can help you regulate:
+        title: 'Two Anchors: Grounding & Pendulation',
+        text: `Two simple practices build your capacity over time.
 
-**Grounding:** Feel your feet on the floor, press your back against a chair, hold something with texture. These remind your body it's here and safe.
+**Grounding** means directing your attention to the support beneath you — your feet on the floor, your back against the chair, the earth holding your weight. This connects you to the here and now and "generally reduces states of activation" (Somatic Therapy for Healing Trauma).
 
-**Orienting:** Slowly look around the room, noticing colors, shapes, and objects. This activates your social engagement system and signals safety.
+**Pendulation** means gently moving your attention back and forth between activation and calm — like a pendulum. You touch a little discomfort, then return to ease, then back again. The point isn't to force anything; it's to teach your nervous system, through direct experience, that states change. Nothing stays forever.
 
-**Containment:** Imagine a strong container (box, vault, cave) where you can place overwhelming material until you're ready. Place your hands on your chest or belly as a physical anchor.
-
-**Pendulation:** Gently shift attention between an area of discomfort and an area of comfort or neutrality. This teaches your nervous system that sensations change — nothing stays forever.`
+Together, these widen your window of tolerance — the zone where you can feel without being overwhelmed (hyperarousal) or shutting down (hypoarousal).`
       },
       {
-        title: 'Embodied Integration',
-        text: `After a psychedelic experience, your body may carry material that words can't capture:
+        title: 'Sensation Becomes Wisdom (Felt Sense)',
+        text: `In the 1950s, the philosopher Eugene Gendlin described the "felt sense" — the ability to sense your emotional experience in your body, not just think about it in your head.
 
-1. **Move it** — Dance, shake, stretch, walk. Let your body process what it needs to
-2. **Sound it** — Humming, sighing, toning can release held energy
-3. **Touch it** — Self-massage, warm baths, weighted blankets
-4. **Express it** — Draw what you feel in your body, sculpt with clay
-5. **Rest it** — Sometimes integration means simply being still and letting the body settle
+This matters because experience that's stuck somatically can begin to shift when you bring gentle awareness to it. Somatic work helps "release survival impulses and energy (such as fight, flight, or freeze responses) that may have become stuck."
 
-The body processes at its own pace. Trust the timing.`
+Notice, though: awareness is the first step, not a magic eraser. Tension doesn't simply vanish because you noticed it. Awareness makes room; grounding, movement, breath, and time do the rest.`
+      },
+      {
+        title: 'From Implicit to Explicit',
+        text: `Difficult experiences are often stored as implicit memory — encoded as sensations and reactions rather than a clear narrative with words. That's why a trigger can feel like it's happening now, even when it's long over.
+
+Sensorimotor Psychotherapy describes a key skill: dual awareness — staying connected to the present moment while also noticing the old internal state. Held this way, an implicit memory can move from "always happening" to "happened in the past."
+
+The aim isn't to erase anything. It's to befriend what your body carries, so it no longer runs the show from the shadows.`
       }
     ],
     keyTakeaways: [
-      'Trauma and insight live in the body, not just the mind',
-      'Body awareness means listening without trying to fix',
-      'The window of tolerance is your zone for safe processing',
-      'Somatic resources like grounding and pendulation help regulate',
-      'Let the body process at its own pace through movement, sound, and rest'
-    ]
+      'Your body holds your history as physical patterns — intelligent adaptations, not faults',
+      'Your nervous system scans for safety automatically (neuroception); after trauma it can misread safe as dangerous',
+      'Somatic awareness means noticing with curiosity, not forcing change',
+      'Grounding and pendulation teach your nervous system that states change',
+      'Awareness moves implicit memory from "always happening" toward "happened in the past"'
+    ],
+    tryThis: {
+      title: 'Body Awareness Grounding',
+      duration: '5–10 minutes',
+      intro: 'A gentle practice in listening to your body. Go slowly, and feel free to stop or skip any part that feels like too much — that choice is part of the practice.',
+      steps: [
+        'Settle into a comfortable position and feel the points where your body makes contact with the chair or floor.',
+        'Slowly scan from your toes up to the top of your head, noticing sensation without trying to fix anything.',
+        'Where you find a tight or activated spot, pause with curiosity — is it warm, heavy, buzzing, still?',
+        'Find a spot that feels neutral or easeful, and let your attention rest there for a moment as a resource.',
+        'Close with three slow breaths, letting the exhale be unhurried.'
+      ]
+    },
+    relatedExercises: ['SO-001', 'GR-001', 'SO-004'],
+    sources: [
+      'Drawn from: Pat Ogden (Sensorimotor Psychotherapy), Manuela Mischke-Reeds (Somatic Psychotherapy Toolbox), and Somatic Therapy for Healing Trauma.'
+    ],
+    seeAlso: ['nervous_system_safety', 'trauma_understanding']
   },
 
   {
     id: 'brain_and_healing',
     title: 'Your Brain on Healing',
-    description: 'How neuroscience explains why integration works and how your brain changes',
+    description: 'Two ways of understanding emotion — evolved circuits and constructed meaning — and what they mean for integration',
     emoji: '🧬',
-    estimatedTime: '10 minutes',
+    estimatedTime: '12 minutes',
     content: [
       {
-        title: 'Neuroplasticity: Your Brain Can Change',
-        text: `Your brain is not fixed — it rewires itself throughout life. This is neuroplasticity, and it's the biological basis for integration.
+        title: 'Your Brain Is Built to Change',
+        text: `Your brain isn't a fixed piece of hardware you were handed at birth. While its large-scale structure is largely set, the fine-grained wiring — the connections that shape how you feel, react, and relate — is built and rebuilt by experience.
 
-Every time you practice a new pattern — regulating your breathing instead of spiraling, sitting with an emotion instead of numbing — you strengthen new neural pathways. The old pathways don't disappear immediately, but they weaken from disuse.
+As neuroscientist Lisa Feldman Barrett puts it, some of your brain's connections "literally come into existence because other people talked to you or treated you in a certain way." Experience wires the microcircuits.
 
-This is why integration is a practice, not a one-time event. Repetition literally reshapes your brain.`
+This is the quiet, hopeful premise underneath integration: the patterns you carry were learned, and what's learned can be reshaped through new experience. It's less like flipping a switch and more like wearing a new path into a field by walking it — which is why integration is a practice, not a single event.`
       },
       {
-        title: 'The Emotional Brain',
-        text: `Your brain has multiple systems that process emotions:
+        title: 'Emotions Have Deep Evolutionary Roots',
+        text: `One way to understand emotion is that we come equipped with ancient, built-in systems that kept our ancestors alive.
 
-**The limbic system** (amygdala, hippocampus) handles emotional learning and memory. It's fast — it reacts before your thinking brain catches up. This is why triggers feel automatic.
+Neuroscientist Jaak Panksepp mapped a set of basic emotional systems shared across mammals — including SEEKING (curiosity and drive), FEAR, RAGE, CARE (nurturing), PANIC/GRIEF (the pain of separation), and PLAY. These live in older, subcortical parts of the brain that evolved long before the human "thinking brain," and they can be set off automatically, before conscious deliberation.
 
-**The prefrontal cortex** handles planning, decision-making, and regulation. It can modulate emotional responses, but it goes offline during intense stress or overwhelm.
+Antonio Damasio describes emotions as part of our "bioregulatory" equipment — tools "with which we come equipped to survive," there to help the organism maintain life. This is why a strong emotion can grip your body before you've had time to think.
 
-**The insula** maps internal body states and generates the felt sense of emotions. It bridges body and mind.
-
-Psychedelic experiences appear to temporarily increase connectivity between these systems, which may explain why insights feel so whole-body and profound.`
+But evolved doesn't mean fixed. Both Panksepp and Damasio note that learning and culture shape how these systems get activated and what they come to mean.`
       },
       {
-        title: 'Memory Reconsolidation',
-        text: `When an emotional memory is activated, it briefly becomes malleable — open to updating. This is called memory reconsolidation, and it's a key mechanism in therapeutic change.
+        title: 'Your Brain Also Constructs Emotions',
+        text: `There's a second, complementary way to understand emotion — and it's where the hope for change lives.
 
-The process:
-1. **Activate** the old emotional learning (the trigger, the pattern)
-2. **Introduce a mismatch** — a new experience that contradicts what was expected
-3. **The brain updates** the memory with new information
+Barrett's research shows that the raw sensations in your body don't carry a fixed emotional meaning on their own. As she writes, "these purely physical sensations inside your body have no objective psychological meaning. Once your concepts enter the picture, however, those sensations may take on additional meaning."
 
-This is why integration after a psychedelic experience is so powerful — the experience often provides that mismatch naturally. Integration helps you consolidate the new learning before the old pattern reasserts itself.
+A racing heart and tight stomach could be fear, excitement, longing, or hunger — your brain predicts which one based on context, past experience, and the concepts you've learned. The same body signal becomes a different feeling depending on the meaning your brain assigns it.
 
-The integration window (first 6-8 weeks) may correspond to this period of neural flexibility.`
+This matters enormously for healing: if emotions are partly constructed from meaning, then meaning is something that can change.`
       },
       {
-        title: 'Default Mode Network',
-        text: `The Default Mode Network (DMN) is a brain network active when you're self-referential — thinking about yourself, your story, your identity.
+        title: 'How the Two Fit Together',
+        text: `These aren't competing theories you have to choose between — they describe different layers.
 
-Research shows psychedelics temporarily quiet the DMN, which may explain:
-• **Ego dissolution** — the sense of self loosens
-• **New perspectives** — rigid self-narratives soften
-• **Connectedness** — boundaries between self and world blur
-• **Fresh seeing** — familiar things feel new
+The evolved circuits are the raw material: fast, bodily, ancient. The constructed layer is the meaning your brain builds on top of that raw material, shaped by your history and the concepts you carry.
 
-After the experience, the DMN comes back online. Integration is about incorporating insights before old patterns of self-reference fully re-establish.`
+Barrett's own theory deliberately holds both — it "acknowledges the importance of culture and concepts" while treating emotions as built from "core systems in the brain and body." Nature and nurture, working at different levels.
+
+For integration, this is the whole point: you're not trying to delete your protective circuitry. You're giving your brain new experiences and new meanings, teaching those old circuits new concepts — so the same activation can come to mean something different.
+
+(This is a way of fitting the two views together, not a single claim every neuroscientist states outright — but it follows naturally from how each describes their level.)`
       },
       {
-        title: 'Interpersonal Neurobiology',
-        text: `Daniel Siegel's interpersonal neurobiology (IPNB) framework shows that the mind emerges from both the brain AND relationships. Your neural wiring was shaped by your earliest connections and continues to be shaped by current ones.
+        title: 'Your Body Is Your Emotional Compass',
+        text: `If emotions are built partly from body signals plus meaning, then learning to read your body more precisely gives you more to work with.
 
-Key IPNB principles for integration:
-• **Integration** in IPNB means linking differentiated parts into a coherent whole
-• **Co-regulation** — being with a safe person literally calms your nervous system
-• **Mindsight** — the ability to see your own mind and others' minds clearly
-• **The triangle of well-being** — mind, brain, and relationships are interconnected
+Your brain is constantly sensing the state of your body from the inside — a process called interoception, which Barrett calls "the origin of feeling." Damasio similarly describes feelings as the brain's representation of what's happening in the body.
 
-This is why integration circles, therapy, and trusted relationships are so valuable — they provide the relational context your brain needs for change.`
+One especially useful skill here is emotional granularity: the ability to tell your feelings apart with precision. Barrett's research found that people with higher granularity — who can distinguish "anxious" from "overwhelmed" from "lonely" rather than just "bad" — tend to cope better, use less medication, and report better relationships. And granularity is trainable.
+
+The more precisely you can name what you feel, the more choice you have about what to do with it.`
+      },
+      {
+        title: 'How Emotional Learning Updates',
+        text: `Your brain is fundamentally a prediction machine. It carries a model of the world built from past experience, and it constantly checks that model against what actually happens.
+
+When reality doesn't match the prediction — what scientists call prediction error, or mismatch — that's the brain's signal to learn. Barrett describes the brain as continually needing to "learn and update its concepts in a changing environment."
+
+This is why a vivid, felt experience that contradicts an old expectation can be so powerful: it gives the emotional brain a mismatch it can't ignore. A psychedelic experience often provides exactly that kind of contradicting experience — and integration is what helps the new learning take hold before old patterns reassert themselves.
+
+There's a deeper, more specific account of exactly how emotional memories update — memory reconsolidation — which has its own article in this collection. Here, the key idea is simpler: your emotional brain learns through experiences that don't match what it expected.`
+      },
+      {
+        title: 'Your Sense of Self Is a Construction',
+        text: `One of the most striking parts of a psychedelic experience is what can happen to the sense of self — that feeling of being "you," observing the world from behind your eyes.
+
+Neuroscientist Anil Seth argues that this sense of self is itself something your brain constructs moment to moment — a kind of "controlled hallucination," built from prediction just like your perception of color or sound. If the self is constructed, it isn't a fixed, unchangeable fact.
+
+Philosopher and neuroscientist Sam Harris makes a related point from the contemplative side: the feeling of being a separate self "can be altered or entirely extinguished," and certain states can produce a sense of "boundless, open awareness." Both note that under conditions like deep meditation or psychedelic states, the usual boundary between self and world can shift or dissolve — what's often called ego dissolution.
+
+The takeaway for integration is gentle but profound: the self you experience is less a solid core and more a dynamic construction — which is part of why these experiences can loosen rigid self-stories and let something new take root.
+
+(This article keeps to what the sense of self is and how it can shift, rather than claiming a specific brain mechanism — that neuroscience is still being worked out.)`
       }
     ],
     keyTakeaways: [
-      'Neuroplasticity means your brain rewires through repeated practice',
-      'Memory reconsolidation explains why integration timing matters',
-      'The Default Mode Network quieting during psychedelics enables fresh perspectives',
-      'Your brain changes through both internal practice and relationships',
-      'Integration works with your brain\'s natural mechanisms for change'
-    ]
+      'Your brain\'s fine-grained wiring is shaped by experience — what was learned can be reshaped',
+      'Emotions are both real evolved biology AND constructed meaning; integration works on the meaning layer',
+      'The more precisely you can name a feeling (emotional granularity), the more choice you have',
+      'Your emotional brain learns through mismatch — experiences that contradict what it expected',
+      'Your sense of self is a construction that can shift, which is part of why these experiences open new perspectives'
+    ],
+    tryThis: {
+      title: 'Granular Noticing',
+      duration: '5 minutes',
+      intro: 'A small practice for the skill at the heart of this article — telling your feelings apart with more precision.',
+      steps: [
+        'Notice one sensation in your body, without naming it yet.',
+        'Describe it plainly: is it fast or slow, warm or cool, where is it?',
+        'Ask what it could mean in this context — not what it usually means.',
+        'Name it freshly ("activation," "longing," "anticipation") rather than a broad word like "bad" or "anxious."',
+        'Repeat with another sensation. Each time you do this, you build granularity.'
+      ]
+    },
+    relatedExercises: ['SO-001', 'BR-003'],
+    sources: [
+      'Drawn from: Lisa Feldman Barrett, Jaak Panksepp, Antonio Damasio, Anil Seth, and Sam Harris.'
+    ],
+    seeAlso: ['emotional_learning_change', 'mind_brain_relationships']
   },
 
   {
@@ -1113,190 +1155,559 @@ Change happens at the speed of trust — trust in yourself, in the process, and 
   {
     id: 'trauma_understanding',
     title: 'Understanding Trauma',
-    description: 'What trauma is, how it affects you, and how integration supports healing',
+    description: 'Trauma is the wound inside you, not the event — and wounds can heal',
     emoji: '🌿',
-    estimatedTime: '10 minutes',
+    estimatedTime: '11 minutes',
     content: [
       {
-        title: 'What Is Trauma?',
-        text: `Trauma isn't just about what happened to you — it's about what happened inside you as a result. It's a rupture in connection: to yourself, to others, to a sense of safety in the world.
+        title: 'Trauma Is a Wound Inside You, Not the Event',
+        text: `We usually use the word "trauma" to mean a terrible event. But the word's Greek root simply means wound. As Gabor Maté puts it, trauma is "what took place inside us as a result of what happened" — the wounding, the disconnection — not the event itself.
 
-Trauma can come from:
-• **Single events** — accidents, assaults, sudden losses
-• **Prolonged experiences** — ongoing abuse, neglect, war
-• **Developmental gaps** — what you needed but didn't receive as a child
-• **Systemic causes** — oppression, discrimination, intergenerational patterns
+This reframe changes everything. If trauma were the event, it would be fixed and unchangeable. But if trauma is the wound inside you, then — like any wound — healing and reconnection become real possibilities.
 
-What matters isn't the event itself but whether your nervous system was able to process it. Unprocessed experiences get "stuck" in survival mode.`
+Maté notes that what happens after a painful experience matters enormously. The presence of attuned, caring support can change whether a wound stays raw, hardens into protective scar tissue, or has the chance to mend.`
       },
       {
-        title: 'How Trauma Lives in the Body',
-        text: `When a threatening experience can't be fully processed, the body stores it:
+        title: 'Kinds of Trauma — From Single Events to Developmental',
+        text: `Trauma isn't only the dramatic, obvious events. Maté distinguishes "big-T" trauma — overwhelming events like accidents or assaults — from "small-t" or developmental trauma, the quieter wounds of childhood.
 
-• **Muscle tension** — chronic bracing against anticipated threat
-• **Breathing patterns** — shallow, held, or erratic
-• **Startle responses** — exaggerated reactions to unexpected stimuli
-• **Dissociation** — disconnection from body sensations
-• **Chronic pain** — the body expressing what words cannot
+And developmental wounds can come not only from bad things happening, but from good things not happening: emotional needs for attunement going unmet, the experience of not being truly seen — "even by loving parents."
 
-These aren't "imaginary" — they're real neurobiological patterns. The survival system that activated during the traumatic experience never fully turned off.
-
-This is why talk therapy alone sometimes isn't enough. The body needs to complete its response.`
+This is important: a wound being less visible doesn't make it less real. Many people carry the effects of trauma without ever having labeled it as such.`
       },
       {
-        title: 'Complex Trauma & Integration',
-        text: `Complex trauma results from prolonged, repeated experiences — especially in childhood or in relationships where you couldn't escape.
+        title: 'How Trauma Lives in Your Nervous System',
+        text: `Under threat, the nervous system moves through a sequence. Bruce Perry describes how, as stress rises, our internal state shifts "from alert to terror." In someone whose stress response has become sensitized by past trauma, even small daily challenges can trigger fear.
 
-Survivors of complex trauma often develop:
-• Difficulty regulating emotions (too much or too little feeling)
-• Challenges with identity and self-worth
-• Relationship patterns that repeat the trauma
-• Dissociative experiences
-• A deep sense that something is fundamentally wrong with them
+This shows up as two broad patterns. Arielle Schwartz describes them simply: "feeling anxious, overwhelmed, or panicked" is hyperarousal; "feeling shut down, numb, or disconnected" is hypoarousal.
 
-Psychedelic experiences can be particularly powerful — and particularly challenging — for complex trauma survivors. The opening that occurs can bring healing, but it can also temporarily overwhelm a system that's already at capacity.
-
-**Important:** If you have complex trauma, working with a trauma-informed therapist alongside your integration practice is strongly recommended.`
+And much of this is stored below words. Maté points out that some wounds are imprinted on parts of the nervous system "having nothing to do with language" — which is why the body can react before the thinking brain catches up.`
       },
       {
-        title: 'Trauma-Informed Integration Principles',
-        text: `Whether or not you identify as having "trauma," these principles support safe integration:
+        title: 'You\'re Not Broken — You\'re Adapted',
+        text: `Your survival responses — the hypervigilance, the shutting down, the bracing — were intelligent adaptations. They were your nervous system's best solution for protecting you when you needed it.
 
-**1. Safety first** — Integration only works when your nervous system feels safe enough. Build safety before diving deep.
+Perry's whole reframe — asking "what happened to you?" instead of "what's wrong with you?" — rests on this. Trauma responses aren't character flaws. They're the marks of a system that adapted to survive.
 
-**2. Titration** — Process small amounts at a time. You don't need to face everything at once. Think of a tea bag in water — let it steep slowly.
-
-**3. Pendulation** — Move between the difficult material and resources (safety, comfort). This teaches your nervous system that it can touch pain and return to safety.
-
-**4. Choice and agency** — You choose the pace. You choose what to explore. You can stop at any time. Reclaiming choice is itself healing.
-
-**5. Completion** — Allow the body to finish survival responses that got interrupted. Shaking, crying, pushing away, running — these are completions, not breakdowns.`
+Healing, then, isn't about fixing something broken. It's about helping your nervous system learn, through new experience, that it's safe now — so patterns that once protected you can gently update.`
       },
       {
-        title: 'When to Seek Professional Support',
-        text: `Integration is powerful, but some experiences need professional guidance:
+        title: 'Core Principles of Safe, Paced Healing',
+        text: `Trauma-informed healing follows a few principles, whether or not you identify as "traumatized":
 
-**Seek support if:**
-• You're experiencing flashbacks or intrusive memories
-• Dissociation is increasing or feels uncontrollable
-• You're unable to function in daily life
-• Self-harm thoughts are present
-• You feel stuck in a trauma response for days or weeks
-• The psychedelic experience activated material you can't process alone
+**Safety and rhythm first.** Before turning toward pain, you build resources and felt safety. Schwartz: these tools "allow you to turn toward your pain without creating additional distress."
 
-**What to look for in a therapist:**
-• Trauma-informed training (EMDR, Somatic Experiencing, Sensorimotor Psychotherapy)
-• Openness to psychedelic integration
-• Focus on safety and pacing (not rushing to "the material")
-• A good felt sense of safety when you're with them
+**Titration.** Process small amounts at a time — like adding a single drop and letting it settle, rather than facing everything at once.
 
-Seeking help is not weakness — it's wisdom. Some healing requires a witness.`
+**Pendulation.** Move between the difficult material and a sense of safety, so your system learns it can touch pain and return.
+
+**Choice and pacing.** You set the pace; you can stop anytime. Reclaiming choice is itself part of healing.
+
+**Completion.** Allowing interrupted survival responses (shaking, tears, movement) to finish is a release, not a breakdown.`
+      },
+      {
+        title: 'Grounding in the Present + When to Seek Support',
+        text: `A simple grounding tool from Schwartz: name five things you see, four you hear, three you can touch, two you can smell, and take one slow breath — while feeling your feet on the earth.
+
+And connection itself is medicine. Recovery from developmental trauma, Schwartz writes, "requires that you have a reparative experience in a relationship." A compassionate other offers a container for what's hard to hold alone.
+
+**These tools support professional care; they don't replace it.** Complex trauma healing genuinely needs a trauma-informed therapist. Please reach out for professional support if you experience intrusive flashbacks, increasing or uncontrollable dissociation, an inability to function day to day, thoughts of self-harm, or material from a psychedelic experience you can't process alone. In a crisis, contact a local emergency line (in the US, call or text 988).
+
+Seeking help isn't weakness — some healing requires a witness.`
       }
     ],
     keyTakeaways: [
-      'Trauma is about what happened inside you, not just what happened to you',
-      'The body stores unprocessed experiences as tension, pain, and survival patterns',
-      'Complex trauma needs extra care — work with a professional if this resonates',
-      'Key principles: safety first, titration, pendulation, choice, completion',
-      'Seeking professional support when needed is wisdom, not weakness'
-    ]
+      'Trauma is the wound inside you, not the event itself — and wounds can heal',
+      'Developmental wounds can come from good things not happening, not only bad things happening',
+      'Your survival adaptations were intelligent; healing helps your system learn it\'s safe now',
+      'Safe healing is paced: safety first, titration, pendulation, choice, completion',
+      'These tools complement professional care for complex trauma — they don\'t replace it'
+    ],
+    tryThis: {
+      title: 'Window of Tolerance Check-In',
+      duration: '2–3 minutes',
+      intro: 'A brief practice for noticing and gently steadying your nervous system. The goal isn\'t to force yourself to feel better — it\'s to signal to your body that you\'re safe right now.',
+      steps: [
+        'Pause and notice where you are: flooded and activated, checked-out and numb, or somewhere okay in between.',
+        'Anchor: feel your feet on the floor, place a hand on your heart, and take a few slow, deep breaths.',
+        'Look around and notice one thing that feels safe or neutral in your surroundings.',
+        'If your body wants to move — to stretch, shift, or settle — let it, gently.',
+        'Notice whether anything has softened, even slightly. If not, that\'s okay too.'
+      ]
+    },
+    relatedExercises: ['TR-001', 'GR-001', 'TR-004'],
+    sources: [
+      'Drawn from: Gabor Maté (The Myth of Normal, Scattered), Bruce Perry (What Happened to You?), and Arielle Schwartz (The Complex PTSD Treatment Manual).'
+    ],
+    seeAlso: ['nervous_system_safety', 'somatic_awareness', 'mind_body_pain']
   },
 
   {
     id: 'attachment_styles',
     title: 'Attachment & Relationships',
-    description: 'How your attachment patterns shape your inner world and relationships',
+    description: 'How your earliest bonds shaped you — and how those patterns can change at any age',
     emoji: '🤝',
-    estimatedTime: '9 minutes',
+    estimatedTime: '11 minutes',
     content: [
       {
         title: 'What Is Attachment?',
-        text: `Attachment theory, developed by John Bowlby and Mary Ainsworth, describes how your earliest relationships with caregivers shaped your expectations about connection, safety, and love.
+        text: `From your earliest relationships, your mind built an internal working model — an unconscious template for what to expect from closeness, safety, and connection. Daniel Siegel describes how the attachment relationship literally helps "shape the personality."
 
-These patterns aren't just childhood relics — they actively shape how you relate to partners, friends, yourself, and even your psychedelic experiences.
+These patterns aren't just childhood relics. They quietly shape how you relate to partners, friends, and yourself today.
 
-Your attachment style isn't a permanent label. It's a set of learned patterns that can be updated through new experiences — including integration work.`
+But here's the hopeful part, central to Siegel's work: these models aren't fixed. A core aim of therapeutic and relational work is precisely "to change internal working models of attachment." Your pattern is learned — and what's learned can be reshaped.`
       },
       {
         title: 'The Four Attachment Styles',
-        text: `**Secure:** "I'm okay, you're okay."
-• Comfortable with closeness and independence
-• Can ask for help and offer it
-• Processes emotions effectively
-• Formed when caregivers were consistently responsive
+        text: `Researchers (in the classic attachment tradition of Ainsworth and Main, carried into modern neurobiology by Siegel and Ogden) describe four broad patterns. Hold these as patterns, not boxes — most of us recognize ourselves in more than one.
 
-**Anxious-Preoccupied:** "I need closeness to feel okay."
-• Craves connection but fears abandonment
-• May become clingy or people-pleasing
-• Emotions feel big and hard to regulate alone
-• Formed when caregivers were inconsistently available
+**Secure:** comfortable seeking closeness and being independent; can feel and process emotions; a flexible, responsive nervous system.
 
-**Dismissive-Avoidant:** "I'm fine on my own."
-• Values independence, uncomfortable with closeness
-• May suppress emotions or intellectualize
-• Difficulty asking for or receiving help
-• Formed when caregivers were emotionally unavailable
+**Anxious-Preoccupied:** inclined to "maximize attachment needs, fear abandonment," with a more sympathetically activated, higher-arousal nervous system; closeness is sought, separation feels threatening.
 
-**Fearful-Avoidant (Disorganized):** "I want closeness but it scares me."
-• Desires connection but expects pain
-• Push-pull pattern in relationships
-• May dissociate during emotional intensity
-• Often formed in environments with frightening caregivers`
+**Avoidant-Dismissing:** tends to "shun situations and relationships that stimulate attachment needs," with lower overall arousal and minimal emotional expression; independence feels safer than reaching out.
+
+**Disorganized-Fearful:** forms when the attachment figure is also a source of fear, creating an "intolerable conflict between the need for attachment and the need for defense" — a push-pull, with swings between high and low arousal.`
       },
       {
-        title: 'Attachment and Psychedelic Experiences',
-        text: `Your attachment style influences how you experience psychedelics and integration:
+        title: 'Attunement: Maté\'s Lens',
+        text: `Gabor Maté adds a tender layer. Attunement — a caregiver genuinely sensing and meshing with a child's inner state — is, he writes, "necessary for the normal development of the brain pathways" of emotional self-regulation. And it can't be faked; infants "read feelings clearly."
 
-**Anxious style:** May seek constant reassurance after experiences. Integration benefit: learning that you can hold your own experience without external validation.
+Maté names a painful bind: when our need for attachment collides with our authenticity — our connection to what we truly feel — "attachment unfailingly tops the bill." As children, many of us learned to suppress parts of ourselves to preserve connection.
 
-**Avoidant style:** May intellectualize the experience or dismiss emotional content. Integration benefit: allowing the felt sense to matter without needing to "understand" everything.
-
-**Disorganized style:** May experience intense activation or dissociation. Integration benefit: building internal safety so connection doesn't equal danger. Extra care and professional support recommended.
-
-**Secure style:** Generally integrates more fluidly but may be challenged by experiences that shake their sense of safety. Integration benefit: expanding capacity for uncertainty.`
+He's clear this suppression was acquired, not our true nature: "Human infants are born with no capability whatsoever to hide or suppress any feeling." Which means it can be unlearned.`
       },
       {
-        title: 'Earned Security',
-        text: `The good news: you can develop "earned security" regardless of your early experiences. This happens through:
+        title: 'How Your Style Shows Up',
+        text: `In relationships, the patterns have recognizable shapes. Anxious-preoccupied tends toward "clinging, grasping, and reaching-out actions" and agitation at the threat of separation. Avoidant tends toward "distancing actions" — pushing away, avoiding eye contact, withdrawing under stress. Disorganized can show contradictory behaviors, because the same person is both the longed-for safety and the source of fear.
 
-• **Therapy** — A consistent, attuned therapeutic relationship rewires attachment patterns
-• **Secure relationships** — Being with people who are reliably responsive
-• **Self-awareness** — Recognizing your patterns without judgment
-• **Integration work** — Processing the experiences that shaped your attachment style
-• **Internal work** — Building a secure relationship with yourself
+All of these, Ogden emphasizes, began as adaptive responses — intelligent solutions to your early environment, not flaws.
 
-Psychedelic experiences often provide glimpses of secure attachment — the feeling of being unconditionally held, accepted, loved. Integration anchors these glimpses into lasting neural change.`
+These patterns can also color how you meet intense inner experiences, including psychedelic states and the relationship with a guide or sitter. That application is a reasonable extension of attachment research rather than a proven fact — so hold it lightly, as a lens for noticing your own tendencies, not a rule.`
       },
       {
-        title: 'Practices for Attachment Healing',
-        text: `**For anxious patterns:**
-• Practice sitting with discomfort without reaching for reassurance
-• Build self-soothing skills (your hands on your own heart)
-• Notice when you're okay on your own — collect evidence
+        title: 'Co-Regulation & Why Connection Heals',
+        text: `Early on, a caregiver's calm was your regulation. Bruce Perry describes how a parent acts as the child's "external stress regulator" — and through repeated, attuned interaction, the child's brain gradually "develop[s] the capacity for self-regulation."
 
-**For avoidant patterns:**
-• Practice naming emotions with one trusted person
-• Let yourself need someone — start small
-• Notice the body's response to closeness (it may feel threatening; that's information)
+This isn't only for infants. Perry is explicit that we always need at least some social connection for a healthy life. Reaching for a regulated other when you're dysregulated isn't weakness — it's how nervous systems are designed to settle.
 
-**For disorganized patterns:**
-• Prioritize safety — build predictable routines and relationships
-• Work with a trauma-informed therapist
-• Practice grounding before exploring relational territory
+This is why connection heals: safe, attuned relationship is the very context in which the nervous system can reorganize.`
+      },
+      {
+        title: 'Earned Security — You Can Change at Any Age',
+        text: `Siegel offers one of the most hopeful findings in the field: through sustained, attuned relationship over time, it's possible to "transform a right brain insecure attachment into an earned-secure attachment" — making real, structural change "in the deep core of the personality."
 
-**For everyone:**
-• Journal about what safety in connection feels like
-• Notice your patterns without making them wrong
-• Celebrate small moments of secure connection`
+A striking marker of this security is narrative coherence: being able to make sense of your own life story, even the hard parts. As Siegel puts it, we "construct a story of our lives that makes sense even of things that didn't make sense at the time." The coherent story isn't just evidence of security — building it is part of how security grows.
+
+This change is implicit and relational, not just intellectual. It comes through repeated experiences of safe attunement — which is why it takes time, and usually other people.`
+      },
+      {
+        title: 'What This Means for Your Integration',
+        text: `Knowing your pattern lets you work with it gently:
+
+• If you lean **anxious**, you might ask for clear check-ins, and practice noticing you're okay on your own.
+• If you lean **avoidant**, you might let yourself need someone in small doses, and let the felt sense matter even when you can't fully "explain" it.
+• If you lean **disorganized**, prioritize slowness, grounding, and predictable safety — and lean on a trauma-informed therapist.
+
+In all cases, a guide, therapist, or trusted person can serve as a co-regulator — the safe presence within which integration takes root. And the through-line of this whole article: your pattern is not your destiny.`
       }
     ],
     keyTakeaways: [
-      'Attachment patterns form early but can be updated throughout life',
-      'Your attachment style influences how you experience and integrate psychedelics',
-      'Earned security is possible through therapy, relationships, and self-awareness',
-      'Different attachment styles benefit from different integration approaches',
-      'Building secure connection with yourself is the foundation for all other healing'
-    ]
+      'Your attachment style is a learned pattern, not your destiny — it can change at any age',
+      'The four styles (secure / anxious / avoidant / disorganized) are patterns, not boxes',
+      'Attunement is the relational nutrient; suppressing yourself to keep connection was learned, and can be unlearned',
+      'Co-regulation isn\'t weakness — safe relationship is how nervous systems reorganize',
+      'Being able to tell a coherent story of your life is both a sign and a builder of earned security'
+    ],
+    tryThis: {
+      title: 'Three-Breath Attunement',
+      duration: '2–3 minutes',
+      intro: 'A short practice in offering yourself, or receiving from another, the attunement that builds security.',
+      steps: [
+        'Breath one — arrival: breathe in and quietly ask, "What does my nervous system need right now?"',
+        'Breath two — connection: if you\'re with a trusted person, breathe with them; if alone, rest a hand on your heart and feel your own warmth.',
+        'Breath three — intention: on the exhale, offer yourself a true-feeling phrase, such as "I\'m learning that closeness is possible for me," or "...that I can have space and still belong."',
+        'Notice that lasting change comes from repeating safe, attuned moments like this over time — not from a single breath.'
+      ]
+    },
+    relatedExercises: ['SC-001', 'PV-009', 'SC-008'],
+    sources: [
+      'Drawn from: Daniel Siegel (Interpersonal Neurobiology and Clinical Practice), Pat Ogden (Sensorimotor Psychotherapy), Gabor Maté (Scattered), and Bruce Perry (Born for Love). Style names from classic attachment research (Ainsworth, Main).'
+    ],
+    seeAlso: ['mind_brain_relationships', 'trauma_understanding', 'nervous_system_safety']
+  },
+
+  {
+    id: 'nervous_system_safety',
+    title: 'Your Nervous System & Safety',
+    description: 'A polyvagal-informed map of your three states — and how to find your way back to safety',
+    emoji: '🚦',
+    estimatedTime: '11 minutes',
+    content: [
+      {
+        title: 'You\'re Wired for Connection',
+        text: `Your autonomic nervous system — the part that runs your body automatically — is, in Deb Dana's words, "a relational system. Through your biology you are wired for connection."
+
+It's always working as a kind of safety surveillance, scanning for cues of safety and danger and shifting you between three protective pathways. When it pulls you into freeze, or into fight-or-flight, that's not a malfunction. Dana invites us to see these as "adaptive survival responses triggered by too many cues of danger and not enough cues of safety."
+
+In other words: when you shut down or get activated, your nervous system is doing its job — trying to keep you safe.`
+      },
+      {
+        title: 'The Story of Three States',
+        text: `Polyvagal theory describes three states, which Dana pictures as an "autonomic ladder."
+
+**Ventral vagal — safe & connected (top of the ladder):** "being a part of the world, connected to self, able to reach out to others, open to change." It feels like calm, warmth, ease, possibility.
+
+**Sympathetic — mobilized & alert (middle):** the system "adds fight and flight." Your breath changes, your heart speeds up, your thoughts may swirl, and there's an urge to act.
+
+**Dorsal vagal — shutdown & collapse (bottom):** the oldest pathway, bringing "strategies of immobilization." Energy drains, everything slows, you may feel numb, heavy, or far away.
+
+No state is "good" or "bad" — each is there to protect you. Knowing which one you're in is the first step.`
+      },
+      {
+        title: 'Neuroception: Your Body\'s Safety-Sensing System',
+        text: `Dana borrows Stephen Porges's word neuroception — your body's safety-sensing system. As she describes it, the nervous system "listens intently, searching for cues of safety and watching for signs of danger."
+
+This happens "below the realm of conscious thought and outside of awareness." You often won't know why you suddenly feel uneasy or at ease — but you'll feel the response in your body.
+
+Two things follow. First, the state you're in shapes the story you tell yourself about what's happening. Second, feeling unsafe isn't a choice or a weakness — neuroception runs automatically, beneath your control.`
+      },
+      {
+        title: 'Triggers & Glimmers',
+        text: `Just as cues of danger can drop you down the ladder, small cues of safety can lift you up. Dana coined a lovely word for these: glimmers — "micro-moments when we feel a spark of ventral energy."
+
+Triggers light up your protective states. Glimmers are the opposite: a warm glance, a favorite song, sunlight, a pet's weight against you — tiny moments of ventral safety.
+
+Here's the catch Dana names: "from a state of protection they are very hard to find." When you're activated or shut down, glimmers are easy to miss. But the more you deliberately look for them, the more they accumulate — and "glimmers can be turned into the deeper experience of a glow."`
+      },
+      {
+        title: 'Co-Regulation & Connection',
+        text: `Dana calls co-regulation one of the organizing principles of the whole system: "Through co-regulation we connect with others and create a shared sense of safety."
+
+Crucially, "the ability to self-regulate is built on ongoing experiences of co-regulation." We learn to steady ourselves, in part, by being steadied by others — first as children, and throughout life.
+
+So reaching for a regulated, trusted person when you're struggling isn't dependence or weakness. It's your biology working as designed. "We depend on the people around us for co-regulation and try to offer experiences of co-regulation in return."`
+      },
+      {
+        title: 'Anchors & Ventral-Vagal Practices',
+        text: `An anchor, in Dana's framework, "holds the connection to the energy of your ventral vagal system when experiences threaten to pull you" elsewhere. Anchors are personal cues of safety, and she sorts them into four categories — who, what, where, and when:
+
+• **Who** — a person (present or imagined) whose presence settles you
+• **What** — an object, a piece of music, a soft sweater, a scent
+• **Where** — a place, real or remembered, that brings your ventral state alive
+• **When** — a time of day, a ritual, a predictable routine
+
+"With regular practice, ventral vagal anchors strengthen your capacity to return to regulation." You're not forcing calm — you're reminding your body of safety it already knows.`
+      },
+      {
+        title: 'Befriend Your Nervous System',
+        text: `The overarching skill Dana teaches is befriending: "learning to tune in and turn toward autonomic state and story with curiosity and self-compassion."
+
+The nervous system itself doesn't moralize. As Dana notes, it "doesn't attach moral meaning to states and state changes; it simply acts in service of survival." So there's nothing to judge — only patterns to get curious about.
+
+This article is the reading. The doing is your turn: noticing your states, your triggers, and your glimmers in daily life. (The in-app Nervous System Mapping exercise is a good next step.)`
+      }
+    ],
+    keyTakeaways: [
+      'Your nervous system isn\'t your enemy — it\'s constantly trying to keep you safe',
+      'Three states: ventral (safe & connected), sympathetic (mobilized), dorsal (shutdown) — knowing which is step one',
+      'Neuroception is your body\'s safety-sensing system; it runs below awareness, so feeling unsafe isn\'t a choice',
+      'Glimmers — micro-moments of safety — are real and countable; noticing them teaches that safety is possible',
+      'Reaching for a regulated other (co-regulation) is biology, not weakness'
+    ],
+    tryThis: {
+      title: 'Five Senses + Ground',
+      duration: '2–3 minutes',
+      intro: 'A short, polyvagal-informed practice for sending your nervous system cues of safety. (A gentle blend of grounding and Dana\'s anchoring work.)',
+      steps: [
+        'Find your feet — feel them on the floor and let your weight settle down into them.',
+        'Move through your senses, naming one thing for each: something you see, hear, feel, smell, and (if you can) taste.',
+        'Rest a hand on your heart or belly, wherever feels steadying.',
+        'Offer yourself a gentle anchor phrase, such as "I\'m here," or "I\'m safe right now."',
+        'Notice, with curiosity and no agenda, whether anything shifts.'
+      ]
+    },
+    relatedExercises: ['PV-001', 'GR-003', 'PV-004'],
+    sources: [
+      'Drawn from: Deb Dana (Polyvagal Exercises for Safety and Connection, Anchored), building on the polyvagal theory of Stephen Porges.'
+    ],
+    seeAlso: ['somatic_awareness', 'trauma_understanding', 'polyvagal_mapping']
+  },
+
+  {
+    id: 'mind_body_pain',
+    title: 'The Mind-Body Connection & Chronic Pain',
+    description: 'How some chronic pain becomes a learned brain pattern — and what can help, after medical evaluation',
+    emoji: '🫀',
+    estimatedTime: '12 minutes',
+    content: [
+      {
+        title: 'Start Here: See a Doctor First',
+        text: `**This article is educational, not medical advice.** Before anything else: if you have chronic pain, your first stop should be a doctor who can look for structural or medical causes.
+
+Some pain comes from clear structural problems — fractures, injury, disease — and needs medical or surgical care. This article is about a *different* mechanism that can develop *after* those causes have been evaluated and, where possible, ruled out.
+
+Please don't use anything here to delay diagnosis, and never stop treatment or medication on your own. As Dr. Howard Schubiner advises, consult your own doctors "to make sure that your condition does not require medical intervention." With that foundation in place, read on.`
+      },
+      {
+        title: 'Is Your Pain Real? (Yes.)',
+        text: `Let's be unambiguous: neuroplastic pain — pain generated by learned brain pathways — is 100% real. It is not "in your head" in the dismissive sense, and it is not imaginary or chosen.
+
+Alan Gordon describes neuroplastic pain as pain "caused by the brain misinterpreting safe signals from your body as if they were dangerous ones" — a kind of stuck false alarm. The pain hurts exactly as much as any other pain.
+
+The difference is the *source*. Schechter notes that some chronic pain persists when "no structural or chemical causes are evident in your body after an examination and appropriate testing by your doctors." When that's the case, the pain may be coming from the nervous system's learned patterns rather than ongoing tissue damage.`
+      },
+      {
+        title: 'How Your Brain Learned to Hurt',
+        text: `Your brain is, in part, a prediction machine — and pain is one of its outputs. Sometimes, after an injury has actually healed, the alarm stays switched on.
+
+Schubiner describes how nerves that carry danger signals can "learn to react to even minor stimuli" and keep firing "even when the person has healed from the acute injury." The pain persists as a learned neural pathway.
+
+Stress and fear keep that pathway active. As Gordon puts it, "high levels of fear set the stage for neuroplastic pain. But the pain itself can reinforce fear" — which is the doorway to the cycle that keeps it going.`
+      },
+      {
+        title: 'The Fear-Pain Cycle (and Breaking It)',
+        text: `Here's the loop Gordon describes: "Pain triggers feelings of fear. The fear puts the brain on high alert, which causes more pain. Which leads to more fear." Round and round — the fear-pain cycle.
+
+The key insight: how you respond either reinforces danger or signals safety. "The way you react reinforces either a sense of danger or a sense of safety."
+
+So the way out isn't to fight the pain harder. It's to begin, gently, to send your brain "messages of safety" — to respond to the sensation with less fear, so the alarm has a reason to quiet down. This is a practice, not a switch.`
+      },
+      {
+        title: 'First Step: Medical Evaluation (Not Optional)',
+        text: `To be clear about sequence, because it matters: medical evaluation comes first, always.
+
+Schubiner's own guidance is that the neuroplastic-pain picture becomes likely only after thorough evaluation: "if you have had complete testing and no serious medical or physical disorder was found — no fractures, no cancer, no heart disease, no infections, no nerve damage" — then a learned-pathway mechanism may be involved.
+
+Pain that has a clear structural cause needs structural treatment. This mind-body approach is for pain that persists *despite* appropriate care, or that has *no* identifiable structural cause — and even then, in partnership with your medical team, not instead of it.`
+      },
+      {
+        title: 'Somatic Tracking',
+        text: `The core skill in Gordon's approach is somatic tracking — and "safety" is its watchword. It has three woven-together parts:
+
+**Mindful observation.** Bring attention to the sensation with "no agenda and no judgment." You're not trying to get rid of it — just observing it, which means observing it *without fear*.
+
+**Safety reappraisal.** Gently remind yourself the sensation is safe: "your brain overreacting to neutral, safe signals from your body." You're correcting a misunderstanding.
+
+**Lightness and curiosity.** Watch with a light, curious attitude — "whatever happens to the sensation is okay." Relief isn't the goal; if you demand relief, you reintroduce fear. You're just watching, with safety in mind.`
+      },
+      {
+        title: 'Emotional Roots & a New Question',
+        text: `Stress and emotion feed this system. Schubiner points to "stress, worry, anxiety, fears, anger" — and patterns like perfectionism and people-pleasing — as activators of learned pain. Structured emotional awareness and journaling can help recalibrate the response. (Note: these are *contributors*, not proof that you "caused" your pain — and emotional work belongs alongside professional care, not instead of it.)
+
+The shift this whole approach invites is from "fix my body" to "calm my brain." After medical causes are addressed, the work becomes building safety and loosening the fear loop.
+
+And setbacks are normal — even expected. Gordon is realistic: you can't "eliminate setbacks." Each flare is simply another chance to respond with safety rather than fear.`
+      }
+    ],
+    keyTakeaways: [
+      'Always start with a doctor — rule out structural and medical causes before anything else',
+      'Neuroplastic pain is 100% real even though the brain generates it; it\'s a stuck false alarm, not imaginary',
+      'Fear and avoidance feed chronic pain; curiosity and cues of safety can break the cycle',
+      'Somatic tracking means observing the sensation without fear and reappraising it as safe — not demanding relief',
+      'This complements medical care for the right kind of pain; it never replaces it, and you should never stop treatment on your own'
+    ],
+    tryThis: {
+      title: 'Somatic Tracking with Safety Reappraisal',
+      duration: '5–10 minutes',
+      intro: 'A gentle introduction to Gordon\'s somatic tracking. Best used for pain your doctors have already evaluated. If a sensation feels alarming or worsens, stop and check in with your medical provider.',
+      steps: [
+        'Bring soft attention to the sensation, with no agenda — you\'re not trying to change it, just notice it.',
+        'Describe it to yourself with curiosity: is it warm, tight, pulsing, dull, moving?',
+        'Offer a message of safety: "This is uncomfortable but not dangerous. My brain is being overprotective."',
+        'Keep watching with lightness, letting whatever happens happen — relief is not the goal.',
+        'Close by noticing you stayed present with the sensation without fear. That itself is the practice.'
+      ]
+    },
+    relatedExercises: ['SO-001', 'BR-006', 'PV-001'],
+    sources: [
+      'Drawn from: Alan Gordon (The Way Out), Howard Schubiner (Unlearn Your Pain), and David Schechter (Think Away Your Pain). Educational only — not medical advice.'
+    ],
+    seeAlso: ['trauma_understanding', 'nervous_system_safety', 'somatic_awareness']
+  },
+
+  {
+    id: 'emotional_learning_change',
+    title: 'How Emotional Learnings Change',
+    description: 'The brain\'s own process for updating deep emotional learnings — memory reconsolidation',
+    emoji: '🌀',
+    estimatedTime: '12 minutes',
+    content: [
+      {
+        title: 'Your Emotions Aren\'t Broken — They\'re Coherent',
+        text: `When you keep reacting in a way you don't want to — flinching from closeness, bracing for rejection — it can feel like something is broken. The research behind Coherence Therapy says the opposite.
+
+Bruce Ecker and colleagues describe symptoms as coming from coherent emotional learnings held in implicit memory — "learnings the individual is unaware of possessing, even as these learnings reactivate and drive unwanted responses." Your emotional brain built a model to protect you, and it's running that model faithfully.
+
+There's even a name for the sense beneath the symptom: the emotional truth of the symptom. Once you understand the learning underneath, the reaction stops looking crazy and starts making deep sense.`
+      },
+      {
+        title: 'Insight Is Not Enough (and Why)',
+        text: `Here's a frustrating truth many people have lived: understanding *why* you do something often doesn't stop you doing it.
+
+Ecker distinguishes two kinds of change. Counteractive change means building a new, preferred response that competes with the old one — managing it, overriding it. It works, but "the unwanted response remains relatively free to recur," so it "requires an ongoing counteractive effort... indefinitely."
+
+Transformational change is different: it actually updates the old learning itself. And the new learning "must feel decisively real to the person based on his or her own living experience" — experiential, not just intellectual. Insight alone leaves the original emotional circuit intact.`
+      },
+      {
+        title: 'The Brain\'s Three-Step Process',
+        text: `Neuroscience has identified how an emotional learning can actually be rewritten — a process called memory reconsolidation. Ecker summarizes it as three steps:
+
+**1. Reactivate.** Re-evoke the old emotional learning by bringing up the cues or feelings of it.
+
+**2. Mismatch.** While it's active, have an experience "significantly at variance with" what that learning expects. This is the crucial step — a felt contradiction (a prediction error) that "unlocks synapses and renders memory circuits labile."
+
+**3. New learning.** During a window of roughly five hours before things re-lock, repeat an experience that contradicts the old learning.
+
+This isn't suppression. As Ecker puts it, it lets new learning "rewrite and erase an old, unwanted learning — and not merely suppress and compete against" it.`
+      },
+      {
+        title: 'Why a Psychedelic Experience Can Catalyze This',
+        text: `Here's where this connects to integration — though a note of honesty first: Ecker's work is about therapy, not psychedelics. What follows is a reasonable application of his model, not a claim he makes.
+
+The reconsolidation model needs a vivid, felt contradiction — "experiential learning as distinct from conceptual." A psychedelic experience can deliver exactly that: a full-body, undeniable sense of being safe, or whole, or worthy, that directly contradicts an old emotional learning.
+
+But — and this is the heart of integration — a powerful experience alone doesn't guarantee lasting change. The model still requires the deliberate steps: reactivating the old learning, holding it against the new felt truth, and repeating that. Integration is how a glimpse becomes a rewrite.`
+      },
+      {
+        title: 'Holding the Emotional Truth Beneath Your Symptom',
+        text: `Before an old learning can update, it has to be met — not fought. Ecker calls this coherence empathy: turning toward "the emotional truth of how and why the symptom actually feels necessary to have," with genuine acceptance.
+
+This is why fighting yourself doesn't work, and why "toxic positivity" — papering over a feeling with a cheerful slogan — fails. You can't update a learning you're busy arguing with. You have to first understand, from the inside, why it was built. It was protective.
+
+People often feel real relief here — realizing, as Ecker observes, that the symptom "is part of a coherent, sensible response to what they actually experienced in life."`
+      },
+      {
+        title: 'A Note on Doing This Safely',
+        text: `This is powerful work, and it has limits worth respecting.
+
+Ecker is clear that reconsolidation work usually unfolds over several sessions, and that for some situations — acute crisis, severe dissociation, or when it's simply too much to hold awareness of the material — deeper transformational work isn't the right starting point, and steadier support and stabilization come first.
+
+He also emphasizes the value of "an emotionally safe presence." So treat the practice below as something to do gently, ideally alongside a therapist or structured integration support — not as a solo deep-dive into your hardest material. The aim is to strengthen a new learning you've already begun to feel, not to force one open.`
+      },
+      {
+        title: 'Markers of Real Change',
+        text: `How do you know whether something genuinely updated, versus just got suppressed? Ecker names clear signs.
+
+When an emotional learning has truly transformed, the old reaction simply stops being triggered — and staying free of it "continues effortlessly and without counteractive or preventive measures of any kind." No white-knuckling. No vigilance.
+
+That's the tell. Suppression is "susceptible to relapse, particularly in new or stressful situations." Real change is stable under stress, because the old learning isn't being held down — it's been rewritten. Effortlessness, not willpower, is the marker.`
+      }
+    ],
+    keyTakeaways: [
+      'Symptoms aren\'t your fault — they\'re coherent emotional learnings, and what\'s learned can be unlearned',
+      'Insight alone doesn\'t rewire the emotional brain; a felt, contradicting experience does',
+      'Reconsolidation has three steps: reactivate the old learning, mismatch it with a felt contradiction, repeat the new learning',
+      'A psychedelic experience can supply the contradiction — but integration is what makes it stick',
+      'Real change feels effortless (erasure, not suppression); willpower-dependent change is a sign the old learning is still intact'
+    ],
+    tryThis: {
+      title: 'Meeting Your Learning',
+      duration: '10–15 minutes',
+      intro: 'A gentle reconsolidation-informed practice, best done after you\'ve already identified a pattern (ideally with support) and have a felt sense of its opposite — for example, soon after integration work. Go slowly, and lean on a therapist if the material is heavy.',
+      steps: [
+        'Vividly recall feeling the pattern — let yourself sense it in your body (this is reactivation).',
+        'Ask, with kindness, what this learning protects you from. Let its emotional truth be understood, not argued with.',
+        'Now recall a real, lived moment of the opposite — a time you felt safe, worthy, or okay. Make it vivid and embodied.',
+        'Hold both side by side, at the same time, without trying to debate either one. Just let them both be true in your awareness.',
+        'If it feels right, return to this over the coming days to strengthen the new learning — especially in the hours right after integration work.'
+      ]
+    },
+    relatedExercises: ['CBT-002', 'IFS-001', 'PI-001'],
+    sources: [
+      'Drawn from: Bruce Ecker, Robin Ticic & Laurel Hulley (Unlocking the Emotional Brain). The psychedelic application is our extension of their model.'
+    ],
+    seeAlso: ['brain_and_healing', 'mind_brain_relationships']
+  },
+
+  {
+    id: 'mind_brain_relationships',
+    title: 'Mind, Brain & Relationships',
+    description: 'Dan Siegel\'s interpersonal neurobiology — how integration and connection make a healthy mind',
+    emoji: '🧩',
+    estimatedTime: '12 minutes',
+    content: [
+      {
+        title: 'The Triangle of Well-Being',
+        text: `Daniel Siegel offers a deceptively simple idea: mind, brain, and relationships "are not separate elements of life — they are irreducible aspects of one interconnected triangle of well-being."
+
+They're three facets of one flow of energy and information: shared in our relationships, regulated by the mind, and structured in the brain. Shift one, and you shift all three.
+
+And the influence runs in every direction — including a startling one: relationships literally shape the brain. From our earliest days, Siegel writes, "our experiences stimulate neural firing and sculpt our emerging synaptic connections." The people around you helped build the brain you have.`
+      },
+      {
+        title: 'What Is the Mind? Embodied AND Relational',
+        text: `Siegel proposes a working definition of a core aspect of mind: "an embodied and relational process that regulates the flow of energy and information."
+
+Sit with the two adjectives. Embodied: your mind isn't trapped in your skull — it runs through your whole body. Relational: it also exists, in part, in the space between you and others. As Siegel says, the mind is "both embodied in an internal physiological context and embedded in an external relational context."
+
+This is why knowing your own mind means knowing your body's signals and your relationships — not just your thoughts.`
+      },
+      {
+        title: 'Integration as Health (the River)',
+        text: `For Siegel, the key to well-being is integration — "the linkage of differentiated elements." Not sameness, not merging: distinct parts, honored in their difference, connected into a coherent whole.
+
+When a system is well-integrated, it moves in what Siegel calls FACES flow — Flexible, Adaptive, Coherent, Energized, and Stable. He pictures it as a river: the central channel is integration and harmony. One bank is chaos; the other is rigidity. "These are the two banks of the river of integration."
+
+When we fall out of integration, we wash up on one bank or the other — flooded and chaotic, or stuck and rigid. Health is the flowing middle.`
+      },
+      {
+        title: 'Mindsight',
+        text: `Siegel coined mindsight for "the brain's capacity for both insight and empathy" — the ability to see your own inner world, and to sense another's.
+
+The good news: it's a skill, not a fixed trait. "By acquiring mindsight skills, we can alter the way the mind functions."
+
+What mindsight gives you is room. It "helps us to be aware of our mental processes without being swept away by them" — to feel a feeling without becoming it. That small gap between you and your reaction is where choice lives.`
+      },
+      {
+        title: 'The Window of Tolerance',
+        text: `Siegel describes the window of tolerance as "the band of arousal... within which an individual can function well." Inside it, you can feel and think at the same time. Outside it, you tip into chaos (hyperarousal) on one side or rigidity (hypoarousal) on the other.
+
+These windows are specific — you might have a wide window for some feelings and a narrow one for others.
+
+And here's the relational key: connection widens the window. "The presence of a caring, trusted other person, one who is attuned to our internal world, is often the initial key to widening our windows of tolerance." Integration work — and psychedelic work — can widen it too.`
+      },
+      {
+        title: 'How Relationships Shape You',
+        text: `The attuned care you received early in life helped wire the very circuits that regulate your emotions. "Every parent helps sculpt the growing brain of a child," Siegel writes — and an attuned, empathetic caregiver is among "the ingredients of a healthy mind."
+
+This doesn't stop in childhood. Thanks to neuroplasticity, your brain keeps reshaping itself through meaningful relationships across your whole life. The "resonance circuitry" that lets us "feel felt" also helps regulate our internal state.
+
+The takeaway isn't that your past determines you — it's the reverse. Because relationships keep shaping the brain, new safe relationships can reshape what old ones set in motion.`
+      },
+      {
+        title: 'Name It to Tame It',
+        text: `One of Siegel's most practical findings: putting words to a feeling changes the feeling. As he says, sometimes we need to "name it to tame it" — and UCLA studies showed that "naming an affect soothes limbic firing."
+
+Naming engages the language and meaning-making capacities of the brain, which helps settle the reactive, alarm-driven parts. It also matters *how* you name it: "I feel sad" leaves room to hold the feeling, where "I am sad" collapses you into it.
+
+This is why putting a psychedelic experience into words — naming what moved through you — isn't just record-keeping. It weaves the experience into your story, integrating raw sensation into a coherent whole. In Siegel's sense, that *is* integration — which maps directly onto psychedelic integration.`
+      }
+    ],
+    keyTakeaways: [
+      'Mind, brain, and relationships are one system — shift one, shift all three',
+      'Integration — linking differentiated parts into coherent flow — is the heart of a healthy mind',
+      'Mindsight (seeing your own and others\' minds) is a learnable skill that creates room for choice',
+      'Attuned connection widens your window of tolerance; relationships keep shaping the brain for life',
+      'Naming an experience helps settle the reactive brain and weaves it into your story — that\'s integration'
+    ],
+    tryThis: {
+      title: 'Wheel of Awareness',
+      duration: '5–15 minutes',
+      intro: 'A brief introduction to Siegel\'s practice for cultivating integrated awareness. (His full version moves through eight sectors; this is a short taste.)',
+      steps: [
+        'Sit comfortably and rest your attention in the open, receptive "hub" of your awareness — a quiet center of simply knowing.',
+        'From the hub, send your attention outward like a spoke: notice your five senses (what you see, hear, feel, smell, taste).',
+        'Move the spoke to your body — the sensations from inside.',
+        'Then to your emotions and thoughts, including anything still alive or tender from a recent experience.',
+        'Hold it all from the hub, without being pulled into any one thing — then simply name the one thread that feels most alive.'
+      ]
+    },
+    relatedExercises: ['MED-006', 'MED-002', 'PI-001'],
+    sources: [
+      'Drawn from: Daniel Siegel (Mindsight, Pocket Guide to Interpersonal Neurobiology, The Mindful Therapist).'
+    ],
+    seeAlso: ['brain_and_healing', 'attachment_styles', 'emotional_learning_change']
   },
 
   {

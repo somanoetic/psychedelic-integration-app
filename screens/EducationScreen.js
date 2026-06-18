@@ -10,11 +10,14 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
+  ArrowRight,
   BookOpen,
   Check,
   Clock,
   Lightbulb,
   MessageCircle,
+  Play,
+  Sparkles,
   Target,
 } from 'lucide-react-native';
 import { colors, gradients, spacing, borderRadius, shadows } from '../theme/colors';
@@ -28,6 +31,7 @@ import IFSPartsWorkChatWithContext from '../enhanced-components/IFSPartsWorkChat
 import IFSPartsEducationWidget from '../components/IFSPartsEducationWidget';
 import GroundingExercisesWidget from '../components/GroundingExercisesWidget';
 import { educationTopics, getTopicById } from '../content/education';
+import { getExerciseById } from '../content/exercises-comprehensive';
 import FormattedText from '../components/FormattedText';
 import { icons } from '../lib/uiIcons';
 
@@ -46,8 +50,12 @@ const TOPIC_ICONS = {
   brain_and_healing: icons.dna,
   building_habits: icons.integration,
   cognitive_patterns: icons.thoughtCloud,
+  nervous_system_safety: icons.nsMap,
   trauma_understanding: icons.repairedHeart,
+  mind_body_pain: icons.sensation,
   attachment_styles: icons.community,
+  emotional_learning_change: icons.integrationCycle,
+  mind_brain_relationships: icons.interconnectedness,
   harm_reduction: icons.guidance,
   contemplative_practices: icons.meditate,
   psychedelic_preparation: icons.newBeginning,
@@ -405,6 +413,108 @@ const EducationScreen = ({ navigation, route }) => {
                   <Text style={styles.takeawayBullet}>•</Text>
                   <Text style={styles.takeawayText}>{takeaway}</Text>
                 </View>
+              ))}
+            </View>
+          )}
+
+          {/* Try This — inline bespoke practice for this article */}
+          {topic.tryThis && (
+            <View style={styles.tryThisContainer}>
+              <View style={styles.tryThisTitleRow}>
+                <Sparkles size={20} color={colors.primary} strokeWidth={2} />
+                <Text style={styles.tryThisTitle}>Try this</Text>
+              </View>
+              <Text style={styles.tryThisName}>
+                {topic.tryThis.title}
+                {topic.tryThis.duration ? `  ·  ${topic.tryThis.duration}` : ''}
+              </Text>
+              {topic.tryThis.intro ? (
+                <Text style={styles.tryThisIntro}>{topic.tryThis.intro}</Text>
+              ) : null}
+              {topic.tryThis.steps && topic.tryThis.steps.map((step, index) => (
+                <View key={index} style={styles.tryThisStep}>
+                  <Text style={styles.tryThisStepNum}>{index + 1}</Text>
+                  <Text style={styles.tryThisStepText}>{step}</Text>
+                </View>
+              ))}
+            </View>
+          )}
+
+          {/* Practice these — tappable links to related interactive exercises */}
+          {topic.relatedExercises && topic.relatedExercises.length > 0 && (() => {
+            const related = topic.relatedExercises
+              .map((id) => getExerciseById(id))
+              .filter(Boolean);
+            if (related.length === 0) return null;
+            return (
+              <View style={styles.relatedExContainer}>
+                <Text style={styles.relatedExTitle}>Practice these</Text>
+                {related.map((ex) => (
+                  <TouchableOpacity
+                    key={ex.id}
+                    style={styles.relatedExChip}
+                    onPress={() =>
+                      navigation.navigate('GuidedExercise', {
+                        exercise: ex,
+                        returnTo: 'Learn',
+                      })
+                    }
+                  >
+                    <View style={styles.relatedExIconWrap}>
+                      <Play size={16} color={colors.primary} strokeWidth={2} fill={colors.primary} />
+                    </View>
+                    <View style={styles.relatedExTextWrap}>
+                      <Text style={styles.relatedExName}>{ex.title}</Text>
+                      {(ex.duration || ex.steps?.length) ? (
+                        <Text style={styles.relatedExMeta}>
+                          {ex.duration ? `${ex.duration} min` : ''}
+                          {ex.duration && ex.steps?.length ? ' · ' : ''}
+                          {ex.steps?.length ? `${ex.steps.length} steps` : ''}
+                        </Text>
+                      ) : null}
+                    </View>
+                    <ArrowRight size={16} color={colors.textSecondary} strokeWidth={2} />
+                  </TouchableOpacity>
+                ))}
+              </View>
+            );
+          })()}
+
+          {/* See Also — tappable cross-links to related topics */}
+          {topic.seeAlso && topic.seeAlso.length > 0 && (() => {
+            const related = topic.seeAlso
+              .map((id) => getTopicById(id))
+              .filter(Boolean);
+            if (related.length === 0) return null;
+            return (
+              <View style={styles.seeAlsoContainer}>
+                <Text style={styles.seeAlsoTitle}>See also</Text>
+                {related.map((rel) => (
+                  <TouchableOpacity
+                    key={rel.id}
+                    style={styles.seeAlsoChip}
+                    onPress={() => handleTopicPress(rel.id)}
+                  >
+                    {rel.emoji ? (
+                      <Text style={styles.seeAlsoEmoji}>{rel.emoji}</Text>
+                    ) : null}
+                    <Text style={styles.seeAlsoChipText}>{rel.title}</Text>
+                    <ArrowRight size={16} color={colors.primary} strokeWidth={2} />
+                  </TouchableOpacity>
+                ))}
+              </View>
+            );
+          })()}
+
+          {/* Sources footer */}
+          {topic.sources && topic.sources.length > 0 && (
+            <View style={styles.sourcesContainer}>
+              <View style={styles.sourcesTitleRow}>
+                <BookOpen size={16} color={colors.textSecondary} strokeWidth={2} />
+                <Text style={styles.sourcesTitle}>Sources</Text>
+              </View>
+              {topic.sources.map((source, index) => (
+                <Text key={index} style={styles.sourcesText}>{source}</Text>
               ))}
             </View>
           )}
@@ -888,6 +998,157 @@ const styles = {
     color: '#166534',
     lineHeight: 22,
     flex: 1,
+  },
+  tryThisContainer: {
+    backgroundColor: '#eef2fb',
+    borderRadius: 12,
+    padding: 20,
+    marginTop: 24,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#c7d4f0',
+  },
+  tryThisTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
+  },
+  tryThisTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: colors.primary,
+  },
+  tryThisName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: 6,
+  },
+  tryThisIntro: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    lineHeight: 20,
+    marginBottom: 14,
+  },
+  tryThisStep: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 10,
+  },
+  tryThisStepNum: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: colors.primary,
+    width: 20,
+    lineHeight: 21,
+  },
+  tryThisStepText: {
+    flex: 1,
+    fontSize: 15,
+    color: colors.text,
+    lineHeight: 21,
+  },
+  relatedExContainer: {
+    marginTop: 4,
+    marginBottom: 16,
+  },
+  relatedExTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 12,
+  },
+  relatedExChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: colors.surface,
+    borderRadius: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: colors.sand,
+  },
+  relatedExIconWrap: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#eef2fb',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  relatedExTextWrap: {
+    flex: 1,
+  },
+  relatedExName: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: colors.text,
+  },
+  relatedExMeta: {
+    fontSize: 13,
+    color: colors.textSecondary,
+    marginTop: 2,
+  },
+  seeAlsoContainer: {
+    marginTop: 8,
+    marginBottom: 24,
+  },
+  seeAlsoTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 12,
+  },
+  seeAlsoChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: colors.surface,
+    borderRadius: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: colors.sand,
+  },
+  seeAlsoEmoji: {
+    fontSize: 20,
+  },
+  seeAlsoChipText: {
+    flex: 1,
+    fontSize: 15,
+    fontWeight: '500',
+    color: colors.text,
+  },
+  sourcesContainer: {
+    marginTop: 8,
+    marginBottom: 24,
+  },
+  sourcesTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 6,
+  },
+  sourcesTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  sourcesText: {
+    fontSize: 13,
+    color: colors.textSecondary,
+    lineHeight: 19,
+    fontStyle: 'italic',
   },
   completeButton: {
     flexDirection: 'row',
