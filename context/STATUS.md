@@ -1,34 +1,40 @@
 # Project Status
 
-**Last Updated:** 2026-05-12
+**Last Updated:** 2026-06-18
 **Version:** 1.1.0 (Build 4)
-**Phase:** Production Readiness — Week 1 (parallel with Phase 3 feature track)
+**Phase:** Production Readiness (release-prep, overrunning original May 5 – Jun 2 window) + Monetization track (planned)
+
+> **Note:** The original Production Readiness timeline (4 weeks ending Jun 2) has been exceeded. Most *code* is complete; the remaining work is largely operational (account/service setup, legal review, device builds) plus the new Monetization feature track.
 
 ---
 
 ## Current State
 
 ### What's Working ✅
-- Core app rebranded to Huxley with grid home screen + Huxley AI guide
+- Core app rebranded to Huxley with grid home screen + Huxley AI guide (marketing name: **Multitudes**)
 - Conversational UI across all major flows (Huxley, Intention, Experience Processing, NS Mapping)
 - Daily journal with AI assistance
 - Integration session tools, intention setting, exercise library (160 exercises)
 - Database (Supabase) — 30 tables, RLS enforced everywhere
-- Authentication flow
+- Authentication flow + age gate / ToS acceptance + non-clinical disclosure gate
 - Educational content section + Learning Hub
 - Tracking features: triggers, glimmers, habits, curriculum
-- **Privacy Policy + Terms of Service screens** (in-app, registered routes)
+- **Privacy Policy + Terms of Service screens** (in-app, registered routes — drafted, pending legal review)
 - **User data export** (Settings → Export My Data, full JSON across 19 tables)
-- **Sentry crash reporting** wired in App.js (DSN currently hardcoded — see BUG-307)
-- **RAG knowledge base** live (21,648 chunks, scores 0.59–0.71)
-- **AI metrics + admin dashboard** (FEAT-203)
+- **Sentry crash reporting** wired in App.js (DSN now env-driven — needs project + DSN value)
+- **RAG knowledge base** — ✅ DEPLOYED & LIVE, verified 2026-06-16 (281 docs / 21,648 chunks, vector search ~0.9–1.4s, IVFFlat index right-sized to lists=150)
+- **AI metrics + admin dashboard** (FEAT-203 — note: two materialized views still missing in live DB, BUG-309)
+- **Anthropic prompt caching** — live & committed (verified 2026-06-10)
+- **Contributor pipeline** — application review + public exercise contribution (ADR-009 B1/B2/B3 complete)
+- **Guided exercise narration v1** — TTS reads exercise steps aloud (built, not yet device-verified)
 
 ### What's In Progress 🚧
-- **Production Readiness phase** (Week 1 of 4) — see `roadmap/production-readiness.md`
+- **Production Readiness phase** — operational items remaining (see `roadmap/production-readiness.md`)
+- **Voice conversation** — ⏸️ PAUSED 2026-06-02; pivoted to narration-only
 - BUG-303: documentation (ongoing)
 
 ### What's Blocked 🚫
-- None currently
+- **Monetization (FEAT-501)** — blocked on legal review (BUG-308) before charging users
 
 ### Recently Resolved P0s 🚨 (2026-05-13)
 - **BUG-312** ✅ — Huxley silently returning mode fallback strings as if they were real AI responses on API errors. Fix: `huxleyService.chat()` now retries transient errors (3 attempts, exponential backoff) and **throws** on persistent failure; orphaned user-turn rolled back to prevent duplicates on retry; `_getFallback()` deleted. Callers' existing `try/catch + Alert` flow now actually fires. Verified BAD→STRONG on trauma_resurfacing and spiritual_bypasser.
@@ -49,7 +55,36 @@
 
 ---
 
-## This Week's Focus (May 5–12) — Production Readiness Week 1
+## Critical Paths (as of 2026-06-18)
+
+**Path to launch:** prod environment (FEAT-401) → legal review (BUG-308) → closed beta (FEAT-402) → Play Store listing (FEAT-403) → submit. Most remaining items are account/service setup and device builds — your action, not code.
+
+**Path to revenue:** legal review (BUG-308) → entitlement layer + metered paywall (FEAT-501, ~1–2 weeks code).
+
+### Remaining Production-Readiness Items
+- **FEAT-401 Prod env** — code-side done; create `huxley-prod` Supabase, run migrations, prod Anthropic key + budget alerts, set EAS Secrets
+- **BUG-307 Sentry** — code reads `SENTRY_DSN` from env; create Sentry project, set DSN, verify a test crash, configure alerts
+- **BUG-308 Legal review** — Privacy/Terms drafted but not reviewed by counsel; `privacy@`/`legal@somanoetic.com` mailboxes not live. **Blocks monetization.**
+- **BUG-306 iOS rebuild** — stale beta; `eas build` → TestFlight → regression on a physical device
+- **FEAT-402 Closed beta** — Play internal track + TestFlight group, recruit 5–15 testers, feedback channel
+- **FEAT-403 Play Store listing** — screenshots, descriptions, content rating, Data Safety form, verify account-deletion flow
+- **FEAT-404 DB backup/rollback** — confirm PITR, write + test rollback playbook
+- **FEAT-405 Crisis safety audit** — verify 988/Crisis Text Line/SAMHSA, add persistent "In crisis?" entry point
+
+### Open Bugs (code work)
+- **BUG-309** (P2) — AI metrics dashboard missing two materialized views in live DB (~2–4 hrs, admin-only)
+- **BUG-311** (P2) — no email on contributor-application decisions (blocked on Resend SMTP first)
+- **BUG-314** (P2) — crisis latch never disengages within a session (conservative-safe; minor for single-session model)
+- **BUG-301** (P3) — no performance monitoring
+- **BUG-303** (P3) — documentation gaps (ongoing)
+
+### Monetization Track (planned, future)
+- **FEAT-501** — entitlement layer + metered paywall (RevenueCat, `<PremiumGate>`, PaywallScreen, metered free Huxley). Large (~1–2 weeks). Blocked on legal review.
+- **FEAT-502** — education content → public web articles (SEO foundation)
+
+---
+
+## Historical: This Week's Focus (May 5–12) — Production Readiness Week 1
 
 ### Top Priorities
 1. ~~**Sentry DSN → env var** (BUG-307)~~ — **code-side done** (merged 2026-05-05; `app.config.js` + `lib/config.js` + `App.js` all read `SENTRY_DSN` from env). User-action remaining: set `SENTRY_DSN` in local `.env`, configure as EAS secret for prod builds, verify capture on a prod build, configure Sentry alerts
@@ -97,9 +132,10 @@
 
 **Technical Debt:**
 - iOS beta build stale (BUG-306)
-- Sentry DSN hardcoded (BUG-307)
+- Sentry project/DSN not yet created (BUG-307 — code now env-driven)
 - No E2E tests yet (Detox/Maestro deferred)
 - Privacy/Terms not legally reviewed (BUG-308)
+- AI metrics materialized views missing in live DB (BUG-309)
 
 ---
 
@@ -111,10 +147,12 @@
 | Critical Bugs | 🟢 Green | All resolved |
 | Test Coverage | 🟢 Green | 519 tests passing |
 | Documentation | 🟢 Green | Context system operational |
+| RAG / Knowledge Base | 🟢 Green | Deployed & verified live (2026-06-16) |
 | Performance | 🟡 Yellow | Acceptable, no formal measurement (BUG-301) |
 | Security | 🟢 Green | All 30 tables RLS-protected, keys rotated |
-| Crash Reporting | 🟡 Yellow | Sentry wired but DSN hardcoded (BUG-307) |
-| Legal Readiness | 🟡 Yellow | Policies drafted, awaiting review (BUG-308) |
+| Crash Reporting | 🟡 Yellow | Sentry env-driven; project/DSN not yet created (BUG-307) |
+| Legal Readiness | 🟡 Yellow | Policies drafted, awaiting review (BUG-308) — blocks monetization |
+| Prod Environment | 🟡 Yellow | Code-side ready; `huxley-prod` not yet created (FEAT-401) |
 | iOS Status | 🔴 Red | Build stale; needs rebuild + regression (BUG-306) |
 
 ---
@@ -143,4 +181,4 @@
 
 ---
 
-**Next Status Update:** 2026-05-12 (end of Production Readiness Week 1)
+**Next Status Update:** when prod env or legal review lands

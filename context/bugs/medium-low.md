@@ -547,9 +547,23 @@ Sentry was initialized in `App.js` with a hardcoded DSN string, blocking env sep
 
 ### BUG-308: Privacy Policy + Terms Not Legally Reviewed
 **Priority:** P2 - Medium (Pre-Production Required)
-**Status:** Open
+**Status:** In Progress — self-serve path (no counsel budget); factual fixes applied 2026-06-18
 **Reported:** 2026-05-05
-**Related:** BUG-304 (privacy/terms creation — resolved)
+**Related:** BUG-304 (privacy/terms creation — resolved), ADR-009, FEAT-501 (monetization)
+
+**Update (2026-06-18):** Full external counsel deferred (budget). Switched to templated-service +
+in-house-audit path. Audited both drafts and applied factual corrections directly:
+- Added OpenAI (user query text IS sent to it at RAG retrieval — confirmed in `embeddings` edge fn)
+  and Sentry to the third-party disclosures; both were previously omitted.
+- Deleted false "applicable federal AI safety frameworks" claim in TOS §8.
+- Fixed data-export language to match the shipped self-service export; clarified account deletion.
+- Added a Consumer Health Data section (WA MHMDA / NV SB 370) to the Privacy Policy.
+- Bumped `TOS_VERSION` → 2026-06-18 (re-prompts acceptance).
+Self-serve packet + open-items + checklist at `context/legal/legal-review-packet.md`.
+**Still needs a human (before monetization):** WA MHMDA section-vs-separate-policy + consent flow;
+arbitration clause; subscription/refund terms. Recommended: ~$200–500 attorney-review add-on scoped
+to just those, not full counsel. **Still needs a decision:** governing-law state (TOS §14 placeholder);
+public app name. **Still operational:** public privacy URL, privacy@/legal@ mailboxes live.
 
 **Description:**
 `screens/PrivacyPolicyScreen.js` and `screens/TermsOfServiceScreen.js` were drafted in-house (BUG-304 resolution). The resolution note flagged that legal review is recommended before production. For a therapeutic app handling sensitive journal data, this is not optional.

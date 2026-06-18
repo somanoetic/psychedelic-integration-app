@@ -45,23 +45,23 @@ const PrivacyPolicyScreen = ({ navigation }) => {
         <Text style={styles.lastUpdated}>Last updated: {LAST_UPDATED}</Text>
 
         <Paragraph>
-          Huxley ("the App") is operated by Alleviation Therapeutics ("we", "us", "our"). We are committed to protecting the privacy and security of your personal information. This policy explains what data we collect, how we use it, and your rights.
+          Multitudes ("the App") is operated by Alleviation Therapeutics ("we", "us", "our"). We are committed to protecting the privacy and security of your personal information. This policy explains what data we collect, how we use it, and your rights. "Huxley" refers to the AI reflection guide within the App.
         </Paragraph>
 
         <Paragraph>
-          Huxley is a self-directed wellness and educational tool. The information you record in the App is personal wellness data — not a clinical record. Because of how personal that data is, we treat it with strong technical safeguards and minimal third-party sharing, and we are transparent about exactly what those safeguards are and aren't (see Section 2 below).
+          Multitudes is a self-directed wellness and educational tool. The information you record in the App is personal wellness data — not a clinical record. Because of how personal that data is, we treat it with strong technical safeguards and minimal third-party sharing, and we are transparent about exactly what those safeguards are and aren't (see Section 2 below).
         </Paragraph>
 
         {/* ---- NOT A HIPAA-COVERED SERVICE ---- */}
         <Section title="1. Not a HIPAA-Covered Service">
           <Paragraph>
-            Huxley is a consumer wellness and educational app. It is not a covered entity, business associate, or healthcare provider under the U.S. Health Insurance Portability and Accountability Act ("HIPAA"), and the data you record in the App is not Protected Health Information ("PHI") in the HIPAA sense.
+            Multitudes is a consumer wellness and educational app. It is not a covered entity, business associate, or healthcare provider under the U.S. Health Insurance Portability and Accountability Act ("HIPAA"), and the data you record in the App is not Protected Health Information ("PHI") in the HIPAA sense.
           </Paragraph>
           <BulletList items={[
             'We do not deliver medical, psychiatric, or therapeutic treatment through the App',
             'We do not bill insurance and do not maintain a clinical chart for you',
-            'No therapist or clinician sees your in-app content through Huxley — there is no provider portal, no client roster, and no in-app handoff to a treatment provider',
-            'If you choose to share an Integration Summary with a therapist via the OS share sheet, that delivery happens entirely outside Huxley; whatever the therapist stores after receiving it is governed by their own privacy obligations, not ours',
+            'No therapist or clinician sees your in-app content through Multitudes — there is no provider portal, no client roster, and no in-app handoff to a treatment provider',
+            'If you choose to share an Integration Summary with a therapist via the OS share sheet, that delivery happens entirely outside Multitudes; whatever the therapist stores after receiving it is governed by their own privacy obligations, not ours',
           ]} />
           <Paragraph>
             Your wellness data is still treated as sensitive personal information and protected by the safeguards described below — but we want you to know, before you decide what to record, that those protections come from our consumer privacy practices and applicable consumer privacy laws (such as CCPA and, where applicable, GDPR), not from HIPAA.
@@ -116,26 +116,33 @@ const PrivacyPolicyScreen = ({ navigation }) => {
         {/* ---- 4. AI PROCESSING ---- */}
         <Section title="4. AI Processing & Third-Party Data Sharing">
           <Paragraph>
-            When you interact with Huxley (our AI guide) or other AI-powered features, your messages are sent to Anthropic (the company behind Claude) for processing. This is necessary to generate personalized responses.
+            Some App features rely on third-party artificial-intelligence providers. To deliver these features, certain text you enter is transmitted to those providers for processing. We send only what is needed to perform the requested function, and we never send your account credentials or your full journal/session history.
           </Paragraph>
 
-          <Text style={styles.subheading}>What is sent to Anthropic:</Text>
+          <Text style={styles.subheading}>Anthropic (AI conversation):</Text>
+          <Paragraph>
+            When you interact with Huxley (our AI guide) or other conversational AI features, your messages are sent to Anthropic (the company behind Claude) to generate responses. What is sent:
+          </Paragraph>
           <BulletList items={[
             'The text of your messages in AI conversations',
             'Relevant context from your recent interactions (to provide continuity)',
             'Your current nervous system state and session context (to tailor responses appropriately)',
           ]} />
+          <Paragraph>
+            Anthropic's commercial API terms state that data sent through their API is not used to train their models. For details, see Anthropic's privacy policy at anthropic.com/privacy.
+          </Paragraph>
 
-          <Text style={styles.subheading}>What Anthropic does NOT receive:</Text>
+          <Text style={styles.subheading}>OpenAI (knowledge-base search):</Text>
+          <Paragraph>
+            When an AI feature looks up relevant educational material from our knowledge base, the text of your query (for example, the message or topic you are asking about) is sent to OpenAI to convert it into a numeric search vector. This is used only to find related content; OpenAI does not receive your journal, your conversation history, or your account information. OpenAI's API terms state that data sent through their API is not used to train their models. For details, see openai.com/policies/privacy-policy.
+          </Paragraph>
+
+          <Text style={styles.subheading}>What AI providers do NOT receive:</Text>
           <BulletList items={[
             'Your email address or account credentials',
             'Your full journal or session history',
-            'Any data beyond what is needed for the current conversation',
+            'Any data beyond what is needed for the specific request',
           ]} />
-
-          <Paragraph>
-            Anthropic's API usage policy states that data sent through their API is not used to train their models. For details, see Anthropic's privacy policy at anthropic.com/privacy.
-          </Paragraph>
         </Section>
 
         {/* ---- 5. DATA STORAGE ---- */}
@@ -171,8 +178,8 @@ const PrivacyPolicyScreen = ({ navigation }) => {
           </Paragraph>
           <BulletList items={[
             'Access your data — all your data is visible to you within the App',
-            'Delete your data — you can delete individual entries (journals, intentions, sessions) at any time. Deleting your account removes all associated data',
-            'Export your data — contact us to request a full export of your data',
+            'Export your data — you can export a full copy of your data yourself at any time from Settings → Export My Data, which produces a JSON file you can save or share',
+            'Delete your data — you can delete individual entries (journals, intentions, sessions) at any time. You can also delete your entire account from within the App, which permanently removes all associated data from our servers',
             'Withdraw consent — you can stop using AI features or switch to local-only storage at any time',
             'Correct your data — you can edit any entries you\'ve created',
           ]} />
@@ -181,8 +188,25 @@ const PrivacyPolicyScreen = ({ navigation }) => {
           </Paragraph>
         </Section>
 
-        {/* ---- 8. DATA RETENTION ---- */}
-        <Section title="8. Data Retention">
+        {/* ---- 8. CONSUMER HEALTH DATA (WA MHMDA / STATE LAWS) ---- */}
+        <Section title="8. Consumer Health Data & State Privacy Rights">
+          <Paragraph>
+            Some of the information you choose to record in the App — such as nervous-system check-ins, reflections on mental and emotional states, and notes related to wellness experiences — may be considered "consumer health data" under certain U.S. state laws, including Washington's My Health My Data Act (MHMDA), Nevada's SB 370, and similar laws. We want to be clear about how we handle it:
+          </Paragraph>
+          <BulletList items={[
+            'We collect this data only because you choose to enter it, in order to provide the App\'s reflection and tracking features to you',
+            'We do not sell consumer health data, and we have no plans to. We will not sell it without first obtaining your separate, explicit consent as required by law',
+            'We do not use consumer health data for advertising, and we do not share it with data brokers',
+            'We share it only with the service providers listed in Section 10, who process it solely to operate the App on our behalf',
+            'You may withdraw your consent to our collection of this data by deleting the relevant entries or your account, and you may request access to or deletion of this data as described in Section 7',
+          ]} />
+          <Paragraph>
+            To exercise any consumer-health-data right, or if you have questions specific to these state laws, contact us at privacy@somanoetic.com. If you are a Washington resident and believe we have not honored your rights under MHMDA, you may also contact the Washington State Attorney General.
+          </Paragraph>
+        </Section>
+
+        {/* ---- 9. DATA RETENTION ---- */}
+        <Section title="9. Data Retention">
           <BulletList items={[
             'Your wellness and reflection data is retained as long as your account is active',
             'AI usage metrics are automatically deleted after 90 days',
@@ -191,36 +215,38 @@ const PrivacyPolicyScreen = ({ navigation }) => {
           ]} />
         </Section>
 
-        {/* ---- 9. CHILDREN ---- */}
-        <Section title="9. Age Requirement">
+        {/* ---- 10. CHILDREN ---- */}
+        <Section title="10. Age Requirement">
           <Paragraph>
-            Huxley is intended for adults aged 18 and older. We do not knowingly collect data from anyone under 18. If you believe a minor has created an account, please contact us and we will delete the account.
+            Multitudes is intended for adults aged 18 and older. We do not knowingly collect data from anyone under 18. If you believe a minor has created an account, please contact us and we will delete the account.
           </Paragraph>
         </Section>
 
-        {/* ---- 10. THIRD PARTIES ---- */}
-        <Section title="10. Third-Party Services">
+        {/* ---- 11. THIRD PARTIES ---- */}
+        <Section title="11. Third-Party Services">
           <Paragraph>
             We use the following third-party services:
           </Paragraph>
           <BulletList items={[
             'Supabase — database hosting and authentication (supabase.com/privacy)',
-            'Anthropic — AI language model processing (anthropic.com/privacy)',
+            'Anthropic — AI language model processing for conversations (anthropic.com/privacy)',
+            'OpenAI — converts your search queries into vectors for knowledge-base search (openai.com/policies/privacy-policy)',
+            'Sentry — crash and error reporting, so we can detect and fix problems. Configured to scrub personal information from error reports; it does not receive your journal, conversations, or account credentials (sentry.io/privacy)',
           ]} />
           <Paragraph>
-            We do not sell, rent, or share your personal data with any other third parties. We do not use analytics trackers, advertising networks, or social media SDKs.
+            We do not sell or rent your personal data, and we do not share it with any third parties other than the service providers listed above, who process it only to provide the App to you. We do not use advertising networks or social media SDKs.
           </Paragraph>
         </Section>
 
-        {/* ---- 11. CHANGES ---- */}
-        <Section title="11. Changes to This Policy">
+        {/* ---- 12. CHANGES ---- */}
+        <Section title="12. Changes to This Policy">
           <Paragraph>
             We may update this policy from time to time. If we make material changes, we will notify you through the App before the changes take effect. Your continued use of the App after changes constitutes acceptance of the updated policy.
           </Paragraph>
         </Section>
 
-        {/* ---- 12. CONTACT ---- */}
-        <Section title="12. Contact Us">
+        {/* ---- 13. CONTACT ---- */}
+        <Section title="13. Contact Us">
           <Paragraph>
             If you have questions about this privacy policy or your data, contact us at:
           </Paragraph>

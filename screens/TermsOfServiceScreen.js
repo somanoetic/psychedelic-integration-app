@@ -45,16 +45,16 @@ const TermsOfServiceScreen = ({ navigation }) => {
         <Text style={styles.lastUpdated}>Last updated: {LAST_UPDATED}</Text>
 
         <Paragraph>
-          Welcome to Huxley. By creating an account or using the App, you agree to these Terms of Service ("Terms"). Please read them carefully.
+          Welcome to Multitudes ("the App"), operated by Alleviation Therapeutics. By creating an account or using the App, you agree to these Terms of Service ("Terms"). Please read them carefully. "Huxley" refers to the AI reflection guide within the App.
         </Paragraph>
 
         {/* ---- 1. ABOUT THE APP ---- */}
-        <Section title="1. About Huxley">
+        <Section title="1. About Multitudes">
           <Paragraph>
-            Huxley is a self-directed wellness and educational tool designed to help individuals process and integrate transformative experiences into daily life. The App provides journaling, AI-guided reflection, nervous system tracking, and educational resources.
+            Multitudes is a self-directed wellness and educational tool designed to help individuals process and integrate transformative experiences into daily life. The App provides journaling, AI-guided reflection, nervous system tracking, and educational resources.
           </Paragraph>
           <Paragraph>
-            Huxley is a consumer wellness product. It is not a healthcare service, and using it does not create a clinician–patient relationship between you and Alleviation Therapeutics or anyone associated with the App.
+            Multitudes is a consumer wellness product. It is not a healthcare service, and using it does not create a clinician–patient relationship between you and Alleviation Therapeutics or anyone associated with the App.
           </Paragraph>
         </Section>
 
@@ -64,10 +64,10 @@ const TermsOfServiceScreen = ({ navigation }) => {
             This is the most important section of these Terms:
           </Paragraph>
           <BulletList items={[
-            'Huxley is NOT a substitute for professional medical, psychiatric, or therapeutic care',
+            'Multitudes is NOT a substitute for professional medical, psychiatric, or therapeutic care',
             'The AI guide (Huxley) is a reflection companion, not a therapist or clinician. It cannot diagnose, treat, prescribe, or provide clinical recommendations, and nothing it says should be acted on as medical or mental-health advice',
             'Content in the App (exercises, educational material, AI responses, contributor submissions) is for informational, educational, and personal reflection purposes only',
-            'Huxley does not create, store, or transmit a clinical record. Information you record in the App is your own personal wellness data — not a medical chart',
+            'Multitudes does not create, store, or transmit a clinical record. Information you record in the App is your own personal wellness data — not a medical chart',
             'If you are in crisis or experiencing a mental health emergency, contact emergency services (911) or the 988 Suicide & Crisis Lifeline immediately',
             'Always consult qualified healthcare professionals for medical or mental health concerns',
           ]} />
@@ -79,12 +79,12 @@ const TermsOfServiceScreen = ({ navigation }) => {
         {/* ---- 3. NOT A HIPAA-COVERED SERVICE ---- */}
         <Section title="3. Not a HIPAA-Covered Service">
           <Paragraph>
-            Huxley is a consumer wellness app, not a healthcare service. We are not a covered entity, business associate, or healthcare provider under the U.S. Health Insurance Portability and Accountability Act ("HIPAA"), and the data you record in the App is not Protected Health Information ("PHI") in the HIPAA sense.
+            Multitudes is a consumer wellness app, not a healthcare service. We are not a covered entity, business associate, or healthcare provider under the U.S. Health Insurance Portability and Accountability Act ("HIPAA"), and the data you record in the App is not Protected Health Information ("PHI") in the HIPAA sense.
           </Paragraph>
           <BulletList items={[
-            'No therapist or clinician sees your in-app content through Huxley — there is no provider portal, no client roster, no in-app handoff to a treatment provider, and no in-app assignment of work from a clinician to a client',
-            'If you choose to share an Integration Summary with a therapist via the OS share sheet, that delivery happens outside Huxley; what the therapist does with it after they receive it is governed by their own privacy and recordkeeping obligations, not ours',
-            'If a Huxley contributor or contributor-submitted exercise mentions clinical concepts, this is general educational content — not personalized clinical advice and not delivered to you in the course of treatment',
+            'No therapist or clinician sees your in-app content through Multitudes — there is no provider portal, no client roster, no in-app handoff to a treatment provider, and no in-app assignment of work from a clinician to a client',
+            'If you choose to share an Integration Summary with a therapist via the OS share sheet, that delivery happens outside Multitudes; what the therapist does with it after they receive it is governed by their own privacy and recordkeeping obligations, not ours',
+            'If a Multitudes contributor or contributor-submitted exercise mentions clinical concepts, this is general educational content — not personalized clinical advice and not delivered to you in the course of treatment',
           ]} />
           <Paragraph>
             We treat your wellness data as sensitive personal information and protect it with the technical safeguards described in our Privacy Policy. Those protections come from our consumer privacy practices and applicable consumer privacy laws (such as CCPA and, where applicable, GDPR), not from HIPAA.
@@ -117,7 +117,7 @@ const TermsOfServiceScreen = ({ navigation }) => {
           </Paragraph>
           <BulletList items={[
             'You grant us a limited license to store, process, and display your content to you within the App',
-            'You grant us permission to send your messages to our AI provider (Anthropic) for the purpose of generating responses. We ensure through our contractual agreements with such providers that your content is used solely to provide the service to you and is not used to train or improve the provider\'s own artificial intelligence models. We will never share, publish, or sell your content to third parties',
+            'You grant us permission to send your messages to our AI providers (Anthropic for conversational responses, and OpenAI to convert search queries into vectors for knowledge-base search) for the purpose of operating these features. Under these providers\' commercial API terms, your content is used solely to provide the service and is not used to train or improve the providers\' own artificial intelligence models. We will never share, publish, or sell your content to third parties. See our Privacy Policy for details on what is sent to each provider',
             'You can delete your content at any time',
           ]} />
         </Section>
@@ -141,7 +141,7 @@ const TermsOfServiceScreen = ({ navigation }) => {
         <Section title="8. AI Features & Limitations">
           <BulletList items={[
             'AI responses are generated by automated language models without human review; they are provided for informational purposes only and may be inaccurate, unhelpful, or inappropriate. The AI does not possess clinical judgment and is not a substitute for professional medical advice. You are responsible for evaluating and independently verifying the accuracy and suitability of all AI-generated content. AI responses do not represent the views or recommendations of Alleviation Therapeutics',
-            'The AI does not have memory between separate sessions unless you have enabled context features. When enabled, your session data is processed and stored using industry-standard security protocols and privacy-preserving techniques to ensure the safety and confidentiality of your information in accordance with our Privacy Policy and applicable federal AI safety frameworks.',
+            'The AI does not have memory between separate sessions unless you have enabled context features. When enabled, your session data is processed and stored using industry-standard security measures in accordance with our Privacy Policy.',
             'We continuously work to improve AI safety, but no AI system is perfect',
             'If you receive a concerning AI response, please report it to us',
           ]} />
@@ -180,7 +180,7 @@ const TermsOfServiceScreen = ({ navigation }) => {
         {/* ---- 12. HARM REDUCTION ---- */}
         <Section title="12. Harm Reduction Commitment">
           <Paragraph>
-            Huxley is built on principles of harm reduction, informed consent, and personal agency. We believe:
+            Multitudes is built on principles of harm reduction, informed consent, and personal agency. We believe:
           </Paragraph>
           <BulletList items={[
             'Individuals have the right to make informed choices about their own experiences',
@@ -203,7 +203,7 @@ const TermsOfServiceScreen = ({ navigation }) => {
         {/* ---- 14. GOVERNING LAW ---- */}
         <Section title="14. Governing Law">
           <Paragraph>
-            These Terms are governed by the laws of the state in which Alleviation Therapeutics is incorporated, without regard to conflict of law provisions.
+            These Terms are governed by the laws of the Commonwealth of Massachusetts, without regard to conflict of law provisions. Any dispute arising out of or relating to these Terms or the App shall be subject to the exclusive jurisdiction of the state and federal courts located in Massachusetts.
           </Paragraph>
         </Section>
 
