@@ -89,7 +89,7 @@ const AdminApplicationReviewScreen = ({ navigation }) => {
   const handleApprove = (app) => {
     Alert.alert(
       'Approve contributor?',
-      `Approve ${app.full_name || app.email} as a Huxley contributor?`,
+      `Approve ${app.full_name || app.email} as a Multitudes contributor?`,
       [
         { text: 'Cancel', style: 'cancel' },
         {

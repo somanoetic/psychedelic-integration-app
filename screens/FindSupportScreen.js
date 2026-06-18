@@ -218,7 +218,7 @@ const FindSupportScreen = ({ navigation }) => {
           <View style={styles.disclaimerCard}>
             <Info size={16} color={colors.textSecondary} strokeWidth={2} />
             <Text style={styles.disclaimerText}>
-              Huxley provides these links as resources. We do not endorse,
+              Multitudes provides these links as resources. We do not endorse,
               verify, or guarantee any provider. Always verify credentials and
               fit before beginning a therapeutic relationship.
             </Text>

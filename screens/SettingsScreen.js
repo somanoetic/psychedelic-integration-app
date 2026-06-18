@@ -197,7 +197,7 @@ const SettingsScreen = ({ navigation }) => {
             <SettingsRow
               Icon={Pencil}
               title="Contributor Tools"
-              subtitle="Apply to contribute to Huxley's library"
+              subtitle="Apply to contribute to Multitudes' library"
               onPress={() => navigation.navigate('ContributorTools')}
             />
           </View>

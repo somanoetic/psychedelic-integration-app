@@ -50,7 +50,7 @@ const AnimatedSplash = ({ onAnimationFinish }) => {
 
     return (
       <View style={styles.container}>
-        <Text style={styles.fallbackText}>Huxley</Text>
+        <Text style={styles.fallbackText}>Multitudes</Text>
       </View>
     );
   }

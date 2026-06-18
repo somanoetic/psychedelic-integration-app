@@ -202,7 +202,7 @@ const ConversationalHomeScreen = ({ navigation, user }) => {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.appName}>Huxley</Text>
+          <Text style={styles.appName}>Multitudes</Text>
           <Image
             source={require('../assets/images/huxley-avatar.png')}
             style={styles.headerAvatar}

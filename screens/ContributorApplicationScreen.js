@@ -226,7 +226,7 @@ const ContributorApplicationScreen = ({ navigation }) => {
         </View>
       ) : (
         <View style={styles.infoSection}>
-          <Text style={styles.infoTitle}>✍️ Contribute to Huxley</Text>
+          <Text style={styles.infoTitle}>✍️ Contribute to Multitudes</Text>
           <Text style={styles.infoText}>
             Practitioners and integration guides can apply to contribute training scenarios that help Huxley respond more skillfully. All contributions are reviewed before going live and are attributed to the contributor — they do not represent the views of Alleviation Therapeutics.
           </Text>
@@ -286,7 +286,7 @@ const ContributorApplicationScreen = ({ navigation }) => {
             style={[styles.input, styles.textArea]}
             value={formData.contribution_focus}
             onChangeText={(text) => setFormData({ ...formData, contribution_focus: text })}
-            placeholder="Briefly describe what you'd like to contribute and why it would help Huxley users"
+            placeholder="Briefly describe what you'd like to contribute and why it would help Multitudes users"
             multiline
             numberOfLines={4}
           />

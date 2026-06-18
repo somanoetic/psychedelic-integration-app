@@ -205,7 +205,7 @@ const ContributorToolsScreen = ({ navigation }) => {
             )}
             {!hasAccess && !isPending && !isNeedsMoreInfo && !isRejected && (
               <Text style={styles.statusSubtext}>
-                Apply to contribute to Huxley's library.
+                Apply to contribute to Multitudes' library.
               </Text>
             )}
           </View>
@@ -247,7 +247,7 @@ const ContributorToolsScreen = ({ navigation }) => {
                 <ToolCard
                   icon="add-circle-outline"
                   title="Submit an Exercise"
-                  subtitle="Contribute a practice to Huxley's public library"
+                  subtitle="Contribute a practice to Multitudes' public library"
                   onPress={() => navigation.navigate('ContributorExerciseSubmission')}
                 />
                 <View style={styles.separator} />
@@ -270,7 +270,7 @@ const ContributorToolsScreen = ({ navigation }) => {
             />
             <Text style={styles.infoText}>
               Approved contributors can submit exercises and protocols to
-              Huxley's public library. Submissions are reviewed before going
+              Multitudes' public library. Submissions are reviewed before going
               live and published with attribution to the contributor.
             </Text>
           </View>

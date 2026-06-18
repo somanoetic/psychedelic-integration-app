@@ -63,14 +63,14 @@ const NonClinicalDisclosureScreen = ({ onAcknowledge }) => {
           <Text style={styles.title}>Before you begin</Text>
 
           <Text style={styles.subtitle}>
-            A few things to know about what Huxley is — and what it isn't.
+            A few things to know about what Multitudes is — and what it isn't.
           </Text>
 
           {/* ---- Wellness, not clinical ---- */}
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>Huxley is a wellness tool, not a clinical service</Text>
+            <Text style={styles.cardTitle}>Multitudes is a wellness tool, not a clinical service</Text>
             <Text style={styles.cardBody}>
-              Huxley is a self-directed companion for personal reflection and integration. It is not therapy, not psychiatric care, and not a substitute for professional mental-health support.
+              Multitudes is a self-directed companion for personal reflection and integration. It is not therapy, not psychiatric care, and not a substitute for professional mental-health support.
             </Text>
             <Text style={styles.cardBody}>
               The AI guide is a reflection companion — not a therapist or clinician. It cannot diagnose you, treat you, or tell you what to do about a medical or mental-health concern. Always work with qualified professionals for clinical care.
@@ -79,9 +79,9 @@ const NonClinicalDisclosureScreen = ({ onAcknowledge }) => {
 
           {/* ---- Not HIPAA-covered ---- */}
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>Huxley is not HIPAA-covered</Text>
+            <Text style={styles.cardTitle}>Multitudes is not HIPAA-covered</Text>
             <Text style={styles.cardBody}>
-              We are not a healthcare provider, covered entity, or business associate under HIPAA. The information you record in Huxley is your personal wellness data, not a clinical record.
+              We are not a healthcare provider, covered entity, or business associate under HIPAA. The information you record in Multitudes is your personal wellness data, not a clinical record.
             </Text>
             <Text style={styles.cardBody}>
               We protect your data with strong technical safeguards (encryption in transit and at rest, row-level isolation, no third-party advertising) under standard consumer privacy practices and applicable privacy laws (CCPA and, where applicable, GDPR) — not under HIPAA. See the Privacy Policy for the full picture.
@@ -92,7 +92,7 @@ const NonClinicalDisclosureScreen = ({ onAcknowledge }) => {
           <View style={[styles.card, styles.crisisCard]}>
             <Text style={styles.cardTitle}>If you are in crisis</Text>
             <Text style={styles.cardBody}>
-              Huxley is not an emergency service. If you are in crisis or having thoughts of harming yourself, please contact emergency services (911) or the 988 Suicide & Crisis Lifeline immediately.
+              Multitudes is not an emergency service. If you are in crisis or having thoughts of harming yourself, please contact emergency services (911) or the 988 Suicide & Crisis Lifeline immediately.
             </Text>
           </View>
 
@@ -147,13 +147,13 @@ const NonClinicalDisclosureScreen = ({ onAcknowledge }) => {
               <View style={styles.practitionerNote}>
                 <Text style={styles.practitionerNoteTitle}>For practitioners</Text>
                 <Text style={styles.cardBody}>
-                  You can use Huxley for your own personal reflection and you can recommend it to clients as self-directed support outside of session, with their consent.
+                  You can use Multitudes for your own personal reflection and you can recommend it to clients as self-directed support outside of session, with their consent.
                 </Text>
                 <Text style={styles.cardBody}>
-                  You cannot use Huxley to receive client data into a HIPAA-covered record, to assign or track client homework, or to deliver care to a specific identified client through the app. There is no in-app provider portal or client roster, and we do not provide a Business Associate Agreement.
+                  You cannot use Multitudes to receive client data into a HIPAA-covered record, to assign or track client homework, or to deliver care to a specific identified client through the app. There is no in-app provider portal or client roster, and we do not provide a Business Associate Agreement.
                 </Text>
                 <Text style={styles.cardBody}>
-                  If a client shares an Integration Summary with you via the OS share sheet (e.g., email, Messages), Huxley plays no part in that delivery, and what you do with the summary after receiving it is governed by your own clinical privacy obligations.
+                  If a client shares an Integration Summary with you via the OS share sheet (e.g., email, Messages), Multitudes plays no part in that delivery, and what you do with the summary after receiving it is governed by your own clinical privacy obligations.
                 </Text>
               </View>
             )}
