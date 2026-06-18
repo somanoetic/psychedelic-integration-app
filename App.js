@@ -95,6 +95,7 @@ import ConversationalExerciseLibrary from './components/ConversationalExerciseLi
 import ConversationalTriggeredSupport from './components/ConversationalTriggeredSupport';
 import DailyJournal from './components/DailyJournal';
 import ConversationalNervousSystemMapping from './components/ConversationalNervousSystemMapping';
+import ConversationalAttachmentInterview from './components/ConversationalAttachmentInterview';
 import ConversationalTriggersGlimmers from './components/ConversationalTriggersGlimmers';
 import ConversationalRegulatingResources from './components/ConversationalRegulatingResources';
 import CoreBeliefsAssessment from './components/CoreBeliefsAssessment';
@@ -559,6 +560,14 @@ function App() {
                 options={{
                   headerShown: false,
                   title: 'Nervous System Mapping'
+                }}
+              />
+              <Stack.Screen
+                name="AttachmentReflection"
+                component={ConversationalAttachmentInterview}
+                options={{
+                  headerShown: false,
+                  title: 'Attachment Reflection'
                 }}
               />
               <Stack.Screen

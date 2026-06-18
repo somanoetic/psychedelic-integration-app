@@ -75,6 +75,15 @@ const options = [
     estimatedTime: '20-45 min',
     route: 'ActiveImagination',
   },
+  {
+    id: 'attachment-reflection',
+    title: 'Attachment Reflection',
+    emoji: '🪢',
+    icon: null,
+    description: 'A guided reflection on your early relationships and how they shaped you',
+    estimatedTime: '25-45 min',
+    route: 'AttachmentReflection',
+  },
 ];
 
 const InnerWorkScreen = ({ navigation }) => {
