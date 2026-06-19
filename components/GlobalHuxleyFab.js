@@ -29,7 +29,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Home as HomeIcon, Pencil, Compass, X } from 'lucide-react-native';
+import { Home as HomeIcon, Pencil, Compass, LifeBuoy, X } from 'lucide-react-native';
 import { colors } from '../theme/colors';
 import HuxleyChatModal from './HuxleyChatModal';
 
@@ -40,6 +40,7 @@ const ACTION_SIZE = 52;
 const ACTION_GAP = 14;       // spacing between stacked actions
 const EDGE_PEEK = 14;        // how much of the tab pokes out when tucked
 const DRAG_HIDE_THRESHOLD = 60; // px of rightward drag to trigger tuck
+const DOUBLE_TAP_MS = 280;   // max gap between taps to count as a double-tap
 
 const GlobalHuxleyFab = ({ navigationRef }) => {
   const insets = useSafeAreaInsets();
@@ -51,6 +52,8 @@ const GlobalHuxleyFab = ({ navigationRef }) => {
   const fan = useRef(new Animated.Value(0)).current;
   // Horizontal tuck offset: 0 = resting, positive = slid toward the edge.
   const tuckX = useRef(new Animated.Value(0)).current;
+  // Timestamp of the last FAB tap, for double-tap-to-hide detection.
+  const lastTapRef = useRef(0);
 
   const navigate = (route, params) => {
     if (navigationRef?.isReady()) navigationRef.navigate(route, params);
@@ -70,6 +73,19 @@ const GlobalHuxleyFab = ({ navigationRef }) => {
     } else {
       setExpanded(true);
       animateFan(1);
+    }
+  };
+
+  // A double-tap on the FAB tucks it away. A single tap toggles the fan menu.
+  // We defer the single-tap action briefly so a second tap can pre-empt it.
+  const handleFabPress = () => {
+    const now = Date.now();
+    if (now - lastTapRef.current < DOUBLE_TAP_MS) {
+      lastTapRef.current = 0;
+      tuckAway();
+    } else {
+      lastTapRef.current = now;
+      toggleExpanded();
     }
   };
 
@@ -125,6 +141,10 @@ const GlobalHuxleyFab = ({ navigationRef }) => {
     { key: 'journal', label: 'Journal', render: <Pencil size={24} color={colors.primary} strokeWidth={2} />, onPress: () => navigate('Journal') },
     { key: 'track', label: 'Track', render: <Compass size={24} color={colors.primary} strokeWidth={2} />, onPress: () => navigate('TrackHub') },
     { key: 'home', label: 'Home', render: <HomeIcon size={24} color={colors.primary} strokeWidth={2} />, onPress: () => navigate('Home') },
+    // SOS is always last in the fan (furthest from the FAB, top of the stack) and
+    // styled red so it reads as a crisis affordance, not just another nav action.
+    // Routes to FindSupport (988 / Crisis Text Line / SAMHSA / Fireside).
+    { key: 'sos', label: 'In crisis?', urgent: true, buttonStyle: styles.actionButtonUrgent, render: <LifeBuoy size={24} color="#dc2626" strokeWidth={2.5} />, onPress: () => navigate('FindSupport') },
   ];
 
   return (
@@ -177,7 +197,7 @@ const GlobalHuxleyFab = ({ navigationRef }) => {
                     },
                   ]}
                 >
-                  <Text style={styles.actionLabel}>{action.label}</Text>
+                  <Text style={[styles.actionLabel, action.urgent && styles.actionLabelUrgent]}>{action.label}</Text>
                   <TouchableOpacity
                     style={[styles.actionButton, action.buttonStyle]}
                     activeOpacity={0.85}
@@ -194,7 +214,7 @@ const GlobalHuxleyFab = ({ navigationRef }) => {
               <TouchableOpacity
                 style={styles.fab}
                 activeOpacity={0.9}
-                onPress={toggleExpanded}
+                onPress={handleFabPress}
                 onLongPress={tuckAway}
               >
                 {expanded ? (
@@ -300,6 +320,15 @@ const styles = StyleSheet.create({
   // the main FAB (so it isn't clipped inside the smaller action circle).
   actionButtonSpill: {
     overflow: 'visible',
+  },
+  // SOS / crisis action: red ring + tinted fill so it stands apart from the
+  // lavender nav actions.
+  actionButtonUrgent: {
+    borderColor: '#dc2626',
+    backgroundColor: '#dc262610',
+  },
+  actionLabelUrgent: {
+    color: '#dc2626',
   },
   huxleyAvatar: {
     width: ACTION_SIZE + 20,

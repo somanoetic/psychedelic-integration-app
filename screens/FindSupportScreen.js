@@ -65,6 +65,14 @@ const CRISIS_RESOURCES = [
     icon: 'phone',
     urgent: true,
   },
+  {
+    name: 'Fireside Project',
+    description: 'Psychedelic peer support line — talk through a hard trip or integration in the moment',
+    action: 'tel:6234737733',
+    actionLabel: 'Call or text 62-FIRESIDE',
+    icon: 'local-fire-department',
+    urgent: true,
+  },
 ];
 
 const THERAPIST_DIRECTORIES = [
@@ -91,12 +99,6 @@ const THERAPIST_DIRECTORIES = [
     description: 'Integration therapists and harm reduction specialists',
     url: 'https://psychedelic.support/network/',
     icon: 'healing',
-  },
-  {
-    name: 'Fireside Project',
-    description: 'Psychedelic peer support line (call or text 62-FIRESIDE)',
-    url: 'https://firesideproject.org/',
-    icon: 'local-fire-department',
   },
 ];
 
