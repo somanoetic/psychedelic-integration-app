@@ -24,6 +24,16 @@
         "DEBUG_CLAUDE": "false"
       }
     },
+    "preview-internal": {
+      "distribution": "internal",
+      "channel": "preview",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "DEBUG_CLAUDE": "false"
+      }
+    },
     "production": {
       "channel": "production",
       "env": {
