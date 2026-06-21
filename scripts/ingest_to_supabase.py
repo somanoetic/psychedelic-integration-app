@@ -117,12 +117,25 @@ def create_document(doc_info):
     resp = requests.post(url, json=payload, headers=supabase_headers())
 
     if resp.status_code == 409 or (resp.status_code == 400 and "duplicate" in resp.text.lower()):
-        # Already exists - fetch the existing one
-        get_url = f"{SUPABASE_URL}/rest/v1/knowledge_documents?filename=eq.{quote(doc_info['filename'], safe='')}&select=id"
-        get_resp = requests.get(get_url, headers=supabase_headers())
+        # Already exists - fetch it AND refresh its mutable fields. Category can
+        # change between runs (e.g. improved categorization), and match_document_chunks
+        # filters on knowledge_documents.category, so a stale category here silently
+        # breaks --category search even after chunks are re-ingested correctly.
+        filt = f"filename=eq.{quote(doc_info['filename'], safe='')}"
+        patch_url = f"{SUPABASE_URL}/rest/v1/knowledge_documents?{filt}"
+        patch_resp = requests.patch(patch_url, json={
+            "category": doc_info["category"],
+            "title": doc_info.get("title", doc_info["filename"]),
+            "total_chunks": doc_info["total_chunks"],
+            "source_type": doc_info["source_type"],
+        }, headers=supabase_headers())
+        if patch_resp.status_code in (200, 204) and patch_resp.json():
+            return patch_resp.json()[0]["id"], False
+        # Fall back to a plain fetch if the patch returned no representation
+        get_resp = requests.get(f"{patch_url}&select=id", headers=supabase_headers())
         if get_resp.status_code == 200 and get_resp.json():
             return get_resp.json()[0]["id"], False
-        raise Exception(f"Document exists but couldn't fetch: {get_resp.text}")
+        raise Exception(f"Document exists but couldn't fetch/update: {patch_resp.text}")
 
     if resp.status_code not in (200, 201):
         raise Exception(f"Failed to create document: {resp.status_code} {resp.text}")

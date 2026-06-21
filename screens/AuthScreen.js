@@ -145,19 +145,26 @@ export default function AuthScreen({ navigation }) {
 
     if (error) {
       console.error('Signup error:', error);
-      Alert.alert(
-        'Sign Up Error',
-        `${error.message}\n\nEmail: ${signupEmail}\nPassword length: ${password.length}`
-      );
-    } else {
-      if (data.user && !data.user.confirmed_at) {
+      // The Supabase auth gateway can return a non-JSON 5xx (e.g. a 504
+      // timeout) during email/load bursts; in that case supabase-js stringifies
+      // the whole Response object into error.message. Never show that to a
+      // tester — map server/timeout errors to a friendly retry message and
+      // surface only known, actionable auth errors verbatim.
+      const status = error.status || error.statusCode;
+      const isServerOrTimeout =
+        (typeof status === 'number' && status >= 500) ||
+        /timeout|gateway|fetch|network/i.test(error.message || '');
+
+      if (isServerOrTimeout) {
         Alert.alert(
-          'Email Confirmation Required',
-          `Account created! Please check ${signupEmail} for the confirmation link.\n\nFor testing: Go to Supabase Dashboard → Authentication → Users → Find ${signupEmail} → Click "..." → Confirm email`
+          'Server Busy',
+          'We could not reach the server just now. Please wait a moment and try again.'
         );
       } else {
-        Alert.alert('Success', 'Account created and ready to use!');
+        Alert.alert('Sign Up Error', error.message);
       }
+    } else {
+      Alert.alert('Success', 'Account created and ready to use!');
     }
     setLoading(false);
   }

@@ -33,6 +33,7 @@ import GroundingExercisesWidget from '../components/GroundingExercisesWidget';
 import { educationTopics, getTopicById } from '../content/education';
 import { getExerciseById } from '../content/exercises-comprehensive';
 import FormattedText from '../components/FormattedText';
+import LearnInteractive from '../components/LearnInteractive';
 import { icons } from '../lib/uiIcons';
 
 // Mirror ConversationalEducation.js — semantic topic ID -> illustrated PNG icon
@@ -379,7 +380,7 @@ const EducationScreen = ({ navigation, route }) => {
           </TouchableOpacity>
         </View>
 
-        <ScrollView style={styles.topicContent}>
+        <ScrollView key={selectedTopic} style={styles.topicContent}>
           <View style={styles.topicHeroIconWrap}>
             {TOPIC_ICONS[selectedTopic] ? (
               <Image source={TOPIC_ICONS[selectedTopic]} style={styles.topicHeroIcon} />
@@ -438,6 +439,11 @@ const EducationScreen = ({ navigation, route }) => {
                 </View>
               ))}
             </View>
+          )}
+
+          {/* Interactive widgets — flashcards / scenario quizzes for this article */}
+          {topic.interactive && topic.interactive.length > 0 && (
+            <LearnInteractive items={topic.interactive} />
           )}
 
           {/* Practice these — tappable links to related interactive exercises */}
