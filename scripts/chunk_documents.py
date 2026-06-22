@@ -71,7 +71,7 @@ DIR_TO_CATEGORY = {
     "jungian": "jungian",
     "mind-body-chronic pain": "mind-body",
     "miscellaneous": "miscellaneous",
-    "polyvagal": "polyvagal",
+    "autonomics": "autonomics",
     "psychedelic-integration": "psychedelic-integration",
     "somatic": "somatic",
     "spirituality": "spirituality",
@@ -136,7 +136,7 @@ def detect_category_from_filename(filename):
     lower = filename.lower()
     category_keywords = {
         "ifs": ["ifs", "internal family", "parts work", "self-led", "exile", "protector"],
-        "polyvagal": ["polyvagal", "vagal", "vagus", "nervous system", "neuroception"],
+        "autonomics": ["polyvagal", "vagal", "vagus", "nervous system", "neuroception", "autonomic"],
         "somatic": ["somatic", "body", "embodiment", "sensorimotor"],
         "trauma-informed": ["trauma", "ptsd", "adverse", "interventions"],
         "cbt-act": ["cbt", "cognitive", "acceptance", "commitment", "distortion"],
