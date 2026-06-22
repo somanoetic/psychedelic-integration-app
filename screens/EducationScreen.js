@@ -68,6 +68,10 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const EducationScreen = ({ navigation, route }) => {
   const [selectedTopic, setSelectedTopic] = useState(null);
   const [showConversational, setShowConversational] = useState(true);
+  // Remember which guided category the user was in (e.g. 'about_myself') so
+  // that backing out of a topic/article returns them to that sub-page rather
+  // than the top-level Learn greeting.
+  const [eduStep, setEduStep] = useState('greeting');
   // If the user was deep-linked into a topic from another screen (e.g.
   // the trail), remember where to send them back when the topic closes.
   const [returnTo, setReturnTo] = useState(null);
@@ -375,7 +379,11 @@ const EducationScreen = ({ navigation, route }) => {
         <View style={styles.topicHeader}>
           <TouchableOpacity onPress={handleEducationComplete}>
             <Text style={styles.backButton}>
-              {returnTo === 'CurriculumTracker' ? '← Back to Trails' : '← Back to Education'}
+              {returnTo === 'CurriculumTracker'
+                ? '← Back to Trails'
+                : showConversational && eduStep !== 'greeting'
+                ? '← Back'
+                : '← Back to Education'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -501,9 +509,11 @@ const EducationScreen = ({ navigation, route }) => {
                     style={styles.seeAlsoChip}
                     onPress={() => handleTopicPress(rel.id)}
                   >
-                    {rel.emoji ? (
-                      <Text style={styles.seeAlsoEmoji}>{rel.emoji}</Text>
-                    ) : null}
+                    {TOPIC_ICONS[rel.id] ? (
+                      <Image source={TOPIC_ICONS[rel.id]} style={styles.seeAlsoIcon} />
+                    ) : (
+                      <BookOpen size={18} color={colors.primary} strokeWidth={2} style={styles.seeAlsoIconLucide} />
+                    )}
                     <Text style={styles.seeAlsoChipText}>{rel.title}</Text>
                     <ArrowRight size={16} color={colors.primary} strokeWidth={2} />
                   </TouchableOpacity>
@@ -546,6 +556,8 @@ const EducationScreen = ({ navigation, route }) => {
     return (
       <ConversationalEducation
         navigation={navigation}
+        initialStep={eduStep}
+        onStepChange={setEduStep}
         onSelectTopic={(topicId) => {
           handleTopicPress(topicId);
         }}
@@ -1124,8 +1136,15 @@ const styles = {
     borderWidth: 1,
     borderColor: colors.sand,
   },
-  seeAlsoEmoji: {
-    fontSize: 20,
+  seeAlsoIcon: {
+    width: 28,
+    height: 28,
+    resizeMode: 'contain',
+  },
+  seeAlsoIconLucide: {
+    width: 28,
+    height: 28,
+    textAlign: 'center',
   },
   seeAlsoChipText: {
     flex: 1,

@@ -29,7 +29,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Home as HomeIcon, Pencil, Compass, LifeBuoy, X } from 'lucide-react-native';
+import { Home as HomeIcon, Pencil, Compass, LifeBuoy, HeartHandshake, X } from 'lucide-react-native';
 import { colors } from '../theme/colors';
 import HuxleyChatModal from './HuxleyChatModal';
 
@@ -141,6 +141,9 @@ const GlobalHuxleyFab = ({ navigationRef }) => {
     { key: 'journal', label: 'Journal', render: <Pencil size={24} color={colors.primary} strokeWidth={2} />, onPress: () => navigate('Journal') },
     { key: 'track', label: 'Track', render: <Compass size={24} color={colors.primary} strokeWidth={2} />, onPress: () => navigate('TrackHub') },
     { key: 'home', label: 'Home', render: <HomeIcon size={24} color={colors.primary} strokeWidth={2} />, onPress: () => navigate('Home') },
+    // Contribute — relocated out of Settings (beta feedback). Opens the
+    // contributor tools / application flow.
+    { key: 'contribute', label: 'Contribute', render: <HeartHandshake size={24} color={colors.primary} strokeWidth={2} />, onPress: () => navigate('ContributorTools') },
     // SOS is always last in the fan (furthest from the FAB, top of the stack) and
     // styled red so it reads as a crisis affordance, not just another nav action.
     // Routes to FindSupport (988 / Crisis Text Line / SAMHSA / Fireside).

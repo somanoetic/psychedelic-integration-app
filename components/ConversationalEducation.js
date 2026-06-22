@@ -56,9 +56,19 @@ import { colors, gradients } from '../theme/colors';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics }) => {
+const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics, initialStep, onStepChange }) => {
   const insets = useSafeAreaInsets();
-  const [conversationStep, setConversationStep] = useState('greeting'); // greeting, categories, topic_selection
+  // Initialize from `initialStep` so the hub can restore the active category
+  // (e.g. "Teach me about myself") when the user backs out of an article —
+  // otherwise a fresh mount always drops them on the greeting screen.
+  const [conversationStep, setConversationStepRaw] = useState(initialStep || 'greeting'); // greeting, categories, topic_selection
+
+  // Wrap the setter so the parent hub can mirror the active step and bring the
+  // user back to it after they return from a full-screen topic/article.
+  const setConversationStep = (step) => {
+    setConversationStepRaw(step);
+    onStepChange?.(step);
+  };
 
   const educationCategories = [
     {

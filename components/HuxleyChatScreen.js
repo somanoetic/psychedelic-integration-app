@@ -24,7 +24,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Send, ChevronDown } from 'lucide-react-native';
+import { Send, ChevronDown, Settings } from 'lucide-react-native';
 import { colors, gradients } from '../theme/colors';
 import { icons } from '../lib/uiIcons';
 import conversationalRoutingService from '../lib/conversationalRoutingService';
@@ -675,6 +675,15 @@ const HuxleyChatScreen = ({ navigation }) => {
               onPress={() => navigation.navigate('Home')}
             >
               <Image source={icons.home} style={styles.homeIcon} />
+            </TouchableOpacity>
+
+            {/* Settings gear relocated here from the (now removed) home header. */}
+            <TouchableOpacity
+              style={styles.menuButton}
+              onPress={() => navigation.navigate('Settings')}
+              accessibilityLabel="Settings"
+            >
+              <Settings size={26} color={colors.text} strokeWidth={2} />
             </TouchableOpacity>
 
             {/* Voice conversation toggle paused 2026-06-02 — the turn-based

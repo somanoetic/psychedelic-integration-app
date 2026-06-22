@@ -21,7 +21,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { Image } from 'react-native';
-import { Settings } from 'lucide-react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { colors, gradients } from '../theme/colors';
 
@@ -406,29 +405,9 @@ const GridHomeScreen = ({ navigation }) => {
       style={styles.container}
     >
       <SafeAreaView style={styles.safeArea} edges={['top']}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity
-            style={styles.headerButton}
-            onPress={() => navigation.navigate('HuxleyChat')}
-          >
-            <Image source={uiIcons.chat} style={styles.headerIcon} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.headerButton}
-            onPress={() => navigation.navigate('Settings')}
-          >
-            <Settings size={26} color={colors.text} strokeWidth={2} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.headerButton, styles.sosButton]}
-            onPress={() => navigation.navigate('TriggeredSupport')}
-          >
-            <Text style={styles.sosButtonText}>SOS</Text>
-          </TouchableOpacity>
-        </View>
+        {/* Home header removed (beta feedback: redundant). Chat, SOS/crisis,
+            and settings are reachable from the global FAB; the settings gear
+            now lives in the Huxley chat header. */}
 
         <ScrollView
           style={styles.scrollView}
@@ -498,29 +477,6 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  headerButton: {
-    padding: 8,
-    borderRadius: 12,
-    minWidth: 44,
-    minHeight: 44,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  sosButton: {
-    backgroundColor: '#E57373',
-  },
-  sosButtonText: {
-    color: '#fff',
-    fontWeight: '700',
-    fontSize: 14,
-  },
   scrollView: {
     flex: 1,
   },
@@ -568,12 +524,6 @@ const styles = StyleSheet.create({
     padding: 12,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-
-  headerIcon: {
-    width: 56,
-    height: 56,
-    resizeMode: 'contain',
   },
 
   // Track block
