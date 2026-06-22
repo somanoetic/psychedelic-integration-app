@@ -56,7 +56,7 @@ export default validateWorksheet({
     },
     {
       id: 'handle-challenges',
-      label: 'How I handled challenges today',
+      label: 'How I handle challenges today',
       kind: 'free-text',
       lines: 4,
     },

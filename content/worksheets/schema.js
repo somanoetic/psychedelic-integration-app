@@ -50,6 +50,14 @@
  *                                    the low end, e.g. "Exhausted".
  * @property {string} [maxLabel]      For kind='scale'. Short word printed at
  *                                    the high end, e.g. "Energized".
+ * @property {boolean} [drawColumn]   Print-only. Render an empty bordered
+ *                                    sketch box beside this field's writing
+ *                                    area (the source journal's "Write | Draw"
+ *                                    two-column table, pages 7 & 12). The box
+ *                                    is for hand-drawing on the printed page;
+ *                                    its ink is captured as part of the scan
+ *                                    image. No in-app drawing surface. Only
+ *                                    meaningful for kind='free-text'.
  * @property {string} [hint]          Optional small italic helper text under
  *                                    the label on the printed page.
  * @property {string} [promptForClaude]
@@ -149,6 +157,12 @@ export function validateWorksheet(w) {
       }
       if (f.kind === 'free-text' && f.lines != null && (!Number.isInteger(f.lines) || f.lines < 1)) {
         errors.push(`fields[${i}].lines must be a positive integer`);
+      }
+      if (f.drawColumn != null && typeof f.drawColumn !== 'boolean') {
+        errors.push(`fields[${i}].drawColumn must be a boolean`);
+      }
+      if (f.drawColumn && f.kind !== 'free-text') {
+        errors.push(`fields[${i}].drawColumn is only supported on kind='free-text'`);
       }
       if (f.kind === 'list' && f.maxItems != null && (!Number.isInteger(f.maxItems) || f.maxItems < 1)) {
         errors.push(`fields[${i}].maxItems must be a positive integer`);

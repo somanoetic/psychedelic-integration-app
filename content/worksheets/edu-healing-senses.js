@@ -17,7 +17,7 @@ const EDU_COLLECTION = {
 export default validateWorksheet({
   id: 'edu-healing-senses',
   version: 1,
-  title: 'What does healing feel like?',
+  title: 'How Your Nervous System Heals',
   subtitle: 'Imagine healing through your senses',
   description:
     'Four short reflections — what healing looks like, feels like, sounds ' +
@@ -46,7 +46,7 @@ export default validateWorksheet({
     },
     {
       id: 'where-healing-happens',
-      label: 'Where does healing happen — and who is your support?',
+      label: 'Where does healing happen and who is your support?',
       kind: 'free-text',
       lines: 4,
     },

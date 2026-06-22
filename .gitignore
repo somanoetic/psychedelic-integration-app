@@ -58,6 +58,7 @@ temp/
 tmp/
 
 # Generated data
+out/
 scripts/chunked_documents.jsonl
 scripts/glimmer-images/staging-faces/
 scripts/glimmer-images/staging-nature/

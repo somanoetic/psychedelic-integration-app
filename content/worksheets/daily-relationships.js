@@ -28,7 +28,7 @@ export default validateWorksheet({
   fields: [
     {
       id: 'most-connection-type',
-      label: 'Relationships that brought the most connection — Type',
+      label: 'Relationships that brought me the most connection — Type',
       kind: 'free-text',
       lines: 1,
       hint: 'Family, friend, partner, coworker, pet, etc.',
