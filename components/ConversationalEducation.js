@@ -47,6 +47,7 @@ const TOPIC_ICONS = {
   attachment_styles: icons.community,
   emotional_learning_change: icons.integrationCycle,
   mind_brain_relationships: icons.interconnectedness,
+  neurobiology_of_connection: icons.compassion,
   harm_reduction: icons.guidance,
   contemplative_practices: icons.meditate,
   psychedelic_preparation: icons.newBeginning,
@@ -96,7 +97,7 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics, i
       color: colors.error,
       iconImg: icons.lungs,
       description: 'How your body and brain process experiences and support healing',
-      topics: ['somatic_awareness', 'brain_and_healing', 'nervous_system_safety', 'trauma_understanding', 'mind_body_pain', 'attachment_styles', 'emotional_learning_change', 'mind_brain_relationships']
+      topics: ['somatic_awareness', 'brain_and_healing', 'nervous_system_safety', 'trauma_understanding', 'mind_body_pain', 'attachment_styles', 'neurobiology_of_connection', 'emotional_learning_change', 'mind_brain_relationships']
     },
     {
       id: 'tools_and_practices',
@@ -242,6 +243,12 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics, i
     mind_brain_relationships: {
       title: 'Mind, Brain & Relationships',
       description: 'Dan Siegel\'s interpersonal neurobiology — integration and connection',
+      time: '12 minutes',
+      color: colors.error
+    },
+    neurobiology_of_connection: {
+      title: 'The Neurobiology of Connection',
+      description: 'Why other people calm us, and how safety travels between nervous systems',
       time: '12 minutes',
       color: colors.error
     },
@@ -420,6 +427,7 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics, i
         {renderTopicCard('trauma_understanding')}
         {renderTopicCard('mind_body_pain')}
         {renderTopicCard('attachment_styles')}
+        {renderTopicCard('neurobiology_of_connection')}
         {renderTopicCard('emotional_learning_change')}
         {renderTopicCard('mind_brain_relationships')}
       </View>

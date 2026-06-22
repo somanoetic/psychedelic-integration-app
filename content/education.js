@@ -1971,6 +1971,96 @@ This is why putting a psychedelic experience into words — naming what moved th
   },
 
   {
+    id: 'neurobiology_of_connection',
+    title: 'The Neurobiology of Connection',
+    description: 'Why other people calm us, how safety travels between nervous systems, and the biology of belonging',
+    emoji: '🫶',
+    estimatedTime: '12 minutes',
+    content: [
+      {
+        title: 'Connection Isn\'t Optional — It\'s Biology',
+        text: `We tend to think of needing other people as a soft thing — nice, but not essential. Your nervous system disagrees.
+
+The autonomic nervous system is, at its core, a relational system. It evolved not just to keep you alive but to keep you connected, because for a mammal, connection *is* a survival strategy. Stephen Porges called the newest branch of this system the "social engagement system" — a dedicated piece of wiring whose job is to help you bond, soothe, and be soothed.
+
+The stakes are physical, not just emotional. Chronic loneliness and isolation raise the risk of cardiovascular disease, inflammation, depression, and early death at levels researchers compare to smoking. Social experience even reaches into gene expression — the field of human social genomics shows that isolation and belonging change which of your genes are switched on, shaping immune function and inflammation. Connection, in other words, is written into the body all the way down.`
+      },
+      {
+        title: 'The Face-Heart Connection',
+        text: `Here's the elegant part. The same nerve pathway that calms your heart (the ventral branch of the vagus nerve) is wired together with the muscles of your face, your voice, your eyes, and even the tiny muscles in your middle ear that tune you to the human voice.
+
+Porges named this the "face-heart connection." It means your inner state and your outer signals are one circuit. When you feel safe, it shows — your face softens, your voice warms and gains melody (what's called prosody), your gaze steadies. And it runs the other way too: when you take in a warm face and a gentle voice, that circuit helps settle *your* heart.
+
+This is why a calm voice can reach you when words can't, and why a flat, expressionless face feels subtly unsafe. You're not imagining it — you're reading someone's nervous system directly, through their face and voice.`
+      },
+      {
+        title: 'Neuroception: Reading Safety in Each Other',
+        text: `Underneath all of this runs neuroception — your body's around-the-clock, below-awareness scan for safety or danger. (If you've read *Your Nervous System & Safety*, you've met it.) What's worth drawing out here is how *relational* that scan is.
+
+Neuroception listens to three streams at once: what's happening inside you (heart, breath, gut), what's around you (sound, space, light), and — crucially — what's passing *between* you and other people: their facial expression, tone, eye contact, the distance they keep, whether their movements are smooth or sharp.
+
+One vivid image for this comes from the work of Natureza Gabriel, who extends polyvagal ideas: we're like a snail that withdraws into its shell at a cue of threat and extends out from it when it senses enough safety to be vulnerable. Connection is the nervous system extending out. And because this happens automatically, feeling unsafe with someone — or oddly safe — isn't a verdict you chose. It's neuroception doing its job, often using old information.`
+      },
+      {
+        title: 'Co-Regulation: How Safety Travels Between Bodies',
+        text: `Now the heart of it. When a calm, present person is with you, your nervous systems begin to sync — heart rhythms, breathing, even neural activity start to entrain. Researchers call this physiological synchrony, and it's the mechanism behind something you've felt your whole life: a steady person can steady you.
+
+This is co-regulation, and the order matters. We don't start life able to self-soothe — we *borrow* a caregiver's regulated state until our own develops. As Deb Dana puts it, "the ability to self-regulate is built on ongoing experiences of co-regulation." That borrowing never fully ends. Reaching for a regulated, trusted person when you're struggling isn't dependence or weakness — it's the system working exactly as designed.
+
+There's chemistry under it: safe connection releases oxytocin and vasopressin, the molecules of bonding and trust, which let us be physically close and still without alarm. The vagus has even been nicknamed the "compassion nerve," because the same ventral state that makes you feel safe is the one that makes you feel *for* others.`
+      },
+      {
+        title: 'States Blend: Play, Joy, and Safe Stillness',
+        text: `The familiar map — safe, mobilized, shutdown — is the foundation, but real connection lives in the blends. Safety doesn't mean low energy; it means energy held inside safety.
+
+When your ventral safety mixes with a dose of sympathetic activation, you get **play and joy** — laughter, flirting, dancing, sport, creative flow. The energy is high, but because connection stays online, it's exhilarating rather than threatening. (Natureza Gabriel notes that a boxer who can suddenly hear their coach mid-fight has kept their connection system online under huge activation — that's the blend at its edge.)
+
+When ventral safety mixes with the deep stillness of the dorsal branch — *without* fear — you get **intimacy, rest, and union**: being held, deep meditation, the quiet closeness where boundaries soften and you can be still with another person without bracing. Porges calls this "immobilization without fear." Both of these — play and safe stillness — are connection. Healing isn't reaching one perfect calm state; it's regaining access to the whole menu, anchored in safety.`
+      },
+      {
+        title: 'Rupture, Repair, and Why It Builds Trust',
+        text: `Good connection is not seamless connection. Decades of attachment research found something freeing: attuned caregivers are "in sync" with a child only about a third of the time. What distinguishes secure bonds isn't the absence of misattunement — it's *repair*. The disconnect happens, gets noticed, and connection is restored.
+
+Each repair teaches the nervous system something it can't learn any other way: *we can break and come back*. That lesson is what lets you risk closeness at all. Avoiding all conflict doesn't build trust; reliably repairing after rupture does.
+
+So when you feel a snag with someone who matters — the missed cue, the small sting — that moment isn't the failure. It's the doorway. Naming it ("I think we got out of sync there") and turning back toward each other is how bonds actually deepen.`
+      },
+      {
+        title: 'Why This Matters for Integration',
+        text: `Psychedelic and other non-ordinary experiences often crack open a profound felt sense of connection — to others, to the living world, to something larger. That's not a side effect to file away; it's data about what your nervous system is capable of feeling.
+
+Integration is partly the work of building a life where that felt connection has somewhere to land — relationships and rituals that keep nudging you toward ventral safety. A flood of insight rarely reorganizes a nervous system on its own. Safe, repeated, attuned connection does.
+
+This article is the reading. The doing is your turn — and the in-app **Personal Connection Plan** is a gentle place to start mapping where connection already lives in your life, and where you'd like to grow it.`
+      }
+    ],
+    keyTakeaways: [
+      'Connection is a biological need, not a luxury — isolation harms the body the way major health risks do',
+      'The face-heart connection links your calm to your face, voice, and eyes — so safety is something we literally read in each other',
+      'Co-regulation comes first: we borrow others\' steadiness before we can self-soothe, and that never fully stops',
+      'Safety isn\'t low energy — it blends with activation into play and joy, and with stillness into rest and intimacy',
+      'Rupture is normal; repair is what builds trust — bonds deepen by reconnecting, not by never disconnecting'
+    ],
+    tryThis: {
+      title: 'Borrow a Calm Nervous System',
+      duration: '2–3 minutes',
+      intro: 'A short co-regulation practice you can do with a real person nearby — or with one you carry inside.',
+      steps: [
+        'Bring to mind (or sit near) someone whose presence settles you — a person, or even a pet.',
+        'Picture their face and the sound of their voice. Let your own face soften, and your shoulders drop a little.',
+        'Slow your out-breath, making the exhale a touch longer than the inhale, as if you were being breathed with.',
+        'Silently let yourself receive their steadiness: "I can borrow this calm right now."',
+        'Notice, without forcing anything, whether your body settles even slightly toward safety.'
+      ]
+    },
+    relatedExercises: ['PV-001', 'PV-004', 'GR-003'],
+    sources: [
+      'Drawn from: Stephen Porges (Polyvagal Theory: A Primer), Deb Dana (Anchored, Polyvagal Exercises for Safety and Connection), Natureza Gabriel / Hearth Science (Autonomic Spectrum), Daniel Siegel (Interpersonal Neurobiology), and Bruce Perry & Maia Szalavitz (Born for Love).'
+    ],
+    seeAlso: ['nervous_system_safety', 'attachment_styles', 'mind_brain_relationships']
+  },
+
+  {
     id: 'harm_reduction',
     title: 'Harm Reduction & Safety',
     description: 'Practical safety knowledge for responsible psychedelic use',
