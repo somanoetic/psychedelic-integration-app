@@ -41,6 +41,27 @@ const { renderProsePageHtml } = require(path.join(ROOT, 'lib/prosePdfService.js'
 const prose = (id) =>
   require(path.join(ROOT, `content/journal-prose/${id}.js`)).default;
 
+// The 5 daily worksheet pages, in order. Repeated per day in the full book.
+const DAILY_PAGES = [
+  'daily-morning-checkin',
+  'daily-life-experience',
+  'daily-relationships',
+  'daily-emotional-physical',
+  'daily-self-care-evening',
+];
+
+// Expand the daily set across `days` days. Each entry carries a `day` number
+// so the renderer can stamp "Day N" on the page.
+function dailyCheckInDays(days) {
+  const out = [];
+  for (let day = 1; day <= days; day++) {
+    for (const id of DAILY_PAGES) {
+      out.push({ type: 'worksheet', id, day });
+    }
+  }
+  return out;
+}
+
 // Book order. Each entry is a page to render. type 'prose' | 'worksheet'.
 // MINI = a representative slice for style review.
 const SEQUENCE = MINI
@@ -76,12 +97,10 @@ const SEQUENCE = MINI
       { type: 'worksheet', id: 'baseline-coping-strategies' },
       { type: 'worksheet', id: 'baseline-relationship-patterns' },
       { type: 'prose', file: 'p19-instructions-for-use' },
-      // --- Daily Check-In (one copy of the 5-page template) ---
-      { type: 'worksheet', id: 'daily-morning-checkin' },
-      { type: 'worksheet', id: 'daily-life-experience' },
-      { type: 'worksheet', id: 'daily-relationships' },
-      { type: 'worksheet', id: 'daily-emotional-physical' },
-      { type: 'worksheet', id: 'daily-self-care-evening' },
+      // --- Daily Check-In: the 5-page template repeated for 14 days, each
+      //     instance stamped "Day N" so the printed book matches the source
+      //     journal (source pages 20-89 = 14 days x 5 pages). ---
+      ...dailyCheckInDays(14),
       // --- Session Reflections ---
       { type: 'worksheet', id: 'post-session-integration' },
       // --- Setting Intentions back-matter ---
@@ -95,13 +114,26 @@ const SEQUENCE = MINI
 fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(OUT, { recursive: true });
 
+// Return a render-time copy of a worksheet with "Day N" stamped into its
+// subtitle. Does not mutate the config; the day label is a master-only
+// decoration so the printed daily pages are unambiguous.
+function withDayLabel(worksheet, day) {
+  if (!day) return worksheet;
+  const dayText = `Day ${day}`;
+  return {
+    ...worksheet,
+    subtitle: worksheet.subtitle ? `${dayText} · ${worksheet.subtitle}` : dayText,
+  };
+}
+
 const pdfPaths = [];
 SEQUENCE.forEach((entry, i) => {
-  const idx = String(i + 1).padStart(2, '0');
-  const name = entry.type === 'prose' ? entry.file : `ws-${entry.id}`;
+  const idx = String(i + 1).padStart(3, '0');
+  const daySuffix = entry.day ? `-d${String(entry.day).padStart(2, '0')}` : '';
+  const name = entry.type === 'prose' ? entry.file : `ws-${entry.id}${daySuffix}`;
   const html = entry.type === 'prose'
     ? renderProsePageHtml(prose(entry.file))
-    : renderWorksheetHtml(getWorksheet(entry.id));
+    : renderWorksheetHtml(withDayLabel(getWorksheet(entry.id), entry.day));
   const htmlPath = path.join(OUT, `${idx}-${name}.html`);
   const pdfPath = path.join(OUT, `${idx}-${name}.pdf`);
   fs.writeFileSync(htmlPath, html, 'utf8');
