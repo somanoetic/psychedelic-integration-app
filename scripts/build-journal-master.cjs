@@ -52,10 +52,44 @@ const SEQUENCE = MINI
       { type: 'prose', file: 'p92-sample-intentions' },
     ]
   : [
-      // Full sequence is filled in once all ~18 prose pages are authored.
+      // Full book in source-page order: prose chapters interleaved with the
+      // worksheet pages that sit between them.
+      // --- Front matter / teaching chapters ---
       { type: 'prose', file: 'p01-dear-reader' },
+      { type: 'prose', file: 'p02-understanding-healing-system-polyvagal' },
+      { type: 'prose', file: 'p03-window-of-tolerance' },
+      { type: 'worksheet', id: 'edu-patterns-resonance' },        // p.3 prompt
+      { type: 'prose', file: 'p04-support-nervous-system-daily' },
+      { type: 'prose', file: 'p06-what-happens-during-ketamine-sessions' },
+      { type: 'worksheet', id: 'edu-healing-senses' },            // p.5
+      { type: 'worksheet', id: 'edu-unique-ns' },                 // p.7
       { type: 'prose', file: 'p08-connection-to-healing' },
+      { type: 'prose', file: 'p09-why-integration-is-essential' },
+      { type: 'prose', file: 'p10-integration-as-relationship' },
+      { type: 'prose', file: 'p11-the-immersion-effect' },
+      { type: 'worksheet', id: 'edu-multisensory-integration' },  // p.12
+      { type: 'prose', file: 'p13-neuroscience-compounding' },
+      { type: 'worksheet', id: 'edu-pre-treatment-letter' },      // p.14
+      // --- Pre-Treatment Baseline Log ---
+      { type: 'worksheet', id: 'baseline-life-now' },
+      { type: 'worksheet', id: 'baseline-life-areas' },
+      { type: 'worksheet', id: 'baseline-coping-strategies' },
+      { type: 'worksheet', id: 'baseline-relationship-patterns' },
+      { type: 'prose', file: 'p19-instructions-for-use' },
+      // --- Daily Check-In (one copy of the 5-page template) ---
+      { type: 'worksheet', id: 'daily-morning-checkin' },
+      { type: 'worksheet', id: 'daily-life-experience' },
+      { type: 'worksheet', id: 'daily-relationships' },
+      { type: 'worksheet', id: 'daily-emotional-physical' },
+      { type: 'worksheet', id: 'daily-self-care-evening' },
+      // --- Session Reflections ---
+      { type: 'worksheet', id: 'post-session-integration' },
+      // --- Setting Intentions back-matter ---
+      { type: 'prose', file: 'p90-setting-intentions-goals-vs-intentions' },
+      { type: 'prose', file: 'p91-art-of-setting-healing-intentions' },
       { type: 'prose', file: 'p92-sample-intentions' },
+      { type: 'prose', file: 'p93-how-to-connect-with-your-intentions' },
+      { type: 'prose', file: 'p94-transforming-experience-into-wisdom' },
     ];
 
 fs.rmSync(OUT, { recursive: true, force: true });
