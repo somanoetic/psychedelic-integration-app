@@ -1,8 +1,13 @@
 /**
- * Philosophical Talkthroughs Hub Screen
+ * Thought Experiments Hub Screen
  *
- * Landing screen for 5 philosophical explorations.
- * Pattern follows InnerWorkScreen.js — hub with option cards.
+ * Landing screen for the scenario-based philosophical thought experiments
+ * (Nozick's Experience Machine, Hobbes's Ship of Theseus, etc.). Mirrors
+ * PhilosophicalTalkthroughsHubScreen and reuses the same PhilosophicalTalkthrough
+ * conversation screen — topics are looked up by id via getTopicById.
+ *
+ * Source: Peg Tittle, "What If... Collected Thought Experiments in
+ * Philosophy" (Routledge, 2016).
  */
 
 import React from 'react';
@@ -19,9 +24,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { ArrowLeft, ChevronRight } from 'lucide-react-native';
 import { colors, gradients, spacing, borderRadius, shadows, typography } from '../theme/colors';
 import { icons } from '../lib/uiIcons';
-import { talkthroughTopics } from '../content/philosophicalTalkthroughs';
+import { thoughtExperiments } from '../content/philosophicalTalkthroughs';
 
-const PhilosophicalTalkthroughsHubScreen = ({ navigation }) => {
+const ThoughtExperimentsHubScreen = ({ navigation }) => {
   return (
     <LinearGradient
       colors={gradients.standard}
@@ -47,16 +52,16 @@ const PhilosophicalTalkthroughsHubScreen = ({ navigation }) => {
 
           {/* Hero */}
           <View style={styles.hero}>
-            <Image source={icons.philosophical} style={styles.heroIcon} />
-            <Text style={styles.heroTitle}>Philosophical Talkthroughs</Text>
+            <Image source={icons.puzzle} style={styles.heroIcon} />
+            <Text style={styles.heroTitle}>Thought Experiments</Text>
             <Text style={styles.heroSubtitle}>
-              Guided contemplative explorations of the big questions. No right answers — just honest attention.
+              Classic puzzles from philosophy, turned into guided reflections. They have no right answer — only what they stir up in you.
             </Text>
           </View>
 
           {/* Topic Cards */}
           <View style={styles.optionsContainer}>
-            {talkthroughTopics.map((topic) => (
+            {thoughtExperiments.map((topic) => (
               <TouchableOpacity
                 key={topic.id}
                 style={styles.optionCard}
@@ -71,8 +76,11 @@ const PhilosophicalTalkthroughsHubScreen = ({ navigation }) => {
                   )}
                   <View style={styles.optionText}>
                     <Text style={styles.optionTitle}>{topic.title}</Text>
+                    {topic.subtitle ? (
+                      <Text style={styles.optionSubtitle}>{topic.subtitle}</Text>
+                    ) : null}
                     <Text style={styles.optionDescription}>{topic.description}</Text>
-                    <Text style={styles.optionTime}>{'\u23F1\uFE0F'} {topic.estimatedTime}</Text>
+                    <Text style={styles.optionTime}>{'⏱️'} {topic.estimatedTime}</Text>
                   </View>
                 </View>
                 <ChevronRight size={24} color={colors.textSecondary} strokeWidth={2} />
@@ -80,31 +88,18 @@ const PhilosophicalTalkthroughsHubScreen = ({ navigation }) => {
             ))}
           </View>
 
-          {/* Thought Experiments entry point */}
-          <TouchableOpacity
-            style={styles.crossLinkCard}
-            onPress={() => navigation.navigate('ThoughtExperiments')}
-            activeOpacity={0.7}
-          >
-            <View style={styles.optionLeft}>
-              <Image source={icons.puzzle} style={styles.crossLinkIcon} />
-              <View style={styles.optionText}>
-                <Text style={styles.optionTitle}>Thought Experiments</Text>
-                <Text style={styles.optionDescription}>
-                  Classic philosophical puzzles — the Experience Machine, the Ship of Theseus, the Teletransporter — as guided reflections.
-                </Text>
-              </View>
-            </View>
-            <ChevronRight size={24} color={colors.textSecondary} strokeWidth={2} />
-          </TouchableOpacity>
-
           {/* Tip */}
           <View style={styles.tipBox}>
-            <Text style={styles.tipTitle}>{'\u{1F56F}\uFE0F'} Before You Begin</Text>
+            <Text style={styles.tipTitle}>{'\u{1F4A1}'} How to use these</Text>
             <Text style={styles.tipText}>
-              These are not lessons. They are invitations to look at what you already know but may not have words for yet. Go slowly. Let the questions work on you.
+              Read the scenario, notice your first honest reaction, then let the conversation open it up. These pair especially well with integration — many of them ask the same questions an expanded state can raise about self, reality, and meaning.
             </Text>
           </View>
+
+          {/* Attribution */}
+          <Text style={styles.attribution}>
+            Adapted from Peg Tittle, “What If… Collected Thought Experiments in Philosophy” (Routledge, 2016).
+          </Text>
         </ScrollView>
       </SafeAreaView>
     </LinearGradient>
@@ -198,6 +193,12 @@ const styles = StyleSheet.create({
     color: colors.text,
     marginBottom: 2,
   },
+  optionSubtitle: {
+    fontSize: 13,
+    color: colors.primary,
+    fontWeight: '500',
+    marginBottom: 4,
+  },
   optionDescription: {
     fontSize: 14,
     color: colors.textSecondary,
@@ -208,29 +209,13 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.textLight,
   },
-  crossLinkCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.surface,
-    padding: spacing.md,
-    borderRadius: borderRadius.lg,
-    marginBottom: spacing.lg,
-    borderWidth: 1,
-    borderColor: colors.primary,
-    ...shadows.soft,
-  },
-  crossLinkIcon: {
-    width: 112,
-    height: 112,
-    resizeMode: 'contain',
-    marginRight: spacing.md,
-  },
   tipBox: {
     backgroundColor: 'rgba(255, 255, 255, 0.7)',
     padding: spacing.md,
     borderRadius: borderRadius.lg,
     borderLeftWidth: 4,
     borderLeftColor: colors.primary,
+    marginBottom: spacing.md,
   },
   tipTitle: {
     fontSize: 15,
@@ -243,6 +228,13 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     lineHeight: 20,
   },
+  attribution: {
+    fontSize: 12,
+    color: colors.textLight,
+    fontStyle: 'italic',
+    textAlign: 'center',
+    lineHeight: 18,
+  },
 });
 
-export default PhilosophicalTalkthroughsHubScreen;
+export default ThoughtExperimentsHubScreen;
