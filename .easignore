@@ -31,17 +31,33 @@ ACCESSING_TRAINING_SCENARIOS.md
 # PDFs and reference materials
 *.pdf
 
-# Design files (exclude source files but keep required assets)
-design/*.mp4
-design/*.mov
-design/*.pdf
-design/figma-starter-kit.json
-design/COMPONENT_REFERENCE.md
-design/HOW_TO_USE_FIGMA_STARTER.md
-design/INFINITE_KNOT_CANVA_GUIDE.md
-design/huxley-final-basic.png
-design/splash4-canva/
+# Design files: exclude the whole source-art tree (303 MB of Figma exports,
+# icon working files, etc.) EXCEPT the two splash assets AnimatedSplash.js
+# require()s at runtime. .easignore supports negation with "!".
+design/*
+!design/splash3-canva.json
+!design/splash3-canva-static.png
 IFS-resources/
+
+# --- Heavy dirs NOT needed to build the app ---
+# IMPORTANT: when .easignore exists it REPLACES .gitignore for the upload,
+# so gitignored heavy dirs must be re-listed here or they get uploaded.
+knowledge-base/
+dist/
+out/
+coverage/
+.venv/
+scripts/
+marketing/
+mockups/
+__tests__/
+.expo/
+web-build/
+.full-stack-feature/
+
+# Python bytecode
+__pycache__/
+*.pyc
 
 # Debug and test files (only root-level test files, not screens/)
 debug/
