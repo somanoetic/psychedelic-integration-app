@@ -68,6 +68,7 @@ import PracticeScreen from './screens/PracticeScreen';
 import ActiveImaginationScreen from './screens/ActiveImaginationScreen';
 import PhilosophicalTalkthroughsHubScreen from './screens/PhilosophicalTalkthroughsHubScreen';
 import PhilosophicalTalkthroughScreen from './screens/PhilosophicalTalkthroughScreen';
+import ThoughtExperimentsHubScreen from './screens/ThoughtExperimentsHubScreen';
 import PrivacyPolicyScreen from './screens/PrivacyPolicyScreen';
 import TermsOfServiceScreen from './screens/TermsOfServiceScreen';
 import SettingsScreen from './screens/SettingsScreen';
@@ -103,6 +104,8 @@ import IFSPartsWorkChatWithContext from './enhanced-components/IFSPartsWorkChatW
 import GlimmerSwiper from './components/GlimmerSwiper';
 import TriggerTracker from './components/TriggerTracker';
 import GlimmerTracker from './components/GlimmerTracker';
+import CognitiveDistortionTracker from './components/CognitiveDistortionTracker';
+import CravingTracker from './components/CravingTracker';
 import NervousSystemCheckin from './components/NervousSystemCheckin';
 import PartsCheckin from './components/PartsCheckin';
 import IFSPartsInventory from './components/IFSPartsInventory';
@@ -675,6 +678,22 @@ function App() {
                 }}
               />
               <Stack.Screen
+                name="CognitiveDistortionTracker"
+                component={CognitiveDistortionTracker}
+                options={{
+                  headerShown: false,
+                  title: 'Thought Record'
+                }}
+              />
+              <Stack.Screen
+                name="CravingTracker"
+                component={CravingTracker}
+                options={{
+                  headerShown: false,
+                  title: 'Log an Urge'
+                }}
+              />
+              <Stack.Screen
                 name="NervousSystemCheckin"
                 component={NervousSystemCheckin}
                 options={{
@@ -784,6 +803,14 @@ function App() {
                 options={{
                   headerShown: false,
                   title: 'Philosophical Talkthrough'
+                }}
+              />
+              <Stack.Screen
+                name="ThoughtExperiments"
+                component={ThoughtExperimentsHubScreen}
+                options={{
+                  headerShown: false,
+                  title: 'Thought Experiments'
                 }}
               />
               <Stack.Screen

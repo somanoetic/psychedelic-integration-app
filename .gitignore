@@ -42,6 +42,10 @@ ios/sentry.properties
 # typescript
 *.tsbuildinfo
 
+# Python bytecode cache
+__pycache__/
+*.pyc
+
 app-example
 
 # Large files - PDFs and media stored externally
