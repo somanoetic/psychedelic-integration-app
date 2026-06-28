@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -7,15 +7,15 @@ import {
   Dimensions,
   Platform,
   Image,
+  BackHandler,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   ArrowRight,
   BookOpen,
   Check,
   Clock,
-  Lightbulb,
-  MessageCircle,
   Play,
   Sparkles,
   Target,
@@ -30,13 +30,13 @@ import ConversationalRegulatingResources from '../components/ConversationalRegul
 import IFSPartsWorkChatWithContext from '../enhanced-components/IFSPartsWorkChatWithContext';
 import IFSPartsEducationWidget from '../components/IFSPartsEducationWidget';
 import GroundingExercisesWidget from '../components/GroundingExercisesWidget';
-import { educationTopics, getTopicById } from '../content/education';
+import { getTopicById } from '../content/education';
 import { getExerciseById } from '../content/exercises-comprehensive';
 import FormattedText from '../components/FormattedText';
 import LearnInteractive from '../components/LearnInteractive';
 import { icons } from '../lib/uiIcons';
 
-// Mirror ConversationalEducation.js — semantic topic ID -> illustrated PNG icon
+// Mirror ConversationalEducation.js â€” semantic topic ID -> illustrated PNG icon
 const TOPIC_ICONS = {
   nervous_system: icons.dna,
   ifs_basics: icons.group,
@@ -67,7 +67,6 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 const EducationScreen = ({ navigation, route }) => {
   const [selectedTopic, setSelectedTopic] = useState(null);
-  const [showConversational, setShowConversational] = useState(true);
   // Remember which guided category the user was in (e.g. 'about_myself') so
   // that backing out of a topic/article returns them to that sub-page rather
   // than the top-level Learn greeting.
@@ -94,6 +93,31 @@ const EducationScreen = ({ navigation, route }) => {
     setSelectedTopic(topicId);
   };
 
+  // Make the Android system back button (and gesture) unwind the Learn hub's
+  // internal levels — topic/article -> category sub-page -> greeting — instead
+  // of popping the whole stack screen straight back to Home. The in-app "Back"
+  // chrome already does this; this mirrors that for hardware/gesture back.
+  useFocusEffect(
+    useCallback(() => {
+      const onBackPress = () => {
+        if (selectedTopic) {
+          // Backing out of an open article/widget returns to its category page.
+          handleEducationComplete();
+          return true;
+        }
+        if (eduStep !== 'greeting') {
+          // Backing out of a category sub-page returns to the greeting.
+          setEduStep('greeting');
+          return true;
+        }
+        return false; // At the top level — let the system pop back to Home.
+      };
+
+      const sub = BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      return () => sub.remove();
+    }, [selectedTopic, eduStep, returnTo])
+  );
+
   const handleEducationComplete = () => {
     setSelectedTopic(null);
     if (returnTo) {
@@ -101,199 +125,6 @@ const EducationScreen = ({ navigation, route }) => {
       setReturnTo(null);
       navigation.navigate(dest);
     }
-  };
-
-  const renderEducationHub = () => {
-    return (
-      <LinearGradient colors={gradients.standard} start={{ x: 1.0, y: 0.0 }} end={{ x: 0.0, y: 1.0 }} style={{ flex: 1 }}>
-      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-        <ScrollView contentContainerStyle={styles.content}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.headerTop}>
-            <View style={styles.headerTextContainer}>
-              <Text style={styles.headerTitle}>Integration Education</Text>
-              <Text style={styles.headerSubtitle}>
-                Learn the foundations of psychedelic integration
-              </Text>
-            </View>
-            <TouchableOpacity
-              style={styles.conversationalToggle}
-              onPress={() => setShowConversational(true)}
-            >
-              <MessageCircle size={24} color={colors.primary} strokeWidth={2} />
-              <Text style={styles.conversationalToggleText}>Guided</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* Quick Start */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>🚀 Quick Start</Text>
-          <TouchableOpacity
-            style={styles.quickStartCard}
-            onPress={() => handleTopicPress('nervous_system')}
-          >
-            <View style={styles.quickStartContent}>
-              <Text style={styles.quickStartEmoji}>🧠💚⚡🛡️</Text>
-              <Text style={styles.quickStartTitle}>Start Here: Nervous System Basics</Text>
-              <Text style={styles.quickStartDescription}>
-                Essential knowledge for understanding your states during integration
-              </Text>
-              <Text style={styles.quickStartTime}>5 minutes</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-
-        {/* IFS Parts Work Session */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>💬 Interactive Practices</Text>
-          <Text style={styles.sectionSubtitle}>
-            Guided sessions for deep inner work
-          </Text>
-
-          <TouchableOpacity
-            style={styles.ifsCard}
-            onPress={() => handleTopicPress('ifs_chat')}
-          >
-            <View style={styles.ifsContent}>
-              <Text style={styles.ifsEmoji}>💬</Text>
-              <View style={styles.ifsTextContainer}>
-                <Text style={styles.ifsTitle}>IFS Parts Work Session</Text>
-                <Text style={styles.ifsDescription}>
-                  Chat-based guidance through the Six F's to get to know one of your parts
-                </Text>
-                <View style={styles.ifsTimeRow}>
-                  <Clock size={14} color={colors.primary} strokeWidth={2} />
-                  <Text style={styles.ifsTime}>15-20 minutes • Interactive</Text>
-                </View>
-              </View>
-            </View>
-          </TouchableOpacity>
-        </View>
-
-        {/* Interactive Mapping Exercises */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>🗺️ Nervous System Mapping</Text>
-          <Text style={styles.sectionSubtitle}>
-            Build self-awareness through guided exercises
-          </Text>
-
-          <TouchableOpacity
-            style={styles.mappingCard}
-            onPress={() => handleTopicPress('polyvagal_mapping')}
-          >
-            <View style={styles.mappingContent}>
-              <Text style={styles.mappingEmoji}>🗺️</Text>
-              <View style={styles.mappingTextContainer}>
-                <Text style={styles.mappingTitle}>Map Your Nervous System</Text>
-                <Text style={styles.mappingDescription}>
-                  Identify what each state looks and feels like for you
-                </Text>
-                <View style={styles.mappingTimeRow}>
-                  <Clock size={14} color={colors.textLight} strokeWidth={2} />
-                  <Text style={styles.mappingTime}>10-15 minutes</Text>
-                </View>
-              </View>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.triggersCard}
-            onPress={() => handleTopicPress('triggers_glimmers')}
-          >
-            <View style={styles.mappingContent}>
-              <Text style={styles.mappingEmoji}>⚡✨</Text>
-              <View style={styles.mappingTextContainer}>
-                <Text style={styles.mappingTitle}>Triggers & Glimmers</Text>
-                <Text style={styles.mappingDescription}>
-                  Map what dysregulates you and what brings safety
-                </Text>
-                <View style={styles.mappingTimeRow}>
-                  <Clock size={14} color={colors.textLight} strokeWidth={2} />
-                  <Text style={styles.mappingTime}>10-12 minutes</Text>
-                </View>
-              </View>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.resourcesCard}
-            onPress={() => handleTopicPress('regulating_resources')}
-          >
-            <View style={styles.mappingContent}>
-              <Text style={styles.mappingEmoji}>🛠️</Text>
-              <View style={styles.mappingTextContainer}>
-                <Text style={styles.mappingTitle}>Regulating Resources</Text>
-                <Text style={styles.mappingDescription}>
-                  Identify what helps you regulate - alone and with others
-                </Text>
-                <View style={styles.mappingTimeRow}>
-                  <Clock size={14} color={colors.textLight} strokeWidth={2} />
-                  <Text style={styles.mappingTime}>8-10 minutes</Text>
-                </View>
-              </View>
-            </View>
-          </TouchableOpacity>
-        </View>
-
-
-        {/* All Topics */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>📚 All Topics</Text>
-          <View style={styles.topicsGrid}>
-            {educationTopics.map((topic) => (
-              <TouchableOpacity
-                key={topic.id}
-                style={styles.topicCard}
-                onPress={() => handleTopicPress(topic.id)}
-              >
-                {TOPIC_ICONS[topic.id] ? (
-                  <Image source={TOPIC_ICONS[topic.id]} style={styles.topicCardIcon} />
-                ) : (
-                  <BookOpen size={28} color={colors.primary} strokeWidth={1.5} />
-                )}
-                <Text style={styles.topicTitle}>{topic.title}</Text>
-                <Text style={styles.topicDescription}>{topic.description}</Text>
-                <Text style={styles.topicTime}>{topic.estimatedTime}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-
-        {/* Getting Started Tips */}
-        <View style={styles.section}>
-          <View style={styles.sectionTitleRow}>
-            <Lightbulb size={20} color={colors.primary} strokeWidth={2} />
-            <Text style={styles.sectionTitle}>Getting Started Tips</Text>
-          </View>
-          <View style={styles.tipsContainer}>
-            <View style={styles.tip}>
-              <Text style={styles.tipEmoji}>🎯</Text>
-              <Text style={styles.tipText}>
-                Start with nervous system basics - it's the foundation for everything else
-              </Text>
-            </View>
-            <View style={styles.tip}>
-              <View style={styles.tipIconWrap}>
-                <Clock size={20} color={colors.success} strokeWidth={2} />
-              </View>
-              <Text style={styles.tipText}>
-                Take your time - you can pause and resume any topic
-              </Text>
-            </View>
-            <View style={styles.tip}>
-              <Text style={styles.tipEmoji}>🧘</Text>
-              <Text style={styles.tipText}>
-                Practice the exercises - they'll help during actual integration sessions
-              </Text>
-            </View>
-          </View>
-        </View>
-      </ScrollView>
-      </SafeAreaView>
-      </LinearGradient>
-    );
   };
 
   const renderSelectedTopic = () => {
@@ -380,10 +211,10 @@ const EducationScreen = ({ navigation, route }) => {
           <TouchableOpacity onPress={handleEducationComplete}>
             <Text style={styles.backButton}>
               {returnTo === 'CurriculumTracker'
-                ? '← Back to Trails'
-                : showConversational && eduStep !== 'greeting'
-                ? '← Back'
-                : '← Back to Education'}
+                ? 'â† Back to Trails'
+                : eduStep !== 'greeting'
+                ? 'â† Back'
+                : 'â† Back to Education'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -419,14 +250,14 @@ const EducationScreen = ({ navigation, route }) => {
               </View>
               {topic.keyTakeaways.map((takeaway, index) => (
                 <View key={index} style={styles.takeawayItem}>
-                  <Text style={styles.takeawayBullet}>•</Text>
+                  <Text style={styles.takeawayBullet}>â€¢</Text>
                   <Text style={styles.takeawayText}>{takeaway}</Text>
                 </View>
               ))}
             </View>
           )}
 
-          {/* Try This — inline bespoke practice for this article */}
+          {/* Try This â€” inline bespoke practice for this article */}
           {topic.tryThis && (
             <View style={styles.tryThisContainer}>
               <View style={styles.tryThisTitleRow}>
@@ -435,7 +266,7 @@ const EducationScreen = ({ navigation, route }) => {
               </View>
               <Text style={styles.tryThisName}>
                 {topic.tryThis.title}
-                {topic.tryThis.duration ? `  ·  ${topic.tryThis.duration}` : ''}
+                {topic.tryThis.duration ? `  Â·  ${topic.tryThis.duration}` : ''}
               </Text>
               {topic.tryThis.intro ? (
                 <Text style={styles.tryThisIntro}>{topic.tryThis.intro}</Text>
@@ -449,12 +280,12 @@ const EducationScreen = ({ navigation, route }) => {
             </View>
           )}
 
-          {/* Interactive widgets — flashcards / scenario quizzes for this article */}
+          {/* Interactive widgets â€” flashcards / scenario quizzes for this article */}
           {topic.interactive && topic.interactive.length > 0 && (
             <LearnInteractive items={topic.interactive} />
           )}
 
-          {/* Practice these — tappable links to related interactive exercises */}
+          {/* Practice these â€” tappable links to related interactive exercises */}
           {topic.relatedExercises && topic.relatedExercises.length > 0 && (() => {
             const related = topic.relatedExercises
               .map((id) => getExerciseById(id))
@@ -482,7 +313,7 @@ const EducationScreen = ({ navigation, route }) => {
                       {(ex.duration || ex.steps?.length) ? (
                         <Text style={styles.relatedExMeta}>
                           {ex.duration ? `${ex.duration} min` : ''}
-                          {ex.duration && ex.steps?.length ? ' · ' : ''}
+                          {ex.duration && ex.steps?.length ? ' Â· ' : ''}
                           {ex.steps?.length ? `${ex.steps.length} steps` : ''}
                         </Text>
                       ) : null}
@@ -494,7 +325,7 @@ const EducationScreen = ({ navigation, route }) => {
             );
           })()}
 
-          {/* See Also — tappable cross-links to related topics */}
+          {/* See Also â€” tappable cross-links to related topics */}
           {topic.seeAlso && topic.seeAlso.length > 0 && (() => {
             const related = topic.seeAlso
               .map((id) => getTopicById(id))
@@ -552,23 +383,16 @@ const EducationScreen = ({ navigation, route }) => {
     return renderSelectedTopic();
   }
 
-  if (showConversational) {
-    return (
-      <ConversationalEducation
-        navigation={navigation}
-        initialStep={eduStep}
-        onStepChange={setEduStep}
-        onSelectTopic={(topicId) => {
-          handleTopicPress(topicId);
-        }}
-        onViewAllTopics={() => {
-          setShowConversational(false);
-        }}
-      />
-    );
-  }
-
-  return renderEducationHub();
+  return (
+    <ConversationalEducation
+      navigation={navigation}
+      initialStep={eduStep}
+      onStepChange={setEduStep}
+      onSelectTopic={(topicId) => {
+        handleTopicPress(topicId);
+      }}
+    />
+  );
 };
 
 const styles = {

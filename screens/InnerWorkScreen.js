@@ -79,7 +79,7 @@ const options = [
     id: 'attachment-reflection',
     title: 'Attachment Reflection',
     emoji: '🪢',
-    icon: null,
+    icon: icons.attachmentNest,
     lucideIcon: HeartHandshake,
     description: 'A guided reflection on your early relationships and how they shaped you',
     estimatedTime: '25-45 min',
