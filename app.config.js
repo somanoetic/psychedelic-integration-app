@@ -24,7 +24,7 @@ export default {
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": bundleId,
-      "buildNumber": "5",
+      "buildNumber": "6",
       "runtimeVersion": {
         "policy": "appVersion"
       },
