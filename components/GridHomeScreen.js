@@ -54,7 +54,7 @@ const uiIcons = {
   subParts: require('../assets/images/icons/roles.png'),
   subHabits: require('../assets/images/icons/checklist.png'),
   subDistortion: require('../assets/images/icons/thought_cloud.png'),
-  subCraving: require('../assets/images/icons/flow.png'),
+  subCraving: require('../assets/images/icons/urge.png'),
 };
 
 const NS_ICONS = {
