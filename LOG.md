@@ -1,5 +1,25 @@
 # Project Log
 
+## 2026-07-02 — Fixed the keyboard on the "Write Your Intention" screen
+
+On the Set Your Intention screen, when you chose to type your own intention (rather than have Huxley guide you), the keyboard misbehaved: on iPhone the whole text box got hidden behind the keyboard, and on Android the Save button stayed partly covered — then a white gap appeared above the keyboard and lingered after it closed. The root cause was two different keyboard helpers fighting each other and doubling up the spacing. We simplified it so each phone uses its own native keyboard handling, which removes the gap and keeps the text box and Save button visible above the keyboard. Not yet re-tested on a phone — please try tapping the box on your Android to confirm the gap is gone.
+
+## 2026-07-02 — Fixed the back arrow in Triggered Support
+
+A beta tester noticed that in the Triggered Support screen — the guided flow Huxley walks you through when you're activated — the back arrow jumped you all the way out to the Huxley home instead of stepping back one screen. So if you'd opened a grounding exercise, hitting back kicked you out of the whole thing rather than returning to the list of exercises. We made the back arrow (and the phone's own back button on Android) step back one level at a time, only leaving the screen once you're at the very start. The tester confirmed it now works as expected.
+
+## 2026-07-02 — Turned on spell check across the app
+
+Added spell check to the typing areas throughout the app — the chats, the journals, and all the check-in and tracker notes fields — while deliberately leaving it off where it would get in the way, like the login email and password boxes, dates, and number fields. For the journals specifically we switched off silent autocorrect so the app stops quietly changing your words behind your back; it will still flag misspellings for you to fix yourself. One honest limitation: the tap-the-red-underlined-word experience only shows up on iPhone/iPad — on Android the phone can't display those underlines inside the app, so there you'll just see the keyboard's own suggestion strip. None of this has been run on a phone yet.
+
+## 2026-07-02 — Fixed the IFS chat "Learn More" button & tightened how it guides parts work
+
+You spotted two things in the IFS chat. First, tapping the "learn more" button dropped you straight into a parts-work conversation ("there's a part of you that wants to know more...") instead of actually explaining anything — that was a wiring bug where the button's text was being sent to the AI as if you'd typed it. The intro now offers three clear choices: have it explain IFS and answer your questions, open the step-by-step learning modules, or dive straight into working with a part. Second, you felt it jumped too fast to "what does this part want?" — so we rewrote its guidance to walk through the six steps in order (find the part, turn toward it, get to know it, check how you feel toward it, befriend it, then explore its fears), with real guardrails against rushing and a new section on gently handling wounded/exiled parts and unburdening. It still uses judgment and stays conversational — just with better structure. We also checked the other guided chats for the same button bug and they're clean.
+
+## 2026-06-30 — Fixed the stale Urge icon on the home Track tile
+
+You noticed the new Urge tracker icon hadn't shown up on the home page's Track tile in the latest preview builds. It turned out the icon was correct everywhere except one spot: the home tile keeps its own separate list of little icons, and the Urge one there was still pointing at the old artwork while the dedicated tracker page had already been updated. We pointed it at the new icon so the two now match, and committed the fix.
+
 ## 2026-06-22 — Mined the "Neurobiology of Connection" book & wired it into Huxley
 
 Dug through the research library for material on how human connection works in the body, and built a new "Neurobiology of Connection" learning article from it (covering why other people calm us, co-regulation, and rupture-and-repair). Along the way we discovered that a whole book you'd added — Natureza Gabriel's "The Neurobiology of Connection" — had never been loaded into the app's knowledge base, so the Huxley guide couldn't draw on it; we cleaned it up and ingested it so Huxley can now reference it. We also renamed the "polyvagal" knowledge category to "autonomics" to fit this richer body of work, and cataloged the roughly eighty hands-on practices the book contains for a future exercise feature. Two small bugs got fixed too (the attachment-reflection guide had been running without its source material). One step is left for you: a quick database reindex in Supabase to make the new book search at full quality.
