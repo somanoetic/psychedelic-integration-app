@@ -1,8 +1,8 @@
 # Project Log
 
-## 2026-07-02 — Fixed the keyboard on the "Write Your Intention" screen
+## 2026-07-02 — Fixed the white keyboard gap on the Set Intention screen
 
-On the Set Your Intention screen, when you chose to type your own intention (rather than have Huxley guide you), the keyboard misbehaved: on iPhone the whole text box got hidden behind the keyboard, and on Android the Save button stayed partly covered — then a white gap appeared above the keyboard and lingered after it closed. The root cause was two different keyboard helpers fighting each other and doubling up the spacing. We simplified it so each phone uses its own native keyboard handling, which removes the gap and keeps the text box and Save button visible above the keyboard. Not yet re-tested on a phone — please try tapping the box on your Android to confirm the gap is gone.
+On the session-prep "Set Your Intention" screen — the one with the "AI-Guided Intention" button and the "write it yourself" box — tapping the text box on Android popped up the keyboard with an ugly white gap above it that stuck around and grew after the keyboard closed. The cause was the screen trying to make room for the keyboard a second time, on top of what Android already does automatically. We turned that double-handling off on Android (iPhone keeps its own handling, which was fine). Please tap the box on your Android to confirm the gap is gone. Note: this was a different screen than the two we'd edited earlier in the session — those earlier edits were on the separate AI-guided flow and are unverified.
 
 ## 2026-07-02 — Fixed the back arrow in Triggered Support
 
