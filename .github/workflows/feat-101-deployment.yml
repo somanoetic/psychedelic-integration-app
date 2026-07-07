@@ -21,10 +21,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Validate JSON configuration
+      - name: Validate configuration
         run: |
-          echo "Validating app.json..."
-          node -e "require('./app.json')"
+          echo "Validating app.config.js (syntax only — it's a dynamic ESM config that pulls in expo/dotenv at eval time)..."
+          node --check app.config.js
           echo "Validating eas.json..."
           node -e "require('./eas.json')"
 
