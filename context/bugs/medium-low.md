@@ -743,6 +743,19 @@ This rebuilds centroids on the real data AND right-sizes the lists in one shot. 
 
 **Remaining:** none for the index. (Note for future re-ingests: after a bulk load, run `REINDEX INDEX idx_document_chunks_embedding;` so centroids reflect the new data — captured in the migration comment.)
 
+**Follow-up (2026-07-08):** the note above was NOT honored after the 2026-06-22
+Neurobiology-of-Connection ingest (+~1,800 chunks). Device RAG logs showed
+`rpc=700-1187ms` (regressed from the sub-100ms of 6/16) on stale centroids built
+against the old 21,648 rows. Re-ran REINDEX + ANALYZE on the current **23,454**
+chunks; `suggested_lists = 153 ≈ 150`, so lists sizing stayed correct — only the
+centroids needed rebuilding. Reusable script committed at
+`supabase/maintenance/rag-reindex.sql`. **Caveat:** a device turn immediately after
+the reindex still showed `rpc≈3088ms` (0-result query) — so the reindex did not
+resolve the RPC latency alone; the dominant cost on **0-result category-filtered
+queries** appears to be the threshold-post-filter + LIMIT giving IVFFlat no early
+exit (it scans all `probes=10` lists finding nothing above threshold). Tracked in
+the `rag-speed-and-quality` handoff; separate from the index-tuning of this bug.
+
 ---
 
 **Current Count:** 5 P2 active (BUG-306, BUG-307, BUG-308, BUG-309, BUG-311), 2 P3 active (BUG-301, BUG-303)
