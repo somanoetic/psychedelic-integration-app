@@ -89,6 +89,51 @@ supabase functions deploy embeddings
 (No new secrets required. The Supabase CLI isn't installed in this workspace, so
 run this from a machine that has it / is linked to the project.)
 
+## 3. Per-stage timing in the search response (automatic once deployed)
+
+`handleSearch` now returns `timing: { authMs, authPath, embedMs, embedCacheHit,
+rpcMs }` in the JSON response, so a **device turn shows the real auth/embed/rpc
+split directly** without reading Supabase edge logs. The client surfaces it:
+- `lib/ragService.js` stashes it on `ragService.lastServerTiming` (+ `clientMs`).
+- `lib/huxleyService.js` appends it to the PERF line:
+  `[Huxley PERF] … rag=NNNms [auth=NN(local) embed=NNM rpc=NN net=NN] …`
+  (`net` = client wall-time − the three server stages = TLS/transfer.)
+
+The split only appears on a **live** search — a RAG client-cache hit, timeout, or
+empty-query turn shows `rag=…` with no bracket (reset to null each turn).
+
+## 4. Local JWT verification — the auth-hop removal (opt-in via a secret)
+
+Option A from `handoffs/rag-speed-and-quality.md`. The search RPC runs on the
+service-role client (bypasses RLS), so token validation is the **only** auth gate.
+It was a ~1s network `auth.getUser()` call. This project signs access tokens with
+**HS256** (the anon key JWT header is `{alg:'HS256'}`), so the function now verifies
+the signature **locally** with the project JWT secret (`verifyJwtLocal`, <1ms,
+Web Crypto HMAC) — checking signature, `exp`, and `role === 'authenticated'`.
+
+**Engaging it requires setting a secret.** The name is `RAG_JWT_SECRET` — NOT
+`SUPABASE_JWT_SECRET`: the Supabase CLI refuses to set any secret starting with
+`SUPABASE_` (that prefix is reserved for platform-injected vars). Until the secret
+is set, the function **safely falls back to the network `getUser()` path** — never
+runs unauthenticated.
+
+The value is the project's **legacy JWT secret**: Dashboard → Settings → JWT Keys →
+**"Legacy JWT Secret"** tab (this project still uses the legacy secret; do NOT click
+"Migrate JWT secret" — that switches to asymmetric signing keys, which are not
+HS256 and would need a different verify path). Then:
+```
+npx supabase secrets set RAG_JWT_SECRET=<legacy JWT secret>
+npx supabase functions deploy embeddings
+```
+Confirm which path ran on-device via the PERF split: `auth=NN(local)` = fast path
+engaged; `auth=NN(network)` = secret not set, still on the old hop.
+
+**Risk (why this is the higher-risk item):** local verify trusts a token until it
+**expires** (~1h) — a user signed out / disabled server-side still passes until
+`exp`. Acceptable here because the endpoint returns only published clinical corpus
+(no user data). If real-time revocation ever matters, unset `RAG_JWT_SECRET`
+to revert to `getUser()` with no code change.
+
 ## After deploying + scheduling — re-measure, then drop the timeout
 
 1. Run a multi-turn IFS session on device. Watch `[Huxley PERF] rag=` and the

@@ -5,6 +5,49 @@ merged + cron live. Remaining: RAG still ~1-1.5s (embed+auth hop, un-optimized);
 decide whether to chase it.** Investigation complete (see
 `context/features/rag-perf-investigation.md`). Owner: TBD.
 
+## Session update (2026-07-08c) — speed instrumentation + local-JWT-verify DRAFTED (uncommitted)
+
+Resume line: **Read handoffs/rag-speed-and-quality.md and continue.**
+
+Decision work on the deferred RAG *speed* item. **Nothing committed — awaiting
+on-device verification.** Two things done:
+
+**(1) Per-stage timing now surfaces on-device.** `handleSearch` returns
+`timing:{authMs,authPath,embedMs,embedCacheHit,rpcMs}`; `ragService` stashes it on
+`lastServerTiming`; the `[Huxley PERF]` line shows
+`rag=NNNms [auth=NN(local|network) embed=NNM rpc=NN net=NN]`. Only on a live
+(non-cached) turn. Files: `supabase/functions/embeddings/index.ts`,
+`lib/ragService.js`, `lib/huxleyService.js`.
+
+**Baseline measured via `search.py` (service-role → authMs=0, so this EXCLUDES the
+auth hop):** embed MISS ~850–975ms (one cold 2268ms); embed HIT (server cache)
+~430–690ms; warm floor (HIT, no auth) min 384 / median ~800ms, one 3937ms outlier.
+Reading: RPC is fast (~50–90ms per migration); ~800ms warm floor is mostly HTTP/TLS
+from a laptop; the OpenAI embed adds ~0.4–1.8s on a miss (high variance). The
+~1s `getUser()` hop is **fully additive** on the real app path and invisible here.
+
+**(2) Option A (local JWT verify) DRAFTED in `index.ts`.** Confirmed this project
+signs HS256 (anon-key JWT header `{alg:'HS256'}`), so `verifyJwtLocal()` does an
+HMAC-SHA256 check (Web Crypto, no dep) of signature + `exp` + `role==='authenticated'`
+in <1ms, replacing the network hop. Logic unit-tested (valid ✓; wrong-secret,
+tampered, expired, anon-role, alg:none all rejected ✓).
+- **Gated on a secret:** set `RAG_JWT_SECRET` (NOT `SUPABASE_JWT_SECRET` — the CLI
+  refuses secrets prefixed `SUPABASE_`). Value = the project's **legacy** JWT secret
+  (Dashboard → Settings → JWT Keys → "Legacy JWT Secret" tab; project still uses it,
+  do NOT click "Migrate JWT secret" — asymmetric keys aren't HS256, would need a
+  different verify path). Until set, code **falls back to network `getUser()`** —
+  never unauthenticated. Engage: `npx supabase secrets set RAG_JWT_SECRET=<secret>`
+  then redeploy.
+- **Risk (why it's higher-risk):** trusts token until `exp` (~1h) — no real-time
+  revocation. OK for a read-only published-corpus search. Revert = unset the secret.
+- Full deploy/verify steps in `supabase/functions/embeddings/WARM_PING_AND_CACHE.md`
+  §3–4.
+
+**Next (device):** deploy edge fn → run multi-turn IFS session → read the
+`[auth=.. embed=.. rpc=..]` split → confirm auth≈1s on `network` path → set
+`RAG_JWT_SECRET` + redeploy → confirm `auth≈0(local)`. `RAG_TIMEOUT_MS` still
+2000 (untouched; do NOT drop to 800 while turns land ~1–1.5s). THEN commit.
+
 ## Session update (2026-07-08b) — ROOT CAUSE of "0 results every turn" found + fixed
 
 Resume line: **Read handoffs/rag-speed-and-quality.md and continue.**

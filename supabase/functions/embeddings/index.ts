@@ -20,6 +20,17 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.0';
 const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+// Project (legacy) JWT secret — this project signs access tokens with HS256
+// (verified: the anon key's JWT header is {alg:'HS256'}; Dashboard → Settings →
+// JWT Keys still shows "using the legacy JWT secret"). When present, we verify
+// the user's token locally (HMAC, sub-ms) instead of the ~1s auth.getUser()
+// network hop. Falls back to getUser() if unset, so auth never silently weakens.
+//
+// NOTE the env name is NOT prefixed SUPABASE_ — the Supabase CLI refuses to set
+// secrets starting with SUPABASE_ (reserved for platform-injected vars). Set via:
+//   npx supabase secrets set RAG_JWT_SECRET=<legacy JWT secret>
+// See the auth block below and handoffs/rag-speed-and-quality.md.
+const RAG_JWT_SECRET = Deno.env.get('RAG_JWT_SECRET');
 
 const EMBEDDING_MODEL = 'text-embedding-3-small';
 const EMBEDDING_DIMENSIONS = 1536;
@@ -138,11 +149,33 @@ serve(async (req: Request) => {
     // Service role key = server-side pipeline (ingestion scripts)
     const isServiceRole = token === SUPABASE_SERVICE_ROLE_KEY;
 
+    // Time the auth hop separately — for a normal user JWT this is a network
+    // round-trip to Supabase Auth (getUser), which the perf investigation flags
+    // as ~1s and the single biggest lever after the OpenAI embed call. We thread
+    // authMs into handleSearch so the search response can report the full
+    // auth/embed/rpc split back to the device (see handoffs/rag-speed-and-quality.md).
+    let authMs = 0;
+    let authPath = 'service-role';
     if (!isServiceRole) {
-      // Normal user auth via JWT
-      const { data: { user }, error: authError } = await supabase.auth.getUser(token);
-      if (authError || !user) {
-        return jsonResponse({ error: 'Invalid or expired token' }, 401);
+      const authStart = Date.now();
+      if (RAG_JWT_SECRET) {
+        // Fast path: verify the HS256 signature locally (<1ms), no network hop.
+        const payload = await verifyJwtLocal(token, RAG_JWT_SECRET);
+        authMs = Date.now() - authStart;
+        authPath = 'local';
+        if (!payload) {
+          return jsonResponse({ error: 'Invalid or expired token' }, 401);
+        }
+      } else {
+        // Fallback: no JWT secret configured — validate via Supabase Auth so we
+        // never run UNAUTHENTICATED. Deploy-time misconfig degrades to the old
+        // ~1s behavior, not to an open endpoint.
+        const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+        authMs = Date.now() - authStart;
+        authPath = 'network';
+        if (authError || !user) {
+          return jsonResponse({ error: 'Invalid or expired token' }, 401);
+        }
       }
     }
 
@@ -160,7 +193,7 @@ serve(async (req: Request) => {
     // Route to handler
     switch (body.action) {
       case 'search':
-        return await handleSearch(supabase, body as SearchRequest);
+        return await handleSearch(supabase, body as SearchRequest, authMs, authPath);
       case 'embed':
         return await handleEmbed(body as EmbedRequest);
       case 'ingest':
@@ -181,7 +214,7 @@ serve(async (req: Request) => {
 /**
  * Search: embed query → cosine similarity search
  */
-async function handleSearch(supabase: any, body: SearchRequest) {
+async function handleSearch(supabase: any, body: SearchRequest, authMs = 0, authPath = 'unknown') {
   if (!body.query) {
     return jsonResponse({ error: 'Missing query parameter' }, 400);
   }
@@ -213,17 +246,25 @@ async function handleSearch(supabase: any, body: SearchRequest) {
     return jsonResponse({ error: 'Search failed', details: error.message }, 500);
   }
 
+  const rpcMs = Date.now() - rpcStart;
+
   // Server-side stage timing — read in the function logs to confirm the embed
   // cache is landing (embedMs ≈ 0 on hit) and where the remaining time goes.
   console.log(
-    `[embeddings] search embed=${embedMs}ms (cache ${embedCacheHit ? 'HIT' : 'MISS'}) ` +
-    `rpc=${Date.now() - rpcStart}ms results=${data?.length || 0}`
+    `[embeddings] search auth=${authMs}ms(${authPath}) embed=${embedMs}ms (cache ${embedCacheHit ? 'HIT' : 'MISS'}) ` +
+    `rpc=${rpcMs}ms results=${data?.length || 0}`
   );
 
   return jsonResponse({
     results: data || [],
     query: body.query,
     match_count: data?.length || 0,
+    // Per-stage server timing, so a device turn can see the real split directly
+    // (Supabase edge logs aren't easily readable from a device). authMs is the
+    // token-validation hop (authPath: 'local' HMAC verify, 'network' getUser
+    // fallback, or 'service-role'); embedMs is the OpenAI embedding call (0 on
+    // cache hit); rpcMs is the pgvector search. See handoffs/rag-speed-and-quality.md.
+    timing: { authMs, authPath, embedMs, embedCacheHit, rpcMs },
   }, 200);
 }
 
@@ -341,6 +382,76 @@ async function generateEmbeddings(texts: string[]): Promise<number[][]> {
   // Sort by index to maintain order
   const sorted = data.data.sort((a: any, b: any) => a.index - b.index);
   return sorted.map((item: any) => item.embedding);
+}
+
+// ---------------------------------------------------------------------------
+// Local JWT verification (HS256)
+//
+// The search RPC runs on the service-role client (bypasses RLS), so token
+// validation is the ONLY auth gate. We previously validated via a network call
+// to Supabase Auth (auth.getUser), ~1s on the RAG critical path. This project
+// signs access tokens with HS256 (the anon key JWT header is {alg:'HS256'}), so
+// we can verify the signature locally with the project JWT secret in <1ms and
+// skip the round-trip.
+//
+// Tradeoff vs getUser(): local verify trusts the token until it EXPIRES — a user
+// signed out / disabled server-side still passes until `exp` (Supabase access
+// tokens are short-lived, ~1h). For a read-only search over published clinical
+// corpus (no user data returned), that stale-token window is an acceptable risk.
+// If real-time revocation ever matters here, revert to getUser().
+//
+// Returns the decoded payload on success, or null on any failure (bad alg,
+// signature mismatch, expired, wrong role) — caller treats null as 401. Uses
+// only Web Crypto + atob; no external dependency.
+function b64urlToBytes(s: string): Uint8Array {
+  // JWT uses base64url without padding; convert to standard base64 for atob.
+  const b64 = s.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - (s.length % 4)) % 4);
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
+}
+
+async function verifyJwtLocal(token: string, secret: string): Promise<Record<string, any> | null> {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const [headerB64, payloadB64, sigB64] = parts;
+
+    // Only HS256 is accepted — reject anything else (incl. 'none') to avoid
+    // algorithm-confusion attacks.
+    const header = JSON.parse(new TextDecoder().decode(b64urlToBytes(headerB64)));
+    if (header.alg !== 'HS256') return null;
+
+    // Verify HMAC-SHA256 over `header.payload` with the project JWT secret.
+    const key = await crypto.subtle.importKey(
+      'raw',
+      new TextEncoder().encode(secret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['verify'],
+    );
+    const valid = await crypto.subtle.verify(
+      'HMAC',
+      key,
+      b64urlToBytes(sigB64),
+      new TextEncoder().encode(`${headerB64}.${payloadB64}`),
+    );
+    if (!valid) return null;
+
+    const payload = JSON.parse(new TextDecoder().decode(b64urlToBytes(payloadB64)));
+
+    // Expiry (required). exp is seconds since epoch.
+    if (typeof payload.exp !== 'number' || payload.exp * 1000 <= Date.now()) return null;
+
+    // Must be a signed-in user, not the anon role. getUser() implicitly rejected
+    // anon tokens (no user); mirror that here.
+    if (payload.role !== 'authenticated' || !payload.sub) return null;
+
+    return payload;
+  } catch {
+    return null;
+  }
 }
 
 function jsonResponse(data: any, status: number) {
