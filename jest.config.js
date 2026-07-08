@@ -29,6 +29,8 @@ module.exports = {
   },
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
+    // Stub static assets so Jest doesn't parse binary files (png/jpg/fonts) as JS.
+    '\\.(png|jpg|jpeg|gif|webp|svg|ttf|otf|woff2?)$': '<rootDir>/__mocks__/fileMock.js',
   },
   testTimeout: 10000,
 };

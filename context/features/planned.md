@@ -90,7 +90,7 @@ As an on-call developer, I need a tested rollback procedure so a bad migration d
 
 ### FEAT-405: Crisis Safety Audit
 **Priority:** High
-**Status:** Planned
+**Status:** Code-complete (pending device verification) — 2026-06-18
 **Target:** Production Readiness, Week 2
 **Estimated Effort:** 1-2 days
 
@@ -98,10 +98,13 @@ As an on-call developer, I need a tested rollback procedure so a bad migration d
 As a user in distress, I need crisis resources reachable within 2 taps from anywhere in the app.
 
 **Requirements:**
-- [ ] Audit every crisis resource referenced in app (988, Crisis Text Line, SAMHSA) — verify current
-- [ ] Add a persistent "In crisis?" entry point (Settings + footer link minimum)
-- [ ] Document crisis-response philosophy (we are not a crisis service; we route)
-- [ ] Verify across all conversation modes that Huxley's safety prompts route to resources
+- [x] Audit every crisis resource referenced in app (988, Crisis Text Line, SAMHSA) — verified current 2026-06-18; numbers correct in `FindSupportScreen.js` + AI crisis protocol (`huxleyKnowledgeBase.js`)
+- [x] Add a persistent "In crisis?" entry point — added a red SOS action to the global FAB (`GlobalHuxleyFab.js`), reachable from any screen, routing to `FindSupport`. (Also still in Settings + triggered-support flow.)
+- [x] Promoted Fireside Project (psychedelic peer-support line, 62-FIRESIDE) into the crisis "Immediate Help" section
+- [x] Document crisis-response philosophy — disclaimer card in `FindSupportScreen.js` ("we provide links; we don't endorse/verify")
+- [x] Verify across all conversation modes that Huxley's safety prompts route to resources — covered by BUG-313 session crisis latch + persona matrix (suicidal_crisis × all modes STRONG)
+
+**Remaining:** device verification — tap-through the FAB SOS, confirm `tel:`/`sms:` links dial (esp. Fireside 62-FIRESIDE = 623-473-7733).
 
 **Dependencies:** None
 

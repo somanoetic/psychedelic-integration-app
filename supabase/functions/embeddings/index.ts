@@ -24,6 +24,45 @@ const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 const EMBEDDING_MODEL = 'text-embedding-3-small';
 const EMBEDDING_DIMENSIONS = 1536;
 
+// ---------------------------------------------------------------------------
+// Query-embedding cache (per warm instance)
+//
+// text-embedding-3-small is deterministic for identical input, and RAG search
+// queries repeat heavily — short openers ("The anger", greetings) and identical
+// follow-ups recur across turns and across users. Caching the query→vector
+// mapping in-memory removes the ~330ms OpenAI round-trip on a hit, which is the
+// dominant warm-path cost of a search (pgvector itself is ~50-90ms).
+//
+// Scope: this Map lives only as long as the warm function instance. It is NOT a
+// correctness cache (the search RPC re-runs every time); a cold start just
+// repopulates it. Only SEARCH queries are cached — ingest/embed utility calls
+// bypass it, since those are unique bulk content, not recurring queries.
+//
+// Bounded LRU-ish: on overflow we drop the oldest insertion (Map preserves
+// insertion order). MAX kept modest — query diversity is low and each 1536-float
+// vector is ~6KB, so 500 entries ≈ 3MB, comfortably within the function's memory.
+const EMBED_CACHE_MAX = 500;
+const embedCache = new Map<string, number[]>();
+
+function embedCacheGet(text: string): number[] | undefined {
+  const hit = embedCache.get(text);
+  if (hit) {
+    // Refresh recency: re-insert so it moves to the newest position.
+    embedCache.delete(text);
+    embedCache.set(text, hit);
+  }
+  return hit;
+}
+
+function embedCacheSet(text: string, vec: number[]): void {
+  if (embedCache.size >= EMBED_CACHE_MAX) {
+    // Evict oldest (first key in insertion order).
+    const oldest = embedCache.keys().next().value;
+    if (oldest !== undefined) embedCache.delete(oldest);
+  }
+  embedCache.set(text, vec);
+}
+
 interface SearchRequest {
   action: 'search';
   query: string;
@@ -67,6 +106,21 @@ serve(async (req: Request) => {
   }
 
   try {
+    // Warm-ping: a scheduled no-op that keeps at least one instance hot so real
+    // searches don't pay the 0.7-1.4s cold-start spike (which was blowing the
+    // RAG timeout on the first turn of a session). Handled as the FIRST thing in
+    // the handler — before secrets/OpenAI/DB — so the ping is cheap: it touches
+    // no secrets, no OpenAI, no DB, and skips our own getUser() auth hop below.
+    //
+    // NOTE: this does NOT mean the ping is credential-free. Supabase's platform
+    // gateway enforces verify_jwt on this function and rejects a request with no
+    // Authorization header with a 401 BEFORE our code ever runs. The pinger must
+    // still send the project ANON key (a public client key) as apikey + bearer;
+    // it just doesn't need a real user session. See the warm-ping workflow.
+    if (req.method === 'GET' || req.headers.get('x-warm-ping') === '1') {
+      return jsonResponse({ ok: true, warm: true }, 200);
+    }
+
     // Validate secrets
     if (!OPENAI_API_KEY) {
       return jsonResponse({ error: 'OPENAI_API_KEY not configured' }, 500);
@@ -132,8 +186,19 @@ async function handleSearch(supabase: any, body: SearchRequest) {
     return jsonResponse({ error: 'Missing query parameter' }, 400);
   }
 
-  // Generate embedding for query
-  const queryEmbedding = await generateEmbedding(body.query);
+  // Generate embedding for query — served from the per-instance cache when the
+  // exact query text has been embedded before on this warm instance (see
+  // embedCache). On a hit we skip the ~330ms OpenAI call entirely.
+  const embedStart = Date.now();
+  let queryEmbedding = embedCacheGet(body.query);
+  const embedCacheHit = queryEmbedding !== undefined;
+  if (!queryEmbedding) {
+    queryEmbedding = await generateEmbedding(body.query);
+    embedCacheSet(body.query, queryEmbedding);
+  }
+  const embedMs = Date.now() - embedStart;
+
+  const rpcStart = Date.now();
 
   // Call match_document_chunks RPC
   const { data, error } = await supabase.rpc('match_document_chunks', {
@@ -147,6 +212,13 @@ async function handleSearch(supabase: any, body: SearchRequest) {
     console.error('Search RPC error:', error);
     return jsonResponse({ error: 'Search failed', details: error.message }, 500);
   }
+
+  // Server-side stage timing — read in the function logs to confirm the embed
+  // cache is landing (embedMs ≈ 0 on hit) and where the remaining time goes.
+  console.log(
+    `[embeddings] search embed=${embedMs}ms (cache ${embedCacheHit ? 'HIT' : 'MISS'}) ` +
+    `rpc=${Date.now() - rpcStart}ms results=${data?.length || 0}`
+  );
 
   return jsonResponse({
     results: data || [],

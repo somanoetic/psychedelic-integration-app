@@ -36,6 +36,8 @@ const icons = {
   trigger: require('../assets/images/icons/trigger2.png'),
   parts: require('../assets/images/icons/roles.png'),
   habits: require('../assets/images/icons/checklist.png'),
+  distortion: require('../assets/images/icons/thought_cloud.png'),
+  craving: require('../assets/images/icons/urge.png'),
 };
 
 // The five tracker entry cards. `route` is the per-tracker screen.
@@ -44,6 +46,8 @@ const TRACKERS = [
   { id: 'glimmer', title: 'Glimmer Tracker', description: 'Log a positive moment', icon: icons.glimmer, iconScale: 1.4, route: 'GlimmerTracker' },
   { id: 'trigger', title: 'Trigger Tracker', description: 'Log when you were triggered', icon: icons.trigger, iconScale: 1.2, route: 'TriggerTracker' },
   { id: 'parts', title: 'Parts Check-in', description: 'Check in with your inner parts', icon: icons.parts, route: 'PartsCheckin' },
+  { id: 'distortion', title: 'Thought Record', description: 'Catch & reframe a distorted thought', icon: icons.distortion, route: 'CognitiveDistortionTracker' },
+  { id: 'craving', title: 'Urge Tracker', description: 'Notice a craving or urge', icon: icons.craving, route: 'CravingTracker' },
   { id: 'habits', title: 'Habit Tracker', description: 'Track your daily practices', icon: icons.habits, route: 'HabitTracker' },
 ];
 
@@ -53,6 +57,8 @@ const KIND_META = {
   glimmer: { icon: icons.glimmer, label: 'Glimmer', route: 'GlimmerTracker', iconScale: 1.4 },
   trigger: { icon: icons.trigger, label: 'Trigger', route: 'TriggerTracker', iconScale: 1.2 },
   parts: { icon: icons.parts, label: 'Parts', route: 'PartsCheckin' },
+  distortion: { icon: icons.distortion, label: 'Thought record', route: 'CognitiveDistortionTracker' },
+  craving: { icon: icons.craving, label: 'Urge', route: 'CravingTracker' },
 };
 
 function timeAgo(dateStr) {

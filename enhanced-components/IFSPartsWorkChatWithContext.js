@@ -26,7 +26,7 @@ import { ChatConversation } from '../components/chat';
  * - Saves session history
  */
 const IFSPartsWorkChatWithContext = ({ navigation, onComplete, onSkip }) => {
-  const [currentPhase, setCurrentPhase] = useState('check_in');
+  const [currentPhase, setCurrentPhase] = useState('intro');
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -46,28 +46,100 @@ const IFSPartsWorkChatWithContext = ({ navigation, onComplete, onSkip }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const INTRO_OPTIONS = [
+    'Explain it to me & discuss',
+    'Explore the learning modules',
+    'Start working with a part',
+  ];
+
+  // Always show the intro first. The user chooses whether to learn/discuss,
+  // open the learning modules, or dive straight into parts work. Loading the
+  // user's known parts is deferred until they actually begin a session.
   const initializeSession = async () => {
     try {
       const user = await AsyncStorage.getItem('user');
       if (user) {
         const userData = JSON.parse(user);
         setUserId(userData.id);
-
         await huxleyService.initialize(userData.id);
-        huxleyService.setMode('ifs', { clearHistory: true });
-
-        const partsData = await ifsContextService.loadUserParts(userData.id);
-        setKnownParts(partsData.allParts || []);
-
-        addMessage('assistant', getCheckInMessage(partsData.allParts), null);
-      } else {
-        addMessage('assistant', getIntroMessage(), ['Begin Session', 'Learn More About IFS First']);
       }
     } catch (error) {
       console.error('Error initializing IFS session:', error);
-      addMessage('assistant', getIntroMessage(), ['Begin Session', 'Learn More About IFS First']);
     } finally {
+      setCurrentPhase('intro');
+      addMessage('assistant', getIntroMessage(), INTRO_OPTIONS);
       setLoading(false);
+    }
+  };
+
+  // Enter parts work: set the IFS mode, load known parts, show the check-in.
+  const beginSession = async () => {
+    setIsTyping(true);
+    try {
+      huxleyService.setMode('ifs', { clearHistory: true });
+
+      let allParts = [];
+      if (userId) {
+        const partsData = await ifsContextService.loadUserParts(userId);
+        allParts = partsData.allParts || [];
+        setKnownParts(allParts);
+      }
+
+      setCurrentPhase('check_in');
+      addMessage('assistant', getCheckInMessage(allParts), null);
+    } catch (error) {
+      console.error('Error beginning IFS session:', error);
+      setCurrentPhase('check_in');
+      addMessage('assistant', getCheckInMessage([]), null);
+    } finally {
+      setIsTyping(false);
+    }
+  };
+
+  // Open the full slide-based IFS learning modules. Prefers a dedicated
+  // navigation route if the app exposes one; otherwise falls back to the
+  // Education hub. If neither is available (e.g. embedded with no navigation),
+  // stay in the discuss flow rather than dead-ending.
+  const openLearningModules = () => {
+    if (navigation) {
+      navigation.navigate('Learn', { selectedTopicId: 'ifs_basics' });
+      return;
+    }
+    setCurrentPhase('learning');
+    addMessage(
+      'assistant',
+      `The step-by-step learning modules live in the Learn area of the app. In the meantime, I'm happy to explain anything here - just ask.`,
+      ['Start working with a part'],
+    );
+  };
+
+  // Educational Q&A about IFS. Routed through Huxley's GENERAL mode so it
+  // explains concepts conversationally instead of running the parts-work
+  // protocol (which is what caused "there's a part of you that wants to
+  // know more..." when this used to leak into the IFS chat).
+  const handleLearningQuestion = async (question) => {
+    setIsTyping(true);
+    try {
+      const aiResponse = await huxleyService.chat(
+        `The user is learning about Internal Family Systems (IFS) and asked: "${question}". `
+          + `Answer their question clearly and warmly as an educator. Explain the concept; do NOT `
+          + `start a parts-work session or ask them to focus on a part unless they ask to begin.`,
+        { mode: 'general' },
+      );
+      setIsAIMode(aiResponse.isAI);
+      addMessage('assistant', aiResponse.message, [
+        'Start working with a part',
+        'Explore the learning modules',
+      ]);
+    } catch (error) {
+      console.error('Error answering IFS learning question:', error);
+      addMessage(
+        'assistant',
+        "I'm having trouble connecting right now. You can still start working with a part whenever you're ready.",
+        ['Start working with a part'],
+      );
+    } finally {
+      setIsTyping(false);
     }
   };
 
@@ -97,11 +169,15 @@ Is one of these parts active right now, or is this a new part wanting attention?
 
   const getIntroMessage = () => `Welcome to IFS Parts Work.
 
-This AI-guided session will help you get to know one of your parts - those inner voices, feelings, or patterns that shape your experience.
+This is a space to get to know one of your parts - those inner voices, feelings, or patterns that shape your experience.
 
-We'll explore together at your pace, starting with noticing what's present, then getting curious about it, understanding its role, and building a relationship with it.
+How would you like to start?
 
-I'll guide you gently through each step. You're in control the whole time.`;
+• **Explain it to me & discuss** - I'll walk you through what IFS is, and you can ask me anything.
+• **Explore the learning modules** - a guided walkthrough of parts, Self, and how it all fits together.
+• **Start working with a part** - dive straight in and we'll explore together at your pace.
+
+You're in control the whole time.`;
 
   const getLearnMoreMessage = () => `**What is IFS?**
 
@@ -115,7 +191,9 @@ Calm, Clarity, Compassion, Confidence, Courage, Creativity, Curiosity, Connected
 • **Managers** - Parts that control daily life to prevent pain
 • **Firefighters** - Emergency responders when exiles break through
 
-All parts have positive intentions, even when their methods cause problems. This work is about building relationship with them.`;
+All parts have positive intentions, even when their methods cause problems. This work is about building relationship with them.
+
+**Ask me anything** - what a part is, how this is different from just "talking to yourself," what Self energy feels like, or anything else you're curious about. When you're ready, tap **Start working with a part**.`;
 
   const addMessage = (sender, text, options = null) => {
     const newMessage = {
@@ -132,20 +210,33 @@ All parts have positive intentions, even when their methods cause problems. This
   const handleOptionSelect = async (option) => {
     addMessage('user', option);
 
-    if (currentPhase === 'intro') {
-      if (option === 'Begin Session') {
-        await initializeSession();
-      } else {
+    if (currentPhase === 'intro' || currentPhase === 'learning') {
+      if (option === 'Start working with a part' || option === 'Start Working With a Part') {
+        await beginSession();
+      } else if (option === 'Explore the learning modules') {
+        openLearningModules();
+      } else if (option === 'Back to Home') {
+        if (onSkip) {
+          onSkip();
+        } else if (navigation) {
+          navigation.goBack();
+        }
+      } else if (option === 'Explain it to me & discuss') {
         setIsTyping(true);
         setTimeout(() => {
           setIsTyping(false);
-          addMessage('assistant', getLearnMoreMessage(), ['Start Working With a Part', 'Back to Home']);
-        }, 800);
+          setCurrentPhase('learning');
+          addMessage('assistant', getLearnMoreMessage(), [
+            'Start working with a part',
+            'Explore the learning modules',
+          ]);
+        }, 600);
+      } else {
+        // Any other tap in intro/learning is a free-text question → discuss it.
+        await handleLearningQuestion(option);
       }
     } else if (currentPhase === 'check_in') {
       await handlePartSelection(option);
-    } else if (option === 'Start Working With a Part') {
-      await initializeSession();
     } else if (option === 'Back to Home') {
       if (onSkip) {
         onSkip();
@@ -368,6 +459,15 @@ This ${newPart.part_role} part is showing up now. What do you notice about it in
   const handleSendMessage = async (messageOverride = null) => {
     const message = (messageOverride ?? userInput).trim();
     if (!message) return;
+
+    // In the learning/discuss phase, typed questions are educational — route
+    // them to the general-mode Q&A, not the parts-work protocol.
+    if (currentPhase === 'learning') {
+      addMessage('user', message);
+      if (!messageOverride) setUserInput('');
+      await handleLearningQuestion(message);
+      return;
+    }
 
     addMessage('user', message);
     if (!messageOverride) {

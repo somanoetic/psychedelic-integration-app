@@ -15,7 +15,10 @@ import { colors, gradients, spacing, borderRadius, typography } from '../theme/c
 
 // Bumped if the disclosure copy is materially updated, so previously-acknowledging
 // users see it again. Read by App.js before rendering main app routes.
-export const DISCLOSURE_VERSION = 'v1';
+// v2 (2026-06-18): added the beta-disclaimer card for closed beta — legal review
+// of Privacy/Terms is still pending (BUG-308), so testers must acknowledge that
+// the policies are drafts. Remove the beta card + bump to v3 at public launch.
+export const DISCLOSURE_VERSION = 'v2';
 export const DISCLOSURE_STORAGE_KEY = `huxley:disclosure_acknowledged_${DISCLOSURE_VERSION}`;
 export const PRACTITIONER_FLAG_KEY = 'huxley:is_practitioner';
 
@@ -65,6 +68,17 @@ const NonClinicalDisclosureScreen = ({ onAcknowledge }) => {
           <Text style={styles.subtitle}>
             A few things to know about what Multitudes is — and what it isn't.
           </Text>
+
+          {/* ---- Beta disclaimer (remove at public launch — see DISCLOSURE_VERSION) ---- */}
+          <View style={[styles.card, styles.betaCard]}>
+            <Text style={styles.cardTitle}>You're using an early beta</Text>
+            <Text style={styles.cardBody}>
+              Multitudes is in a closed beta. You may run into bugs, rough edges, or features that change between updates. Thank you for helping us improve it.
+            </Text>
+            <Text style={styles.cardBody}>
+              Our Privacy Policy and Terms of Service are current drafts that have not yet completed legal review, and the wording may change before public launch. By continuing, you acknowledge you're trying pre-release software under these draft terms. We still protect your data with the safeguards described below and in the Privacy Policy.
+            </Text>
+          </View>
 
           {/* ---- Wellness, not clinical ---- */}
           <View style={styles.card}>
@@ -160,7 +174,7 @@ const NonClinicalDisclosureScreen = ({ onAcknowledge }) => {
           </View>
 
           <Text style={styles.footerNote}>
-            By continuing, you confirm you have read and understood the above. You can review the full Privacy Policy and Terms of Service from Settings at any time.
+            By continuing, you confirm you have read and understood the above, including the beta and draft-terms notice. You can review the full Privacy Policy and Terms of Service from Settings at any time.
           </Text>
         </ScrollView>
 
@@ -219,6 +233,10 @@ const styles = StyleSheet.create({
   crisisCard: {
     borderLeftWidth: 4,
     borderLeftColor: colors.error,
+  },
+  betaCard: {
+    borderLeftWidth: 4,
+    borderLeftColor: colors.primary,
   },
   cardTitle: {
     fontSize: typography.base,

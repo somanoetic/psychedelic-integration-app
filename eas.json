@@ -11,7 +11,8 @@
         "buildType": "apk"
       },
       "env": {
-        "DEBUG_CLAUDE": "true"
+        "DEBUG_CLAUDE": "true",
+        "APP_VARIANT": "development"
       }
     },
     "preview": {
@@ -19,6 +20,16 @@
       "channel": "preview",
       "ios": {
         "simulator": false
+      },
+      "env": {
+        "DEBUG_CLAUDE": "false"
+      }
+    },
+    "preview-internal": {
+      "distribution": "internal",
+      "channel": "preview",
+      "android": {
+        "buildType": "apk"
       },
       "env": {
         "DEBUG_CLAUDE": "false"

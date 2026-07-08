@@ -8,9 +8,19 @@
  * focused prompts that fit on one page and don't ask the user to write a
  * book post-session when their system may still be settling.
  *
+ * Part of the printed journal: this page is included in the pre-printed
+ * companion (a Session Reflections page printed after the Daily Check-In
+ * run), so a torn book page scans back in like any app-printed page.
+ *
  * Glyph: MT-post-session-integration-v1
  */
 import { validateWorksheet } from './schema';
+
+const SESSION_COLLECTION = {
+  id: 'session-reflections',
+  title: 'Session Reflections',
+  description: 'Fill one out within a day of each session.',
+};
 
 export default validateWorksheet({
   id: 'post-session-integration',
@@ -23,6 +33,7 @@ export default validateWorksheet({
     'and what you want to carry with you. Fill it out by hand, then scan it ' +
     'back in when you\'re ready.',
   tracks: ['integration'],
+  collection: { ...SESSION_COLLECTION, order: 10 },
   layout: 'letter-portrait',
   fields: [
     {

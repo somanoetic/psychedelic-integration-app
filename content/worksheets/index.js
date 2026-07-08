@@ -9,8 +9,6 @@
  * broken worksheet config fails fast at app start rather than only when
  * someone tries to print it.
  */
-import postSessionIntegration from './post-session-integration';
-
 // Pre-Treatment Baseline Log (4 pages)
 import baselineLifeNow from './baseline-life-now';
 import baselineLifeAreas from './baseline-life-areas';
@@ -24,6 +22,9 @@ import dailyRelationships from './daily-relationships';
 import dailyEmotionalPhysical from './daily-emotional-physical';
 import dailySelfCareEvening from './daily-self-care-evening';
 
+// Session Reflections (printed after the Daily Check-In run)
+import postSessionIntegration from './post-session-integration';
+
 // Educational chapter reflections (5 one-page prompts)
 import eduPatternsResonance from './edu-patterns-resonance';
 import eduHealingSenses from './edu-healing-senses';
@@ -32,7 +33,6 @@ import eduMultisensoryIntegration from './edu-multisensory-integration';
 import eduPreTreatmentLetter from './edu-pre-treatment-letter';
 
 const ALL = [
-  postSessionIntegration,
   baselineLifeNow,
   baselineLifeAreas,
   baselineCopingStrategies,
@@ -42,6 +42,7 @@ const ALL = [
   dailyRelationships,
   dailyEmotionalPhysical,
   dailySelfCareEvening,
+  postSessionIntegration,
   eduPatternsResonance,
   eduHealingSenses,
   eduUniqueNs,

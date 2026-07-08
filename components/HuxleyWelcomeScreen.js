@@ -22,10 +22,11 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 // Rotating description texts
 const DESCRIPTION_TEXTS = [
-  "I can help you process non-ordinary states of consciousness, like psychedelics or ketamine therapy.",
-  "I use Internal Family Systems (IFS), polyvagal theory, and somatic approaches to support your healing.",
+  "I can help you process non-ordinary states of consciousness, like a psychedelic experience or ketamine therapy.",
+  "I draw on Internal Family Systems (IFS), the autonomic nervous system, somatic approaches, CBT, and philosophy to support your healing.",
   "Whether you're preparing for a journey, integrating an experience, or working through daily challenges...",
   "I'm here to help you develop lasting insights and nervous system regulation.",
+  "I'm not here to replace your therapist, guide, or care team — I'm a companion alongside the real people who support you.",
 ];
 
 const HuxleyWelcomeScreen = ({ onComplete }) => {

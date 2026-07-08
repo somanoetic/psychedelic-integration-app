@@ -69,7 +69,7 @@
 - **FEAT-402 Closed beta** — Play internal track + TestFlight group, recruit 5–15 testers, feedback channel
 - **FEAT-403 Play Store listing** — screenshots, descriptions, content rating, Data Safety form, verify account-deletion flow
 - **FEAT-404 DB backup/rollback** — confirm PITR, write + test rollback playbook
-- **FEAT-405 Crisis safety audit** — verify 988/Crisis Text Line/SAMHSA, add persistent "In crisis?" entry point
+- **FEAT-405 Crisis safety audit** — ✅ code-complete 2026-06-18 (pending device verification): numbers verified, Fireside promoted to crisis section, persistent SOS in global FAB
 
 ### Open Bugs (code work)
 - **BUG-309** (P2) — AI metrics dashboard missing two materialized views in live DB (~2–4 hrs, admin-only)

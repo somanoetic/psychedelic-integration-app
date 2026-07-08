@@ -21,17 +21,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Validate JSON configuration
+      - name: Validate configuration
         run: |
-          echo "Validating app.json..."
-          node -e "require('./app.json')"
+          echo "Validating app.config.js (syntax only — it's a dynamic ESM config that pulls in expo/dotenv at eval time)..."
+          node --check app.config.js
           echo "Validating eas.json..."
           node -e "require('./eas.json')"
 
       - name: Check for secrets
         run: |
           echo "Scanning for exposed secrets..."
-          if grep -r "sk-ant-" . --include="*.js" --include="*.json" --exclude-dir=node_modules 2>/dev/null; then
+          # Match a REAL Anthropic key body (sk-ant-<...>- then >=24 key chars),
+          # not the sk-ant-... / sk-ant-[your-key] placeholders that appear in docs
+          # and setup comments. -E for extended regex.
+          if grep -rE "sk-ant-[a-zA-Z0-9]+-[a-zA-Z0-9_-]{24,}" . --include="*.js" --include="*.json" --exclude-dir=node_modules 2>/dev/null; then
             echo "ERROR: Anthropic API key found in source code!"
             exit 1
           fi

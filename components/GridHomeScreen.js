@@ -21,8 +21,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { Image } from 'react-native';
-import { Settings } from 'lucide-react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { LifeBuoy, Settings } from 'lucide-react-native';
 import { colors, gradients } from '../theme/colors';
 
 // Tile icons (v2 — illustrated set)
@@ -53,6 +53,8 @@ const uiIcons = {
   subTrigger: require('../assets/images/icons/trigger2.png'),
   subParts: require('../assets/images/icons/roles.png'),
   subHabits: require('../assets/images/icons/checklist.png'),
+  subDistortion: require('../assets/images/icons/thought_cloud.png'),
+  subCraving: require('../assets/images/icons/urge.png'),
 };
 
 const NS_ICONS = {
@@ -66,13 +68,6 @@ import { fetchDashboardData } from '../lib/dashboardService';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const TILE_GAP = 16;
 const TILE_WIDTH = (SCREEN_WIDTH - 48 - TILE_GAP) / 2;
-
-const NS_COLORS = {
-  ventral: { dot: colors.success, bg: '#d1fae5', label: 'Safe & Social' },
-  sympathetic: { dot: colors.error, bg: '#fee2e2', label: 'Fight / Flight' },
-  dorsal: { dot: colors.textSecondary, bg: '#f3f4f6', label: 'Shutdown' },
-  mixed: { dot: colors.warning, bg: colors.bubbleArchetypal, label: 'Mixed / Blended' },
-};
 
 // --- Reusable helper components (extractable to components/ui/ later) ---
 
@@ -158,42 +153,100 @@ const ProgressRing = ({ progress, size = 48, strokeWidth = 4, color = colors.pri
 
 // --- Greeting logic ---
 
-function getGreetingContent(dashboardData) {
+// Forward-looking reflection prompts shown under the greeting. These replace the
+// old NS-state recap + habit-nag subtext (both duplicated the tracker tiles right
+// below). The line is an invitation, not a status mirror. Rotated by day-of-month
+// so it stays fresh day-to-day but is stable across re-renders within a day
+// (deterministic — no Math.random flicker).
+const REFLECTION_PROMPTS = [
+  'What’s alive for you right now?',
+  'How is your body feeling today?',
+  'What deserves your attention today?',
+  'What would feel like care right now?',
+  'Notice what’s present, without fixing it.',
+  'What’s one small thing you can tend to?',
+  'Where is your energy today?',
+  'What are you carrying into today?',
+];
+
+// Quotes from the voices woven through the app's content (IFS, polyvagal, IPNB,
+// Whitman/"Multitudes") plus adjacent contemplative/literary figures in the same
+// tone. EVERY entry here was attribution-verified against a primary source — book,
+// poem, Collected Works paragraph, or peer-reviewed paper — and the known-fake or
+// aggregator-only quotes (most viral Rumi/Hafiz/"Jung"/Nin lines) were excluded on
+// purpose. If adding more, hold the same bar; don't trust Goodreads/QuoteFancy.
+const QUOTES = [
+  // IFS / parts work — Schwartz, No Bad Parts (2021)
+  { text: 'There are no bad parts.', author: 'Richard Schwartz' },
+  { text: 'All parts are welcome.', author: 'IFS' },
+  { text: 'Even the most destructive parts have protective intentions.', author: 'Richard Schwartz' },
+  { text: 'Parts are sacred, spiritual beings, and they deserve to be treated as such.', author: 'Richard Schwartz' },
+  { text: 'Love is the answer in the inner world, just as it is in the outer world.', author: 'Richard Schwartz' },
+  // Polyvagal / IPNB — Dana, Siegel
+  { text: 'Story follows state.', author: 'Deb Dana' },
+  { text: 'Where attention goes, neural firing flows, and neural connection grows.', author: 'Dan Siegel' },
+  { text: 'Name it to tame it.', author: 'Dan Siegel' },
+  { text: 'Integration is the linkage of differentiated parts.', author: 'Dan Siegel' },
+  { text: 'Integration is the basis of mental health.', author: 'Dan Siegel' },
+  { text: 'The mind is fully embodied and fully relational.', author: 'Dan Siegel' },
+  // Trauma / somatic — Levine, van der Kolk, Maté
+  { text: 'Trauma is a fact of life. It does not, however, have to be a life sentence.', author: 'Peter Levine' },
+  { text: 'Being able to feel safe with other people is probably the single most important aspect of mental health.', author: 'Bessel van der Kolk' },
+  { text: 'Trauma is not just an event that took place in the past; it is also the imprint left by that experience on mind, brain, and body.', author: 'Bessel van der Kolk' },
+  { text: 'Safety is not the absence of threat; it is the presence of connection.', author: 'Gabor Maté' },
+  { text: 'The attempt to escape from pain is what creates more pain.', author: 'Gabor Maté' },
+  { text: 'Trauma is not what happens to you. It is what happens inside you.', author: 'Gabor Maté' },
+  // Humanistic — Rogers, Frankl
+  { text: 'The curious paradox is that when I accept myself as I am, then I change.', author: 'Carl Rogers' },
+  { text: 'The good life is a process, not a state of being. It is a direction, not a destination.', author: 'Carl Rogers' },
+  { text: 'Everything can be taken from a man but one thing: the last of the human freedoms — to choose one’s attitude in any given set of circumstances, to choose one’s own way.', author: 'Viktor Frankl' },
+  { text: 'When we are no longer able to change a situation, we are challenged to change ourselves.', author: 'Viktor Frankl' },
+  { text: 'Suffering ceases to be suffering at the moment it finds a meaning.', author: 'Viktor Frankl' },
+  // Jung — Collected Works
+  { text: 'Knowing your own darkness is the best method for dealing with the darknesses of other people.', author: 'Carl Jung' },
+  { text: 'When an inner situation is not made conscious, it happens outside, as fate.', author: 'Carl Jung' },
+  { text: 'One does not become enlightened by imagining figures of light, but by making the darkness conscious.', author: 'Carl Jung' },
+  { text: 'The greatest problems of life can never be solved, only outgrown.', author: 'Carl Jung' },
+  { text: 'The privilege of a lifetime is being who you are.', author: 'Joseph Campbell' },
+  // Whitman / poetic — verified translations only
+  { text: 'I am large, I contain multitudes.', author: 'Walt Whitman' },
+  { text: 'Re-examine all you have been told, and dismiss whatever insults your own soul.', author: 'Walt Whitman' },
+  { text: 'The wound is the place where the light enters you.', author: 'Rumi (trans. Coleman Barks)' },
+  { text: 'Tell me, what is it you plan to do with your one wild and precious life?', author: 'Mary Oliver' },
+  { text: 'You do not have to be good. You only have to let the soft animal of your body love what it loves.', author: 'Mary Oliver' },
+  { text: 'Someone I loved once gave me a box full of darkness. It took me years to understand that this too was a gift.', author: 'Mary Oliver' },
+  { text: 'Let everything happen to you: beauty and terror. Just keep going. No feeling is final.', author: 'Rilke (trans. Macy & Barrows)' },
+  { text: 'Live the questions now. Perhaps you will then gradually, without noticing it, live along some distant day into the answer.', author: 'Rilke (trans. Mitchell)' },
+  { text: 'For a time I rest in the grace of the world, and am free.', author: 'Wendell Berry' },
+  // Contemplative — Chödrön, Thich Nhat Hanh, Brach, Brown
+  { text: 'Nothing ever goes away until it has taught us what we need to know.', author: 'Pema Chödrön' },
+  { text: 'When we know how to suffer, we suffer much, much less.', author: 'Thich Nhat Hanh' },
+  { text: 'No mud, no lotus.', author: 'Thich Nhat Hanh' },
+  { text: 'Seeing clearly and holding our experience with compassion are as interdependent as the two wings of a great bird.', author: 'Tara Brach' },
+  { text: 'Vulnerability is the birthplace of love, belonging, joy, courage, empathy, and creativity.', author: 'Brené Brown' },
+  { text: 'Owning our story and loving ourselves through that process is the bravest thing we’ll ever do.', author: 'Brené Brown' },
+  { text: 'We don’t heal in isolation, but in community.', author: 'S. Kelley Harrell' },
+];
+
+// Days since the Unix epoch — a monotonically increasing index so the rotation
+// walks through the FULL list (not capped at 31 like day-of-month) and never
+// resets at month boundaries. Stable within a calendar day across re-renders.
+function epochDay() {
+  return Math.floor(Date.now() / 86400000);
+}
+
+function getGreetingContent() {
   const hour = new Date().getHours();
   let greeting;
   if (hour < 12) greeting = 'Good morning';
   else if (hour < 17) greeting = 'Good afternoon';
   else greeting = 'Good evening';
 
-  if (!dashboardData) {
-    return { greeting, context: null, subtext: "Here's where you are today" };
-  }
+  const day = epochDay();
+  const subtext = REFLECTION_PROMPTS[day % REFLECTION_PROMPTS.length];
+  const quote = QUOTES[day % QUOTES.length];
 
-  const ns = dashboardData.nsCheckin;
-  const habits = dashboardData.habitProgress;
-  const nsConfig = ns ? (NS_COLORS[ns.ns_state] || NS_COLORS.mixed) : null;
-
-  // NS context line
-  const context = ns
-    ? `You were feeling ${nsConfig.label.toLowerCase()} ${timeAgo(ns.created_at)}`
-    : null;
-
-  // Contextual subtext
-  let subtext;
-  if (!ns && (!habits || habits.total === 0)) {
-    subtext = 'Start by checking in with yourself';
-  } else if (ns && (!habits || habits.total === 0)) {
-    subtext = 'Ready to build some habits?';
-  } else if (habits && habits.total > 0 && habits.completed >= habits.total) {
-    subtext = 'Great work today!';
-  } else if (habits && habits.total > 0) {
-    const remaining = habits.total - habits.completed;
-    subtext = `You have ${remaining} habit${remaining === 1 ? '' : 's'} left today`;
-  } else {
-    subtext = "Here's where you are today";
-  }
-
-  return { greeting, context, subtext };
+  return { greeting, subtext, quote };
 }
 
 function timeAgo(dateStr) {
@@ -284,28 +337,52 @@ const GridHomeScreen = ({ navigation }) => {
 
   // --- Track block ---
 
-  // The five Track indicators, in the same order as the Track hub. Each derives
-  // a short read-only status from dashboardData (value when present, muted dash
+  // The seven Track indicators, laid out as two rows: a top row of three
+  // state/practice check-ins (Parts, Nervous, Habits) and a bottom row of four
+  // "things that arise" logs (Glimmer, Trigger, Urge, Thought). Each derives a
+  // short read-only status from dashboardData (value when present, muted dash
   // when empty) and carries its tracker `route` so it can be tapped straight
   // through. The block header taps through to the full Track hub instead.
+  // Returns { topRow, bottomRow } — see renderTrackBlock.
   const buildTrackIndicators = () => {
     const ns = dashboardData?.nsCheckin;
     const glimmers = dashboardData?.glimmerCount;
     const trigger = dashboardData?.lastTrigger;
     const parts = dashboardData?.lastParts;
     const habits = dashboardData?.habitProgress;
+    const distortion = dashboardData?.lastDistortion;
+    const craving = dashboardData?.lastCraving;
 
     const glimmerCount = glimmers?.count ?? 0;
 
-    return [
+    const topRow = [
+      {
+        id: 'parts',
+        label: 'Parts',
+        icon: uiIcons.subParts,
+        status: parts ? timeAgo(parts.created_at) : '—',
+        active: !!parts,
+        route: 'PartsCheckin',
+      },
       {
         id: 'nervous',
-        label: 'Nervous',
+        label: 'State',
         icon: ns ? (NS_ICONS[ns.ns_state] || NS_ICONS.mixed) : uiIcons.nsMixed,
         status: ns ? timeAgo(ns.created_at) : '—',
         active: !!ns,
         route: 'NervousSystemCheckin',
       },
+      {
+        id: 'habits',
+        label: 'Habits',
+        icon: uiIcons.subHabits,
+        status: habits && habits.total > 0 ? `${habits.completed}/${habits.total}` : '—',
+        active: !!(habits && habits.total > 0),
+        route: 'HabitTracker',
+      },
+    ];
+
+    const bottomRow = [
       {
         id: 'glimmer',
         label: 'Glimmer',
@@ -327,22 +404,24 @@ const GridHomeScreen = ({ navigation }) => {
         route: 'TriggerTracker',
       },
       {
-        id: 'parts',
-        label: 'Parts',
-        icon: uiIcons.subParts,
-        status: parts ? timeAgo(parts.created_at) : '—',
-        active: !!parts,
-        route: 'PartsCheckin',
+        id: 'craving',
+        label: 'Urge',
+        icon: uiIcons.subCraving,
+        status: craving ? timeAgo(craving.created_at) : '—',
+        active: !!craving,
+        route: 'CravingTracker',
       },
       {
-        id: 'habits',
-        label: 'Habits',
-        icon: uiIcons.subHabits,
-        status: habits && habits.total > 0 ? `${habits.completed}/${habits.total}` : '—',
-        active: !!(habits && habits.total > 0),
-        route: 'HabitTracker',
+        id: 'distortion',
+        label: 'Thought',
+        icon: uiIcons.subDistortion,
+        status: distortion ? timeAgo(distortion.created_at) : '—',
+        active: !!distortion,
+        route: 'CognitiveDistortionTracker',
       },
     ];
+
+    return { topRow, bottomRow };
   };
 
   // The block header opens the full Track hub; each indicator taps straight
@@ -366,8 +445,9 @@ const GridHomeScreen = ({ navigation }) => {
           <ActivityIndicator size="small" color={colors.primary} />
         </View>
       ) : (
-        <View style={styles.trackIndicatorRow}>
-          {buildTrackIndicators().map((ind) => (
+        (() => {
+          const { topRow, bottomRow } = buildTrackIndicators();
+          const renderIndicator = (ind) => (
             <TouchableOpacity
               key={ind.id}
               style={styles.indicator}
@@ -390,13 +470,21 @@ const GridHomeScreen = ({ navigation }) => {
                 {ind.status}
               </Text>
             </TouchableOpacity>
-          ))}
-        </View>
+          );
+          return (
+            <>
+              <View style={styles.trackIndicatorRow}>{topRow.map(renderIndicator)}</View>
+              <View style={[styles.trackIndicatorRow, styles.trackIndicatorRowBottom]}>
+                {bottomRow.map(renderIndicator)}
+              </View>
+            </>
+          );
+        })()
       )}
     </GlassCard>
   );
 
-  const { greeting, context, subtext } = getGreetingContent(dashboardData);
+  const { greeting, subtext, quote } = getGreetingContent();
 
   return (
     <LinearGradient
@@ -406,40 +494,39 @@ const GridHomeScreen = ({ navigation }) => {
       style={styles.container}
     >
       <SafeAreaView style={styles.safeArea} edges={['top']}>
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity
-            style={styles.headerButton}
-            onPress={() => navigation.navigate('HuxleyChat')}
-          >
-            <Image source={uiIcons.chat} style={styles.headerIcon} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.headerButton}
-            onPress={() => navigation.navigate('Settings')}
-          >
-            <Settings size={26} color={colors.text} strokeWidth={2} />
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.headerButton, styles.sosButton]}
-            onPress={() => navigation.navigate('TriggeredSupport')}
-          >
-            <Text style={styles.sosButtonText}>SOS</Text>
-          </TouchableOpacity>
-        </View>
+        {/* Home header removed (beta feedback: redundant). Chat is reachable
+            from the global FAB; the greeting's SOS opens triggered support, and
+            a bottom utility row exposes crisis Support + Settings. */}
 
         <ScrollView
           style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* Greeting */}
+          {/* Greeting + SOS (crisis affordance, opposite the title) */}
           <Animated.View style={[styles.greetingContainer, { opacity: greetingOpacity }]}>
-            <Text style={styles.greetingText}>{greeting}</Text>
-            {context && <Text style={styles.greetingContext}>{context}</Text>}
-            <Text style={styles.greetingSubtext}>{subtext}</Text>
+            <View style={styles.greetingRow}>
+              <View style={styles.greetingTextWrap}>
+                <Text style={styles.greetingText}>{greeting}</Text>
+                <Text style={styles.greetingSubtext}>{subtext}</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.sosButton}
+                onPress={() => navigation.navigate('TriggeredSupport')}
+                accessibilityRole="button"
+                accessibilityLabel="Triggered support"
+                activeOpacity={0.85}
+              >
+                <LifeBuoy size={20} color="#dc2626" strokeWidth={2.5} />
+                <Text style={styles.sosLabel}>SOS</Text>
+              </TouchableOpacity>
+            </View>
+            {quote && (
+              <Text style={styles.greetingQuote}>
+                “{quote.text}”
+                <Text style={styles.greetingQuoteAuthor}>  — {quote.author}</Text>
+              </Text>
+            )}
           </Animated.View>
 
           {/* Track block (replaces the old NS/Habits/Glimmer widgets +
@@ -480,6 +567,33 @@ const GridHomeScreen = ({ navigation }) => {
             ))}
           </Animated.View>
 
+          {/* Bottom utility row — crisis resources + settings.
+              Support (Find Support) is a distinct, always-available entry,
+              separate from the greeting's SOS (which opens triggered support).
+              Settings is open to everyone; admin-only rows are gated inside it. */}
+          <Animated.View style={[styles.bottomBar, { opacity: tilesOpacity }]}>
+            <TouchableOpacity
+              style={styles.bottomBarButton}
+              onPress={() => navigation.navigate('FindSupport')}
+              accessibilityRole="button"
+              accessibilityLabel="Find support"
+              activeOpacity={0.7}
+            >
+              <LifeBuoy size={28} color={colors.textSecondary} strokeWidth={2} />
+              <Text style={styles.bottomBarLabel}>Support</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.bottomBarButton}
+              onPress={() => navigation.navigate('Settings')}
+              accessibilityRole="button"
+              accessibilityLabel="Settings"
+              activeOpacity={0.7}
+            >
+              <Settings size={28} color={colors.textSecondary} strokeWidth={2} />
+              <Text style={styles.bottomBarLabel}>Settings</Text>
+            </TouchableOpacity>
+          </Animated.View>
+
           <View style={styles.bottomSpacer} />
         </ScrollView>
 
@@ -498,29 +612,6 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-  },
-  headerButton: {
-    padding: 8,
-    borderRadius: 12,
-    minWidth: 44,
-    minHeight: 44,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  sosButton: {
-    backgroundColor: '#E57373',
-  },
-  sosButtonText: {
-    color: '#fff',
-    fontWeight: '700',
-    fontSize: 14,
-  },
   scrollView: {
     flex: 1,
   },
@@ -533,21 +624,53 @@ const styles = StyleSheet.create({
   greetingContainer: {
     marginBottom: 20,
   },
+  greetingRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  greetingTextWrap: {
+    flex: 1,
+  },
+  sosButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 20,
+    borderWidth: 1.5,
+    borderColor: '#dc2626',
+    backgroundColor: 'rgba(220, 38, 38, 0.08)',
+    marginLeft: 12,
+    marginTop: 4,
+  },
+  sosLabel: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#dc2626',
+    marginLeft: 5,
+    letterSpacing: 0.5,
+  },
   greetingText: {
     fontSize: 28,
     fontWeight: '700',
     color: colors.text,
   },
-  greetingContext: {
-    fontSize: 15,
-    fontWeight: '500',
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
   greetingSubtext: {
     fontSize: 14,
     color: colors.textSecondary,
     marginTop: 4,
+  },
+  greetingQuote: {
+    fontSize: 13,
+    fontStyle: 'italic',
+    color: colors.textSecondary,
+    lineHeight: 19,
+    marginTop: 10,
+  },
+  greetingQuoteAuthor: {
+    fontStyle: 'normal',
+    fontWeight: '600',
   },
 
   // Glass card base
@@ -568,12 +691,6 @@ const styles = StyleSheet.create({
     padding: 12,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-
-  headerIcon: {
-    width: 56,
-    height: 56,
-    resizeMode: 'contain',
   },
 
   // Track block
@@ -631,8 +748,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 12,
-    paddingBottom: 20,
     paddingTop: 4,
+  },
+  trackIndicatorRowBottom: {
+    paddingBottom: 20,
+    paddingTop: 12,
   },
   indicator: {
     flex: 1,
@@ -766,6 +886,30 @@ const styles = StyleSheet.create({
 
   bottomSpacer: {
     height: 100,
+  },
+
+  // Bottom utility row (crisis support + settings)
+  bottomBar: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 40,
+    marginTop: 12,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(0, 0, 0, 0.06)',
+  },
+  bottomBarButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+  },
+  bottomBarLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: colors.textSecondary,
+    marginTop: 6,
   },
 });
 

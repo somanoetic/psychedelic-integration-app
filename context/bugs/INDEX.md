@@ -1,6 +1,6 @@
 # Bug Tracker Index
 
-**Last Updated:** 2026-05-13
+**Last Updated:** 2026-07-08
 
 ---
 
@@ -14,10 +14,10 @@ Bugs are organized by priority across three files to keep each manageable.
 |------|----------|-------------|-------|
 | [critical.md](critical.md) | P0 | Show-stoppers, crashes, security issues | 0 active (2 just resolved) |
 | [high.md](high.md) | P1 | Major issues affecting key features | 0 active (17 resolved) |
-| [medium-low.md](medium-low.md) | P2-P3 | Minor issues, polish, edge cases | 11 active (18 resolved) |
+| [medium-low.md](medium-low.md) | P2-P3 | Minor issues, polish, edge cases | 12 active (18 resolved) |
 | [resolved.md](resolved.md) | -- | Archived resolved bugs | 28 resolved |
 
-**Total Active Bugs:** 11 (42 resolved)
+**Total Active Bugs:** 12 (42 resolved)
 
 ---
 

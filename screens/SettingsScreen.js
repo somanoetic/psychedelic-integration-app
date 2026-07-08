@@ -14,8 +14,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import {
   ShieldCheck,
   FileText,
-  LifeBuoy,
-  Pencil,
   Download,
   LayoutDashboard,
   UserCheck,
@@ -180,27 +178,8 @@ const SettingsScreen = ({ navigation }) => {
             />
           </View>
 
-          {/* Support */}
-          <Text style={styles.sectionHeader}>Support</Text>
-          <View style={styles.card}>
-            <SettingsRow
-              Icon={LifeBuoy}
-              title="Find Support"
-              subtitle="Crisis lines, therapist directories, and resources"
-              onPress={() => navigation.navigate('FindSupport')}
-            />
-          </View>
-
-          {/* Contribute */}
-          <Text style={styles.sectionHeader}>Contribute</Text>
-          <View style={styles.card}>
-            <SettingsRow
-              Icon={Pencil}
-              title="Contributor Tools"
-              subtitle="Apply to contribute to Multitudes' library"
-              onPress={() => navigation.navigate('ContributorTools')}
-            />
-          </View>
+          {/* Find Support and Contribute moved out of Settings into the global
+              FAB radial menu (beta feedback). See components/GlobalHuxleyFab.js. */}
 
           {/* Data */}
           <Text style={styles.sectionHeader}>Your Data</Text>

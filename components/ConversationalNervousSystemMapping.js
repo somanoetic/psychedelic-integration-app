@@ -269,7 +269,9 @@ Take your time with this. When you're done, the app will show you a digital vers
   const renderBelowMessages = () => {
     const mappedStates = sessionProgress?.mappedStates || {};
 
-    if (currentState === 'drawing_prompt') {
+    // The mapping mode handler emits phase 'drawing' (not 'drawing_prompt'),
+    // so gate the drawing-guide/done buttons on the phase it actually produces.
+    if (currentState === 'drawing') {
       return (
         <View style={styles.actionButtons}>
           <TouchableOpacity

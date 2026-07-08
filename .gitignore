@@ -42,6 +42,10 @@ ios/sentry.properties
 # typescript
 *.tsbuildinfo
 
+# Python bytecode cache
+__pycache__/
+*.pyc
+
 app-example
 
 # Large files - PDFs and media stored externally
@@ -58,6 +62,7 @@ temp/
 tmp/
 
 # Generated data
+out/
 scripts/chunked_documents.jsonl
 scripts/glimmer-images/staging-faces/
 scripts/glimmer-images/staging-nature/

@@ -1,12 +1,10 @@
 /**
  * Educational reflection — Your Unique Nervous System.
  *
- * Four-row table from "Understanding Your Unique Nervous System". The
- * printed journal has both a Write column and a Draw column; on this
- * worksheet we render only a single free-text column per question (the
- * drawing column is implicit — users can sketch in the margin of the
- * printed page if they want, and that ink will be captured in the scan
- * alongside the writing).
+ * Four-row "Write | Draw" table from "Understanding Your Unique Nervous
+ * System". Each question renders writing lines plus an empty sketch box
+ * (drawColumn: true) — print-only, matching the source journal. The drawn
+ * ink is captured as part of the scan image.
  *
  * Source: The Integration Companion, page 7.
  */
@@ -32,27 +30,31 @@ export default validateWorksheet({
   fields: [
     {
       id: 'helps-feel-safe',
-      label: 'What helps me feel safe and regulated',
+      label: 'What helps YOU feel safe and regulated?',
       kind: 'free-text',
       lines: 4,
+      drawColumn: true,
     },
     {
       id: 'early-warning-signs',
-      label: 'My early warning signs of activation or shutdown',
+      label: 'What are YOUR early warning signs of activation or shutdown?',
       kind: 'free-text',
       lines: 4,
+      drawColumn: true,
     },
     {
       id: 'window-of-tolerance',
-      label: 'What my window of tolerance feels like',
+      label: 'What does YOUR window of tolerance feel like?',
       kind: 'free-text',
       lines: 4,
+      drawColumn: true,
     },
     {
       id: 'effective-regulation-tools',
-      label: 'My most effective regulation tools',
+      label: 'What are YOUR most effective regulation tools?',
       kind: 'free-text',
       lines: 4,
+      drawColumn: true,
     },
   ],
 });

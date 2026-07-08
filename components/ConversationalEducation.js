@@ -16,8 +16,6 @@ import {
   ArrowRight,
   ChevronRight,
   Clock,
-  Library,
-  ExternalLink,
   Lightbulb,
 } from 'lucide-react-native';
 import { icons } from '../lib/uiIcons';
@@ -47,6 +45,7 @@ const TOPIC_ICONS = {
   attachment_styles: icons.community,
   emotional_learning_change: icons.integrationCycle,
   mind_brain_relationships: icons.interconnectedness,
+  neurobiology_of_connection: icons.compassion,
   harm_reduction: icons.guidance,
   contemplative_practices: icons.meditate,
   psychedelic_preparation: icons.newBeginning,
@@ -56,9 +55,28 @@ import { colors, gradients } from '../theme/colors';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics }) => {
+const ConversationalEducation = ({ navigation, onSelectTopic, initialStep, onStepChange }) => {
   const insets = useSafeAreaInsets();
-  const [conversationStep, setConversationStep] = useState('greeting'); // greeting, categories, topic_selection
+  // Initialize from `initialStep` so the hub can restore the active category
+  // (e.g. "Teach me about myself") when the user backs out of an article —
+  // otherwise a fresh mount always drops them on the greeting screen.
+  const [conversationStep, setConversationStepRaw] = useState(initialStep || 'greeting'); // greeting, categories, topic_selection
+
+  // Wrap the setter so the parent hub can mirror the active step and bring the
+  // user back to it after they return from a full-screen topic/article.
+  const setConversationStep = (step) => {
+    setConversationStepRaw(step);
+    onStepChange?.(step);
+  };
+
+  // Let the parent hub drive the step too (e.g. the Android hardware back
+  // button resetting us to the greeting). `initialStep` is otherwise only read
+  // on mount, so without this a parent-side change would be ignored.
+  useEffect(() => {
+    if (initialStep && initialStep !== conversationStep) {
+      setConversationStepRaw(initialStep);
+    }
+  }, [initialStep]);
 
   const educationCategories = [
     {
@@ -86,7 +104,7 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
       color: colors.error,
       iconImg: icons.lungs,
       description: 'How your body and brain process experiences and support healing',
-      topics: ['somatic_awareness', 'brain_and_healing', 'nervous_system_safety', 'trauma_understanding', 'mind_body_pain', 'attachment_styles', 'emotional_learning_change', 'mind_brain_relationships']
+      topics: ['somatic_awareness', 'brain_and_healing', 'nervous_system_safety', 'trauma_understanding', 'mind_body_pain', 'attachment_styles', 'neurobiology_of_connection', 'emotional_learning_change', 'mind_brain_relationships']
     },
     {
       id: 'tools_and_practices',
@@ -105,15 +123,6 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
       iconImg: icons.guidance,
       description: 'Set & setting, harm reduction, and the full integration arc',
       topics: ['psychedelic_preparation', 'harm_reduction']
-    },
-    {
-      id: 'deep_dives',
-      title: 'Deep dives & all topics',
-      icon: 'school',
-      color: '#6366f1',
-      iconImg: icons.educationProgress,
-      description: 'Browse the complete library of integration education',
-      topics: ['all_topics']
     }
   ];
 
@@ -232,6 +241,12 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
     mind_brain_relationships: {
       title: 'Mind, Brain & Relationships',
       description: 'Dan Siegel\'s interpersonal neurobiology — integration and connection',
+      time: '12 minutes',
+      color: colors.error
+    },
+    neurobiology_of_connection: {
+      title: 'The Neurobiology of Connection',
+      description: 'Why other people calm us, and how safety travels between nervous systems',
       time: '12 minutes',
       color: colors.error
     },
@@ -410,6 +425,7 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
         {renderTopicCard('trauma_understanding')}
         {renderTopicCard('mind_body_pain')}
         {renderTopicCard('attachment_styles')}
+        {renderTopicCard('neurobiology_of_connection')}
         {renderTopicCard('emotional_learning_change')}
         {renderTopicCard('mind_brain_relationships')}
       </View>
@@ -444,44 +460,6 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
         <Text style={styles.topicsLabel}>Preparation & Safety:</Text>
         {renderTopicCard('psychedelic_preparation')}
         {renderTopicCard('harm_reduction')}
-      </View>
-
-    </>
-  );
-
-  const renderDeepDives = () => (
-    <>
-      {renderHuxleyMessage(
-        "Ready to explore everything? Browse the complete library of integration education — from foundational concepts to advanced therapeutic frameworks."
-      )}
-
-      <View style={styles.topicsContainer}>
-        <Text style={styles.topicsLabel}>Complete Library:</Text>
-
-        <TouchableOpacity
-          style={styles.allTopicsButton}
-          onPress={() => {
-            if (onViewAllTopics) {
-              onViewAllTopics();
-            } else if (navigation) {
-              navigation.navigate('EducationHub');
-            }
-          }}
-          activeOpacity={0.7}
-        >
-          <Library size={32} color="#6366f1" strokeWidth={2} />
-          <View style={styles.allTopicsContent}>
-            <Text style={styles.allTopicsTitle}>Browse All 25 Topics</Text>
-            <Text style={styles.allTopicsDescription}>
-              View the complete education library with detailed theory and practice lessons
-            </Text>
-          </View>
-          <ExternalLink size={24} color="#6366f1" strokeWidth={2} />
-        </TouchableOpacity>
-
-        <Text style={styles.popularLabel}>Recommended starting points:</Text>
-        {renderTopicCard('nervous_system')}
-        {renderTopicCard('integration_basics')}
       </View>
 
     </>
@@ -543,7 +521,6 @@ const ConversationalEducation = ({ navigation, onSelectTopic, onViewAllTopics })
           {conversationStep === 'body_and_brain' && renderBodyAndBrain()}
           {conversationStep === 'tools_and_practices' && renderToolsAndPractices()}
           {conversationStep === 'therapies' && renderTherapies()}
-          {conversationStep === 'deep_dives' && renderDeepDives()}
         </View>
 
         {conversationStep === 'greeting' && renderProTip()}
@@ -768,37 +745,6 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     fontWeight: '600',
-  },
-  allTopicsButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    padding: 20,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: colors.primary,
-  },
-  allTopicsContent: {
-    flex: 1,
-    marginHorizontal: 12,
-  },
-  allTopicsTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.primaryDark,
-    marginBottom: 4,
-  },
-  allTopicsDescription: {
-    fontSize: 13,
-    color: colors.primary,
-    lineHeight: 18,
-  },
-  popularLabel: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: colors.textSecondary,
-    marginTop: 8,
-    marginBottom: 4,
   },
   proTipContainer: {
     backgroundColor: '#fffbeb',

@@ -80,6 +80,24 @@ const PhilosophicalTalkthroughsHubScreen = ({ navigation }) => {
             ))}
           </View>
 
+          {/* Thought Experiments entry point */}
+          <TouchableOpacity
+            style={styles.crossLinkCard}
+            onPress={() => navigation.navigate('ThoughtExperiments')}
+            activeOpacity={0.7}
+          >
+            <View style={styles.optionLeft}>
+              <Image source={icons.puzzle} style={styles.crossLinkIcon} />
+              <View style={styles.optionText}>
+                <Text style={styles.optionTitle}>Thought Experiments</Text>
+                <Text style={styles.optionDescription}>
+                  Classic philosophical puzzles — the Experience Machine, the Ship of Theseus, the Teletransporter — as guided reflections.
+                </Text>
+              </View>
+            </View>
+            <ChevronRight size={24} color={colors.textSecondary} strokeWidth={2} />
+          </TouchableOpacity>
+
           {/* Tip */}
           <View style={styles.tipBox}>
             <Text style={styles.tipTitle}>{'\u{1F56F}\uFE0F'} Before You Begin</Text>
@@ -189,6 +207,23 @@ const styles = StyleSheet.create({
   optionTime: {
     fontSize: 13,
     color: colors.textLight,
+  },
+  crossLinkCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.surface,
+    padding: spacing.md,
+    borderRadius: borderRadius.lg,
+    marginBottom: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.primary,
+    ...shadows.soft,
+  },
+  crossLinkIcon: {
+    width: 112,
+    height: 112,
+    resizeMode: 'contain',
+    marginRight: spacing.md,
   },
   tipBox: {
     backgroundColor: 'rgba(255, 255, 255, 0.7)',

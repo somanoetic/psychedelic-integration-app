@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ArrowLeft, ChevronRight, Clock, Lightbulb } from 'lucide-react-native';
+import { ArrowLeft, ChevronRight, Clock, Lightbulb, HeartHandshake } from 'lucide-react-native';
 import { colors, gradients, spacing, borderRadius, shadows, typography } from '../theme/colors';
 import { icons } from '../lib/uiIcons';
 
@@ -79,7 +79,8 @@ const options = [
     id: 'attachment-reflection',
     title: 'Attachment Reflection',
     emoji: '🪢',
-    icon: null,
+    icon: icons.attachmentNest,
+    lucideIcon: HeartHandshake,
     description: 'A guided reflection on your early relationships and how they shaped you',
     estimatedTime: '25-45 min',
     route: 'AttachmentReflection',
@@ -131,6 +132,10 @@ const InnerWorkScreen = ({ navigation }) => {
                 <View style={styles.optionLeft}>
                   {option.icon ? (
                     <Image source={option.icon} style={styles.optionIconImage} />
+                  ) : option.lucideIcon ? (
+                    <View style={styles.optionLucideWrap}>
+                      <option.lucideIcon size={40} color={colors.primary} strokeWidth={1.75} />
+                    </View>
                   ) : (
                     <Text style={styles.optionEmoji}>{option.emoji}</Text>
                   )}
@@ -240,6 +245,17 @@ const styles = StyleSheet.create({
     width: 112,
     height: 112,
     resizeMode: 'contain',
+    marginRight: spacing.md,
+  },
+  // Wrapper so a lucide icon occupies roughly the same footprint as the
+  // illustrated image icons on the other cards (keeps row heights even).
+  optionLucideWrap: {
+    width: 72,
+    height: 72,
+    borderRadius: borderRadius.lg,
+    backgroundColor: 'rgba(157, 132, 183, 0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginRight: spacing.md,
   },
   optionText: {

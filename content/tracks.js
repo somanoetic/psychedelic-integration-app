@@ -105,8 +105,8 @@ export const tracks = [
     intro: "Many of you. All with reasons. We start by listening.",
     markers: [
       {
-        id: 'p1', title: 'What is IFS?', subtitle: 'Learn · 8 min',
-        payload: { type: 'education', refId: 'parts_work' },
+        id: 'p1', title: 'What is IFS?', subtitle: 'Learn · 7 min',
+        payload: { type: 'education', refId: 'ifs_basics' },
         relatedMarkers: ['belief.b1'],
       },
       {
@@ -288,8 +288,8 @@ export const tracks = [
         relatedMarkers: ['belief.b5'],
       },
       {
-        id: 'i5', title: 'Johnson\'s 4-step process', subtitle: 'Learn · 10 min',
-        payload: { type: 'education', refId: 'johnson_framework' },
+        id: 'i5', title: 'Active Imagination', subtitle: 'Guided · 15 min',
+        payload: { type: 'conversational', refId: 'ActiveImagination' },
         relatedMarkers: ['belief.b3'],
       },
       {

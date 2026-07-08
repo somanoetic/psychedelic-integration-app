@@ -1,11 +1,62 @@
 # Medium & Low Priority Bugs (P2-P3)
 
 **File Size Limit:** 300 lines
-**Last Updated:** 2026-05-15
+**Last Updated:** 2026-07-08
 
 ---
 
 ## Medium Priority (P2)
+
+### BUG-318: 6 intention-guidance tests time out (mocked `sendMessage` never resolves)
+**Priority:** P2 - Medium (test-infra only; no user-facing impact)
+**Status:** 🟡 Open — pre-existing, discovered 2026-07-08
+**Reported:** 2026-07-08 (surfaced while unblocking the Jest asset-parse crash — see commit `ceb2ea7`)
+**Assigned:** Unassigned
+**Related:** These were previously *masked*: `__tests__/e2e/conversationBot.test.js` crashed on a binary-PNG require and aborted the run early, so these suites never executed in CI. Fixing that crash (asset `moduleNameMapper`) made them reachable again.
+
+**Description:**
+6 tests fail with `Exceeded timeout of 10000 ms`. All exercise
+`IntentionGuidanceAIService.continueIntentionConversation`, which calls a mocked
+`sendMessage`. The mock is not resolving/rejecting, so the awaited call hangs
+until Jest's timeout. Sibling tests in the same suites that resolve synchronously
+(`analyzeDraftIntention`, `saveIntention`, the "deepen" stage, `browse_templates`)
+all pass — so the service itself works; the **test mock wiring** is the fault.
+
+**Confirmed pre-existing / unrelated to the branch it was found on:**
+- `lib/intentionGuidanceAIService.js` and both test files have **0 commits** on
+  `feat/neurobiology-of-connection` (`git log master..HEAD -- <file>` empty).
+- The failures reproduce at branch HEAD with the asset-mock change reverted.
+- Not caused by the RAG/warm-ping work; merged to `master` in PR #1 with the red
+  `Run Tests` acknowledged as this pre-existing flake.
+
+**Failing tests:**
+- `feat-102-flow.test.js` › Complete Conversation Flow › should complete full conversation journey
+- `intentionGuidanceAIService.test.js` › continueIntentionConversation › should return message, suggestedActions, and conversationStage on success
+- …› should detect "direction" stage with exactly 1 user message in history
+- …› should detect "confirm" stage with 3+ user messages (regardless of draft)
+- …› should return fallback response (not throw) when sendMessage rejects
+- …› should use dorsal fallback message for dorsal NS state on error
+
+(One further test — "welcome" stage detection — is flaky under the same cause; it
+intermittently passes.)
+
+**Reproduction:**
+```
+npx jest __tests__/lib/intentionGuidanceAIService.test.js
+```
+
+**Affected Files:**
+- `__tests__/lib/intentionGuidanceAIService.test.js` (mock setup for `sendMessage`)
+- `__tests__/integration/feat-102-flow.test.js` (same root cause via the full flow)
+
+**Proposed Fix Direction:**
+Audit the `sendMessage` mock in these suites — likely the mock returns `undefined`
+(or an unresolved promise) instead of a resolved value shaped like the real
+Claude/service response, so `await` never settles. Make the mock resolve/reject
+explicitly and assert the timeouts disappear. Pure test-side fix; do NOT change
+`lib/intentionGuidanceAIService.js` unless the audit shows a real contract gap.
+
+---
 
 ### BUG-316: Huxley fabricates suicidal-ideation disclosures by conflating "fear of dying" with "wanting to die"
 **Priority:** P1 - High (Clinical Safety)

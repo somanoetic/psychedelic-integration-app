@@ -898,167 +898,427 @@ The takeaway for integration is gentle but profound: the self you experience is 
   {
     id: 'building_habits',
     title: 'Building Integration Habits',
-    description: 'Use habit science to make your integration practices stick',
+    description: 'Use the science of behavior change to make your integration practices stick',
     emoji: '🔄',
-    estimatedTime: '8 minutes',
+    estimatedTime: '11 minutes',
     content: [
       {
-        title: 'Why Habits Matter for Integration',
-        text: `Insights without action fade. The most profound psychedelic experience means little if nothing changes in your daily life.
+        title: 'Why Insight Needs Habit',
+        text: `The most profound psychedelic experience means little if nothing changes in your daily life. Insight is the seed; habit is what lets it take root.
 
-Habits are automated behaviors learned from experience. When repeated enough, they happen without conscious effort. This is exactly what you want for integration — practices that become part of who you are, not things you force yourself to do.
+James Clear, in *Atomic Habits*, makes the case plainly: "You do not rise to the level of your goals. You fall to the level of your systems." Your intentions matter far less than the small, repeated actions your days are actually built from.
 
-The research is clear: habits compound. Getting 1% better each day leads to remarkable transformation over time.`
+That's good news, because habits compound. A 1% improvement repeated daily isn't 365% better in a year — it's nearly 38 times better, because the gains build on each other. The flip side is just as true: tiny lapses compound too. Integration isn't won in one heroic effort. It's won in the small practices you return to, again and again, until they become simply who you are.`
+      },
+      {
+        title: 'The Habit Loop',
+        text: `Every habit, Clear explains, runs through a four-step loop: **Cue → Craving → Response → Reward.**
+
+A *cue* triggers the brain to predict a reward (you see your journal on the pillow). The *craving* is the motivation — not for the act itself, but for the change of state it brings (a moment of calm). The *response* is the habit you perform (you write a line). The *reward* satisfies the craving and teaches your brain that this loop is worth remembering.
+
+This loop is why willpower is the wrong tool for the job. Willpower is a scarce, exhausting resource. Habits work precisely because they let you bypass it — once the loop is wired, the behavior happens almost on its own. Your aim isn't to force integration practices through sheer effort. It's to design loops so they run with as little effort as possible.`
       },
       {
         title: 'The Four Laws of Behavior Change',
-        text: `Every habit follows a loop: Cue → Craving → Response → Reward. You can use four laws to build integration habits:
+        text: `Clear maps each step of the loop to a practical law. To *build* a habit, run all four:
 
-**1. Make it obvious** — Design your environment so cues for integration practices are visible. Put your journal on your pillow. Set a meditation cushion where you'll see it. Use implementation intentions: "After I pour my morning coffee, I will sit quietly for 2 minutes."
+**1. Make it obvious (cue).** Design your environment so the cue is unmissable. Put the journal on your pillow; leave the meditation cushion where you'll trip over it. Use an implementation intention — a specific plan in the form *"I will [behavior] at [time] in [place]."*
 
-**2. Make it attractive** — Pair integration practices with something you enjoy. Journal while drinking your favorite tea. Do breathwork with music you love. Bundle a needed behavior with a rewarding one.
+**2. Make it attractive (craving).** Pair the practice with something you enjoy. Journal with your favorite tea; do breathwork to music you love. This is *temptation bundling* — linking a needed behavior to a wanted one.
 
-**3. Make it easy** — Reduce friction. Start with the "two-minute version" of any practice. Don't commit to 30 minutes of meditation — commit to sitting down. Momentum builds from there.
+**3. Make it easy (response).** Reduce friction to almost nothing. Don't commit to 30 minutes of meditation — commit to sitting down. Which brings us to the most important rule of all (next section).
 
-**4. Make it satisfying** — Track your streaks. Share progress with an accountability partner. Notice how you feel after practicing, not just during.`
+**4. Make it satisfying (reward).** Give yourself an immediate signal of success. Tick a box, notice how you feel afterward, tell an accountability partner. What's rewarded gets repeated.
+
+(To break an *unhelpful* habit, Clear simply inverts these: make it invisible, unattractive, difficult, and unsatisfying.)`
       },
       {
-        title: 'Identity-Based Integration',
-        text: `The most powerful approach isn't focusing on outcomes ("I want to feel better") but on identity ("I am someone who integrates their experiences").
+        title: 'Start Absurdly Small',
+        text: `If you take one thing from the science of habits, take this: shrink the behavior until it's almost impossible to fail.
 
-Ask yourself:
-• Who is the type of person who successfully integrates psychedelic experiences?
-• What would that person do today?
-• What small action proves I am becoming that person?
+Clear calls it the Two-Minute Rule — scale any new habit down to a version that takes two minutes or less. "Meditate daily" becomes "sit on the cushion for one breath." "Journal every night" becomes "write one sentence."
 
-Every time you journal, meditate, or check in with your nervous system, you cast a vote for that identity. You don't need a majority — just enough votes to shift the balance.`
+BJ Fogg, the Stanford researcher behind *Tiny Habits*, goes further: make it tiny *and* celebrate immediately. In his model, **Behavior = Motivation × Ability × Prompt** — a behavior happens only when all three meet at once. Since motivation is unreliable, the reliable lever is *ability*: make the habit so easy that even on your worst day, you can still do it. Then celebrate the instant you do — a small "yes!" or a smile — because that flash of positive emotion is what wires the habit in.
+
+This feels too small to matter. That's the point. You're not trying to transform your life today. You're establishing the *pattern* of showing up. The size can grow later; the identity is what you're building now.`
       },
       {
-        title: 'Habit Stacking for Integration',
-        text: `Connect new integration practices to existing habits:
+        title: 'Habit Stacking',
+        text: `One of the most reliable ways to make a cue obvious is to anchor a new habit to something you already do without fail. Fogg calls these anchors; Clear calls it habit stacking. The formula:
 
-**Morning stack:**
-"After I brush my teeth, I will do 3 conscious breaths."
-"After my 3 breaths, I will check in with my nervous system state."
+*"After I [current habit], I will [new tiny habit]."*
+
+**A morning stack:**
+"After I pour my coffee, I will take 3 conscious breaths."
+"After my 3 breaths, I will check in with my nervous system."
 "After my check-in, I will set one intention for the day."
 
-**Evening stack:**
-"After I set my phone to charge, I will write one sentence in my journal."
-"After I write in my journal, I will name one thing I'm grateful for."
-"After my gratitude, I will do a body scan as I fall asleep."
+**An evening stack:**
+"After I set my phone to charge, I will write one line in my journal."
+"After I write, I will name one thing I'm grateful for."
 
-Start with ONE link in the chain. Add more only after the first feels automatic.`
+The existing habit is already a deeply grooved cue — you're borrowing its reliability. Crucial rule: **start with one link.** Add the next only once the first feels automatic. A stack built too fast collapses; a stack grown one link at a time holds.`
+      },
+      {
+        title: 'Vote for Who You\'re Becoming',
+        text: `Here's the deepest layer, and the one most aligned with integration. Clear argues that lasting change isn't outcome-based ("I want to feel better") but *identity-based* ("I am someone who tends to my inner life").
+
+Every action you take is a vote for the type of person you wish to become. Write one line in your journal and you've cast a vote for "I am someone who reflects." You don't need a unanimous result — just enough votes to tip the balance.
+
+This reframes the whole project. The point of the journal isn't the journal; it's to *become a person who journals.* The point of the breath practice isn't the breath; it's to *become someone who pauses and listens to themselves.* A psychedelic experience often shows you a glimpse of who you could be. Habits are how you cast the daily votes that make that person real.
+
+Ask yourself: *Who is the kind of person who integrates their experiences? What small thing would they do today?* Then do that — at two-minute size.`
       },
       {
         title: 'When Habits Break Down',
-        text: `Missing a day isn't failure — it's data. Notice what happened:
+        text: `You will miss days. Everyone does. What you do next matters more than the miss itself.
 
-• **Too ambitious?** Scale back to the two-minute version
-• **Environmental friction?** Redesign your space
-• **Lost motivation?** Reconnect to why this matters to you
-• **Life disruption?** Be compassionate and restart
+Clear's rule: **never miss twice.** Missing once is an accident; missing twice is the start of a new (unwanted) habit. The goal was never an unbroken streak — perfectionism is its own trap. The goal is to return quickly, and kindly.
 
-The rule of thumb: never miss twice. Missing once is an accident. Missing twice is the start of a new pattern.
+When you notice a habit slipping, treat the miss as data, not failure:
+• **Too ambitious?** Shrink it back to the two-minute version.
+• **Environmental friction?** Redesign the space so the cue is obvious again.
+• **Lost the thread of why?** Reconnect to what your experience showed you mattered.
+• **Life upheaval?** Lower the bar, be compassionate, and restart small.
 
-Remember that integration isn't about perfection — it's about returning, again and again, to what matters.`
+Self-criticism doesn't build habits — it breaks them. Integration isn't about doing it perfectly. It's about returning, again and again, to what matters.`
       }
     ],
     keyTakeaways: [
-      'Insights without habits fade — make integration automatic',
-      'Use the four laws: make it obvious, attractive, easy, and satisfying',
-      'Focus on identity ("I am someone who integrates") not outcomes',
-      'Habit stack: attach new practices to existing routines',
-      'Never miss twice — consistency matters more than perfection'
-    ]
+      'You fall to the level of your systems, not your goals — and small habits compound',
+      'Build habits with the four laws: make it obvious, attractive, easy, and satisfying',
+      'Start absurdly small (the Two-Minute Rule) and celebrate immediately (Fogg) — ability beats motivation',
+      'Habit-stack onto existing routines, one link at a time',
+      'Change is identity-based: every action is a vote for who you\'re becoming. Never miss twice.',
+    ],
+    tryThis: {
+      title: 'Design One Tiny Habit',
+      duration: '5 minutes',
+      intro: 'Build a single integration habit using the science above. Resist making it bigger — small is the whole strategy.',
+      steps: [
+        'Name one integration practice you want to be doing (journaling, breathing, a body check-in).',
+        'Shrink it to a two-minute (or smaller) version you could do even on your worst day.',
+        'Find an anchor — a thing you already do daily without fail — and write: "After I ___, I will ___."',
+        'Make the cue obvious: put something where you\'ll see it (journal on pillow, app on home screen).',
+        'Decide how you\'ll celebrate the instant you do it — a quiet "yes," a checkmark, a smile.',
+      ],
+    },
+    relatedExercises: ['HAB-001', 'HAB-002', 'HAB-006', 'HAB-007'],
+    sources: [
+      'Drawn from: James Clear, Atomic Habits, and BJ Fogg, Tiny Habits.',
+    ],
+    seeAlso: ['acceptance_commitment', 'contemplative_practices'],
   },
 
   {
     id: 'cognitive_patterns',
     title: 'Cognitive Patterns & Distortions',
-    description: 'Recognize thinking traps that block integration and learn to reframe them',
+    description: 'Recognize the thinking traps — distortions, biases, and fallacies — that block integration, and practice catching them',
     emoji: '💭',
-    estimatedTime: '9 minutes',
+    estimatedTime: '13 minutes',
     content: [
       {
-        title: 'What Are Cognitive Distortions?',
-        text: `Cognitive distortions are habitual patterns of thinking that are inaccurate or biased. Everyone has them — they're how your brain takes shortcuts. But they can sabotage integration by filtering your experience through old, unhelpful lenses.
+        title: 'Your Mind Takes Shortcuts',
+        text: `Your brain is constantly making fast, automatic judgments — it has to. Daniel Kahneman calls this "System 1": quick, effortless, intuitive thinking that runs in the background without your permission. It's brilliant for crossing a street; it's unreliable for making sense of your inner life.
 
-Cognitive Behavioral Therapy (CBT) identifies these patterns so you can catch them in action and choose a more balanced perspective.
+Cognitive distortions are the predictable ways those shortcuts go wrong. They're habitual patterns of thinking that feel completely true but are biased or inaccurate. As psychologist John Grohol puts it, they're "simply ways that our mind convinces us of something that isn't really true" — thoughts that "sound rational and accurate, but really only serve to keep us feeling bad about ourselves."
 
-This isn't about "positive thinking" — it's about accurate thinking.`
+Everyone has them. They're not a character flaw or a sign you're broken. They're the cost of having a fast brain. The work isn't to stop having them — it's to notice them, so you're no longer at their mercy.`
       },
       {
-        title: 'Common Thinking Traps',
-        text: `**All-or-Nothing Thinking:** "My experience was either life-changing or a waste." Reality has gradients.
+        title: 'Where CBT Comes From',
+        text: `Cognitive Behavioral Therapy rests on a deceptively simple idea: it's not events themselves that disturb us, but the beliefs we hold about them. This isn't new — it traces back to the Stoic philosopher Epictetus nearly two thousand years ago, a lineage the founders of CBT openly acknowledge.
 
-**Catastrophizing:** "This difficult feeling means I'm permanently damaged." Difficult feelings are temporary.
+Aaron Beck and Albert Ellis turned that insight into a method in the mid-20th century. Their core move: the link between an event and your emotional reaction runs *through* an interpretation — and that interpretation can be examined, tested, and revised.
 
-**Mind Reading:** "People would think I'm crazy if I told them." You don't actually know what others think.
-
-**Should Statements:** "I should be further along by now." Should creates shame, not motivation.
-
-**Discounting the Positive:** "That moment of peace doesn't count because the rest was hard." All experiences count.
-
-**Emotional Reasoning:** "I feel overwhelmed, so integration must not be working." Feelings aren't facts about progress.`
+This matters for integration because a psychedelic experience doesn't arrive with a fixed meaning attached. The same experience can become "proof I'm beyond help" or "the moment something started to shift," depending on the story your mind tells about it. CBT gives you tools to notice that story is being written — and to write a more accurate one.`
       },
       {
-        title: 'The ABCs of Cognitive Restructuring',
-        text: `A simple framework for working with distorted thoughts:
+        title: 'The Common Thinking Traps',
+        text: `Clinicians have catalogued a couple dozen of these patterns. Here are the ones you're most likely to meet during integration — the full set lives in the flip-card deck further down, so don't worry about memorizing them. See which ones feel familiar:
 
-**A — Activating Event:** What happened? (Describe factually)
+**All-or-Nothing (Polarized) Thinking** — No middle ground. "My experience was either life-changing or a waste." Reality almost always lives in the gray.
+
+**Overgeneralization** — Taking one event as a never-ending pattern. One hard day becomes "this always happens to me." Watch for the words *always* and *never.*
+
+**Catastrophizing** — Expecting disaster, asking "what if" until the worst-case feels inevitable. "This difficult feeling means I'm permanently damaged." Its mirror image is **magnification & minimization** — blowing up the negatives while shrinking the positives.
+
+**Mental Filtering** — Dwelling on one negative detail until it darkens your whole view, screening out everything good around it.
+
+**Discounting the Positive** — A subtler cousin: the good moments "don't count." "That moment of peace doesn't count because the rest was hard."
+
+**Jumping to Conclusions** — Deciding you know how things are with no evidence. It comes in two flavors: **mind reading** ("everyone would think I'm crazy") and **fortune-telling** ("this will never work for me").
+
+**Should Statements** — Ironclad rules about how you (and everyone) must be. "I should be further along by now." As Grohol notes, shoulds breed guilt and shame, not motivation.
+
+**Emotional Reasoning** — "If I feel it, it must be true." Feeling overwhelmed becomes proof that integration "isn't working."
+
+**Personalization & Blaming** — Taking responsibility for things outside your control, or assuming everything is about you (or, flipped, that it's all someone else's fault).
+
+**Labeling** — Turning one event into a verdict on your whole self. Not "I struggled today" but "I'm a failure."
+
+**The Comparison Game** — Measuring your insides against everyone else's outsides. "They've clearly got this figured out — what's wrong with me?"`
+      },
+      {
+        title: 'Catch It, Check It, Change It',
+        text: `Once you can name a distortion, you can work with it. The classic CBT sequence, drawn from Ellis's ABC model, gives you a clear path:
+
+**A — Activating Event:** What actually happened? Describe it like a camera would, just the facts.
 "I tried to meditate and felt anxious instead of peaceful."
 
 **B — Belief:** What did you tell yourself about it?
 "I'm doing this wrong. I'll never be good at integration."
 
-**C — Consequence:** How did the belief make you feel/act?
+**C — Consequence:** How did that belief make you feel and act?
 "Felt discouraged. Stopped meditating for a week."
 
-**D — Dispute:** Challenge the belief with evidence.
-"Meditation isn't about feeling peaceful — it's about noticing. Anxiety arising IS the practice working."
+**D — Dispute:** Challenge the belief with evidence, the way a fair-minded friend would.
+"Meditation isn't about feeling peaceful — it's about noticing. Anxiety arising *is* the practice working."
 
-**E — Effective new belief:**
-"Noticing anxiety during meditation is a sign of awareness, not failure."`
+**E — Effective new belief:** Land on something more accurate (not just cheerful).
+"Noticing anxiety during meditation is a sign of awareness, not failure."
+
+The aim, as the CBT tradition stresses, is *accurate* thinking, not positive thinking. You're not papering over reality with affirmations — you're correcting a distortion back toward the truth.`
       },
       {
-        title: 'Thought Records for Integration',
-        text: `When a difficult thought arises during integration:
+        title: 'The Thought Record',
+        text: `When a sticky thought won't let go, slow it down on paper. A thought record is CBT's workhorse tool:
 
 1. **Name it** — "I notice I'm having the thought that..."
-2. **Identify the distortion** — Which thinking trap is this?
-3. **Evidence for** — What supports this thought?
-4. **Evidence against** — What contradicts it?
-5. **Balanced thought** — What's a more accurate perspective?
+2. **Spot the distortion** — Which trap is this? (Use the deck and quiz below to sharpen this skill.)
+3. **Evidence for** — What genuinely supports the thought?
+4. **Evidence against** — What contradicts it? (This is where most distortions fall apart.)
+5. **Balanced thought** — What's a fairer, more complete picture?
 
-Example:
-• Thought: "Nothing has changed since my experience."
-• Distortion: Discounting the positive, all-or-nothing
-• Evidence for: "I still feel stressed sometimes"
-• Evidence against: "I've journaled 12 times, I caught myself before yelling yesterday, I noticed my breathing today"
-• Balanced: "Change is gradual. I'm making small shifts that matter."`
+Worked example:
+• **Thought:** "Nothing has changed since my experience."
+• **Distortion:** Discounting the positive + all-or-nothing
+• **Evidence for:** "I still feel stressed sometimes."
+• **Evidence against:** "I've journaled 12 times, I caught myself before yelling yesterday, I paused to breathe this morning."
+• **Balanced:** "Change is gradual. I'm making small shifts that matter."
+
+Writing it down matters — it pulls the thought out of System 1's fast automatic loop and hands it to slower, deliberate reasoning, where it can actually be examined.`
       },
       {
-        title: 'CBT Meets Psychedelic Integration',
-        text: `Psychedelic experiences can both reveal and dissolve cognitive distortions:
+        title: 'Why This Matters for Integration',
+        text: `Psychedelic experiences have a striking two-way relationship with these patterns.
 
-**Revealed:** You might see clearly for the first time how a pattern of catastrophizing has run your life. The experience shows you the pattern from outside it.
+**They reveal them.** From inside an experience, you may see — sometimes for the first time — how a lifetime of catastrophizing or self-blame has quietly run the show. The pattern becomes visible because, briefly, you're standing outside it.
 
-**Dissolved:** The felt sense of interconnection can directly counter beliefs of worthlessness or isolation.
+**They can loosen them.** A felt sense of connection or worth can directly contradict a long-held belief like "I'm unlovable" or "I'm alone." That contradiction is powerful.
 
-But old patterns are persistent. Integration uses CBT tools to:
-• Catch distortions as they re-emerge after the experience
-• Reinforce the new perspectives the experience revealed
-• Build evidence-based confidence in your capacity to change
-• Create concrete practices for when old thinking returns`
+But insight fades, and old grooves are deep. Without practice, the familiar distortions creep back within days or weeks. This is exactly the gap integration fills: CBT tools let you catch the distortions as they re-emerge, reinforce the truer perspective the experience offered, and build real evidence — over time — that you can think, and live, differently.
+
+Hold it gently, though: if a thought reflects a genuine problem in your life, the answer isn't to "reframe" it away. Accurate thinking sometimes means facing something real and changing it.`
+      },
+      {
+        title: 'Beyond Distortions: Fallacies & Biases',
+        text: `Cognitive distortions are the *emotional* thinking traps CBT focuses on. But they have two close cousins worth knowing, because they shape integration just as quietly.
+
+**Cognitive biases** are the systematic ways everyone's judgment tilts off-true. Daniel Kahneman, in *Thinking, Fast and Slow*, showed these aren't signs of a weak mind — they're built into how the fast, automatic part of all of us works. A few that touch integration directly:
+• *Confirmation bias* — you notice what fits your existing story and skip what doesn't, so an old belief like "I never change" keeps finding its own evidence.
+• *Negativity bias* — the hard moments of a session stick harder than the beautiful ones.
+• *The sunk cost fallacy* — clinging to a practice, relationship, or self-image because of what you've already poured in.
+
+**Logical fallacies** are flaws in *reasoning* — the shaky arguments your mind makes to itself. *Black-or-white thinking* ("either I'm healed or I'm hopeless"), *slippery slopes* ("one missed day and it all falls apart"), and *appeals to emotion* ("I feel it, so it must be the truth") all show up in the stories we tell about our own progress.
+
+You don't need to master these like a logic textbook. The move is the same as with distortions: when you can *name* the pattern, it loses some of its grip. The two decks below are a field guide — flip through them, and see which ones you recognize in your own self-talk.`
       }
     ],
     keyTakeaways: [
-      'Cognitive distortions are normal shortcuts, not character flaws',
-      'Common traps: all-or-nothing, catastrophizing, should statements',
-      'Use the ABCDE framework to challenge unhelpful beliefs',
-      'Psychedelic experiences can reveal distortions — CBT tools help you stay free of them',
-      'The goal is accurate thinking, not positive thinking'
-    ]
+      'Distortions are your fast brain\'s shortcuts gone wrong — normal, not a character flaw',
+      'CBT\'s core idea (from the Stoics through Beck & Ellis): events disturb us through our beliefs about them',
+      'Learn the named traps — all-or-nothing, catastrophizing, mind reading, shoulds, emotional reasoning',
+      'Use the ABCDE sequence and the thought record to catch, check, and change a thought',
+      'Distortions have cousins — cognitive biases (Kahneman) and logical fallacies — that distort integration too',
+      'Aim for accurate thinking, not positive thinking — and don\'t reframe away problems that are real',
+    ],
+    tryThis: {
+      title: 'Catch One Thought',
+      duration: '5 minutes',
+      intro: 'A pocket-sized thought record for a single sticky thought. Keep it light — you\'re practicing noticing, not interrogating yourself.',
+      steps: [
+        'Name a thought that\'s been nagging you, starting with "I notice I\'m having the thought that..."',
+        'Glance at the list of traps above — which one does this thought most resemble?',
+        'Ask: what real evidence is there *for* this thought? Be honest.',
+        'Now ask: what evidence is there *against* it? List at least two things.',
+        'Write one more balanced sentence that accounts for both — not cheerier, just truer.',
+      ],
+    },
+    interactive: [
+      {
+        type: 'flashcards',
+        title: 'Distortion Deck',
+        intro: 'Tap each card to reveal what the distortion is and how it sounds. Swipe through to learn the names — you\'ll use them in the quiz below.',
+        cards: [
+          { front: 'All-or-Nothing Thinking', back: 'Seeing things in black-and-white extremes, with no middle ground. "My experience was either life-changing or a complete waste."' },
+          { front: 'Overgeneralization', back: 'Taking one event as a never-ending pattern. One hard day becomes "this always happens to me." Watch for "always" and "never."' },
+          { front: 'Mental Filtering', back: 'Dwelling on a single negative detail until it darkens your whole view, screening out everything positive around it.' },
+          { front: 'Discounting the Positive', back: 'Insisting the good moments "don\'t count." "I\'ve only been steady for two weeks — that\'s not a big deal."' },
+          { front: 'Jumping to Conclusions', back: 'Deciding you know how things are with no evidence. Splits into two flavors — mind reading and fortune-telling (next two cards).' },
+          { front: 'Mind Reading', back: 'Assuming you know what others think — usually that they\'re judging you. "Everyone would think I\'m crazy if I told them."' },
+          { front: 'Fortune-Telling', back: 'Predicting the future as if it\'s already decided. "I always end up back where I started." "This will never work for me."' },
+          { front: 'Catastrophizing', back: 'Expecting disaster; asking "what if?" until the worst case feels certain. "If I feel this, I won\'t be able to cope."' },
+          { front: 'Magnification & Minimization', back: 'Blowing up the negatives and shrinking the positives — like looking through binoculars backward and forward. The flip side of catastrophizing.' },
+          { front: 'Emotional Reasoning', back: '"If I feel it, it must be true." Feeling overwhelmed becomes proof that integration isn\'t working — but feelings aren\'t facts.' },
+          { front: 'Should Statements', back: 'Ironclad rules about how you must be. "I should be further along by now." Shoulds breed shame, not motivation.' },
+          { front: 'Labeling', back: 'Turning one event into a verdict on your whole self. Not "I struggled today" but "I\'m a weak person."' },
+          { front: 'Personalization', back: 'Taking responsibility for things outside your control, or assuming everything others do is a reaction to you.' },
+          { front: 'Blaming', back: 'Holding others wholly responsible for your pain — "you make me feel this way" — or, flipped, blaming yourself for everything.' },
+          { front: 'The Comparison Game', back: 'Measuring your insides against others\' outsides. "They got promoted; I should have too." "Everyone else has this figured out."' },
+          { front: 'Fallacy of Fairness', back: 'Measuring life against a private ruler of what\'s "fair" and feeling resentful when reality doesn\'t comply. Life often isn\'t fair.' },
+          { front: 'Control Fallacies', back: 'Feeling either totally helpless ("a victim of fate") or over-responsible for everyone\'s happiness around you. Both distort where control actually lies.' },
+        ],
+      },
+      {
+        type: 'scenario',
+        title: 'Name the Distortion',
+        intro: 'Read each thought and pick the trap it best fits. There\'s often overlap — go with the closest match, and read the explanation either way.',
+        prompt: 'Which distortion is at work here?',
+        items: [
+          {
+            scenario: '"The session got hard at the end, so the whole thing was a failure."',
+            options: ['All-or-Nothing Thinking', 'Mind Reading', 'Should Statements'],
+            answer: 0,
+            explanation: 'All-or-nothing: one rough patch flips the entire experience into "failure," erasing every gradient in between.',
+          },
+          {
+            scenario: '"I felt a flash of fear, which proves I\'m not ready to heal."',
+            options: ['Personalization', 'Emotional Reasoning', 'Mental Filtering'],
+            answer: 1,
+            explanation: 'Emotional reasoning: a feeling (fear) is treated as hard evidence about reality. But fear arising is normal — it isn\'t a verdict on your readiness.',
+          },
+          {
+            scenario: '"If I tell my friend about my experience, she\'ll definitely think I\'ve lost it."',
+            options: ['Mind Reading', 'Catastrophizing', 'Global Labeling'],
+            answer: 0,
+            explanation: 'Mind reading: you\'re certain you know her private judgment with no actual evidence. (The "definitely" is the tell.)',
+          },
+          {
+            scenario: '"I should be completely transformed by now. It\'s been three weeks."',
+            options: ['Discounting the Positive', 'Should Statements', 'Fortune-Telling'],
+            answer: 1,
+            explanation: 'Should statement: an arbitrary rule about your pace becomes a stick to beat yourself with — generating guilt rather than progress.',
+          },
+          {
+            scenario: '"Yes, I journaled and stayed calm with my kids this week, but that doesn\'t really count."',
+            options: ['Catastrophizing', 'Personalization', 'Discounting the Positive'],
+            answer: 2,
+            explanation: 'Discounting the positive: real evidence of change is waved away as not counting — which keeps the negative belief safely in place.',
+          },
+          {
+            scenario: '"My partner seemed quiet at dinner. It must be something I did wrong."',
+            options: ['Personalization', 'All-or-Nothing Thinking', 'Emotional Reasoning'],
+            answer: 0,
+            explanation: 'Personalization: you assume you\'re the cause of someone else\'s state, with no evidence they were reacting to you at all.',
+          },
+          {
+            scenario: '"I skipped my practice today. I always sabotage everything good in my life."',
+            options: ['Discounting the Positive', 'Overgeneralization', 'Catastrophizing'],
+            answer: 1,
+            explanation: 'Overgeneralization: a single missed day becomes an "always" — one event stretched into a permanent, sweeping pattern. The word "always" is the tell.',
+          },
+          {
+            scenario: '"Everyone in my integration group seems so much further along than me."',
+            options: ['The Comparison Game', 'Mind Reading', 'Should Statements'],
+            answer: 0,
+            explanation: 'The comparison game: measuring your insides against others\' outsides. You can\'t actually see their inner struggles — only the surface you\'re comparing yourself to.',
+          },
+          {
+            scenario: '"Sure, I had a real breakthrough — but anyone could have seen that. My panic attack last week is the real story."',
+            options: ['Emotional Reasoning', 'Personalization', 'Magnification & Minimization'],
+            answer: 2,
+            explanation: 'Magnification & minimization: the breakthrough is shrunk to nothing while the hard moment is blown up — the binoculars pointed the wrong way at each.',
+          },
+        ],
+      },
+      {
+        type: 'flashcards',
+        title: 'Cognitive Biases Deck',
+        intro: 'Biases are the systematic ways everyone\'s judgment tilts off-true — built into the fast part of the mind (Kahneman). Tap to reveal each one, and notice where it shows up in how you read your own progress.',
+        cards: [
+          { front: 'Confirmation Bias', back: 'You look for, and trust, information that fits what you already believe — and skip the rest. An old story like "I never change" keeps finding its own evidence.' },
+          { front: 'Negativity Bias', back: 'Negative things weigh on you more heavily than positive ones. The hard moment of a session sticks harder than the beautiful one — we\'re primed for survival, not balance.' },
+          { front: 'Availability Heuristic', back: 'You judge by whatever springs most easily to mind — recent, vivid, or emotional memories feel more relevant than they are.' },
+          { front: 'Sunk Cost Fallacy', back: 'You cling to something because of what you\'ve already put in. Ask: if I weren\'t already invested, would I choose this now?' },
+          { front: 'Self-Serving Bias', back: 'Your successes feel like your doing; your failures feel like bad luck or others\' fault. Comforting, but it blurs an honest look.' },
+          { front: 'Fundamental Attribution Error', back: 'You judge others on their character but yourself on your situation. They\'re "just like that"; you "had a rough day."' },
+          { front: 'Spotlight Effect', back: 'You overestimate how much others notice your looks and actions. Most people are far more focused on themselves than on you.' },
+          { front: 'Anchoring', back: 'The first thing you judge colors everything after it. The opening impression of an experience can quietly set the frame for the whole thing.' },
+          { front: 'Optimism / Pessimism Bias', back: 'You over- or under-estimate how things will go. Pessimism often guards against disappointment; optimism can skip past real risk. Aim for realistic.' },
+          { front: 'Backfire Effect', back: 'When a core belief is challenged, you can end up believing it even more strongly — being wrong can feel like an attack on the self.' },
+          { front: 'Barnum Effect', back: 'You read personal specifics into vague statements, filling the gaps. Worth remembering when a profound-sounding message feels uncannily "about you."' },
+          { front: 'Dunning–Kruger Effect', back: 'The less you know about something, the more confident you tend to feel; real expertise brings humility about how much you don\'t know.' },
+        ],
+      },
+      {
+        type: 'flashcards',
+        title: 'Logical Fallacies Deck',
+        intro: 'Fallacies are flaws in reasoning — the shaky arguments the mind makes to itself. Tap to reveal each, and listen for it in the stories you tell about your own progress. (Source: yourlogicalfallacyis.com, CC BY-NC-ND.)',
+        cards: [
+          { front: 'Black-or-White (False Dilemma)', back: 'Presenting two options as the only possibilities when more exist. "Either I\'m fully healed or I\'m hopeless." Reality has a middle.' },
+          { front: 'Slippery Slope', back: 'Claiming one small step inevitably leads to an extreme outcome. "One missed day and the whole practice falls apart" — it avoids the actual issue with a worst-case leap.' },
+          { front: 'Appeal to Emotion', back: 'Using a strong feeling in place of a sound reason. "I feel it, so it must be true." A feeling is real, but it isn\'t, by itself, evidence.' },
+          { front: 'Begging the Question (Circular)', back: 'The conclusion is hidden inside the premise. "I\'m unlovable, which is why no one could love me." The belief quietly assumes itself.' },
+          { front: 'Anecdotal', back: 'Leaning on a single story instead of the broader pattern. One bad night becomes the whole truth, outweighing everything that went well.' },
+          { front: 'The Naturalistic Fallacy', back: 'Assuming that because something feels "natural" it must be good or right — or that an old, familiar pattern is therefore the true one.' },
+          { front: 'Composition / Division', back: 'Assuming what\'s true of a part is true of the whole (or vice versa). "One part of me is afraid, so all of me is broken."' },
+          { front: 'Ad Hominem (turned inward)', back: 'Attacking the person instead of the point — and we often aim it at ourselves: dismissing a real insight because "it came from broken old me."' },
+          { front: 'The Texas Sharpshooter', back: 'Drawing the target around wherever the shots landed — finding a pattern to fit a presumption. We cherry-pick the moments that confirm the story we already had.' },
+          { front: 'The Middle Ground', back: 'Assuming the truth must sit halfway between two positions. Sometimes it does — but halfway between a truth and a falsehood is still false.' },
+        ],
+      },
+      {
+        type: 'scenario',
+        title: 'Spot the Bias or Fallacy',
+        intro: 'A few examples drawn from the self-talk that shows up in integration. Pick the closest match, and read the explanation either way.',
+        prompt: 'Which pattern is at work here?',
+        items: [
+          {
+            scenario: '"I keep noticing every time I get anxious — clearly proof I haven\'t changed at all. (The calm weeks? I barely register those.)"',
+            options: ['Confirmation Bias', 'Slippery Slope', 'Anchoring'],
+            answer: 0,
+            explanation: 'Confirmation bias: you collect the evidence that fits "I haven\'t changed" and skip the evidence against it — so the old belief keeps confirming itself.',
+          },
+          {
+            scenario: '"If I skip one day of journaling, I\'ll lose the habit, then lose all my progress, then end up right back where I started."',
+            options: ['Sunk Cost Fallacy', 'Slippery Slope', 'Appeal to Emotion'],
+            answer: 1,
+            explanation: 'Slippery slope: one small step is assumed to trigger an inevitable cascade to the worst case, with nothing actually linking the steps.',
+          },
+          {
+            scenario: '"I\'ve put three years into this relationship, so I have to make it work — even though it\'s clearly not good for me."',
+            options: ['Sunk Cost Fallacy', 'Confirmation Bias', 'Black-or-White Thinking'],
+            answer: 0,
+            explanation: 'Sunk cost: the past investment drives the decision. The honest question is forward-looking — if I weren\'t already in, would I choose this now?',
+          },
+          {
+            scenario: '"My friend snapped at me — he\'s just a hostile person. (When I snapped last week, well, I was exhausted.)"',
+            options: ['Negativity Bias', 'Fundamental Attribution Error', 'Barnum Effect'],
+            answer: 1,
+            explanation: 'Fundamental attribution error: others\' behavior gets pinned on their character, your own on your circumstances. Charity and accuracy point the same way here.',
+          },
+          {
+            scenario: '"The medicine showed me a message that felt like it was speaking directly and uniquely to my life."',
+            options: ['Barnum Effect', 'Appeal to Emotion', 'Anchoring'],
+            answer: 0,
+            explanation: 'Barnum effect: vague, resonant material reads as uncannily personal because the mind fills the gaps. This doesn\'t cheapen the meaning — but it\'s worth holding insights humbly.',
+          },
+          {
+            scenario: '"Either this experience completely fixes me, or it was a total waste of time."',
+            options: ['Slippery Slope', 'Black-or-White (False Dilemma)', 'Sunk Cost Fallacy'],
+            answer: 1,
+            explanation: 'Black-or-white: only two extremes are allowed, when almost all real change lives in the wide middle ground between them.',
+          },
+        ],
+      },
+    ],
+    relatedExercises: ['CBT-003', 'CBT-001', 'CBT-002'],
+    sources: [
+      'Distortions drawn from: John M. Grohol, Common Cognitive Distortions; the CBT Workbook for Therapists; Donald Robertson, The Philosophy of Cognitive-Behavioural Therapy; and Daniel Kahneman, Thinking, Fast and Slow.',
+      'Biases & fallacies decks adapted from yourbias.is and yourlogicalfallacyis.com by Jesse Richardson / The School of Thought (Creative Commons BY-NC-ND), with bias framing from Kahneman, Thinking, Fast and Slow.',
+    ],
+    seeAlso: ['core_beliefs', 'acceptance_commitment'],
   },
 
   {
@@ -1711,6 +1971,96 @@ This is why putting a psychedelic experience into words — naming what moved th
   },
 
   {
+    id: 'neurobiology_of_connection',
+    title: 'The Neurobiology of Connection',
+    description: 'Why other people calm us, how safety travels between nervous systems, and the biology of belonging',
+    emoji: '🫶',
+    estimatedTime: '12 minutes',
+    content: [
+      {
+        title: 'Connection Isn\'t Optional — It\'s Biology',
+        text: `We tend to think of needing other people as a soft thing — nice, but not essential. Your nervous system disagrees.
+
+The autonomic nervous system is, at its core, a relational system. It evolved not just to keep you alive but to keep you connected, because for a mammal, connection *is* a survival strategy. Stephen Porges called the newest branch of this system the "social engagement system" — a dedicated piece of wiring whose job is to help you bond, soothe, and be soothed.
+
+The stakes are physical, not just emotional. Chronic loneliness and isolation raise the risk of cardiovascular disease, inflammation, depression, and early death at levels researchers compare to smoking. Social experience even reaches into gene expression — the field of human social genomics shows that isolation and belonging change which of your genes are switched on, shaping immune function and inflammation. Connection, in other words, is written into the body all the way down.`
+      },
+      {
+        title: 'The Face-Heart Connection',
+        text: `Here's the elegant part. The same nerve pathway that calms your heart (the ventral branch of the vagus nerve) is wired together with the muscles of your face, your voice, your eyes, and even the tiny muscles in your middle ear that tune you to the human voice.
+
+Porges named this the "face-heart connection." It means your inner state and your outer signals are one circuit. When you feel safe, it shows — your face softens, your voice warms and gains melody (what's called prosody), your gaze steadies. And it runs the other way too: when you take in a warm face and a gentle voice, that circuit helps settle *your* heart.
+
+This is why a calm voice can reach you when words can't, and why a flat, expressionless face feels subtly unsafe. You're not imagining it — you're reading someone's nervous system directly, through their face and voice.`
+      },
+      {
+        title: 'Neuroception: Reading Safety in Each Other',
+        text: `Underneath all of this runs neuroception — your body's around-the-clock, below-awareness scan for safety or danger. (If you've read *Your Nervous System & Safety*, you've met it.) What's worth drawing out here is how *relational* that scan is.
+
+Neuroception listens to three streams at once: what's happening inside you (heart, breath, gut), what's around you (sound, space, light), and — crucially — what's passing *between* you and other people: their facial expression, tone, eye contact, the distance they keep, whether their movements are smooth or sharp.
+
+One vivid image for this comes from the work of Natureza Gabriel, who extends polyvagal ideas: we're like a snail that withdraws into its shell at a cue of threat and extends out from it when it senses enough safety to be vulnerable. Connection is the nervous system extending out. And because this happens automatically, feeling unsafe with someone — or oddly safe — isn't a verdict you chose. It's neuroception doing its job, often using old information.`
+      },
+      {
+        title: 'Co-Regulation: How Safety Travels Between Bodies',
+        text: `Now the heart of it. When a calm, present person is with you, your nervous systems begin to sync — heart rhythms, breathing, even neural activity start to entrain. Researchers call this physiological synchrony, and it's the mechanism behind something you've felt your whole life: a steady person can steady you.
+
+This is co-regulation, and the order matters. We don't start life able to self-soothe — we *borrow* a caregiver's regulated state until our own develops. As Deb Dana puts it, "the ability to self-regulate is built on ongoing experiences of co-regulation." That borrowing never fully ends. Reaching for a regulated, trusted person when you're struggling isn't dependence or weakness — it's the system working exactly as designed.
+
+There's chemistry under it: safe connection releases oxytocin and vasopressin, the molecules of bonding and trust, which let us be physically close and still without alarm. The vagus has even been nicknamed the "compassion nerve," because the same ventral state that makes you feel safe is the one that makes you feel *for* others.`
+      },
+      {
+        title: 'States Blend: Play, Joy, and Safe Stillness',
+        text: `The familiar map — safe, mobilized, shutdown — is the foundation, but real connection lives in the blends. Safety doesn't mean low energy; it means energy held inside safety.
+
+When your ventral safety mixes with a dose of sympathetic activation, you get **play and joy** — laughter, flirting, dancing, sport, creative flow. The energy is high, but because connection stays online, it's exhilarating rather than threatening. (Natureza Gabriel notes that a boxer who can suddenly hear their coach mid-fight has kept their connection system online under huge activation — that's the blend at its edge.)
+
+When ventral safety mixes with the deep stillness of the dorsal branch — *without* fear — you get **intimacy, rest, and union**: being held, deep meditation, the quiet closeness where boundaries soften and you can be still with another person without bracing. Porges calls this "immobilization without fear." Both of these — play and safe stillness — are connection. Healing isn't reaching one perfect calm state; it's regaining access to the whole menu, anchored in safety.`
+      },
+      {
+        title: 'Rupture, Repair, and Why It Builds Trust',
+        text: `Good connection is not seamless connection. Decades of attachment research found something freeing: attuned caregivers are "in sync" with a child only about a third of the time. What distinguishes secure bonds isn't the absence of misattunement — it's *repair*. The disconnect happens, gets noticed, and connection is restored.
+
+Each repair teaches the nervous system something it can't learn any other way: *we can break and come back*. That lesson is what lets you risk closeness at all. Avoiding all conflict doesn't build trust; reliably repairing after rupture does.
+
+So when you feel a snag with someone who matters — the missed cue, the small sting — that moment isn't the failure. It's the doorway. Naming it ("I think we got out of sync there") and turning back toward each other is how bonds actually deepen.`
+      },
+      {
+        title: 'Why This Matters for Integration',
+        text: `Psychedelic and other non-ordinary experiences often crack open a profound felt sense of connection — to others, to the living world, to something larger. That's not a side effect to file away; it's data about what your nervous system is capable of feeling.
+
+Integration is partly the work of building a life where that felt connection has somewhere to land — relationships and rituals that keep nudging you toward ventral safety. A flood of insight rarely reorganizes a nervous system on its own. Safe, repeated, attuned connection does.
+
+This article is the reading. The doing is your turn — and the in-app **Personal Connection Plan** is a gentle place to start mapping where connection already lives in your life, and where you'd like to grow it.`
+      }
+    ],
+    keyTakeaways: [
+      'Connection is a biological need, not a luxury — isolation harms the body the way major health risks do',
+      'The face-heart connection links your calm to your face, voice, and eyes — so safety is something we literally read in each other',
+      'Co-regulation comes first: we borrow others\' steadiness before we can self-soothe, and that never fully stops',
+      'Safety isn\'t low energy — it blends with activation into play and joy, and with stillness into rest and intimacy',
+      'Rupture is normal; repair is what builds trust — bonds deepen by reconnecting, not by never disconnecting'
+    ],
+    tryThis: {
+      title: 'Borrow a Calm Nervous System',
+      duration: '2–3 minutes',
+      intro: 'A short co-regulation practice you can do with a real person nearby — or with one you carry inside.',
+      steps: [
+        'Bring to mind (or sit near) someone whose presence settles you — a person, or even a pet.',
+        'Picture their face and the sound of their voice. Let your own face soften, and your shoulders drop a little.',
+        'Slow your out-breath, making the exhale a touch longer than the inhale, as if you were being breathed with.',
+        'Silently let yourself receive their steadiness: "I can borrow this calm right now."',
+        'Notice, without forcing anything, whether your body settles even slightly toward safety.'
+      ]
+    },
+    relatedExercises: ['PV-001', 'PV-004', 'GR-003'],
+    sources: [
+      'Drawn from: Stephen Porges (Polyvagal Theory: A Primer), Deb Dana (Anchored, Polyvagal Exercises for Safety and Connection), Natureza Gabriel / Hearth Science (Autonomic Spectrum), Daniel Siegel (Interpersonal Neurobiology), and Bruce Perry & Maia Szalavitz (Born for Love).'
+    ],
+    seeAlso: ['nervous_system_safety', 'attachment_styles', 'mind_brain_relationships']
+  },
+
+  {
     id: 'harm_reduction',
     title: 'Harm Reduction & Safety',
     description: 'Practical safety knowledge for responsible psychedelic use',
@@ -1830,96 +2180,128 @@ This app supports integration — the work that happens after. If you need crisi
   {
     id: 'contemplative_practices',
     title: 'Contemplative & Mindfulness Practices',
-    description: 'Meditation, mindfulness, and contemplative approaches to integration',
+    description: 'Meditation and mindfulness as the everyday ground of integration',
     emoji: '🧘',
-    estimatedTime: '9 minutes',
+    estimatedTime: '11 minutes',
     content: [
       {
-        title: 'Contemplative Traditions & Integration',
-        text: `For thousands of years, contemplative traditions have developed practices for working with altered states, expanded awareness, and the integration of profound experiences.
+        title: 'An Ancient Technology for Inner Experience',
+        text: `For thousands of years, contemplative traditions have refined practices for exactly what integration asks of you: how to meet strong inner experience without being swept away by it.
 
-You don't need to adopt any religious framework to benefit from these practices. At their core, they teach:
-• How to sit with what arises without running
-• How to observe the mind without being lost in it
-• How to hold paradox and uncertainty
-• How to let experiences transform you at their own pace
+You don't need to adopt any religious framework to benefit. Meditation teacher Sharon Salzberg defines mindfulness simply as "the quality of awareness that we bring to the activities we are already doing" — paying attention to what's happening while it's happening, without judging it. That's it. No incense required.
 
-These are exactly the skills integration requires.`
+At their core, these practices teach a handful of capacities integration depends on:
+• Sitting with what arises instead of running from it
+• Observing the mind without being lost inside it
+• Holding paradox, discomfort, and not-knowing
+• Letting an experience reveal its meaning in its own time
+
+A psychedelic experience can hand you these capacities for a few hours. Contemplative practice is how you keep them.`
       },
       {
-        title: 'Basic Meditation for Integration',
-        text: `A simple practice for integration — no experience needed:
+        title: 'Why It Works: Training Attention',
+        text: `Meditation can feel mysterious, but the mechanism is concrete. Culadasa (John Yates), in *The Mind Illuminated*, frames it as the systematic training of two faculties: **attention** (the spotlight you point at one thing) and **awareness** (the broader, peripheral sense of everything else).
 
-**Sit still. What continues to move should be observed.**
+Most of us live with attention on autopilot, yanked around by whatever is loudest. Practice gradually gives you the ability to *place* your attention on purpose and *notice* where it's gone when it wanders.
 
-That's it. The rest is detail:
-
-1. Find a comfortable position (sitting, lying down, walking slowly)
-2. Set a timer (start with 5 minutes)
-3. Let your attention rest on whatever is present — breath, sounds, body sensations
-4. When your mind wanders (it will), notice where it went and gently return
-5. There is nothing to achieve, fix, or figure out
-
-What arises during meditation after a psychedelic experience can be rich integration material. Emotions, images, body sensations, memories — let them come, observe them, let them go.
-
-The meditation isn't about making them stop. It's about changing your relationship to them.`
+This is the same muscle integration runs on. When a difficult emotion surfaces days after a session, an untrained mind gets swallowed by it. A trained mind can notice "this is anxiety" and stay steady enough to choose a response. As neuroscientist Robert Wright argues in *Why Buddhism Is True*, much of our suffering comes from being so fused with our feelings that we mistake them for reality itself. Meditation loosens that fusion — and that loosening is the heart of integration.`
       },
       {
-        title: 'Mindful Awareness in Daily Life',
-        text: `You don't need to sit on a cushion to practice. Integration happens in ordinary moments:
+        title: 'A Simple Practice to Begin',
+        text: `No experience needed. Sharon Salzberg's instruction is about as simple as it gets:
 
-**Mindful transitions:** Pause between activities. Three breaths before starting something new.
+1. Find a comfortable position — sitting, lying down, or walking slowly.
+2. Set a timer. Start with just 5 minutes. Consistency matters far more than length.
+3. Rest your attention on the breath — the simple sensation of breathing in and out.
+4. When your mind wanders — and it will, constantly — gently notice where it went, and return to the breath.
+5. There is nothing to achieve, fix, or figure out.
 
-**Mindful eating:** One meal a week, eat without screens. Notice taste, texture, the act of nourishing yourself.
+Here's the part beginners almost always get wrong: **the wandering is not failure.** Salzberg teaches that "the moment you realize you've been distracted is the magic moment" — that's the rep, that's the bicep curl of meditation. Returning *is* the practice. If your mind wandered a thousand times and you returned a thousand times, that was a thousand successful repetitions.
 
-**Mindful walking:** Feel each step. Notice the ground meeting your foot. Let walking be enough.
-
-**Mindful listening:** When someone speaks, just listen. Notice the urge to formulate your response. Let it go.
-
-**Mindful pausing:** When a strong emotion arises, pause before acting. Name it. Feel where it lives in your body. Then choose your response.
-
-These micro-practices accumulate. They train the same awareness muscle that supports integration.`
+What arises while you sit — emotions, images, body sensations, memories from a session — is rich integration material. You're not trying to make it stop. You're changing your relationship to it.`
       },
       {
-        title: 'Working With Difficult States',
-        text: `Contemplative traditions offer specific approaches for difficult states that arise during integration:
+        title: 'Off the Cushion: Mindfulness in Daily Life',
+        text: `You don't need to sit formally to practice. Salzberg stresses that mindfulness lives in the activities you're already doing — and integration happens in ordinary moments:
 
-**RAIN practice (Tara Brach):**
-• **R**ecognize — "This is anxiety"
-• **A**llow — Let it be here without pushing away
-• **I**nvestigate — Where do I feel it? What does it need?
-• **N**urture — Offer yourself kindness
+**Mindful transitions:** Three breaths between activities, before you start the next thing.
 
-**Tonglen (Tibetan Buddhist):**
-• Breathe in suffering (yours or others')
-• Breathe out compassion and relief
-• Transforms the instinct to avoid pain into active engagement
+**Mindful eating:** One meal without a screen. Notice taste, texture, the simple act of nourishing yourself.
 
-**Non-attachment:**
-Not detachment or indifference — it's holding things lightly. You can care deeply without clinging to outcomes. This is especially important for integration: hold your insights with open hands.`
+**Mindful walking:** Feel each step, the ground meeting your foot. Let walking be enough.
+
+**Mindful listening:** When someone speaks, just listen — and notice the urge to start formulating your reply. Let it pass.
+
+**The sacred pause:** When a strong emotion rises, pause before acting. Name it. Feel where it lives in your body. *Then* choose your response.
+
+These micro-practices accumulate. Each one is a small rep training the same attention you brought to the cushion — woven into the fabric of an ordinary day.`
       },
       {
-        title: 'The Contemplative Attitude',
-        text: `More important than any technique is the underlying attitude:
+        title: 'Working With Difficult States: RAIN',
+        text: `When something hard arises — anxiety, grief, shame — you need more than "just breathe." The teacher Tara Brach offers a structured way through it, called **RAIN**:
 
-**Beginner's mind** — Approach each moment as if for the first time. Your psychedelic experience showed you this capacity. Meditation sustains it.
+• **R — Recognize** what's happening. Name it plainly: "This is fear."
+• **A — Allow** it to be here. Not approving of it — just letting it exist without shoving it away. Brach calls this finding the willingness to "let it be."
+• **I — Investigate** with kindness. Where do I feel this in my body? What does this part of me believe? What does it need?
+• **N — Nurture.** Offer the hurting place some care — a hand on the heart, a kind phrase: "It's okay, I'm here."
 
-**Non-striving** — You can't force insight. You create conditions and then wait. Integration is the same.
+Brach emphasizes that the spirit of RAIN is *compassion*, not analysis. You're not trying to fix the feeling or argue it away. You're turning toward it the way you'd turn toward a frightened child — which, more often than not, is exactly what's underneath.
 
-**Radical acceptance** — Whatever arises is workable. Nothing that's true about you is an obstacle to your healing.
+Another classic practice for hard states is **Tonglen** (Tibetan Buddhism): breathe *in* the suffering — yours or others' — and breathe *out* relief and compassion. It deliberately reverses our instinct to avoid pain, and can be steadying when you feel overwhelmed or alone.`
+      },
+      {
+        title: 'Lovingkindness: Befriending Yourself',
+        text: `Integration can quietly curdle into self-improvement pressure — one more arena to fall short in. Lovingkindness practice (metta) is the antidote.
 
-**Compassion** — Toward yourself first, then extending outward. Integration without self-compassion becomes another form of self-improvement tyranny.
+Salzberg, who did more than anyone to bring this practice to the West, describes it as the deliberate cultivation of goodwill — toward yourself first, then outward. You silently offer simple phrases:
 
-**Patience** — The fruit ripens in its own time. Your integration will unfold. Trust the process while showing up for the practice.`
+*May I be safe. May I be happy. May I be healthy. May I live with ease.*
+
+Then you extend the same wishes to a loved one, a neutral person, a difficult person, and eventually all beings. It can feel mechanical or even false at first. That's fine — Salzberg's point is that you're not faking a feeling, you're *planting a seed of intention*, and the warmth grows with repetition.
+
+This matters because so much insight surfaces what we judge in ourselves. Lovingkindness changes the ground you stand on while you do the work — from "what's wrong with me?" toward "may I be well." It's hard to integrate anything from a posture of self-attack.`
+      },
+      {
+        title: 'The Attitude Beneath the Technique',
+        text: `In the end, *how* you practice matters more than *which* practice you choose. A few qualities the traditions return to again and again:
+
+**Beginner's mind** — Meet each moment as if for the first time. Your experience showed you this freshness; practice keeps it alive.
+
+**Non-striving** — You can't force insight or calm. You create the conditions and then allow. Integration works the same way.
+
+**Acceptance** — Whatever arises is workable. Nothing true about you is an obstacle to your healing.
+
+**Compassion** — Toward yourself first. Without it, practice becomes another form of pressure.
+
+**Patience** — The fruit ripens in its own time. Keep showing up; trust the unfolding.
+
+These aren't techniques to perform. They're the soil everything else grows in.`
       }
     ],
     keyTakeaways: [
-      'Contemplative traditions have millennia of experience with integration',
-      'Simple meditation: sit still, observe what moves — no special technique needed',
-      'Daily mindfulness (eating, walking, pausing) builds integration capacity',
-      'RAIN and other practices offer structured ways to work with difficult states',
-      'The attitude matters more than the technique: beginner\'s mind, non-striving, compassion'
-    ]
+      'Mindfulness is simply the awareness you bring to what you\'re already doing — no belief system required',
+      'Practice trains attention and awareness — the exact faculties integration runs on',
+      'The wandering mind isn\'t failure; noticing and returning IS the practice (Salzberg)',
+      'RAIN (Recognize, Allow, Investigate, Nurture) gives you a compassionate way through hard states (Brach)',
+      'Lovingkindness keeps the ground compassionate — you can\'t integrate well from self-attack',
+    ],
+    tryThis: {
+      title: 'Five Breaths, Then RAIN',
+      duration: '5–10 minutes',
+      intro: 'A short sit that flows into RAIN if something hard is present. Go gently, and stop any time it becomes too much.',
+      steps: [
+        'Settle in and take five slow breaths, resting attention on the simple sensation of breathing.',
+        'When your mind wanders, just notice where it went and return — that returning is the practice.',
+        'If a difficult feeling is here, Recognize it: name it plainly ("this is sadness").',
+        'Allow it to be present without pushing it away; then Investigate gently — where do I feel it? what does it need?',
+        'Nurture: place a hand on your heart and offer a kind phrase — "it\'s okay, I\'m here."',
+      ],
+    },
+    relatedExercises: ['MED-001', 'MED-002', 'MED-003'],
+    sources: [
+      'Drawn from: Sharon Salzberg, Real Happiness; John Yates (Culadasa), The Mind Illuminated; Tara Brach\'s RAIN; and Robert Wright, Why Buddhism Is True.',
+    ],
+    seeAlso: ['acceptance_commitment', 'somatic_awareness'],
   },
 
   {
@@ -2049,87 +2431,114 @@ Remember: the goal was never the experience itself. The goal is who you become t
   {
     id: 'acceptance_commitment',
     title: 'Acceptance & Commitment (ACT)',
-    description: 'Learn psychological flexibility through acceptance, values, and committed action',
+    description: 'Stop fighting your inner experience — and move toward what matters',
     emoji: '🎯',
-    estimatedTime: '9 minutes',
+    estimatedTime: '11 minutes',
     content: [
       {
-        title: 'What Is ACT?',
-        text: `Acceptance and Commitment Therapy (ACT, said as one word "act") is a modern therapeutic approach that doesn't try to eliminate difficult thoughts and feelings. Instead, it helps you change your relationship to them.
+        title: 'A Different Goal',
+        text: `Most approaches to feeling better share a hidden assumption: that the path to a good life runs through getting rid of painful thoughts and feelings. Acceptance and Commitment Therapy (ACT, said as one word — "act") quietly overturns that.
 
-ACT is built on a simple premise: suffering comes not from pain itself, but from our attempts to avoid, control, or struggle with pain. When you stop fighting your inner experience and instead focus on what matters to you, transformation becomes possible.
+Developed by psychologist Steven Hayes, ACT starts from a striking observation: our struggle *against* pain often causes more suffering than the pain itself. The more you fight anxiety, the bigger it grows. The more you try to suppress a thought, the more it returns. Hayes calls this trap "experiential avoidance" — and much of human suffering, ACT argues, comes from it.
 
-This is remarkably aligned with psychedelic integration — the experience often teaches you to surrender rather than control.`
+So ACT changes the goal. Instead of "feel less pain," it asks: *Can you make room for the discomfort, and move toward what matters to you anyway?* This skill — staying open and engaged with life even when it's uncomfortable — is what ACT calls **psychological flexibility.**
+
+It's a striking match for psychedelic integration, where the deepest work so often comes not from controlling the experience, but from surrendering to it.`
       },
       {
         title: 'The Six Core Processes',
-        text: `ACT develops psychological flexibility through six interconnected processes:
+        text: `ACT builds psychological flexibility through six interconnected skills. They're often drawn as a hexagon, because they work together rather than in sequence:
 
-**1. Acceptance** — Opening up to difficult experiences rather than avoiding them. Not resignation — active willingness. "I can feel this anxiety AND still do what matters."
+**1. Acceptance** — Opening up to difficult experiences instead of avoiding them. Not grim resignation — active *willingness.* "I can feel this anxiety AND still do what matters."
 
-**2. Cognitive Defusion** — Unhooking from thoughts. Instead of "I'm broken," try "I'm having the thought that I'm broken." The thought loses its grip.
+**2. Defusion** — Unhooking from your thoughts. "I'm broken" becomes "I'm having the thought that I'm broken." The thought loses its grip.
 
-**3. Present Moment Awareness** — Contacting the here and now. Similar to mindfulness — noticing what's happening right now without getting lost in past or future.
+**3. Present-Moment Contact** — Being here now, flexibly noticing what's actually happening rather than living in the story of past or future.
 
-**4. Self-as-Context** — You are the sky, not the weather. Your thoughts and feelings pass through you but they are not you. You are the awareness that observes them.
+**4. Self-as-Context** — You are the sky, not the weather. Thoughts and feelings move through you, but they are not you — you're the awareness they appear in.
 
-**5. Values** — Clarifying what truly matters to you. Not goals (achievable) but directions (ongoing). Like a compass heading you can always move toward.
+**5. Values** — Clarifying what truly matters. Not goals you achieve and tick off, but *directions* you keep moving toward — like a compass heading.
 
-**6. Committed Action** — Taking concrete steps aligned with your values, even when it's uncomfortable. This is where integration becomes real.`
+**6. Committed Action** — Taking concrete, values-guided steps, even when it's uncomfortable. This is where insight becomes a changed life.`
       },
       {
-        title: 'Defusion Techniques',
-        text: `Defusion helps you step back from thoughts that hook you:
+        title: 'Defusion: Unhooking From Thoughts',
+        text: `Of all six, defusion is often the most immediately useful. The mind is a relentless storyteller, and we tend to be *fused* with its stories — treating "I'm a failure" as a fact rather than a string of words the mind produced.
 
-**Name the story:** "Ah, there's the 'not good enough' story again." When you name it as a story, you're no longer inside it.
+Defusion creates a little space between you and the thought. Some ways to practice:
 
-**Silly voice:** Repeat a troubling thought in a cartoon voice. Notice how it changes your relationship to it.
+**Name the story:** "Ah, there's the 'not good enough' story again." Naming it as a story puts you outside it.
 
-**"I notice..." prefix:** Instead of "I'm a failure," say "I notice I'm having the thought that I'm a failure." This creates distance.
+**The "I notice…" prefix:** Instead of "I'm a failure," try "I notice I'm having the thought that I'm a failure." Feel the distance that opens.
 
-**Thoughts on leaves:** Visualize placing each thought on a leaf floating down a stream. Watch them pass without grabbing.
+**Leaves on a stream:** Picture each thought placed on a leaf, floating past. You watch; you don't grab.
 
-**Thank your mind:** "Thanks, mind, for trying to protect me with that thought. I see what you're doing."
+**Thank your mind:** "Thanks, mind, for trying to protect me with that one." It acknowledges the thought without obeying it.
 
-These aren't about dismissing thoughts — they're about seeing them for what they are: mental events, not truths.`
+The point isn't to dismiss thoughts or decide they're false. It's to see them for what they are — mental events passing through — so they stop running the show. Notice the overlap with cognitive work: CBT examines whether a thought is *accurate*; ACT changes your *relationship* to it. Both are useful, and they work well together.`
       },
       {
-        title: 'Values Clarification',
-        text: `Values give integration direction. Without them, insights float without anchoring.
+        title: 'Values: Your Compass',
+        text: `If acceptance and defusion clear the obstacles, values are what give the journey a direction. Without them, hard-won insight just floats, untethered.
 
-Ask yourself in key life domains:
-• **Relationships:** What kind of partner, friend, parent do I want to be?
-• **Growth:** What does living a meaningful life look like?
-• **Work/Contribution:** What do I want to give to the world?
-• **Health/Body:** How do I want to relate to my physical self?
-• **Spirituality/Inner Life:** What's my relationship to something larger?
+A value is not a goal. A goal can be reached and crossed off ("run a marathon"); a value is an ongoing direction ("be someone who cares for my body"). You never "finish" a value — you live it out, choice by choice. Hayes describes values as "chosen life directions" — the qualities you want to bring to your living.
 
-Then ask: "Did my psychedelic experience show me something about what I truly value?" Often the answer reveals values you've been neglecting.
+To find yours, look across the domains of your life:
+• **Relationships:** What kind of partner, friend, or parent do I want to be?
+• **Growth & learning:** What makes a life feel meaningful to me?
+• **Contribution/work:** What do I want to offer the world?
+• **Health & body:** How do I want to treat this body I live in?
+• **Spirituality/inner life:** What's my relationship to something larger?
 
-Values aren't should's — they're deep callings. When you feel pulled toward something rather than pushed, you've found a value.`
+Then the integration question: *Did my experience show me something about what I truly value?* Often it surfaces a value you'd quietly abandoned. A value isn't a "should" imposed from outside — it's a pull you feel from within. When you sense yourself drawn *toward* something rather than pushed, you've likely found one.`
       },
       {
-        title: 'Committed Action & Integration',
-        text: `The final step in ACT — and in integration — is action:
+        title: 'Committed Action: Where It Becomes Real',
+        text: `Insight without action is where so many psychedelic experiences quietly fade. Committed action is ACT's answer — taking real steps in your valued directions, and bringing acceptance and defusion along for the ride when it gets hard.
 
-**Start small:** What's the smallest action aligned with your values that you can take today? Not someday. Today.
+**Start small.** What's the smallest action aligned with a value that you could take *today* — not someday?
 
-**Expect discomfort:** Values-driven action often involves doing hard things. Acceptance helps you carry the discomfort along rather than waiting until you feel "ready."
+**Expect discomfort, and make room for it.** Meaningful action often means doing hard things. Acceptance lets you carry the discomfort *with* you rather than waiting to feel "ready" (you may never feel ready).
 
-**Willingness over motivation:** Motivation fluctuates. Willingness is a choice. "Am I willing to feel this anxiety in service of what matters to me?"
+**Choose willingness over motivation.** Motivation comes and goes. Willingness is a stance you can take regardless: "Am I willing to feel this anxiety in the service of what matters?"
 
-**Integration as committed action:** Every time you journal, meditate, reach out for support, or practice a new pattern, you're taking committed action. You're saying: "This experience matters enough to change my life for."
+**See integration itself as committed action.** Every time you journal, sit, reach out for support, or practice a new pattern, you're taking a values-guided step. You're saying, in effect: *this experience mattered enough to change how I live.*
 
-The question isn't "How do I feel?" but "What am I willing to do in service of my deepest values?"`
+The organizing question of ACT shifts from "How do I feel?" to "What am I willing to do in service of what I care about?"`
+      },
+      {
+        title: 'Acceptance Is Not Passivity',
+        text: `It's worth clearing up the most common misunderstanding. "Acceptance" in ACT does not mean liking your pain, approving of it, or giving up. And it never means tolerating genuinely harmful situations.
+
+Acceptance is about your *inner* experience — the thoughts, feelings, and sensations that show up uninvited. Fighting those tends to amplify them; making room for them frees your energy for what you can actually change. In fact, acceptance is what makes bold action *possible*: when you're no longer pouring effort into suppressing fear, you can spend that effort moving toward your values instead.
+
+So the stance is paradoxical and quietly powerful: *accept what's inside, change what you can outside.* Stop struggling with the weather; keep walking toward where you want to go.`
       }
     ],
     keyTakeaways: [
-      'ACT teaches psychological flexibility — changing your relationship to difficult experiences',
-      'Defusion techniques help you unhook from troubling thoughts',
-      'Values give integration direction — they\'re compasses, not destinations',
-      'Committed action means acting on values even when it\'s uncomfortable',
-      'The goal is a rich, meaningful life — not the absence of pain'
-    ]
+      'Struggling against pain often causes more suffering than the pain itself (experiential avoidance)',
+      'The goal isn\'t feeling less pain — it\'s psychological flexibility: openness plus values-guided action',
+      'Defusion unhooks you from thoughts; CBT checks if they\'re accurate — both are useful together',
+      'Values are ongoing directions (a compass), not goals you finish and cross off',
+      'Acceptance is for your inner experience, not harmful situations — accept inside, change outside',
+    ],
+    tryThis: {
+      title: 'Name a Value, Take One Step',
+      duration: '5 minutes',
+      intro: 'A small bridge from insight to action. Keep the step tiny — the willingness matters more than the size.',
+      steps: [
+        'Pick one life domain (relationships, health, growth, contribution, inner life).',
+        'Finish this sentence: "In this area, the kind of person I want to be is someone who ___."',
+        'Notice that\'s a direction, not a finish line — there\'s no "done," only the next step.',
+        'Name the smallest action that points that way and that you could take today.',
+        'If discomfort shows up, try a defusion move ("I\'m noticing the thought that...") and take the step anyway.',
+      ],
+    },
+    relatedExercises: ['CBT-005', 'MED-004'],
+    sources: [
+      'Drawn from: the work of Steven C. Hayes (founder of Acceptance and Commitment Therapy), with defusion and values practices from the broader ACT tradition.',
+    ],
+    seeAlso: ['cognitive_patterns', 'building_habits'],
   }
 ];
 

@@ -54,6 +54,77 @@ def count_tokens(text):
     return len(enc.encode(text))
 
 
+# Source-materials domain folder -> category slug. The PDFs are already
+# organized by domain on disk, so the folder is the most reliable category
+# signal (far better than keyword-guessing the filename). See BUG: 41% of
+# chunks landed in 'miscellaneous' under the old filename-only approach.
+SOURCE_MATERIALS_DIR = PROJECT_ROOT / "knowledge-base" / "source-materials"
+DIR_TO_CATEGORY = {
+    "attachment-theory-neurosequential": "attachment-theory",
+    "beliefs": "beliefs",
+    "cbt-act": "cbt-act",
+    "consciousness-neuroscience": "consciousness-neuroscience",
+    "habits": "habits",
+    "harm-reduction": "harm-reduction",
+    "ifs": "ifs",
+    "ipnb": "ipnb",
+    "jungian": "jungian",
+    "mind-body-chronic pain": "mind-body",
+    "miscellaneous": "miscellaneous",
+    "autonomics": "autonomics",
+    "psychedelic-integration": "psychedelic-integration",
+    "somatic": "somatic",
+    "spirituality": "spirituality",
+    "trauma-informed": "trauma-informed",
+}
+_SOURCE_EXTS = {".pdf", ".docx", ".epub", ".txt"}
+
+
+def build_stem_to_category():
+    """Map each source file's stem -> category, derived from its domain folder.
+
+    Prefers a specific category over 'miscellaneous' when a file appears in
+    both (a few duplicates exist across folders).
+    """
+    stem_to_cat = {}
+    for folder_name, cat in DIR_TO_CATEGORY.items():
+        folder = SOURCE_MATERIALS_DIR / folder_name
+        if not folder.exists():
+            continue
+        for f in folder.iterdir():
+            if f.is_file() and f.suffix.lower() in _SOURCE_EXTS:
+                existing = stem_to_cat.get(f.stem)
+                # Prefer a specific category over 'miscellaneous'
+                if existing and existing != "miscellaneous" and cat == "miscellaneous":
+                    continue
+                stem_to_cat[f.stem] = cat
+    return stem_to_cat
+
+
+# Built once at import; used by detect_category_from_folder().
+STEM_TO_CATEGORY = build_stem_to_category()
+
+
+def detect_category_from_folder(filename):
+    """Look up a file's category by its domain folder. Exact stem match first,
+    then a fuzzy fallback for renamed/truncated stems. Returns None if no match
+    (caller falls back to keyword detection)."""
+    stem = Path(filename).stem
+    if stem in STEM_TO_CATEGORY:
+        return STEM_TO_CATEGORY[stem]
+    # Fuzzy fallback: longest shared prefix of >=15 chars (handles truncated titles)
+    stem_l = stem.lower()
+    best, best_len = None, 0
+    for known_stem, cat in STEM_TO_CATEGORY.items():
+        known_l = known_stem.lower()
+        # one is a prefix of the other (e.g. "Self-Therapy Vol 3" vs full title)
+        common = known_l if stem_l.startswith(known_l) else (
+                 stem_l if known_l.startswith(stem_l) else "")
+        if len(common) >= 15 and len(common) > best_len:
+            best, best_len = cat, len(common)
+    return best
+
+
 def detect_category_from_metadata(text):
     """Extract category from [CATEGORY: ...] header if present."""
     match = re.search(r"\[CATEGORY:\s*(.+?)\]", text)
@@ -65,7 +136,7 @@ def detect_category_from_filename(filename):
     lower = filename.lower()
     category_keywords = {
         "ifs": ["ifs", "internal family", "parts work", "self-led", "exile", "protector"],
-        "polyvagal": ["polyvagal", "vagal", "vagus", "nervous system", "neuroception"],
+        "autonomics": ["polyvagal", "vagal", "vagus", "nervous system", "neuroception", "autonomic"],
         "somatic": ["somatic", "body", "embodiment", "sensorimotor"],
         "trauma-informed": ["trauma", "ptsd", "adverse", "interventions"],
         "cbt-act": ["cbt", "cognitive", "acceptance", "commitment", "distortion"],
@@ -86,54 +157,64 @@ def detect_category_from_filename(filename):
     return "miscellaneous"
 
 
+PAGE_MARKER_RE = re.compile(r"---\s*PAGE\s*(\d+)\s*---")
+
+
+def extract_and_strip_pages(text):
+    """Pull all `--- PAGE N ---` markers out of a chunk's text.
+
+    Returns (clean_text, sorted_unique_pages). Pages reflect ONLY the markers
+    that fall within this chunk's span, so each chunk cites the actual pages it
+    covers (fixes the old bug where a section accumulated the whole doc's pages).
+    """
+    pages = [int(m) for m in PAGE_MARKER_RE.findall(text)]
+    clean = PAGE_MARKER_RE.sub("", text)
+    # Collapse the blank lines the markers leave behind
+    clean = re.sub(r"\n{3,}", "\n\n", clean)
+    return clean.strip(), sorted(set(pages))
+
+
 def split_into_sections(text):
-    """Split text into sections based on headings and page markers."""
+    """Split text into sections based on headings.
+
+    Page markers (`--- PAGE N ---`) are LEFT INLINE in the section text so that
+    per-chunk page numbers can be extracted later from each chunk's own span
+    (see extract_and_strip_pages). We no longer track pages at the section level.
+    """
     sections = []
-    current_section = {"title": "", "text": "", "pages": []}
+    current_section = {"title": "", "text": ""}
 
     lines = text.split("\n")
     for line in lines:
-        # Detect page markers
-        page_match = re.match(r"---\s*PAGE\s*(\d+)\s*---", line)
-        if page_match:
-            page_num = int(page_match.group(1))
-            if current_section["text"].strip():
-                current_section["pages"].append(page_num)
-            else:
-                current_section["pages"] = [page_num]
+        # Page markers pass straight through as inline text. Must come BEFORE
+        # the ALL-CAPS check below — "--- PAGE 4 ---".isupper() is True, so
+        # otherwise every marker would be mistaken for a section header and
+        # consumed (which silently dropped all page numbers).
+        if PAGE_MARKER_RE.match(line):
+            current_section["text"] += line + "\n"
             continue
 
-        # Detect markdown headings
+        # Markdown headings start a new section
         heading_match = re.match(r"^(#{1,4})\s+(.+)", line)
         if heading_match:
-            # Save current section if it has content
             if current_section["text"].strip():
                 sections.append(current_section)
-            current_section = {
-                "title": heading_match.group(2).strip(),
-                "text": "",
-                "pages": current_section["pages"][-1:] if current_section["pages"] else [],
-            }
+            current_section = {"title": heading_match.group(2).strip(), "text": ""}
             continue
 
-        # Detect ALL-CAPS section headers (common in PDF extracts)
+        # ALL-CAPS section headers (common in PDF extracts)
         if line.strip() and line.strip().isupper() and 3 < len(line.strip()) < 80:
             if current_section["text"].strip():
                 sections.append(current_section)
-            current_section = {
-                "title": line.strip().title(),
-                "text": "",
-                "pages": current_section["pages"][-1:] if current_section["pages"] else [],
-            }
+            current_section = {"title": line.strip().title(), "text": ""}
             continue
 
         current_section["text"] += line + "\n"
 
-    # Don't forget the last section
     if current_section["text"].strip():
         sections.append(current_section)
 
-    return sections if sections else [{"title": "", "text": text, "pages": []}]
+    return sections if sections else [{"title": "", "text": text}]
 
 
 def chunk_section(section, target_tokens=TARGET_TOKENS, max_tokens=MAX_TOKENS):
@@ -249,8 +330,11 @@ def process_text_file(filepath):
 
     filename = filepath.name
 
-    # Detect category
-    category = detect_category_from_metadata(text) or detect_category_from_filename(filename)
+    # Detect category: domain folder (most reliable) > [CATEGORY:] header >
+    # filename keyword guess (last resort).
+    category = (detect_category_from_folder(filename)
+                or detect_category_from_metadata(text)
+                or detect_category_from_filename(filename))
 
     # Remove metadata headers from text before chunking
     text = re.sub(r"\[CATEGORY:.*?\]\n?", "", text)
@@ -266,20 +350,25 @@ def process_text_file(filepath):
         section_chunks = chunk_section(section)
 
         for chunk in section_chunks:
-            if chunk["tokens"] < MIN_TOKENS:
+            # Pull page markers out of THIS chunk's span, then clean the text.
+            clean_text, page_numbers = extract_and_strip_pages(chunk["text"])
+            if not clean_text:
+                continue
+            token_count = count_tokens(clean_text)
+            if token_count < MIN_TOKENS:
                 continue
 
             chunks.append({
-                "text": chunk["text"],
+                "text": clean_text,
                 "metadata": {
                     "source_document": filename.replace(".txt", ".pdf"),
                     "category": category,
-                    "page_numbers": section.get("pages", []),
+                    "page_numbers": page_numbers,
                     "section_title": section.get("title", ""),
-                    "chunk_type": detect_chunk_type(chunk["text"], "pdf_extract"),
+                    "chunk_type": detect_chunk_type(clean_text, "pdf_extract"),
                     "chunk_index": chunk_index,
                     "source_type": "pdf_extract",
-                    "token_count": chunk["tokens"],
+                    "token_count": token_count,
                 },
             })
             chunk_index += 1

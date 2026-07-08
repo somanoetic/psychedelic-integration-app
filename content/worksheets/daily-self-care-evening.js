@@ -23,7 +23,7 @@ export default validateWorksheet({
   description:
     'How you cared for yourself, what you reached for when things got hard, ' +
     'and a short evening wrap-up — best moment, hardest moment, gratitude, ' +
-    'and how you feel about treatment right now.',
+    'and how you feel about starting treatment.',
   tracks: ['integration', 'regulating'],
   collection: { ...DAILY_COLLECTION, order: 50 },
   layout: 'letter-portrait',
@@ -104,7 +104,7 @@ export default validateWorksheet({
     },
     {
       id: 'feeling-about-treatment',
-      label: "How I'm feeling about ketamine treatment right now",
+      label: "How I'm feeling about starting ketamine treatment",
       kind: 'checkbox-list',
       allowOther: true,
       options: ['Excited', 'Nervous', 'Hopeful', 'Scared', 'Curious', 'Skeptical', 'Ready', 'Uncertain'],

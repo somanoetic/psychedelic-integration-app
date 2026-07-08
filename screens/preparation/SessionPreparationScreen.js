@@ -9,6 +9,7 @@ import {
   TextInput,
   Image,
   KeyboardAvoidingView,
+  Keyboard,
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -64,6 +65,27 @@ const SessionPreparationScreen = ({ navigation, route }) => {
   const [nervousSystemNotes, setNervousSystemNotes] = useState('');
   const [activeParts, setActiveParts] = useState([]);
   const [partsNotes, setPartsNotes] = useState('');
+
+  // Ref to the intention step's ScrollView so we can scroll the custom-intention
+  // TextInput (which sits low on the screen) above the keyboard on focus. With
+  // windowSoftInputMode="adjustResize" the window shrinks but the ScrollView does
+  // not auto-scroll the focused input, so without this the keyboard covers it.
+  const intentionScrollRef = useRef(null);
+
+  // When the keyboard opens on the intention step, scroll the low-sitting
+  // custom-intention field (and Save button) into view. Mirrors DailyJournal's
+  // device-verified pattern: listen for the keyboard show event (fires after the
+  // window has resized) rather than guessing a timeout off onFocus.
+  useEffect(() => {
+    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
+    const showSub = Keyboard.addListener(showEvent, () => {
+      if (currentSection !== 'intention_setting') return;
+      setTimeout(() => {
+        intentionScrollRef.current?.scrollToEnd({ animated: true });
+      }, 150);
+    });
+    return () => showSub.remove();
+  }, [currentSection]);
 
   // This screen is always reached from the Prepare for a Journey hub with a
   // concrete sessionId/sessionData, so it no longer silently creates a session
@@ -469,12 +491,7 @@ const SessionPreparationScreen = ({ navigation, route }) => {
   };
 
   const renderOverview = () => (
-    <LinearGradient
-      colors={gradients.standard}
-      start={gradients.standardStart}
-      end={gradients.standardEnd}
-      style={styles.gradientFill}
-    >
+    <View style={styles.gradientFill}>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -643,16 +660,11 @@ const SessionPreparationScreen = ({ navigation, route }) => {
           </Text>
         </View>
       </ScrollView>
-    </LinearGradient>
+    </View>
   );
 
   const renderLearningModules = () => (
-    <LinearGradient
-      colors={gradients.standard}
-      start={gradients.standardStart}
-      end={gradients.standardEnd}
-      style={styles.gradientFill}
-    >
+    <View style={styles.gradientFill}>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -757,16 +769,11 @@ const SessionPreparationScreen = ({ navigation, route }) => {
           <Text style={styles.backButtonText}>← Back to Overview</Text>
         </TouchableOpacity>
       </ScrollView>
-    </LinearGradient>
+    </View>
   );
 
   const renderBeliefAssessments = () => (
-    <LinearGradient
-      colors={gradients.standard}
-      start={gradients.standardStart}
-      end={gradients.standardEnd}
-      style={styles.gradientFill}
-    >
+    <View style={styles.gradientFill}>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -871,16 +878,11 @@ const SessionPreparationScreen = ({ navigation, route }) => {
           <Text style={styles.backButtonText}>← Back to Overview</Text>
         </TouchableOpacity>
       </ScrollView>
-    </LinearGradient>
+    </View>
   );
 
   const renderPhilosophicalExplorations = () => (
-    <LinearGradient
-      colors={gradients.standard}
-      start={gradients.standardStart}
-      end={gradients.standardEnd}
-      style={styles.gradientFill}
-    >
+    <View style={styles.gradientFill}>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -1006,16 +1008,11 @@ const SessionPreparationScreen = ({ navigation, route }) => {
           <Text style={styles.backButtonText}>← Back to Assessments</Text>
         </TouchableOpacity>
       </ScrollView>
-    </LinearGradient>
+    </View>
   );
 
   const renderSessionDetails = () => (
-    <LinearGradient
-      colors={gradients.standard}
-      start={gradients.standardStart}
-      end={gradients.standardEnd}
-      style={styles.gradientFill}
-    >
+    <View style={styles.gradientFill}>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -1043,6 +1040,9 @@ const SessionPreparationScreen = ({ navigation, route }) => {
           onChangeText={setSessionTitle}
           placeholder="e.g., Spring Integration Session"
           placeholderTextColor={colors.textLight}
+          spellCheck={true}
+          autoCorrect={true}
+          autoCapitalize="sentences"
         />
 
         <Text style={styles.inputLabel}>Journey Date</Text>
@@ -1108,6 +1108,9 @@ const SessionPreparationScreen = ({ navigation, route }) => {
           placeholderTextColor={colors.textLight}
           multiline
           numberOfLines={4}
+          spellCheck={true}
+          autoCorrect={true}
+          autoCapitalize="sentences"
         />
 
         <TouchableOpacity
@@ -1123,22 +1126,19 @@ const SessionPreparationScreen = ({ navigation, route }) => {
           <Text style={styles.primaryButtonText}>Save Session Details</Text>
         </TouchableOpacity>
       </ScrollView>
-    </LinearGradient>
+    </View>
   );
 
   // Render based on current section
   const renderIntentionSetting = () => (
-    <LinearGradient
-      colors={gradients.standard}
-      start={gradients.standardStart}
-      end={gradients.standardEnd}
-      style={styles.gradientFill}
-    >
+    <View style={styles.gradientFill}>
       <ScrollView
+        ref={intentionScrollRef}
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="interactive"
       >
         <View style={styles.header}>
           <TouchableOpacity style={styles.navBackButton} onPress={() => setCurrentSection('overview')}>
@@ -1177,6 +1177,9 @@ const SessionPreparationScreen = ({ navigation, route }) => {
           placeholderTextColor={colors.textLight}
           multiline
           numberOfLines={6}
+          spellCheck={true}
+          autoCorrect={true}
+          autoCapitalize="sentences"
         />
 
         <TouchableOpacity
@@ -1191,16 +1194,11 @@ const SessionPreparationScreen = ({ navigation, route }) => {
           <Text style={styles.primaryButtonText}>Save Intention</Text>
         </TouchableOpacity>
       </ScrollView>
-    </LinearGradient>
+    </View>
   );
 
   const renderNervousSystemCheckin = () => (
-    <LinearGradient
-      colors={gradients.standard}
-      start={gradients.standardStart}
-      end={gradients.standardEnd}
-      style={styles.gradientFill}
-    >
+    <View style={styles.gradientFill}>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -1230,6 +1228,9 @@ const SessionPreparationScreen = ({ navigation, route }) => {
           placeholderTextColor={colors.textLight}
           multiline
           numberOfLines={6}
+          spellCheck={true}
+          autoCorrect={true}
+          autoCapitalize="sentences"
         />
 
         <TouchableOpacity
@@ -1244,16 +1245,11 @@ const SessionPreparationScreen = ({ navigation, route }) => {
           <Text style={styles.primaryButtonText}>Save Check-in</Text>
         </TouchableOpacity>
       </ScrollView>
-    </LinearGradient>
+    </View>
   );
 
   const renderPartsCheckin = () => (
-    <LinearGradient
-      colors={gradients.standard}
-      start={gradients.standardStart}
-      end={gradients.standardEnd}
-      style={styles.gradientFill}
-    >
+    <View style={styles.gradientFill}>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -1283,6 +1279,9 @@ const SessionPreparationScreen = ({ navigation, route }) => {
           placeholderTextColor={colors.textLight}
           multiline
           numberOfLines={6}
+          spellCheck={true}
+          autoCorrect={true}
+          autoCapitalize="sentences"
         />
 
         <TouchableOpacity
@@ -1297,7 +1296,7 @@ const SessionPreparationScreen = ({ navigation, route }) => {
           <Text style={styles.primaryButtonText}>Save Check-in</Text>
         </TouchableOpacity>
       </ScrollView>
-    </LinearGradient>
+    </View>
   );
 
   const renderCurrentSection = () => {
@@ -1321,21 +1320,42 @@ const SessionPreparationScreen = ({ navigation, route }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
-      <KeyboardAvoidingView
-        style={{ flex: 1 }}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
-      >
-        {renderCurrentSection()}
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+    // Gradient is the OUTERMOST wrapper (matching DailyJournal's order:
+    // gradient → SafeAreaView → KeyboardAvoidingView). On Android, behavior="height"
+    // shrinks the KAV's child when the keyboard opens; if the gradient sat INSIDE
+    // the KAV, that shrink exposed the SafeAreaView's white background as a gap
+    // above the keyboard. With the gradient outermost, any exposed strip shows
+    // the gradient instead — no white gap. The section renderers used to each wrap
+    // their OWN gradient, which stacked two slightly-misaligned gradients (a
+    // visible seam); they are now plain Views so only this single gradient shows.
+    <LinearGradient
+      colors={gradients.standard}
+      start={gradients.standardStart}
+      end={gradients.standardEnd}
+      style={styles.gradientFill}
+    >
+      <SafeAreaView style={styles.container} edges={['top']}>
+        {/* Keyboard avoidance matches the app's device-verified pattern (see
+            DailyJournal): KeyboardAvoidingView on both platforms, PLUS a
+            keyboardDidShow listener that scrolls the focused input to the end so
+            low-sitting fields (the custom-intention box) clear the keyboard. The
+            KAV alone doesn't scroll; the scroll alone leaves the input covered. */}
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+        >
+          {renderCurrentSection()}
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'transparent',
   },
   gradientFill: {
     flex: 1,

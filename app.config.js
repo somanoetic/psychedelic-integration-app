@@ -1,8 +1,15 @@
 import 'dotenv/config';
 
+// APP_VARIANT=development gives the dev client a distinct bundle ID + name so it
+// can coexist on-device with the preview/production build instead of overwriting it.
+const IS_DEV = process.env.APP_VARIANT === 'development';
+
+const bundleId = IS_DEV ? 'io.multitudesapp.dev' : 'io.multitudesapp';
+const appName = IS_DEV ? 'Multitudes (Dev)' : 'Multitudes';
+
 export default {
   "expo": {
-    "name": "Multitudes",
+    "name": appName,
     "slug": "psychedelic-integration-app",
     "version": "1.2.0",
     "orientation": "portrait",
@@ -16,8 +23,8 @@ export default {
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.psycheteleosapp",
-      "buildNumber": "5",
+      "bundleIdentifier": bundleId,
+      "buildNumber": "6",
       "runtimeVersion": {
         "policy": "appVersion"
       },
@@ -31,7 +38,7 @@ export default {
       }
     },
     "android": {
-      "package": "com.anonymous.psycheteleosapp",
+      "package": bundleId,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#F5F1E8"

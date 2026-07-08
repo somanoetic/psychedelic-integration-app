@@ -1,0 +1,51 @@
+name: Embeddings warm-ping
+
+# Keeps the Supabase `embeddings` edge function warm so RAG searches don't pay
+# the 0.7-1.4s cold-start spike on the first turn of a session (that spike was
+# blowing the 2000ms RAG timeout). The function answers a credential-free no-op
+# on GET / `x-warm-ping: 1` BEFORE any auth/OpenAI/DB work — see
+# supabase/functions/embeddings/WARM_PING_AND_CACHE.md.
+#
+# Best-effort: GitHub's scheduler runs `*/5` approximately (can be late/skipped
+# under load). A missed ping just means one cold turn, which degrades gracefully.
+#
+# Two repo variables must be set (Settings → Secrets and variables → Actions →
+# Variables — both are non-secret; the anon key is a public client key that
+# already ships in the app bundle):
+#   EMBEDDINGS_FUNCTION_URL  e.g. https://<project-ref>.supabase.co/functions/v1/embeddings
+#   SUPABASE_ANON_KEY        the project's public anon key
+#
+# The anon key is REQUIRED: Supabase's platform gateway enforces verify_jwt on
+# the function and returns 401 for a request with no Authorization header, before
+# the function's own credential-free warm-ping handler runs. The anon key clears
+# that gateway (it does not need to be a real user session).
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch: {}   # allow manual trigger for testing
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Warm the embeddings function
+        run: |
+          URL="${{ vars.EMBEDDINGS_FUNCTION_URL }}"
+          ANON="${{ vars.SUPABASE_ANON_KEY }}"
+          if [ -z "$URL" ] || [ -z "$ANON" ]; then
+            echo "EMBEDDINGS_FUNCTION_URL and/or SUPABASE_ANON_KEY repo variable not set — skipping."
+            exit 0
+          fi
+          # The anon key must be sent (apikey + bearer): the platform's verify_jwt
+          # gateway 401s a no-auth request before the function's warm-ping handler
+          # runs. GET short-circuits to the no-op handler once past the gateway.
+          code=$(curl -sS -o /dev/null -w '%{http_code}' -m 15 \
+            -H "apikey: $ANON" -H "Authorization: Bearer $ANON" \
+            -H 'x-warm-ping: 1' "$URL")
+          echo "warm-ping -> HTTP $code"
+          # 200 expected; treat any 2xx as success, anything else as failure.
+          case "$code" in
+            2*) exit 0 ;;
+            *) echo "Unexpected status $code"; exit 1 ;;
+          esac
