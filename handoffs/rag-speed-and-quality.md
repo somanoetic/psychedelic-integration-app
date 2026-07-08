@@ -1,9 +1,100 @@
 # RAG speed + retrieval-quality investigation (Huxley)
 
-Status: **speed work (Task A) implemented AND DEPLOYED; scheduler + device re-measure
-still pending.** Investigation complete (see `context/features/rag-perf-investigation.md`).
-Quality tuning deferred. Owner: TBD. Separate thread; the IFS latency/intro work it came
-from is settled.
+Status: **QUALITY BUG FOUND & FIXED (committed `eb67884`, device-verified). Speed work
+merged + cron live. Remaining: RAG still ~1-1.5s (embed+auth hop, un-optimized);
+decide whether to chase it.** Investigation complete (see
+`context/features/rag-perf-investigation.md`). Owner: TBD.
+
+## Session update (2026-07-08b) — ROOT CAUSE of "0 results every turn" found + fixed
+
+Resume line: **Read handoffs/rag-speed-and-quality.md and continue.**
+
+**The real bug was NOT speed, threshold, cache, or stale centroids — it was category
+scoping.** IFS mode filtered `ragCategories: ['ifs']` only. Somatic felt-sense language
+("pressure in my chest") — how people actually locate a part in an IFS session — is
+categorized **`somatic`** in the corpus and was filtered out entirely. Every
+body-sensation turn returned 0 results, which is ALSO IVFFlat's slowest path (no LIMIT
+early-exit when nothing clears threshold), so those turns also timed out. The two
+symptoms (0 results + slow/timeout) were the SAME problem.
+
+How it was proven (the key tool): **`knowledge-base/rag/search.py`** — standalone CLI,
+service-role key, hits the SAME edge-fn retrieval path as the app. Run queries at
+`--threshold 0` to see raw top scores with NO cutoff. It showed:
+- `cats=ifs` + "pressure in my chest" → 0 results even at threshold 0.
+- NO category filter → top hit **38% in `somatic`** (Sensorimotor Psychotherapy).
+- Verified tiers: parts queries hit `ifs` at **54-56%**; somatic felt-sense at **31-38%**.
+
+**Fix (committed `eb67884`, client-side only, NO edge redeploy):**
+- `lib/huxleyModeConfigs.js`: ifsMode `ragCategories` `['ifs']` → `['ifs','somatic']`.
+- `lib/huxleyService.js`: RAG `threshold` `0.4` → `0.30` (0.4 clipped the 31-38%
+  somatic tier; 0.30 admits it, filters <30% noise). Earlier 0.25 experiment reverted.
+- `supabase/maintenance/{rag-reindex,rag-diagnose-ifs,rag-diagnose-scores}.sql` added.
+- BUG-317 annotated (post-6/22-ingest reindex was missed; reindex alone didn't fix RPC).
+
+**Device-verified (2026-07-08):** "Pressure in my chest" → **2 results (37%/32%)**, no
+timeout. Parts queries unaffected. One-word turns ("Yeah") correctly return 0.
+
+**Corpus facts established this session (via SQL + CLI):**
+- 23,454 total chunks (was 21,648 on 6/16; +~1,800 from the 6/22 Neurobiology ingest).
+- 2,256 chunks categorized exactly `'ifs'` (healthy; label correct, lowercase).
+- REINDEX + ANALYZE re-run on current data; `suggested_lists=153 ≈ 150` (sizing fine).
+
+**What did NOT matter (ruled out with data):**
+- Warm-ping/embed-cache: irrelevant to live chat — every conversational query is unique
+  (always cache MISS), and the function was already warm (0.2s ping) yet search was 2s.
+- Stale centroids: real hygiene, reindexed, but NOT the cause (0-results persisted after).
+- Threshold alone: my 0.25 drop was treating a symptom; the category filter was the cause.
+
+**Remaining (unchanged, needs a decision — NOT started):**
+1. RAG is still **~1-1.5s** = OpenAI embedding call (0.5-1.5s, high variance) + the
+   `auth.getUser()` network hop (~1s delta between server-sum and app-observed). Neither
+   is optimized. This is the deliberately-deferred, higher-risk work.
+2. `RAG_TIMEOUT_MS` still **2000** in `lib/huxleyService.js`. Turns no longer time out
+   (they clear threshold → early-exit → ~1-1.5s), but 1496ms > 800, so DON'T drop to 800.
+   Could trim to ~1800 to tighten the worst case; low value until speed work lands.
+3. NOTE on perceived slowness: a slow first turn seen on device was **Claude=14.2s on a
+   prompt-cache MISS** (`cache read=0 created=6723`), NOT RAG (1.5s). Turn 2 was a cache
+   HIT → Claude 6s. That's the cache working as designed (cold first turn), unrelated here.
+
+## Session update (2026-07-08) — PR #1 merged; warm-ping cron ACTIVE; CI unblocked
+
+## Session update (2026-07-08) — PR #1 merged; warm-ping cron ACTIVE; CI unblocked
+
+Resume line: **Read handoffs/rag-speed-and-quality.md and continue.**
+
+**Merged PR #1 → master** (`c0f3f5e`), which registered + activated the `*/5`
+`Embeddings warm-ping` workflow. Verified live:
+- `gh workflow list` → `Embeddings warm-ping  active`.
+- Manual `workflow_dispatch` on master → **success in 9s**.
+- Prod warm-ping reconfirmed this session: correct form (anon key + `x-warm-ping`)
+  → `200 {"ok":true,"warm":true}` in 0.42s; no-auth form → `401` (fix holds).
+- Branch `feat/neurobiology-of-connection` NOT deleted (still holds unrelated
+  uncommitted working-tree changes).
+
+**Merge was gated on 3 broken CI checks — all fixed this session (all false alarms /
+config gaps, none in app code):**
+- `46a8d03` — Validate step required the deleted `app.json`; switched to
+  `node --check app.config.js`.
+- `8f9652f` — secret scan matched `sk-ant-...` doc placeholders; tightened regex to
+  a real key body.
+- `ceb2ea7` — Jest parsed `droplet.png` as JS and crashed `conversationBot`; added a
+  static-asset `moduleNameMapper` (`__mocks__/fileMock.js`). Unblocked 23 tests.
+- CI ended **fully green** (526 passed) — no admin override used.
+
+**New tracked debt — BUG-318** (`ac47992`, `context/bugs/medium-low.md`): fixing the
+PNG crash exposed 6 pre-existing `intentionGuidanceAIService`/`feat-102-flow` tests
+that time out because a mocked `sendMessage` never resolves. **Local-only flake** —
+they PASS in CI (Linux resolves within the 10s window; Windows doesn't). Unrelated to
+this thread; documented, not a blocker.
+
+Next (in order) — BOTH need a physical device:
+1. Device re-measure `[Huxley PERF] rag=` on a multi-turn IFS session now that the cron
+   keeps the function warm (watch `[embeddings] … cache HIT/MISS`; expect warm turns
+   well under the old ~1.5s once the cache/warm path engages).
+2. Only after warm turns land <800ms: drop `RAG_TIMEOUT_MS` 2000→800 in
+   `lib/huxleyService.js` (one-line; currently still 2000, correctly gated).
+3. Separate pass: quality tuning (threshold nudge) — turn-1 zeros are largely EXPECTED
+   (see below).
 
 ## Session update (2026-07-06) — deployed state confirmed + warm-ping auth bug fixed
 
@@ -25,6 +116,37 @@ secrets. Corrected: the workflow, the function comment, and WARM_PING_AND_CACHE.
 - Device re-measure of `[Huxley PERF] rag=` on a multi-turn IFS session, THEN drop
   `RAG_TIMEOUT_MS` 2000→800.
 - **Auth-hop removal remains deliberately NOT done** (higher risk, smaller win) — see below.
+
+## Session update (2026-07-07) — committed, pushed, deployed; scheduler activation pending
+
+Resume line: **Read handoffs/rag-speed-and-quality.md and continue.**
+
+Done this session:
+- **Repo variables set** via `gh` on `somanoetic/psychedelic-integration-app`:
+  `EMBEDDINGS_FUNCTION_URL` and `SUPABASE_ANON_KEY` (both non-secret variables).
+- **Warm-ping verified against prod**: the workflow's exact curl (anon key + `x-warm-ping`)
+  → `200 {"ok":true,"warm":true}`; the old no-auth form → `401`. Fix confirmed end-to-end.
+- **Committed** `f447320` (`perf(rag): parallelize retrieval + edge-fn embed cache + warm-ping`)
+  and **pushed** to `origin/feat/neurobiology-of-connection`. Files: `lib/huxleyService.js`,
+  `lib/ragService.js`, `supabase/functions/embeddings/index.ts`,
+  `.github/workflows/embeddings-warm-ping.yml`, `supabase/functions/embeddings/WARM_PING_AND_CACHE.md`,
+  `handoffs/rag-speed-and-quality.md`, `context/features/rag-perf-investigation.md`.
+- **User deployed** the `embeddings` edge function (`supabase functions deploy embeddings`).
+
+State / gotchas:
+- Branch `feat/neurobiology-of-connection` (PR #1 open to master). NOT merged.
+- **The `*/5` warm-ping cron will NOT fire until this merges to `master`** — GitHub only runs
+  `schedule:` triggers from the default branch. Until then, manual only:
+  `gh workflow run "Embeddings warm-ping" --ref feat/neurobiology-of-connection`.
+- Unrelated working-tree changes remain uncommitted (many `components/`, `screens/` edits) —
+  they were intentionally left out of the RAG commit; not part of this thread.
+
+Next (in order):
+1. (Optional now) manual `gh workflow run` to see the warm-ping go green on the branch.
+2. Merge PR #1 → activates the automatic `*/5` warm-ping.
+3. Device re-measure `[Huxley PERF] rag=` on a multi-turn IFS session (watch `[embeddings] … cache HIT/MISS` logs too).
+4. Only after warm turns land <800ms: drop `RAG_TIMEOUT_MS` 2000→800 in `lib/huxleyService.js`.
+5. Separate pass: quality tuning (threshold nudge) — but note turn-1 zeros are largely EXPECTED (see below).
 
 ## Session update (2026-07-05) — Task A: safe speed wins IMPLEMENTED
 
