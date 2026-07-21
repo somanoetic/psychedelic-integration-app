@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Keyboard, Platform } from 'react-native';
+import { Keyboard } from 'react-native';
 
 /**
  * Smart auto-scroll for chat surfaces.
@@ -46,12 +46,23 @@ export default function useSmartScroll() {
   }, []);
 
   useEffect(() => {
-    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
-    const sub = Keyboard.addListener(showEvent, () => {
-      setTimeout(() => {
-        isNearBottomRef.current = true;
+    // Scroll on keyboardDidShow (fires AFTER the show animation + layout have
+    // settled) on both platforms — NOT keyboardWillShow. The old will-show +
+    // fixed-150ms path fired mid-animation: it scrolled to the content bottom
+    // as it was at t=150ms, then the keyboard-avoidance padding kept growing
+    // underneath (iOS KAV behavior="padding" ~250ms; Android keyboardPad
+    // listener also on didShow), pushing the newest reply back under the
+    // keyboard. Waiting for didShow means the ScrollView's final content
+    // height (with padding applied) is what scrollToEnd targets.
+    const sub = Keyboard.addListener('keyboardDidShow', () => {
+      isNearBottomRef.current = true;
+      // rAF-style double-tap: scroll once now, then again on the next frame in
+      // case the avoidance padding lands a frame after didShow (it's applied
+      // via an Animated value / layout pass, not synchronously with the event).
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+      requestAnimationFrame(() => {
         scrollViewRef.current?.scrollToEnd({ animated: true });
-      }, 150);
+      });
     });
     return () => sub.remove();
   }, []);

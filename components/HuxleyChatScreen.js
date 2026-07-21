@@ -220,14 +220,19 @@ const HuxleyChatScreen = ({ navigation }) => {
     scrollViewRef.current?.scrollToEnd({ animated: true });
   }, []);
 
-  // Scroll to bottom when keyboard opens
+  // Scroll to bottom when keyboard opens.
+  // Use keyboardDidShow (fires AFTER the show animation + layout settle) on both
+  // platforms — NOT will-show + fixed 150ms. The old path fired mid-animation
+  // and scrolled to the content bottom before the keyboard-avoidance padding
+  // finished growing, leaving the newest reply under the keyboard. See the
+  // canonical version in components/chat/useSmartScroll.js.
   useEffect(() => {
-    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
-    const sub = Keyboard.addListener(showEvent, () => {
-      setTimeout(() => {
-        isNearBottomRef.current = true;
+    const sub = Keyboard.addListener('keyboardDidShow', () => {
+      isNearBottomRef.current = true;
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+      requestAnimationFrame(() => {
         scrollViewRef.current?.scrollToEnd({ animated: true });
-      }, 150);
+      });
     });
     return () => sub.remove();
   }, []);
@@ -742,6 +747,9 @@ const HuxleyChatScreen = ({ navigation }) => {
                 maxLength={500}
                 editable={inputEnabled || messages.length > 0}
                 onSubmitEditing={() => handleSend()}
+                spellCheck={true}
+                autoCorrect={true}
+                autoCapitalize="sentences"
               />
               <TouchableOpacity
                 style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}
