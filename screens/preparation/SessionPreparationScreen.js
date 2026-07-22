@@ -77,12 +77,15 @@ const SessionPreparationScreen = ({ navigation, route }) => {
   // device-verified pattern: listen for the keyboard show event (fires after the
   // window has resized) rather than guessing a timeout off onFocus.
   useEffect(() => {
-    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
-    const showSub = Keyboard.addListener(showEvent, () => {
+    // keyboardDidShow (after animation + layout settle) + a next-frame
+    // re-scroll, NOT will-show + fixed 150ms which fired mid-animation and
+    // stopped short. See components/chat/useSmartScroll.js.
+    const showSub = Keyboard.addListener('keyboardDidShow', () => {
       if (currentSection !== 'intention_setting') return;
-      setTimeout(() => {
+      intentionScrollRef.current?.scrollToEnd({ animated: true });
+      requestAnimationFrame(() => {
         intentionScrollRef.current?.scrollToEnd({ animated: true });
-      }, 150);
+      });
     });
     return () => showSub.remove();
   }, [currentSection]);

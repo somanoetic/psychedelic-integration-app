@@ -42,13 +42,16 @@ const ConversationalHomeScreen = ({ navigation, user }) => {
   const [isSending, setIsSending] = useState(false);
   const scrollViewRef = useRef(null);
 
-  // Scroll to bottom when keyboard opens
+  // Scroll to bottom when keyboard opens. Use keyboardDidShow (fires after the
+  // show animation + layout settle) + a next-frame re-scroll, NOT will-show +
+  // fixed 150ms — the old path fired mid-animation and stopped short of the
+  // final content bottom. See components/chat/useSmartScroll.js.
   useEffect(() => {
-    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
-    const sub = Keyboard.addListener(showEvent, () => {
-      setTimeout(() => {
+    const sub = Keyboard.addListener('keyboardDidShow', () => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+      requestAnimationFrame(() => {
         scrollViewRef.current?.scrollToEnd({ animated: true });
-      }, 150);
+      });
     });
     return () => sub.remove();
   }, []);
@@ -300,6 +303,9 @@ const ConversationalHomeScreen = ({ navigation, user }) => {
             multiline
             maxLength={500}
             editable={!isSending}
+            spellCheck={true}
+            autoCorrect={true}
+            autoCapitalize="sentences"
           />
           <TouchableOpacity
             style={[
