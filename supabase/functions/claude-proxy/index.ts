@@ -154,42 +154,131 @@ serve(async (req: Request) => {
       }, claudeResponse.status);
     }
 
-    const claudeData = await claudeResponse.json();
+    // Shared post-turn bookkeeping: bump the rate-limit window and record the
+    // usage row. Identical for streamed and non-streamed turns — the only
+    // difference is WHEN we have `usage` (a body field for JSON, the terminal
+    // message_delta event for SSE), so both paths call this once usage is known.
+    const recordTurn = async (usage: any) => {
+      await supabase
+        .from('user_rate_limits')
+        .upsert({
+          user_id: user.id,
+          service: 'claude_api',
+          request_count: requestCount + 1,
+          window_start: windowStart.toISOString(),
+          last_request_at: new Date().toISOString(),
+        }, {
+          onConflict: 'user_id,service',
+        });
 
-    // 5. UPDATE RATE LIMIT
-    await supabase
-      .from('user_rate_limits')
-      .upsert({
-        user_id: user.id,
-        service: 'claude_api',
-        request_count: requestCount + 1,
-        window_start: windowStart.toISOString(),
-        last_request_at: new Date().toISOString(),
-      }, {
-        onConflict: 'user_id,service',
-      });
+      await supabase
+        .from('api_usage_logs')
+        .insert({
+          user_id: user.id,
+          service: 'claude_api',
+          model: requestBody.model,
+          input_tokens: usage?.input_tokens || 0,
+          output_tokens: usage?.output_tokens || 0,
+          cost_estimate: calculateCost(requestBody.model, usage),
+          metadata: {
+            endpoint: 'messages',
+            system_prompt_length: systemPromptLength(requestBody.system),
+            streamed: !!requestBody.stream,
+            // Prompt-cache accounting (present once cache_control breakpoints are
+            // used). Lets us audit hit rate from api_usage_logs without a client.
+            cache_read_input_tokens: usage?.cache_read_input_tokens || 0,
+            cache_creation_input_tokens: usage?.cache_creation_input_tokens || 0,
+          },
+        });
+    };
 
-    // 6. LOG REQUEST (for cost tracking)
-    await supabase
-      .from('api_usage_logs')
-      .insert({
-        user_id: user.id,
-        service: 'claude_api',
-        model: requestBody.model,
-        input_tokens: claudeData.usage?.input_tokens || 0,
-        output_tokens: claudeData.usage?.output_tokens || 0,
-        cost_estimate: calculateCost(requestBody.model, claudeData.usage),
-        metadata: {
-          endpoint: 'messages',
-          system_prompt_length: systemPromptLength(requestBody.system),
-          // Prompt-cache accounting (present once cache_control breakpoints are
-          // used). Lets us audit hit rate from api_usage_logs without a client.
-          cache_read_input_tokens: claudeData.usage?.cache_read_input_tokens || 0,
-          cache_creation_input_tokens: claudeData.usage?.cache_creation_input_tokens || 0,
+    // 5. STREAMING PATH — pipe Anthropic's SSE straight to the client, tee-ing a
+    // copy so we can pull `usage` out of the terminal events and still record the
+    // turn. The client sees raw Anthropic SSE (content_block_delta text +
+    // message_start/message_delta with usage), so the transport layer parses the
+    // same event shapes it would in a direct Anthropic call.
+    if (requestBody.stream) {
+      // Anthropic splits usage across two events: message_start carries the
+      // input/cache token counts, message_delta the final output_tokens. We
+      // accumulate both from a tee'd copy of the byte stream, then record once
+      // the stream drains — WITHOUT buffering the client's copy (it flows live).
+      const [clientStream, meterStream] = claudeResponse.body!.tee();
+
+      // The meter drains a tee'd copy AFTER the Response is returned. On Supabase
+      // Edge (Deno) the isolate can be reclaimed once the response flushes, which
+      // would abort this background read and silently drop the rate-limit +
+      // usage-log write. waitUntil keeps the isolate alive until it settles.
+      const meterTask = (async () => {
+        const usage: any = {};
+        try {
+          const reader = meterStream.getReader();
+          const decoder = new TextDecoder();
+          let buf = '';
+          for (;;) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            buf += decoder.decode(value, { stream: true });
+            // SSE frames are separated by a blank line. Parse complete frames;
+            // keep the trailing partial in `buf`.
+            let sep;
+            while ((sep = buf.indexOf('\n\n')) !== -1) {
+              const frame = buf.slice(0, sep);
+              buf = buf.slice(sep + 2);
+              const dataLine = frame.split('\n').find((l) => l.startsWith('data:'));
+              if (!dataLine) continue;
+              try {
+                const evt = JSON.parse(dataLine.slice(5).trim());
+                if (evt.type === 'message_start' && evt.message?.usage) {
+                  Object.assign(usage, evt.message.usage);
+                } else if (evt.type === 'message_delta' && evt.usage) {
+                  // message_delta.usage carries output_tokens (and may repeat
+                  // cache fields); merge so both halves survive.
+                  Object.assign(usage, evt.usage);
+                }
+              } catch {
+                // Non-JSON keepalive / ping lines — ignore.
+              }
+            }
+          }
+        } catch (e) {
+          console.error('Stream meter error:', e);
+        }
+        try {
+          await recordTurn(usage);
+        } catch (e) {
+          console.error('recordTurn (stream) error:', e);
+        }
+      })();
+
+      // Keep the isolate alive for the background meter if the runtime supports
+      // it (Supabase Edge / Deno Deploy). Falls back to a bare .catch elsewhere.
+      const edgeRuntime = (globalThis as any).EdgeRuntime;
+      if (edgeRuntime?.waitUntil) {
+        edgeRuntime.waitUntil(meterTask);
+      } else {
+        meterTask.catch((e) => console.error('meterTask error:', e));
+      }
+
+      return new Response(clientStream, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive',
+          'Access-Control-Allow-Origin': '*',
+          // Surface rate-limit headroom without waiting for the stream to drain.
+          'X-RateLimit-Remaining': String(RATE_LIMIT_PER_DAY - requestCount - 1),
+          'X-RateLimit-Reset': new Date(windowStart.getTime() + RATE_LIMIT_WINDOW_MS).toISOString(),
         },
       });
+    }
 
-    // 7. RETURN RESPONSE
+    // 5b. NON-STREAMING PATH (unchanged behavior)
+    const claudeData = await claudeResponse.json();
+
+    await recordTurn(claudeData.usage);
+
+    // 6. RETURN RESPONSE
     return jsonResponse({
       ...claudeData,
       _proxy_metadata: {

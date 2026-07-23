@@ -30,6 +30,10 @@ const IFSPartsWorkChatWithContext = ({ navigation, onComplete, onSkip }) => {
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  // Streaming reply: id of the assistant bubble currently being written live,
+  // and its accumulating text. While set, the thinking spinner is suppressed and
+  // this bubble grows token-by-token. Cleared once the turn's branch logic runs.
+  const [streamingId, setStreamingId] = useState(null);
   const [isAIMode, setIsAIMode] = useState(true);
   const [loading, setLoading] = useState(true);
 
@@ -205,6 +209,45 @@ All parts have positive intentions, even when their methods cause problems. This
       isAI: sender === 'assistant' && isAIMode,
     };
     setMessages((prev) => [...prev, newMessage]);
+  };
+
+  // Create an empty assistant bubble to stream into, and return its id. The
+  // spinner is turned off the moment we start streaming real text.
+  const beginStreamingMessage = () => {
+    const id = Date.now() + Math.random();
+    setMessages((prev) => [
+      ...prev,
+      {
+        id,
+        sender: 'assistant',
+        text: '',
+        options: null,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        isAI: isAIMode,
+        streaming: true,
+      },
+    ]);
+    setStreamingId(id);
+    return id;
+  };
+
+  // Append a delta to the live streaming bubble.
+  const appendStreamingText = (id, delta) => {
+    setMessages((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, text: m.text + delta } : m)),
+    );
+  };
+
+  // Finalize the streaming bubble: set its final text (in case the parsed
+  // displayMessage differs slightly from the raw streamed prose — e.g. trimmed)
+  // and clear the streaming flag. Removes the bubble entirely if it ended empty.
+  const finalizeStreamingMessage = (id, finalText) => {
+    setStreamingId(null);
+    setMessages((prev) =>
+      prev
+        .map((m) => (m.id === id ? { ...m, text: finalText, streaming: false } : m))
+        .filter((m) => !(m.id === id && !finalText)),
+    );
   };
 
   const handleOptionSelect = async (option) => {
@@ -469,24 +512,58 @@ This ${newPart.part_role} part is showing up now. What do you notice about it in
       return;
     }
 
+    // A typed answer to the check-in IS the start of the session (the user is
+    // describing what they're noticing, or naming a trailhead, in free text
+    // rather than tapping a known part). Mark the session started so the input
+    // box stays visible even when the IFS handler reports its own 'intro'
+    // working phase back to us. Without this, sessionType stayed null and
+    // showInput hid the box after the first check-in answer.
+    if (currentPhase === 'check_in' && !sessionType) {
+      setSessionType('discovery');
+    }
+
     addMessage('user', message);
     if (!messageOverride) {
       setUserInput('');
     }
     setIsTyping(true);
 
+    // Live-stream the reply into a bubble that grows as tokens arrive. onToken
+    // fires only with user-facing prose (huxleyService gates the JSON tail), so
+    // we can append it verbatim. The spinner shows only until the first token.
+    let streamId = null;
     try {
-      const aiResponse = await huxleyService.chat(message);
+      const aiResponse = await huxleyService.chat(message, {
+        onToken: (delta) => {
+          if (streamId === null) {
+            setIsTyping(false);
+            streamId = beginStreamingMessage();
+          }
+          appendStreamingText(streamId, delta);
+        },
+      });
 
       setIsTyping(false);
       setIsAIMode(aiResponse.isAI);
+
+      // Helper: land the assistant reply. If we streamed it, finalize the live
+      // bubble in place (using the parsed displayMessage as source of truth);
+      // otherwise fall back to a fresh appended message.
+      const landReply = () => {
+        if (streamId !== null) {
+          finalizeStreamingMessage(streamId, aiResponse.message);
+          streamId = null;
+        } else {
+          addMessage('assistant', aiResponse.message);
+        }
+      };
 
       if (aiResponse.sessionProgress) {
         setSessionProgress(aiResponse.sessionProgress);
         setCurrentPhase(aiResponse.sessionProgress.phase);
 
         if (aiResponse.sessionProgress.isComplete && currentPhase !== 'summary') {
-          addMessage('assistant', aiResponse.message);
+          landReply();
           showSummary();
           return;
         }
@@ -498,7 +575,7 @@ This ${newPart.part_role} part is showing up now. What do you notice about it in
           await recordProtectorExileConnection(currentPart.id, detectedExile.id);
         }
 
-        addMessage('assistant', aiResponse.message);
+        landReply();
         addMessage(
           'assistant',
           `I'm noticing something... You mentioned feelings and language that remind me of **${detectedExile.part_name}**, an exile you've worked with before.
@@ -521,7 +598,7 @@ Is that part showing up right now? Sometimes protectors reveal the exiles they p
         if (activePart?.name) {
           const duplicate = detectDuplicatePart(activePart.name);
           if (duplicate) {
-            addMessage('assistant', aiResponse.message);
+            landReply();
             addMessage(
               'assistant',
               `This sounds similar to **${duplicate.part_name}**, a ${duplicate.part_role} you've worked with before.
@@ -534,9 +611,14 @@ Is this the same part showing up in a new way, or is this definitely a new part?
         }
       }
 
-      addMessage('assistant', aiResponse.message);
+      landReply();
     } catch (error) {
       setIsTyping(false);
+      // Drop any partial streamed bubble so the error message stands alone.
+      if (streamId !== null) {
+        finalizeStreamingMessage(streamId, '');
+        streamId = null;
+      }
       console.error('Error getting response:', error);
       addMessage(
         'assistant',
