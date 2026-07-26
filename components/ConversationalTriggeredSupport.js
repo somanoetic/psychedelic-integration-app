@@ -7,6 +7,7 @@ import {
   ScrollView,
   Animated,
   Image,
+  BackHandler,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -53,6 +54,7 @@ const EXERCISE_ICON_MAP = {
 
 const ConversationalTriggeredSupport = ({ navigation }) => {
   const [conversationStep, setConversationStep] = useState('initial'); // initial, safety_check, grounding, support_options, exercise
+  const [stepHistory, setStepHistory] = useState([]); // breadcrumb of visited steps for level-by-level back
   const [selectedExercise, setSelectedExercise] = useState(null);
   const [fadeAnim] = useState(new Animated.Value(0));
 
@@ -63,6 +65,38 @@ const ConversationalTriggeredSupport = ({ navigation }) => {
       useNativeDriver: true,
     }).start();
   }, []);
+
+  // Advance to a new conversation step, remembering where we came from.
+  const goToStep = (nextStep) => {
+    setStepHistory((prev) => [...prev, conversationStep]);
+    setConversationStep(nextStep);
+  };
+
+  // Step back one conversational level. Only leave the screen entirely
+  // when we're already at the initial step (nothing left to pop).
+  const goBackStep = () => {
+    if (stepHistory.length === 0) {
+      navigation.goBack();
+      return;
+    }
+    const previousStep = stepHistory[stepHistory.length - 1];
+    setStepHistory((prev) => prev.slice(0, -1));
+    setConversationStep(previousStep);
+  };
+
+  // Android hardware/gesture back: step back one conversational level too,
+  // rather than popping the whole screen back to the Huxley home.
+  useEffect(() => {
+    const onHardwareBack = () => {
+      if (stepHistory.length === 0) {
+        return false; // let the OS pop the screen normally
+      }
+      goBackStep();
+      return true; // we handled it
+    };
+    const subscription = BackHandler.addEventListener('hardwareBackPress', onHardwareBack);
+    return () => subscription.remove();
+  }, [stepHistory, conversationStep]);
 
   const crisisResources = [
     { name: 'National Suicide Prevention Lifeline', number: '988', description: '24/7 crisis support' },
@@ -151,9 +185,9 @@ const ConversationalTriggeredSupport = ({ navigation }) => {
       )}
       <View style={styles.optionsContainer}>
         <Text style={styles.optionsLabel}>You:</Text>
-        {renderUserOption('Yes, I need crisis help', () => setConversationStep('safety_check'), 'emergency', colors.error)}
-        {renderUserOption('No, I just need to calm down', () => setConversationStep('grounding'), 'self-improvement', colors.success)}
-        {renderUserOption('I need other support', () => setConversationStep('support_options'), 'help', colors.primary)}
+        {renderUserOption('Yes, I need crisis help', () => goToStep('safety_check'), 'emergency', colors.error)}
+        {renderUserOption('No, I just need to calm down', () => goToStep('grounding'), 'self-improvement', colors.success)}
+        {renderUserOption('I need other support', () => goToStep('support_options'), 'help', colors.primary)}
       </View>
     </>
   );
@@ -183,8 +217,8 @@ const ConversationalTriggeredSupport = ({ navigation }) => {
 
       <View style={styles.optionsContainer}>
         <Text style={styles.optionsLabel}>You:</Text>
-        {renderUserOption('I\'m safe now, help me ground', () => setConversationStep('grounding'), 'self-improvement', colors.success)}
-        {renderUserOption('Go back home', () => navigation.goBack(), 'home', colors.textSecondary)}
+        {renderUserOption('I\'m safe now, help me ground', () => goToStep('grounding'), 'self-improvement', colors.success)}
+        {renderUserOption('Go back', () => goBackStep(), 'arrow-back', colors.textSecondary)}
       </View>
     </>
   );
@@ -204,7 +238,7 @@ const ConversationalTriggeredSupport = ({ navigation }) => {
               style={[styles.exerciseCard, { borderLeftColor: exercise.color }]}
               onPress={() => {
                 setSelectedExercise(exercise);
-                setConversationStep('exercise');
+                goToStep('exercise');
               }}
             >
               <View style={[styles.exerciseIcon, { backgroundColor: `${exercise.color}20` }]}>
@@ -222,8 +256,8 @@ const ConversationalTriggeredSupport = ({ navigation }) => {
 
       <View style={styles.optionsContainer}>
         <Text style={styles.optionsLabel}>You:</Text>
-        {renderUserOption('I need other support', () => setConversationStep('support_options'), 'help', colors.primary)}
-        {renderUserOption('Go back', () => setConversationStep('initial'), 'arrow-back', colors.textSecondary)}
+        {renderUserOption('I need other support', () => goToStep('support_options'), 'help', colors.primary)}
+        {renderUserOption('Go back', () => goBackStep(), 'arrow-back', colors.textSecondary)}
       </View>
     </>
   );
@@ -236,7 +270,7 @@ const ConversationalTriggeredSupport = ({ navigation }) => {
 
       <View style={styles.optionsContainer}>
         <Text style={styles.optionsLabel}>You:</Text>
-        {renderUserOption('Try grounding exercises', () => setConversationStep('grounding'), 'self-improvement', colors.success)}
+        {renderUserOption('Try grounding exercises', () => goToStep('grounding'), 'self-improvement', colors.success)}
         {renderUserOption('Log what happened', () => {
           navigation.navigate('TriggerTracker');
         }, 'edit-note', colors.error)}
@@ -253,7 +287,7 @@ const ConversationalTriggeredSupport = ({ navigation }) => {
         {renderUserOption('Find a therapist', () => {
           navigation.navigate('FindSupport');
         }, 'support-agent', '#8b5cf6')}
-        {renderUserOption('Go back home', () => navigation.goBack(), 'home', colors.textSecondary)}
+        {renderUserOption('Go back', () => goBackStep(), 'arrow-back', colors.textSecondary)}
       </View>
     </>
   );
@@ -284,11 +318,11 @@ const ConversationalTriggeredSupport = ({ navigation }) => {
 
         <View style={styles.optionsContainer}>
           <Text style={styles.optionsLabel}>You:</Text>
-          {renderUserOption('I feel better', () => setConversationStep('initial'), 'check-circle', colors.success)}
+          {renderUserOption('I feel better', () => { setStepHistory([]); setConversationStep('initial'); }, 'check-circle', colors.success)}
           {renderUserOption('Log what happened', () => navigation.navigate('TriggerTracker'), 'edit-note', colors.error)}
-          {renderUserOption('Try another exercise', () => setConversationStep('grounding'), 'replay', colors.primary)}
-          {renderUserOption('I need more support', () => setConversationStep('support_options'), 'help', colors.warning)}
-          {renderUserOption('Go back home', () => navigation.goBack(), 'home', colors.textSecondary)}
+          {renderUserOption('Try another exercise', () => goBackStep(), 'replay', colors.primary)}
+          {renderUserOption('I need more support', () => goToStep('support_options'), 'help', colors.warning)}
+          {renderUserOption('Go back', () => goBackStep(), 'arrow-back', colors.textSecondary)}
         </View>
       </>
     );
@@ -298,7 +332,7 @@ const ConversationalTriggeredSupport = ({ navigation }) => {
     <SafeAreaView style={styles.container} edges={['top']}>
       {/* Header */}
       <View style={[styles.header, styles.urgentHeader]}>
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={goBackStep}>
           <ArrowLeft size={24} color="#ffffff" strokeWidth={2} />
         </TouchableOpacity>
         <Text style={styles.appNameUrgent}>Triggered Support</Text>
