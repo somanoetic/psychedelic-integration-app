@@ -60,7 +60,10 @@ export default {
       },
       "supabaseUrl": process.env.SUPABASE_URL || '',
       "supabaseAnonKey": process.env.SUPABASE_ANON_KEY || '',
-      "sentryDsn": process.env.SENTRY_DSN || ''
+      "sentryDsn": process.env.SENTRY_DSN || '',
+      // Sentry environment: development client, or the EAS channel (preview/production).
+      // Lets us filter beta-build crashes from prod/dev in the Sentry dashboard.
+      "appEnv": IS_DEV ? 'development' : (process.env.EAS_BUILD_PROFILE || process.env.APP_VARIANT || 'production')
     },
     "owner": "alleviationtherapeutics",
     "updates": {

@@ -117,6 +117,9 @@ import config from './lib/config';
 if (config.sentryDsn) {
   Sentry.init({
     dsn: config.sentryDsn,
+    // Separate beta (preview) crashes from prod/dev, and pin each event to a build.
+    environment: config.appEnv,
+    release: `io.multitudesapp@${config.appVersion}`,
     sendDefaultPii: true,
     enableLogs: true,
     replaysSessionSampleRate: 0.1,
