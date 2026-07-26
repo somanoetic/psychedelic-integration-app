@@ -255,6 +255,9 @@ const ContributorApplicationScreen = ({ navigation }) => {
             placeholder="Your relevant training, credentials, and experience (e.g. LMFT, somatic experiencing practitioner, integration coach, lived-experience guide)"
             multiline
             numberOfLines={4}
+            spellCheck={true}
+            autoCorrect={true}
+            autoCapitalize="sentences"
           />
         </View>
 
@@ -289,6 +292,9 @@ const ContributorApplicationScreen = ({ navigation }) => {
             placeholder="Briefly describe what you'd like to contribute and why it would help Multitudes users"
             multiline
             numberOfLines={4}
+            spellCheck={true}
+            autoCorrect={true}
+            autoCapitalize="sentences"
           />
         </View>
 
@@ -301,6 +307,9 @@ const ContributorApplicationScreen = ({ navigation }) => {
             placeholder="Optional. Links, references, or anything else you'd like us to know."
             multiline
             numberOfLines={3}
+            spellCheck={true}
+            autoCorrect={true}
+            autoCapitalize="sentences"
           />
         </View>
       </View>

@@ -266,6 +266,9 @@ function FieldCard({ label, value, placeholder, multiline, onChange }) {
         onChangeText={onChange}
         multiline={multiline}
         textAlignVertical={multiline ? 'top' : 'center'}
+        spellCheck={true}
+        autoCorrect={true}
+        autoCapitalize="sentences"
       />
     </View>
   );

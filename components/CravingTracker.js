@@ -240,6 +240,9 @@ const CravingTracker = ({ navigation }) => {
             placeholderTextColor={colors.textLight}
             multiline
             maxLength={500}
+            spellCheck={true}
+            autoCorrect={true}
+            autoCapitalize="sentences"
           />
         )}
         {!isExpanded && hasValue && (
@@ -287,6 +290,9 @@ const CravingTracker = ({ navigation }) => {
           placeholder="A drink, a cigarette, scrolling, sugar, checking..."
           placeholderTextColor={colors.textLight}
           maxLength={200}
+          spellCheck={true}
+          autoCorrect={true}
+          autoCapitalize="sentences"
         />
 
         {/* Category */}

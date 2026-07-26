@@ -151,6 +151,9 @@ export default function FeedbackButton({ style }) {
                 value={title}
                 onChangeText={setTitle}
                 maxLength={100}
+                spellCheck={true}
+                autoCorrect={true}
+                autoCapitalize="sentences"
               />
 
               <Text style={styles.sectionTitle}>Description</Text>
@@ -162,6 +165,9 @@ export default function FeedbackButton({ style }) {
                 multiline
                 numberOfLines={6}
                 textAlignVertical="top"
+                spellCheck={true}
+                autoCorrect={true}
+                autoCapitalize="sentences"
               />
 
               <View style={styles.buttonContainer}>

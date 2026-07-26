@@ -238,6 +238,9 @@ const CognitiveDistortionTracker = ({ navigation }) => {
             placeholderTextColor={colors.textLight}
             multiline
             maxLength={1000}
+            spellCheck={true}
+            autoCorrect={true}
+            autoCapitalize="sentences"
           />
         )}
         {!isExpanded && hasValue && (
@@ -360,6 +363,9 @@ const CognitiveDistortionTracker = ({ navigation }) => {
             placeholder="Name it in your own words (optional)..."
             placeholderTextColor={colors.textLight}
             maxLength={200}
+            spellCheck={true}
+            autoCorrect={true}
+            autoCapitalize="sentences"
           />
         )}
 

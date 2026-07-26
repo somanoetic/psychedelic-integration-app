@@ -274,6 +274,9 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
             numberOfLines={3}
             textAlignVertical="top"
             onSubmitEditing={() => handleAddToList('goals')}
+            spellCheck={true}
+            autoCorrect={true}
+            autoCapitalize="sentences"
           />
           <TouchableOpacity
             style={styles.addButton}
@@ -353,6 +356,9 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
             multiline
             numberOfLines={3}
             textAlignVertical="top"
+            spellCheck={true}
+            autoCorrect={true}
+            autoCapitalize="sentences"
           />
           <TouchableOpacity
             style={[styles.addButton, { backgroundColor: '#d1fae5' }]}
@@ -405,6 +411,9 @@ const IntentionSetting = ({ sessionId, onComplete, onSkip }) => {
             multiline
             numberOfLines={5}
             textAlignVertical="top"
+            spellCheck={true}
+            autoCorrect={true}
+            autoCapitalize="sentences"
           />
         </View>
       </View>

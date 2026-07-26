@@ -408,6 +408,9 @@ const PreTreatmentBaselineLog = ({ onComplete, onSkip }) => {
                   multiline
                   numberOfLines={4}
                   textAlignVertical="top"
+                  spellCheck={true}
+                  autoCorrect={true}
+                  autoCapitalize="sentences"
                 />
               )}
             </View>

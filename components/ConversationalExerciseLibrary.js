@@ -198,6 +198,9 @@ const ConversationalExerciseLibrary = ({ navigation, route }) => {
           placeholder="I'm feeling..."
           placeholderTextColor={colors.textLight}
           multiline
+          spellCheck={true}
+          autoCorrect={true}
+          autoCapitalize="sentences"
         />
       </View>
 

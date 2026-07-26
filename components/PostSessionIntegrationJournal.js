@@ -379,6 +379,9 @@ const PostSessionIntegrationJournal = ({ sessionId, onComplete, onSkip }) => {
                 multiline={field.type === 'textarea'}
                 numberOfLines={field.type === 'textarea' ? 4 : 1}
                 textAlignVertical={field.type === 'textarea' ? 'top' : 'center'}
+                spellCheck={true}
+                autoCorrect={false}
+                autoCapitalize="sentences"
               />
             </View>
           ))}
@@ -413,6 +416,9 @@ const PostSessionIntegrationJournal = ({ sessionId, onComplete, onSkip }) => {
             multiline
             numberOfLines={8}
             textAlignVertical="top"
+            spellCheck={true}
+            autoCorrect={false}
+            autoCapitalize="sentences"
           />
         </View>
 

@@ -330,6 +330,9 @@ const DailyGlimmersPractice = ({ onComplete, onSkip }) => {
             multiline
             numberOfLines={3}
             textAlignVertical="top"
+            spellCheck={true}
+            autoCorrect={true}
+            autoCapitalize="sentences"
           />
 
           <Text style={[styles.inputLabel, { marginTop: 16 }]}>Where/when did you notice it? (optional)</Text>
@@ -342,6 +345,9 @@ const DailyGlimmersPractice = ({ onComplete, onSkip }) => {
             multiline
             numberOfLines={2}
             textAlignVertical="top"
+            spellCheck={true}
+            autoCorrect={true}
+            autoCapitalize="sentences"
           />
         </View>
 

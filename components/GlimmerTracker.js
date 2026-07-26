@@ -200,6 +200,9 @@ const GlimmerTracker = ({ navigation }) => {
             placeholderTextColor={colors.textLight}
             multiline
             maxLength={500}
+            spellCheck={true}
+            autoCorrect={true}
+            autoCapitalize="sentences"
           />
         )}
         {!isExpanded && hasValue && (

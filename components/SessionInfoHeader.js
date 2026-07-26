@@ -291,6 +291,9 @@ const SessionInfoHeader = ({ session, onUpdate }) => {
                 placeholderTextColor={colors.textLight}
                 multiline
                 numberOfLines={4}
+                spellCheck={true}
+                autoCorrect={true}
+                autoCapitalize="sentences"
               />
 
               <TouchableOpacity

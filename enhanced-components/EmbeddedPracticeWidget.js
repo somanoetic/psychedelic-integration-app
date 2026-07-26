@@ -278,6 +278,9 @@ const EmbeddedPracticeWidget = ({ practice, nervousSystemState, onComplete, onSk
             placeholder="What are you noticing in your body, mind, or emotions?"
             multiline
             numberOfLines={4}
+            spellCheck={true}
+            autoCorrect={true}
+            autoCapitalize="sentences"
           />
         </View>
       );
@@ -389,6 +392,9 @@ const EmbeddedPracticeWidget = ({ practice, nervousSystemState, onComplete, onSk
           placeholder="Take your time to listen inside..."
           multiline
           numberOfLines={4}
+          spellCheck={true}
+          autoCorrect={true}
+          autoCapitalize="sentences"
         />
       </View>
     );

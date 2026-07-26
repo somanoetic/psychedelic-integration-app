@@ -130,6 +130,9 @@ const AddItemModal = ({ visible, onClose, onAdd, loading }) => {
                 placeholderTextColor={colors.textLight}
                 maxLength={200}
                 editable={!loading}
+                spellCheck={true}
+                autoCorrect={true}
+                autoCapitalize="sentences"
               />
               {errors.title && <Text style={styles.errorText}>{errors.title}</Text>}
               <Text style={styles.charCount}>{title.length}/200</Text>
@@ -151,6 +154,9 @@ const AddItemModal = ({ visible, onClose, onAdd, loading }) => {
                 numberOfLines={4}
                 maxLength={500}
                 editable={!loading}
+                spellCheck={true}
+                autoCorrect={true}
+                autoCapitalize="sentences"
               />
               {errors.description && <Text style={styles.errorText}>{errors.description}</Text>}
               <Text style={styles.charCount}>{description.length}/500</Text>

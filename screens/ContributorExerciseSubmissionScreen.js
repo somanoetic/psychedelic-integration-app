@@ -296,6 +296,9 @@ const ContributorExerciseSubmissionScreen = ({ navigation }) => {
                   placeholder="e.g. Three-Part Breath for Grounding"
                   placeholderTextColor={colors.textLight}
                   maxLength={200}
+                  spellCheck={true}
+                  autoCorrect={true}
+                  autoCapitalize="sentences"
                 />
               </Field>
 
@@ -350,6 +353,9 @@ const ContributorExerciseSubmissionScreen = ({ navigation }) => {
                   placeholderTextColor={colors.textLight}
                   multiline
                   maxLength={2000}
+                  spellCheck={true}
+                  autoCorrect={true}
+                  autoCapitalize="sentences"
                 />
               </Field>
 
@@ -364,6 +370,9 @@ const ContributorExerciseSubmissionScreen = ({ navigation }) => {
                       placeholder={`Step ${idx + 1}`}
                       placeholderTextColor={colors.textLight}
                       multiline
+                      spellCheck={true}
+                      autoCorrect={true}
+                      autoCapitalize="sentences"
                     />
                     {form.steps.length > 1 && (
                       <TouchableOpacity

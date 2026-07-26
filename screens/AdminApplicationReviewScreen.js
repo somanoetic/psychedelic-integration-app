@@ -216,6 +216,9 @@ const AdminApplicationReviewScreen = ({ navigation }) => {
                     : 'Tell the applicant what additional info you need.'}
                   placeholderTextColor={colors.textLight}
                   editable={!submitting}
+                  spellCheck={true}
+                  autoCorrect={true}
+                  autoCapitalize="sentences"
                 />
                 <View style={styles.notesActions}>
                   <TouchableOpacity

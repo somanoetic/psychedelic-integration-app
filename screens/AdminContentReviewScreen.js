@@ -251,6 +251,9 @@ const AdminContentReviewScreen = ({ navigation }) => {
                         : 'Tell the contributor what to change before resubmitting.')}
                   placeholderTextColor={colors.textLight}
                   editable={!submitting}
+                  spellCheck={true}
+                  autoCorrect={true}
+                  autoCapitalize="sentences"
                 />
                 <View style={styles.notesActions}>
                   <TouchableOpacity

@@ -231,6 +231,9 @@ const ChatConversation = ({
             maxLength={500}
             editable={!inputDisabled}
             onSubmitEditing={handleSendPress}
+            spellCheck={true}
+            autoCorrect={true}
+            autoCapitalize="sentences"
           />
           <TouchableOpacity
             style={[styles.sendButton, !canSend && styles.sendButtonDisabled]}

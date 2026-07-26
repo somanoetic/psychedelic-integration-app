@@ -357,6 +357,9 @@ const IFSPartsInventory = ({ onComplete, onSkip }) => {
                     value={customNotes[noteKey] || ''}
                     onChangeText={(text) => updateCustomNote(step.category, part.name, text)}
                     multiline
+                    spellCheck={true}
+                    autoCorrect={true}
+                    autoCapitalize="sentences"
                   />
                 )}
               </View>

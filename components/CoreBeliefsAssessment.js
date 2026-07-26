@@ -506,6 +506,9 @@ const CoreBeliefsAssessment = ({ user: userProp, onComplete, navigation }) => {
             placeholderTextColor={colors.textLight}
             multiline
             maxLength={1000}
+            spellCheck={true}
+            autoCorrect={true}
+            autoCapitalize="sentences"
           />
           <TouchableOpacity
             style={[styles.sendButton, !inputText.trim() && styles.sendButtonDisabled]}

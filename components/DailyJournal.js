@@ -769,6 +769,9 @@ Only include fields with clear evidence.`);
               multiline
               maxLength={2000}
               editable={!loading && !saving && phase !== 'discussion_prompt' && phase !== 'suggestions_prompt'}
+              spellCheck={true}
+              autoCorrect={false}
+              autoCapitalize="sentences"
             />
             <TouchableOpacity
               style={[styles.sendButton, (!inputText.trim() || loading || saving) && styles.sendButtonDisabled]}

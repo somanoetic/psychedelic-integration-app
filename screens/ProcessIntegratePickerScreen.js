@@ -201,6 +201,9 @@ const ProcessIntegratePickerScreen = ({ navigation }) => {
           onChangeText={setNewTitle}
           placeholder="e.g., Autumn Journey"
           placeholderTextColor={colors.textLight}
+          spellCheck={true}
+          autoCorrect={true}
+          autoCapitalize="sentences"
         />
 
         <Text style={styles.inputLabel}>Journey Date</Text>
