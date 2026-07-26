@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Platform,
@@ -29,6 +29,10 @@ const IFSPartsWorkChatWithContext = ({ navigation, onComplete, onSkip }) => {
   const [currentPhase, setCurrentPhase] = useState('intro');
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState('');
+  // Debounce timer for the RAG prefetch: while the user types we warm the RAG
+  // cache in the background (see handleInputChange) so the send turn is a cache
+  // hit instead of paying the ~0.15-1.4s embed inline. Cleared on unmount.
+  const ragPrefetchTimer = useRef(null);
   const [isTyping, setIsTyping] = useState(false);
   // Streaming reply: id of the assistant bubble currently being written live,
   // and its accumulating text. While set, the thinking spinner is suppressed and
@@ -499,9 +503,47 @@ This ${newPart.part_role} part is showing up now. What do you notice about it in
     return null;
   };
 
+  // Update the input AND warm the RAG cache in the background. The embed+search
+  // is the dominant remaining time-to-first-token cost (each send is a unique
+  // query = a cache MISS paid inline). Running the identical search here — during
+  // the dead time while the user types — makes the send turn a cache HIT so RAG
+  // resolves ~instantly. Debounced hard (fires ~500ms after typing pauses) so we
+  // don't embed on every keystroke; the service skips very short drafts. This is
+  // fire-and-forget and cannot affect correctness — it only pre-populates a cache
+  // that _startRagRetrieval reads. Skipped in the learning/discuss phase, which
+  // routes to general-mode Q&A (handleLearningQuestion) and does its own thing.
+  const handleInputChange = useCallback(
+    (text) => {
+      setUserInput(text);
+
+      if (ragPrefetchTimer.current) clearTimeout(ragPrefetchTimer.current);
+      if (currentPhase === 'learning') return;
+
+      const draft = text;
+      ragPrefetchTimer.current = setTimeout(() => {
+        huxleyService.prefetchRag(draft);
+      }, 500);
+    },
+    [currentPhase]
+  );
+
+  // Clear any pending prefetch timer on unmount so it can't fire after teardown.
+  useEffect(() => {
+    return () => {
+      if (ragPrefetchTimer.current) clearTimeout(ragPrefetchTimer.current);
+    };
+  }, []);
+
   const handleSendMessage = async (messageOverride = null) => {
     const message = (messageOverride ?? userInput).trim();
     if (!message) return;
+
+    // The send turn fires its own real RAG call — cancel any pending prefetch so
+    // it doesn't fire against a now-stale/empty draft after we clear the input.
+    if (ragPrefetchTimer.current) {
+      clearTimeout(ragPrefetchTimer.current);
+      ragPrefetchTimer.current = null;
+    }
 
     // In the learning/discuss phase, typed questions are educational — route
     // them to the general-mode Q&A, not the parts-work protocol.
@@ -869,7 +911,7 @@ This is a beginning. Parts work is about ongoing relationship. You can return to
           isTyping={isTyping}
           onSend={showInput ? () => handleSendMessage() : undefined}
           inputText={userInput}
-          onInputTextChange={setUserInput}
+          onInputTextChange={handleInputChange}
           inputPlaceholder="Share your experience..."
           inputDisabled={isTyping}
           header={renderHeader()}
