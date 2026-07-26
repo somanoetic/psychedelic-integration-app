@@ -13,6 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import huxleyService from '../lib/huxleyService';
 import ifsContextService from '../lib/ifsContextService';
 import masterContextService from '../lib/masterContextService';
+import { isExperiencedUser, getCheckInMessage } from '../lib/ifsCheckIn';
 import { colors, gradients } from '../theme/colors';
 import { ChatConversation } from '../components/chat';
 
@@ -87,18 +88,35 @@ const IFSPartsWorkChatWithContext = ({ navigation, onComplete, onSkip }) => {
       huxleyService.setMode('ifs', { clearHistory: true });
 
       let allParts = [];
+      let priorSessionCount = 0;
       if (userId) {
-        const partsData = await ifsContextService.loadUserParts(userId);
+        // Load parts and recent-session history in parallel. Both feed the
+        // experience-tier decision below; parts also drive the returning-user
+        // parts list. Session history catches users who explored IFS before
+        // without saving a part (parts empty, but not actually new to this).
+        // Fetch up to 2 sessions — that's all the threshold below needs.
+        const [partsData, recentSessions] = await Promise.all([
+          ifsContextService.loadUserParts(userId),
+          ifsContextService.getRecentSessions(userId, 2).catch(() => []),
+        ]);
         allParts = partsData.allParts || [];
+        priorSessionCount = (recentSessions || []).length;
         setKnownParts(allParts);
       }
 
+      // Experience tier: "new" gets the full teaching intro (both doorways
+      // explained, no jargon assumed); "experienced" gets a one-line reminder.
+      // Derived from app history — no need to ask. Logic + copy live in
+      // lib/ifsCheckIn.js so they can be unit-tested without mounting this
+      // component (see __tests__/lib/ifsCheckIn.test.js).
+      const isExperienced = isExperiencedUser(allParts.length, priorSessionCount);
+
       setCurrentPhase('check_in');
-      addMessage('assistant', getCheckInMessage(allParts), null);
+      addMessage('assistant', getCheckInMessage(allParts, isExperienced), null);
     } catch (error) {
       console.error('Error beginning IFS session:', error);
       setCurrentPhase('check_in');
-      addMessage('assistant', getCheckInMessage([]), null);
+      addMessage('assistant', getCheckInMessage([], false), null);
     } finally {
       setIsTyping(false);
     }
@@ -129,9 +147,14 @@ const IFSPartsWorkChatWithContext = ({ navigation, onComplete, onSkip }) => {
     setIsTyping(true);
     try {
       const aiResponse = await huxleyService.chat(
-        `The user is learning about Internal Family Systems (IFS) and asked: "${question}". `
-          + `Answer their question clearly and warmly as an educator. Explain the concept; do NOT `
-          + `start a parts-work session or ask them to focus on a part unless they ask to begin.`,
+        `The user wants to understand Internal Family Systems (IFS) before trying it. They asked: "${question}". `
+          + `You are teaching here, not running a session. Give a warm, genuinely explanatory answer: a broad, `
+          + `clear overview of the relevant idea, with a concrete example or analogy where it helps. Take your `
+          + `time and go a little deeper than a one-liner — this is a moment for understanding, not brevity. `
+          + `Cover the model itself (parts, Self, protectors/managers/firefighters, exiles, the 8 C's, unblending) `
+          + `as their questions call for it. Invite them to keep asking — end by offering a natural follow-up or `
+          + `checking what else they're curious about. Do NOT start parts work, do NOT ask them to focus on or `
+          + `notice a part, and do NOT use the therapeutic session protocol unless they explicitly say they want to begin.`,
         { mode: 'general' },
       );
       setIsAIMode(aiResponse.isAI);
@@ -151,29 +174,9 @@ const IFSPartsWorkChatWithContext = ({ navigation, onComplete, onSkip }) => {
     }
   };
 
-  const getCheckInMessage = (parts) => {
-    if (!parts || parts.length === 0) {
-      return `Welcome to IFS Parts Work.
-
-**What part is coming up for you right now?**
-
-Take a moment to notice... Is there a part that's active right now? Maybe a feeling, a voice, or a sensation that's asking for attention?
-
-You can describe it in your own words - I'll help you get to know it.`;
-    }
-
-    const partsPreview = parts.slice(0, 5).map((p) => `• ${p.part_name || 'Unnamed part'}`).join('\n');
-    const moreCount = parts.length > 5 ? `\n... and ${parts.length - 5} more` : '';
-
-    return `Welcome back to IFS Parts Work.
-
-**What part is coming up for you right now?**
-
-I see you've worked with these parts before:
-${partsPreview}${moreCount}
-
-Is one of these parts active right now, or is this a new part wanting attention?`;
-  };
+  // getCheckInMessage + the experience-tier decision now live in
+  // lib/ifsCheckIn.js (imported above) so they can be unit-tested as pure
+  // functions without mounting this component.
 
   const getIntroMessage = () => `Welcome to IFS Parts Work.
 
@@ -359,7 +362,10 @@ How is this part showing up for you right now? What does it want you to know?`;
       setCurrentPhase('find');
 
       const aiResponse = await huxleyService.chat(
-        `The user is noticing: "${userMessage}". Help them begin discovering this part.`,
+        `The user is beginning parts work. In response to being invited to notice a feeling/thought/pattern OR name a trailhead (a life problem), they said: "${userMessage}". `
+          + `This may be a part they've noticed, or it may be a trailhead - a problem or friction that's a doorway to a part, not yet a part itself. `
+          + `If it's a trailhead, gently help them turn from the problem toward the part connected to it (e.g. "as you think about that, what do you notice happening inside?"). `
+          + `Meet them where they are and help them begin to make contact. One warm, simple step.`,
       );
 
       setIsTyping(false);
@@ -895,8 +901,20 @@ This is a beginning. Parts work is about ongoing relationship. You can return to
     </View>
   );
 
-  // Hide input in intro / summary phases — user interacts via option buttons.
-  const showInput = currentPhase !== 'intro' && currentPhase !== 'summary';
+  // Hide the text input only in the pre-session menu (intro/learning, driven by
+  // option buttons) and at the end-of-session summary. NOTE: the IFS mode
+  // handler ALSO uses 'intro' as its first *working* phase, so once a session
+  // has actually begun (sessionType set), a returned phase of 'intro' is the
+  // handler's — not our menu — and the input must stay visible. Keying the
+  // menu-hide on sessionType avoids the collision that made the box vanish
+  // after the first trailhead/check-in answer.
+  // Only the button-driven menu ('intro' with no session yet) and the summary
+  // hide the input. 'learning' KEEPS the input visible — that's the educational
+  // discuss flow where the user types questions to Huxley. The !sessionType
+  // guard is what prevents the handler's own 'intro' working phase (reported
+  // after the first check-in answer) from being mistaken for our menu.
+  const inPreSessionMenu = !sessionType && currentPhase === 'intro';
+  const showInput = !inPreSessionMenu && currentPhase !== 'summary';
 
   return (
     <LinearGradient
