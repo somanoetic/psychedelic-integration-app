@@ -36,7 +36,7 @@ import FormattedText from '../components/FormattedText';
 import LearnInteractive from '../components/LearnInteractive';
 import { icons } from '../lib/uiIcons';
 
-// Mirror ConversationalEducation.js â€” semantic topic ID -> illustrated PNG icon
+// Mirror ConversationalEducation.js — semantic topic ID -> illustrated PNG icon
 const TOPIC_ICONS = {
   nervous_system: icons.dna,
   ifs_basics: icons.group,
@@ -128,9 +128,30 @@ const EducationScreen = ({ navigation, route }) => {
   };
 
   const renderSelectedTopic = () => {
+    // These special-cased topics render standalone widgets/flows instead of
+    // the generic article body. They don't provide their own safe-area inset
+    // or back chrome, so wrap them in the same header the article path uses —
+    // otherwise the content sits under the status bar with no way back.
+    const wrapWithChrome = (child) => (
+      <SafeAreaView style={styles.topicContainer} edges={['top', 'bottom']}>
+        <View style={styles.topicHeader}>
+          <TouchableOpacity onPress={handleEducationComplete}>
+            <Text style={styles.backButton}>
+              {returnTo === 'CurriculumTracker'
+                ? '← Back to Trails'
+                : eduStep !== 'greeting'
+                ? '← Back'
+                : '← Back to Education'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.topicWidgetBody}>{child}</View>
+      </SafeAreaView>
+    );
+
     // Special case: Use existing widget for nervous system
     if (selectedTopic === 'nervous_system') {
-      return (
+      return wrapWithChrome(
         <PolyvagalEducationWidget
           onComplete={handleEducationComplete}
           onSkip={handleEducationComplete}
@@ -140,7 +161,7 @@ const EducationScreen = ({ navigation, route }) => {
 
     // Special case: IFS basics (Parts Work education)
     if (selectedTopic === 'ifs_basics') {
-      return (
+      return wrapWithChrome(
         <IFSPartsEducationWidget
           onComplete={handleEducationComplete}
           onSkip={handleEducationComplete}
@@ -150,7 +171,7 @@ const EducationScreen = ({ navigation, route }) => {
 
     // Special case: Grounding practices
     if (selectedTopic === 'grounding_practices') {
-      return (
+      return wrapWithChrome(
         <GroundingExercisesWidget
           onComplete={handleEducationComplete}
           onSkip={handleEducationComplete}
@@ -160,7 +181,7 @@ const EducationScreen = ({ navigation, route }) => {
 
     // Special case: Use conversational nervous system mapping (via huxleyService mode handler)
     if (selectedTopic === 'polyvagal_mapping') {
-      return (
+      return wrapWithChrome(
         <ConversationalNervousSystemMapping
           onComplete={handleEducationComplete}
           navigation={navigation}
@@ -170,7 +191,7 @@ const EducationScreen = ({ navigation, route }) => {
 
     // Special case: Use conversational triggers & glimmers (via huxleyService mode handler)
     if (selectedTopic === 'triggers_glimmers') {
-      return (
+      return wrapWithChrome(
         <ConversationalTriggersGlimmers
           onComplete={handleEducationComplete}
           navigation={navigation}
@@ -180,7 +201,7 @@ const EducationScreen = ({ navigation, route }) => {
 
     // Special case: Use conversational regulating resources (via huxleyService mode handler)
     if (selectedTopic === 'regulating_resources') {
-      return (
+      return wrapWithChrome(
         <ConversationalRegulatingResources
           onComplete={handleEducationComplete}
           navigation={navigation}
@@ -190,7 +211,7 @@ const EducationScreen = ({ navigation, route }) => {
 
     // Special case: Use AI-powered IFS chat with context system
     if (selectedTopic === 'ifs_chat') {
-      return (
+      return wrapWithChrome(
         <IFSPartsWorkChatWithContext
           onComplete={handleEducationComplete}
           onSkip={handleEducationComplete}
@@ -211,10 +232,10 @@ const EducationScreen = ({ navigation, route }) => {
           <TouchableOpacity onPress={handleEducationComplete}>
             <Text style={styles.backButton}>
               {returnTo === 'CurriculumTracker'
-                ? 'â† Back to Trails'
+                ? '← Back to Trails'
                 : eduStep !== 'greeting'
-                ? 'â† Back'
-                : 'â† Back to Education'}
+                ? '← Back'
+                : '← Back to Education'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -250,14 +271,14 @@ const EducationScreen = ({ navigation, route }) => {
               </View>
               {topic.keyTakeaways.map((takeaway, index) => (
                 <View key={index} style={styles.takeawayItem}>
-                  <Text style={styles.takeawayBullet}>â€¢</Text>
+                  <Text style={styles.takeawayBullet}>•</Text>
                   <Text style={styles.takeawayText}>{takeaway}</Text>
                 </View>
               ))}
             </View>
           )}
 
-          {/* Try This â€” inline bespoke practice for this article */}
+          {/* Try This — inline bespoke practice for this article */}
           {topic.tryThis && (
             <View style={styles.tryThisContainer}>
               <View style={styles.tryThisTitleRow}>
@@ -266,7 +287,7 @@ const EducationScreen = ({ navigation, route }) => {
               </View>
               <Text style={styles.tryThisName}>
                 {topic.tryThis.title}
-                {topic.tryThis.duration ? `  Â·  ${topic.tryThis.duration}` : ''}
+                {topic.tryThis.duration ? `  ·  ${topic.tryThis.duration}` : ''}
               </Text>
               {topic.tryThis.intro ? (
                 <Text style={styles.tryThisIntro}>{topic.tryThis.intro}</Text>
@@ -280,12 +301,12 @@ const EducationScreen = ({ navigation, route }) => {
             </View>
           )}
 
-          {/* Interactive widgets â€” flashcards / scenario quizzes for this article */}
+          {/* Interactive widgets — flashcards / scenario quizzes for this article */}
           {topic.interactive && topic.interactive.length > 0 && (
             <LearnInteractive items={topic.interactive} />
           )}
 
-          {/* Practice these â€” tappable links to related interactive exercises */}
+          {/* Practice these — tappable links to related interactive exercises */}
           {topic.relatedExercises && topic.relatedExercises.length > 0 && (() => {
             const related = topic.relatedExercises
               .map((id) => getExerciseById(id))
@@ -313,7 +334,7 @@ const EducationScreen = ({ navigation, route }) => {
                       {(ex.duration || ex.steps?.length) ? (
                         <Text style={styles.relatedExMeta}>
                           {ex.duration ? `${ex.duration} min` : ''}
-                          {ex.duration && ex.steps?.length ? ' Â· ' : ''}
+                          {ex.duration && ex.steps?.length ? ' · ' : ''}
                           {ex.steps?.length ? `${ex.steps.length} steps` : ''}
                         </Text>
                       ) : null}
@@ -325,7 +346,7 @@ const EducationScreen = ({ navigation, route }) => {
             );
           })()}
 
-          {/* See Also â€” tappable cross-links to related topics */}
+          {/* See Also — tappable cross-links to related topics */}
           {topic.seeAlso && topic.seeAlso.length > 0 && (() => {
             const related = topic.seeAlso
               .map((id) => getTopicById(id))
@@ -715,6 +736,9 @@ const styles = {
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: colors.lightGray,
+  },
+  topicWidgetBody: {
+    flex: 1,
   },
   backButton: {
     fontSize: 16,
