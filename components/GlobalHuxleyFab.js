@@ -152,9 +152,16 @@ const GlobalHuxleyFab = ({ navigationRef }) => {
 
   return (
     <>
-      {/* Backdrop closes the fan when tapped (only while expanded). */}
+      {/* Backdrop: dims the screen behind the fan so the action labels/icons
+          read clearly, and closes the fan when tapped. Fades in with the fan
+          so it doesn't pop. */}
       {expanded && (
-        <Pressable style={styles.backdrop} onPress={collapse} />
+        <Animated.View
+          style={[styles.backdrop, { opacity: fan }]}
+          pointerEvents="auto"
+        >
+          <Pressable style={StyleSheet.absoluteFill} onPress={collapse} />
+        </Animated.View>
       )}
 
       <Animated.View
@@ -250,6 +257,7 @@ const GlobalHuxleyFab = ({ navigationRef }) => {
 const styles = StyleSheet.create({
   backdrop: {
     ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.35)',
     zIndex: 999,
   },
   root: {
