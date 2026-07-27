@@ -1,0 +1,24 @@
+# Enforce consistent handling so UTF-8 glyphs (←, •, ·, —, emoji) in source
+# survive commits and checkouts. A month of "mojibake" (â†, â€¢, Â·) traced to
+# source being re-saved as Latin-1 on Windows; these rules keep text as UTF-8
+# text with normalized LF endings in the repo.
+* text=auto eol=lf
+
+# Treat these as text explicitly (UTF-8) so Git never guesses binary and never
+# transcodes them.
+*.js    text eol=lf
+*.jsx   text eol=lf
+*.ts    text eol=lf
+*.tsx   text eol=lf
+*.json  text eol=lf
+*.md    text eol=lf
+
+# Binary assets — never touch.
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.webp  binary
+*.ttf   binary
+*.otf   binary
+*.hbc   binary

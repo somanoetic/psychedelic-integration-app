@@ -4,6 +4,9 @@
     "source.organizeImports": "explicit",
     "source.sortMembers": "explicit"
   },
+  "//": "Pin UTF-8 and disable encoding guessing — a bad guess re-saved source as Latin-1 and produced mojibake (â†, â€¢) in EducationScreen.js.",
+  "files.encoding": "utf8",
+  "files.autoGuessEncoding": false,
   "workbench.colorCustomizations": {
     "activityBar.activeBackground": "#1f6fd0",
     "activityBar.background": "#1f6fd0",
@@ -16,12 +19,19 @@
     "statusBar.background": "#1857a4",
     "statusBar.foreground": "#e7e7e7",
     "statusBarItem.hoverBackground": "#1f6fd0",
-    "statusBarItem.remoteBackground": "#1857a4",
+    "statusBarItem.remoteBackground": "#530c2c",
     "statusBarItem.remoteForeground": "#e7e7e7",
     "titleBar.activeBackground": "#1857a4",
     "titleBar.activeForeground": "#e7e7e7",
     "titleBar.inactiveBackground": "#1857a499",
-    "titleBar.inactiveForeground": "#e7e7e799"
+    "titleBar.inactiveForeground": "#e7e7e799",
+    "activityBarTop.activeBackground": "#1f6fd0",
+    "activityBarTop.background": "#1f6fd0",
+    "activityBarTop.foreground": "#e7e7e7",
+    "activityBarTop.inactiveForeground": "#e7e7e799",
+    "commandCenter.foreground": "#e7e7e7",
+    "statusBar.debuggingBackground": "#1857a4",
+    "statusBar.debuggingForeground": "#e7e7e7"
   },
   "peacock.color": "#1857a4",
   "python.terminal.activateEnvironment": false
