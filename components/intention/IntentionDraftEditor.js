@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,6 @@ import {
   StyleSheet,
   ActivityIndicator,
   ScrollView,
-  Keyboard,
   Platform,
   Image,
   findNodeHandle,
@@ -54,23 +53,16 @@ const IntentionDraftEditor = ({
 
   const scrollRef = useRef(null);
   const inputRef = useRef(null);
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
 
-  // Track keyboard height so the ScrollView always has room to scroll the
-  // focused TextInput above the keyboard.
-  useEffect(() => {
-    const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
-    const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
-    const showSub = Keyboard.addListener(showEvent, (e) => {
-      setKeyboardHeight(e.endCoordinates?.height || 0);
-    });
-    const hideSub = Keyboard.addListener(hideEvent, () => setKeyboardHeight(0));
-    return () => {
-      showSub.remove();
-      hideSub.remove();
-    };
-  }, []);
-
+  // Keyboard avoidance is delegated to the platform:
+  //  - Android: windowSoftInputMode="adjustResize" (AndroidManifest) +
+  //    softwareKeyboardLayoutMode:"resize" shrink the window, so the ScrollView
+  //    naturally fills the space above the keyboard. We add NO manual padding
+  //    and NO keyboard listeners — those double-compensated and left a white gap
+  //    that lingered on dismiss.
+  //  - iOS: automaticallyAdjustKeyboardInsets on the ScrollView (below).
+  // On focus we just nudge the focused input toward the top so the Save button
+  // below it stays reachable once the viewport has shrunk.
   const handleInputFocus = () => {
     setTimeout(() => {
       if (!inputRef.current || !scrollRef.current) return;
@@ -83,7 +75,7 @@ const IntentionDraftEditor = ({
         },
         () => {}
       );
-    }, 250);
+    }, 300);
   };
 
   /**
@@ -217,9 +209,12 @@ const IntentionDraftEditor = ({
     <ScrollView
       ref={scrollRef}
       style={styles.container}
-      contentContainerStyle={{ paddingBottom: 24 + keyboardHeight }}
+      contentContainerStyle={styles.scrollContent}
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
+      keyboardDismissMode="interactive"
+      automaticallyAdjustKeyboardInsets={Platform.OS === 'ios'}
+      contentInsetAdjustmentBehavior="never"
     >
       <View style={styles.content}>
         {/* Header */}
@@ -264,6 +259,9 @@ const IntentionDraftEditor = ({
             textAlignVertical="top"
             editable={!loading}
             onFocus={handleInputFocus}
+            spellCheck={true}
+            autoCorrect={true}
+            autoCapitalize="sentences"
           />
           {renderCharCounter()}
         </View>
@@ -332,6 +330,9 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 24,
   },
   header: {
     marginBottom: spacing.lg,

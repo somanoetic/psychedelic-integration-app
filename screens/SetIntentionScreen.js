@@ -761,19 +761,24 @@ const SetIntentionScreen = ({ navigation, route }) => {
           </View>
         )}
 
-        {/* Main Content. Conversation mode runs full-bleed and owns its OWN
-            keyboard avoidance (ChatConversation's per-platform pattern), so it
-            is rendered OUTSIDE the KeyboardAvoidingView to avoid double-adjusting
-            on Android. Other modes render inside the KAV. */}
+        {/* Main Content. Conversation AND draft modes own their OWN keyboard
+            avoidance (their inner ScrollView tracks keyboardHeight and scrolls
+            the focused input above the keyboard), so they render OUTSIDE the
+            KeyboardAvoidingView to avoid double-adjusting — which on iOS shrinks
+            the container out from under the manual scroll math (hiding the whole
+            input) and on Android leaves the Save button under the keyboard.
+            Templates and welcome render inside the KAV. */}
         {mode === 'conversation' ? (
           renderContent()
+        ) : mode === 'draft' ? (
+          <View style={styles.modeContainer}>{renderContent()}</View>
         ) : (
           <KeyboardAvoidingView
             style={styles.keyboardAvoid}
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
           >
-            {mode === 'templates' || mode === 'draft' ? (
+            {mode === 'templates' ? (
               <View style={styles.modeContainer}>{renderContent()}</View>
             ) : (
               <ScrollView
