@@ -1,6 +1,16 @@
 # RAG speed + retrieval-quality investigation (Huxley)
 
-Status: **QUALITY BUG FOUND & FIXED (committed `eb67884`, device-verified). Speed work
+## Status: CLOSED (2026-07-26) — user calls RAG speed + quality done.
+
+Quality bug fixed & device-verified (`eb67884`). Query-expansion follow-on landed
+(`be2f565`). Speed work merged + cron live; the residual ~1–1.5s is normal embed +
+network and was explicitly decided not worth chasing (stopwatch proved build isn't
+the bottleneck). If speed is ever revisited, the drafted local-JWT-verify (Option A)
+notes below are the starting point.
+
+---
+
+Status (historical): **QUALITY BUG FOUND & FIXED (committed `eb67884`, device-verified). Speed work
 merged + cron live. Remaining: RAG still ~1-1.5s (embed+auth hop, un-optimized);
 decide whether to chase it.** Investigation complete (see
 `context/features/rag-perf-investigation.md`). Owner: TBD.
@@ -299,3 +309,72 @@ Diagnose with DATA, not guesses. Use the Level-1 logs + direct DB inspection:
 ## Deliverable
 
 Profiled breakdown of the 1.5s + data-backed diagnosis of the low result count + specific recommended changes, split into "safe speed wins" and "quality tuning needing clinical judgment." When speed is fixed, lower `RAG_TIMEOUT_MS` to ~800ms.
+
+---
+
+## Session update (2026-07-22) — fresh on-device evidence from the IFS latency re-test
+
+Not worked this session (RAG was untouched — this session shipped the IFS
+delta-JSON latency fix `a17c915` + keyboard scroll fixes `6353637`/`10a86a4`).
+But a full multi-turn IFS chat on iPhone surfaced hard data that confirms and
+sharpens the two open items above. Recording it so the next RAG session starts
+from evidence, not guesses.
+
+### Evidence 1 — embed cache is ALWAYS a MISS (server-side embedding cache)
+Every single turn logged `embed=…M` (MISS). Observed embed times: 137, 155, 188,
+261, 1249ms. The 1249ms cold one **blew the 2000ms RAG safety timeout** (turn 1:
+`rag=2208ms … (TIMED OUT, no RAG this turn)`) — so the user paid 2.2s AND got no
+retrieved context that turn.
+
+- This is the **server-side embedding cache** (`embedCacheHit` from the edge fn),
+  NOT the client result cache. Two different caches — don't conflate:
+  - Client result cache: `ragService._cacheKey` (`lib/ragService.js:256`) keys on
+    the **full query string**, so it only hits on an identical repeat query.
+    In real conversation every query differs → never hits. Working as designed;
+    not the problem.
+  - Server embedding cache: lives in `supabase/functions/embeddings/index.ts`.
+    `embedCacheHit` is false on every call. THIS is the one to fix — a warm embed
+    cache turns the ~150–260ms embed hop into ~0 and, more importantly, prevents
+    the cold-start 1249ms spike that trips the timeout.
+- **First thing to check:** does the embeddings edge fn even have a persistent
+  cache, or does it re-embed every call? If keyed per-query it'll miss for the
+  same reason the client cache does. Consider caching the *embedding vector* by
+  normalized query text with a real TTL, or accept that per-query embed is
+  inherently a MISS and instead attack the cold-start 1249ms (keep-warm / smaller
+  model / provider latency).
+
+### Evidence 2 — 0 results at threshold 0.3 on plausible IFS queries
+Threshold is currently **0.3** in practice (logs show `threshold=0.3`, not the
+0.4 the older notes referenced — someone already lowered it). Even so:
+
+| query (from real session)                         | results | scores |
+|---------------------------------------------------|---------|--------|
+| "Umm. I'm having trouble at work"                 | 3       | 36/34/33% |
+| "I'm not happy at work"                           | **0**   | — |
+| "I don't want to be an ER doctor anymore"         | **0**   | — |
+| "Yeah. But I don't know how to make that much money" | **0** | — |
+| "Umm. The part that wants to leave"               | 3       | 45/44/44% |
+
+Pattern matches the older hypothesis exactly: **real matches cluster at 0.33–0.45**.
+At threshold 0.3, concrete/parts-language queries ("the part that wants to leave")
+clear it; plain emotional-content queries ("I'm not happy at work") fall just
+under. The corpus embeds well for IFS-jargon queries and poorly for plain-language
+ones. Two levers, both need the Level-2 harness to tune safely:
+1. **Lower threshold to ~0.25** and eyeball whether the newly-admitted chunks are
+   actually relevant or noise. 0.33 being the *top* hit for a reasonable query is a
+   sign the ceiling is low, so a lower floor may just add junk — verify, don't
+   assume.
+2. **Query expansion** — the emotional-content queries are the misses. Prepending
+   a bit of IFS framing to the embed query (not the user-visible text) may lift
+   plain-language queries into range. Test in the harness first.
+
+### What's still the right next step (unchanged from above, now data-backed)
+Build the **Level-2 standalone query harness** first (type a query → ranked
+results + scores, no chat session). Everything above is a threshold/expansion
+sweep that's miserable to do through a live chat and trivial in a harness. Then:
+(a) fix or accept the embed MISS, (b) sweep threshold 0.25/0.3/0.35 against a
+golden set, (c) only THEN lower `RAG_TIMEOUT_MS` from 2000ms — right now the cold
+1249ms embed makes 2000ms already marginal, so don't touch the timeout until the
+embed cold-start is handled.
+
+Resume line: **Read handoffs/rag-speed-and-quality.md and continue.**

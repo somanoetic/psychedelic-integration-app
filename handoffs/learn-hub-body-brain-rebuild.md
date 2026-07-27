@@ -7,7 +7,29 @@ truth**, and expand beyond the original 4 articles to a fuller accessible set. T
 **research + scoping + outlines only** (user chose "outlines first, then draft"). No app code
 touched.
 
-## Status: OUTLINES COMPLETE, awaiting user review. Drafting NOT started. No code changes.
+## Status: CLOSED — SHIPPED (2026-07-26 audit). All 8 articles drafted, wired, and committed.
+
+**Superseded:** the "outlines only / drafting not started" note below is stale. A later
+session actually drafted and committed the full rebuild:
+- `2646aaf` — "feat(learn): rebuild Body/Brain & Healing into 8 book-sourced articles"
+- `cac5cfb` — added the 9th article (Neurobiology of Connection) + RAG category fixes
+
+Verified 2026-07-26: all articles in `content/education.js` are full book-sourced prose
+(no TODO/placeholder/SOURCE-PENDING markers), each with `content[]`, `tryThis`,
+`keyTakeaways`, `sources` footer, and `seeAlso` cross-links. The DMN section resolved
+its SOURCE-PENDING flag using Seth (*Being You*) + Harris (*Waking Up*) — no fabricated
+citation. Mind-Body & Pain carries the required medical disclaimer ("See a Doctor First").
+All 9 wired in `components/ConversationalEducation.js` (icons L38-47, category list L107,
+render grid L422-430) and the `sources`/`seeAlso` render blocks exist in
+`screens/EducationScreen.js`. Nothing uncommitted. No open work.
+
+Only remaining follow-on (optional, out of scope here): if a psychedelic-neuroscience
+book is later added to the library, the DMN section could cite it directly instead of
+the contemplative-side sources.
+
+---
+
+## (historical) Status: OUTLINES COMPLETE, awaiting user review. Drafting NOT started. No code changes.
 
 ## What was done
 - Mapped the existing category: 4 articles defined in `content/education.js`

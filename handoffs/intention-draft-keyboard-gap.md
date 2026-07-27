@@ -1,117 +1,101 @@
 # Handoff — Set Intention keyboard white gap (Android)
 
-## ⚠️ CORRECTION — the actual bug was in a DIFFERENT file
-The screen the user reported (screenshots: "AI-Guided Intention ✨" button + "or
-write it yourself:" + "Write your intention here..." + "Save Intention") is
-**`screens/preparation/SessionPreparationScreen.js`** — the `renderIntentionSetting`
-step, wrapped by a whole-screen `KeyboardAvoidingView`.
+## Status: BLOCKED on Android device verification (tabled 2026-07-26).
 
-**Root cause & fix (line ~1338):** that KAV used `behavior="height"` on Android.
-With `windowSoftInputMode="adjustResize"` + edge-to-edge, Android already shrinks
-the window, so the KAV double-compensated → white gap that lingered/grew on
-dismiss. Fixed: iOS keeps `KeyboardAvoidingView behavior="padding"`; **Android
-renders `renderCurrentSection()` directly (no KAV)** and trusts `adjustResize`.
-File parses clean. **NOT device-verified yet** — user should tap the box on Android.
+Branch: `feat/neurobiology-of-connection`.
 
-The edits below (IntentionDraftEditor / SetIntentionScreen) were made BEFORE
-realizing the wrong file was open. They target the SEPARATE AI-guided flow
-(`SetIntentionScreen` "Write Your Intention" draft editor, reached via the blue
-button). They're plausible improvements but UNVERIFIED and unrelated to the
-reported bug. Decide whether to keep or `git checkout` them.
+### Where this stands (2026-07-26)
+Two separate pieces, needing two separate phone checks — both BLOCKED because
+no Android device was available:
 
----
+- **Screen A — session-prep intention** (`SessionPreparationScreen.js`,
+  `renderIntentionSetting`): the ORIGINAL reported bug. Fix is **committed**
+  (`18a1eb4`). Never confirmed on-device.
+- **Screen B — AI-guided draft editor** (`components/intention/IntentionDraftEditor.js`
+  + `screens/SetIntentionScreen.js`, `draft` mode): a real, self-consistent
+  keyboard-avoidance rewrite of the *other* look-alike screen — removed manual
+  JS keyboard-height listeners + `paddingBottom: 24 + keyboardHeight`, replaced
+  with platform-native avoidance (Android `adjustResize`; iOS
+  `automaticallyAdjustKeyboardInsets`). These edits are **UNCOMMITTED** in the
+  working tree, deliberately held back until verified. (The "wrong screen" note
+  in Loose Ends below was mid-session confusion; the surviving edits are wanted
+  and coherent.)
 
-# (superseded) Handoff — "Write Your Intention" draft editor keyboard gap
+### To resume (needs an Android phone)
+1. **Screen A:** session flow → "Set Your Intention" step → tap the
+   "write it yourself" box. Pass = keyboard rises, box sits directly above it,
+   NO white strip; dismiss = clean snap-back, no lingering gap.
+2. **Screen B:** tap "AI-Guided Intention ✨" → draft → "Write Your Intention"
+   editor → tap the draft box. Pass = input scrolls above keyboard, NO gap, and
+   the Save button stays reachable (not trapped under keyboard); dismiss = clean.
+3. Both pass → commit Screen B (`IntentionDraftEditor.js` + `SetIntentionScreen.js`)
+   as its own commit. B fails → fix or revert those two files. A fails → separate
+   issue on the already-committed `18a1eb4`.
 
-## Task
-On the Set Your Intention screen, the **draft editor** (the "Write It Myself" /
-rephrase-your-own-words mode, NOT the Huxley conversation mode) had keyboard bugs:
-- iPhone: tapping the text box hid the entire input behind the keyboard.
-- Android: the Save button stayed partly under the keyboard; then a white gap
-  appeared between the top of the keyboard and the content, and it persisted /
-  grew after the keyboard was dismissed.
+## The screen (important — there are TWO look-alike intention screens)
+The reported bug is on **`screens/preparation/SessionPreparationScreen.js`**, the
+`renderIntentionSetting` step. Identify it by its UI: hero "Set Your Intention",
+an "AI-Guided Intention ✨" button, "or write it yourself:", a "Write your
+intention here..." box, and a "Save Intention" button.
 
-## Status: PARTIAL — iOS/button improved, but Android white gap STILL PRESENT per user. NOT committed. NOT device-verified.
+Do NOT confuse it with the OTHER intention flow reached by tapping that blue
+button: `screens/SetIntentionScreen.js` + `components/intention/IntentionDraftEditor.js`
+("Write Your Intention", "Save & Sync"/"Save Locally"). Early in the session I
+edited that wrong pair before realizing — see "Loose ends".
 
-## Files touched this session (uncommitted, on branch `feat/neurobiology-of-connection`)
-- `screens/SetIntentionScreen.js` — `draft` mode now renders OUTSIDE the parent
-  `KeyboardAvoidingView` (same treatment conversation mode already had), so the
-  editor owns keyboard avoidance alone. Templates + welcome still inside the KAV.
-- `components/intention/IntentionDraftEditor.js` — reworked the editor's own
-  ScrollView keyboard handling (see below).
-- (`components/IntentionSetting.js` is also modified but that's from a PRIOR
-  session's spell-check work — unrelated to this task.)
+## Symptom
+Android: tapping the custom-intention box raised the keyboard with a white gap
+above it that lingered/grew on dismiss; in some intermediate attempts the box was
+covered by the keyboard instead.
 
-## What was tried (in order)
-1. Pulled draft mode out of the KAV so only the editor's ScrollView handles the
-   keyboard (it already tracks `keyboardHeight` + scrolls the focused input in).
-2. Editor: re-trigger scroll-into-view when `keyboardHeight` becomes known (iOS
-   keyboard animates in AFTER onFocus, so focus-only scroll raced the resize).
-   Added `onBlur` to reset an `inputFocusedRef`.
-3. iOS: enabled `automaticallyAdjustKeyboardInsets`, `keyboardDismissMode="interactive"`,
-   `contentInsetAdjustmentBehavior="never"`; dropped manual `paddingBottom:keyboardHeight`
-   on iOS (was double-compensating → white gap).
-4. Android: user then reported the gap was on ANDROID. Confirmed app uses
-   `windowSoftInputMode="adjustResize"` (AndroidManifest.xml:20) +
-   `softwareKeyboardLayoutMode: "resize"` (app.config.js:47) — window already
-   shrinks for the keyboard. So the editor's manual `paddingBottom: 24 + keyboardHeight`
-   was reserving a SECOND keyboard-height of empty space → the white gap.
-   **Removed the manual keyboardHeight padding entirely** (now static
-   `paddingBottom: 24` via `styles.scrollContent`).
+## Root cause (the real one, after several wrong turns)
+Layering. Each section renderer wrapped its content in its OWN `LinearGradient`,
+rendered INSIDE the screen's `KeyboardAvoidingView`. On Android with
+`windowSoftInputMode="adjustResize"` + `behavior="height"`, the KAV shrinks its
+child when the keyboard opens — shrinking that inner gradient and exposing the
+`SafeAreaView`'s white background as a strip above the keyboard. (A later attempt
+that added a SECOND outer gradient produced a visible seam — two slightly
+misaligned gradients stacked.)
 
-5. (After user re-reported gap STILL on Android) **Stripped the editor's custom
-   keyboard machinery entirely** — removed the `keyboardHeight` state, both
-   `Keyboard` listeners, `onBlur`, and unused imports (`useState`, `useEffect`,
-   `Keyboard`). The ScrollView now has NO manual padding tied to the keyboard.
-   Android relies purely on `adjustResize`; iOS on `automaticallyAdjustKeyboardInsets`.
-   Only a plain `onFocus` scroll-to-nudge remains. File parses clean. NOT yet
-   device-tested — this is the current tip.
+## Fix (committed in `18a1eb4`, file: SessionPreparationScreen.js)
+Mirrors the device-verified `components/DailyJournal.js` pattern:
+- ONE `LinearGradient` hoisted to the OUTERMOST wrapper (gradient → SafeAreaView
+  → KeyboardAvoidingView). All 8 section renderers changed from their own
+  `<LinearGradient style={gradientFill}>` to plain `<View style={gradientFill}>`,
+  so only the single outer gradient shows (no seam, no exposed white).
+- `styles.container` (SafeAreaView) set `backgroundColor: 'transparent'`.
+- KAV kept on BOTH platforms (`behavior` ios:padding / android:height,
+  `keyboardVerticalOffset` ios:0 / android:20).
+- Added a `keyboardWillShow`/`keyboardDidShow` listener (scoped to
+  `currentSection === 'intention_setting'`) that `scrollToEnd` on
+  `intentionScrollRef`, so the low box + Save button clear the keyboard.
+- Imported `Keyboard`; added `intentionScrollRef`; added `keyboardDismissMode="interactive"`
+  to the intention ScrollView.
 
-## IF STILL BROKEN after step 5
-The gap is then NOT from the editor's JS at all — it's the parent layout / edge-to-edge
-resize. Next: add a debug `backgroundColor:'red'` to `styles.container` (ScrollView)
-in the editor and a `'blue'` to `modeContainer` in SetIntentionScreen — whichever
-color the gap shows tells you which view owns it. If blue (parent), the fix is in
-`SetIntentionScreen`'s wrapper (SafeAreaView edges / modeContainer), NOT the editor.
-
-## Prior STILL-BROKEN note (pre-step-5)
-User reports (after step 4) the Android white gap was **still showing**. So
-removing the manual padding was NOT the (whole) cause. Current suspects to chase:
-- The `keyboardHeight` state + its `keyboardDidShow` listener still fire on
-  Android; even though padding no longer uses it, verify nothing else (a re-render,
-  the scroll) is opening space. Consider removing the Android branch of the
-  keyboard listener entirely and relying purely on `adjustResize`.
-- Check the PARENT chain for leftover height reservation: `SetIntentionScreen`
-  wraps draft mode in `<View style={styles.modeContainer}>` (flex:1, has
-  `paddingBottom: spacing.sm`) inside `<SafeAreaView edges={['top']}>` inside a
-  `LinearGradient`. With `adjustResize` the gradient/root may not be resizing the
-  way the ScrollView expects — the gap could be BELOW the ScrollView, not inside it.
-- The ScrollView `style={styles.container}` is `{flex:1}` with no background, so
-  white must be coming from a child (inputContainer is `colors.surface` = #FFFFFF)
-  OR from the gradient not filling. Figure out WHICH view is painting the gap:
-  temporarily give the ScrollView a bright debug background to see if the gap is
-  inside it (scroll content) or outside it (parent layout).
-- Compare against how the sibling Huxley conversation mode avoids this — it uses
-  `ChatConversation`'s device-verified Android pattern (see
-  `handoffs/set-intention-chat-input.md` and `components/chat/ChatConversation.js`
-  ~lines 97-101). The draft editor may need the same SafeAreaView bottom-inset
-  reservation rather than its own ad-hoc ScrollView approach.
+Verified only by `babel.parseSync` (parses clean). NOT run on a device.
 
 ## What's next
-1. Reproduce on Android, add a debug background color to isolate whether the gap
-   is inside the ScrollView or in the parent layout.
-2. Most likely fix: simplify the editor to trust `adjustResize` fully — remove the
-   custom keyboard listeners/scroll and mirror the ChatConversation inset pattern.
-3. Device-verify on BOTH Android and iPhone before committing.
-4. Commit (nothing from this task is committed yet).
+1. Device-test on Android: no white gap, no seam, box+Save scroll above keyboard.
+2. Spot-check iPhone (logically unchanged — same KAV padding path).
+3. Decide on the loose-end files (below).
+
+## Loose ends
+- `components/intention/IntentionDraftEditor.js` and `screens/SetIntentionScreen.js`
+  are MODIFIED but UNCOMMITTED — edits from when the wrong screen was open. They
+  target the separate AI-guided draft editor (pulled draft mode out of its KAV,
+  swapped to `automaticallyAdjustKeyboardInsets` on iOS, stripped its custom
+  keyboard listeners). Plausible improvements but UNVERIFIED and unrelated to the
+  committed fix. Either `git checkout -- <both files>` to discard, or verify+commit
+  separately.
+- Many other files show as modified in the tree (spell-check work, trackers, etc.)
+  — pre-existing from earlier sessions, NOT part of this task.
 
 ## Reference
-- Related: `handoffs/set-intention-chat-input.md` (the CONVERSATION mode fix for
-  the same screen — solved a near-identical Android nav-bar/keyboard issue via
-  ChatConversation's pattern + `extraBottomInset`).
-- Memory: `project_chat_keyboard_gap_android.md` (the canonical Android keyboard
-  fix — final fix pads by FULL keyboard height, do NOT subtract insets.bottom).
-- Key files: `components/intention/IntentionDraftEditor.js`,
-  `screens/SetIntentionScreen.js`, `components/chat/ChatConversation.js`.
+- Pattern source: `components/DailyJournal.js` (~lines 62-75 keyboard listener,
+  ~588-599 gradient→SafeAreaView→KAV order). This is the canonical working example.
+- Memory: `project_chat_keyboard_gap_android.md` (Android keyboard fix — pad by
+  FULL keyboard height, don't subtract insets.bottom).
+- Related handoff: `handoffs/set-intention-chat-input.md` (the CONVERSATION mode
+  fix on the OTHER intention screen).
 
 Read handoffs/intention-draft-keyboard-gap.md and continue.
