@@ -600,11 +600,20 @@ Only include fields with clear evidence.`);
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerContent}>
-          {(phase !== 'choosing' || showPastEntries) && (
-            <TouchableOpacity onPress={() => { showPastEntries ? setShowPastEntries(false) : handleBack(); }} style={styles.backButton}>
-              <ArrowLeft size={24} color={colors.primary} strokeWidth={2} />
-            </TouchableOpacity>
-          )}
+          <TouchableOpacity
+            onPress={() => {
+              if (showPastEntries) {
+                setShowPastEntries(false);
+              } else if (phase !== 'choosing') {
+                handleBack();
+              } else {
+                navigation?.goBack();
+              }
+            }}
+            style={styles.backButton}
+          >
+            <ArrowLeft size={24} color={colors.primary} strokeWidth={2} />
+          </TouchableOpacity>
           <BookOpenText size={24} color={colors.primary} strokeWidth={2} />
           <Text style={styles.headerTitle}>Daily Journal</Text>
         </View>

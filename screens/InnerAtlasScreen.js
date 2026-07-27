@@ -10,7 +10,7 @@ import {
   Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronRight, BookOpenText } from 'lucide-react-native';
+import { ChevronRight, BookOpenText, ArrowLeft } from 'lucide-react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../lib/supabase';
@@ -272,6 +272,12 @@ const InnerAtlasScreen = ({ navigation }) => {
             showsVerticalScrollIndicator={false}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => loadAtlas(true)} />}
           >
+            <View style={styles.header}>
+              <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                <ArrowLeft size={24} color={colors.text} strokeWidth={2} />
+              </TouchableOpacity>
+            </View>
+
             {/* Hero */}
             <View style={styles.hero}>
               <Image source={icons.foldedMap} style={styles.heroIcon} />
@@ -352,6 +358,10 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     paddingBottom: 80,
   },
+
+  // Header
+  header: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.md },
+  backButton: { padding: spacing.sm, borderRadius: borderRadius.sm, minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
 
   // Hero
   hero: {
