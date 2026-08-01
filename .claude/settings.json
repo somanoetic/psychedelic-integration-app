@@ -202,7 +202,21 @@
       "Bash(echo)",
       "Bash(echo \"=== count of jsonl files ===\")",
       "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('.claude/settings.json','utf8'\\)\\); console.log\\('settings.json valid JSON ✓'\\);\")",
-      "Bash(node -e \"require\\('@babel/core'\\).parseSync\\(require\\('fs'\\).readFileSync\\('screens/EducationScreen.js','utf8'\\),{presets:['babel-preset-expo']}\\); console.log\\('✓ parse OK'\\);\")"
+      "Bash(node -e \"require\\('@babel/core'\\).parseSync\\(require\\('fs'\\).readFileSync\\('screens/EducationScreen.js','utf8'\\),{presets:['babel-preset-expo']}\\); console.log\\('✓ parse OK'\\);\")",
+      "Bash(grep -viE \"^★|npm install -g|Proceeding with outdated|is now available|^To upgrade|^\\\\s*$\")",
+      "Bash(node -e \"const j=require\\('./eas.json'\\); console.log\\(JSON.stringify\\(j.submit||{}, null, 2\\)\\);\")",
+      "Bash(grep -viE \"^★|npm install -g|Proceeding|available|^To upgrade|^\\\\s*$\")",
+      "Bash(npx eas-cli@latest build:list --platform ios --limit 5 --json --non-interactive)",
+      "Bash(npx eas-cli@latest submit:list --platform ios --limit 5 --non-interactive)",
+      "Bash(npx eas-cli@latest update:list --limit 10 --non-interactive)",
+      "Bash(npx eas-cli@latest branch:list --non-interactive)",
+      "Bash(npx eas-cli@latest channel:list --non-interactive)",
+      "Bash(npx eas-cli@latest update:list --branch production --limit 8 --non-interactive)",
+      "Bash(npx eas-cli@latest channel:view preview --non-interactive --json)",
+      "Bash(npx eas-cli@latest channel:edit preview --branch production --non-interactive)",
+      "Bash(npx eas-cli@latest channel:view preview --non-interactive)",
+      "Bash(git checkout *)",
+      "Bash(git merge *)"
     ],
     "additionalDirectories": [
       "C:\\Users\\hadfi\\psychedelic-integration-app\\.git",
