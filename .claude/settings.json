@@ -216,7 +216,10 @@
       "Bash(npx eas-cli@latest channel:edit preview --branch production --non-interactive)",
       "Bash(npx eas-cli@latest channel:view preview --non-interactive)",
       "Bash(git checkout *)",
-      "Bash(git merge *)"
+      "Bash(git merge *)",
+      "Bash(git branch *)",
+      "Bash(git merge master --no-edit -m 'Merge master into feat/neurobiology-of-connection *)",
+      "Bash(echo \"=== EXIT: $? ===\")"
     ],
     "additionalDirectories": [
       "C:\\Users\\hadfi\\psychedelic-integration-app\\.git",
