@@ -1,5 +1,38 @@
 # Project Log
 
+## 2026-08-07 — Cleared out a backlog that turned out to be mostly already done
+
+You suspected the Learn hub rebuild was already finished, and you were right — its
+notes had a "shipped" stamp at the top that was easy to miss because a long stale
+section sat underneath it. That turned out to be the pattern across the whole
+backlog. Thirteen sets of notes claimed work was written but never saved, and every
+single one was actually saved months ago; nobody had gone back to update the note. So
+the pile looked far more daunting than it was. We checked each one against the real
+code rather than trusting the note — confirming the actual buttons, screens and files
+were there — and corrected every stale claim, including the three trapped screens from
+last week, which are done too.
+
+What's genuinely left is much smaller. Two real open items: the Android beta build was
+never started, and one keyboard fix still needs an Android phone to confirm. Beyond
+that, a batch of finished work has simply never been opened on a real phone — most of
+it small visual things, but one is the full attachment-reflection conversation, which
+deserves a proper sit-down rather than a glance. There's now a single index page at the
+front of the notes folder splitting everything into open, needs-a-phone-check, and
+done, so this doesn't drift again.
+
+One thing to flag: your last five commits, including yesterday's parts-work fix, are
+still only on your machine. Your testers won't see that work until it's pushed up.
+
+## 2026-08-07 — Parts work stopped fixating on "where do you feel it in your body?"
+
+You found in testing that the parts-work chat kept circling back to body sensations and wouldn't flesh a part out any other way. It turned out the chat was actually stuck: it had been built to require a body location before it would move on, so if you described a part as a memory, an inner voice, or something it makes you do, the conversation had nowhere to go and just kept asking about the body again. It now recognises all the ways a part can show up — what it makes you do, what it says and in whose voice, memories it's tied to, images, colours, how old it seems, urges, and feelings, with body sensation as one option among many rather than the required one. It also keeps track of which of those you've already covered so it moves on to a fresh angle instead of repeating itself, which is what lets it tell one part apart from another. You tested it again and said it was much better; it's committed.
+
+## 2026-08-01 — Found out your testers weren't getting any of your updates
+
+We went looking at what was actually on TestFlight and found a real problem: the beta app on your testers' phones had been quietly ignoring every over-the-air update you'd sent it. The app was set up to look for updates in one place while you'd been publishing them somewhere else entirely, and because a mismatch like that fails silently rather than throwing an error, there was nothing anywhere to tell you. Fixed it by pointing the app at the right place — no rebuild, no waiting on Apple — and you confirmed on your phone that the update came through. Your testers now get everything you've published, and future updates will reach them too.
+
+We also merged the last few months of work into the main line of the project and pushed it up. That covers the faster chat, the parts-work welcome, the garbled-text repair, and the rest. No new app version needed for any of it.
+
 ## 2026-07-27 — Fixed three screens you couldn't get out of
 
 You flagged three screens that trapped you: the "Nervous System Basics" lesson opened jammed up under the phone's status bar with no back button, and both the Inner Atlas and the Daily Journal opening screen had no way back either. The nervous-system one turned out to be the real culprit — that lesson (and a handful of its siblings, like the grounding and parts-work mini-lessons) was being shown "bare," without the header and back arrow that the normal lessons get, so it slid up under the notch. All three now show a proper back arrow that returns you to the screen you came from. The other nervous-system screens you might reach elsewhere were already fine. Not yet tried on your phone or committed — worth a quick look next time you're on the device.

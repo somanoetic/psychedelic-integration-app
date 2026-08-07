@@ -8,7 +8,11 @@ While unblocking, replaced the default placeholder bundle ID
 `multitudesapp.io` → `io.multitudesapp`. Safe to change now because the old ID
 was never successfully registered with Apple (no live app tied to it).
 
-## Status: DONE (code) — NOT committed, NOT rebuilt/verified.
+## Status: CLOSED — shipped and in production use (2026-08-07 audit).
+
+`app.config.js:7` reads `IS_DEV ? 'io.multitudesapp.dev' : 'io.multitudesapp'`, and
+both IDs are live: TestFlight builds ship under `io.multitudesapp` and the dev client
+under `io.multitudesapp.dev`. Working tree clean. No open items.
 
 ## What was done
 - `app.config.js` (the LIVE, source-of-truth config — `app.config.js` wins over

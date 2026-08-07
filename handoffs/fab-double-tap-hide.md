@@ -4,7 +4,11 @@
 Per user request: add the ability to double-tap the floating Huxley FAB to hide
 (tuck) it away, in addition to the existing hide gestures.
 
-## Status: DONE (code) — NOT committed, NOT device-verified.
+## Status: CLOSED — committed (2026-08-07 audit). NOT device-verified.
+
+Landed in `cddc102` ("fix(fab): dim screen behind the radial menu for readable
+options"); handoff docs swept up in `6ddcbaf`. Working tree clean.
+Residual: no device pass — fold into the next one.
 
 ## What was done
 All edits in `components/GlobalHuxleyFab.js`:

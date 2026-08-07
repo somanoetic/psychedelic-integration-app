@@ -5,7 +5,13 @@ Flesh out the Learn hub → "Tools & daily practices" category (was 4 thin fly-o
 articles) to the same book-sourced quality bar as the recent "Body, brain & healing"
 rebuild, and add in-article interactivity (flashcards + scenario quizzes).
 
-## Status: code-complete, tsc clean, NOT device-verified. On branch `master` (uncommitted).
+## Status: CLOSED — committed (2026-08-07 audit). NOT device-verified.
+
+Verified in code: `components/LearnInteractive.js` exists and is tracked; imported at
+`screens/EducationScreen.js:36` and rendered at L306; `interactive:` content present in
+`content/education.js`. Working tree clean.
+Residual: the flashcard/quiz widgets have never been tapped on a real device — worth a
+deliberate look on the next device pass, since they're the most interactive thing in Learn.
 
 ## What was done
 - **Rebuilt all 4 articles** in `content/education.js` (~2x length each, named-author sourcing,

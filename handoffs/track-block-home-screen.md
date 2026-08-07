@@ -6,7 +6,12 @@ navigate — and it duplicated the 3 dashboard widgets (NS / Habits / Glimmers),
 which already linked to 3 of Track's 5 submenu items. Consolidated both surfaces
 into a single **Track block** and made the tile grid 5 consistent sections.
 
-## Status: DONE (built) — NOT committed, NOT device-verified
+## Status: CLOSED — committed (2026-08-07 audit). NOT device-verified.
+
+Verified: `fetchLastTrigger`/`fetchLastParts` in `lib/dashboardService.js:96,110` and
+wired into `fetchDashboardData()` at L30-31; zero `dashboardRow` references left in
+`components/GridHomeScreen.js`. Working tree clean.
+Residual: no device pass — fold into the next one.
 
 ## What was done
 - `lib/dashboardService.js`

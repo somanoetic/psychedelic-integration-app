@@ -8,7 +8,11 @@ Two unrelated nav fixes raised this session:
    when it should open the grounding/triggered-support flow; and the home screen
    had lost its settings gear (never replaced) with no separate Support entry.
 
-## Status: DONE — code only, NOT committed, NOT device-verified.
+## Status: CLOSED — committed `ee8d79f` (2026-08-07 audit). NOT device-verified.
+
+"feat(learn): all-topics cleanup, hardware-back unwind, home support/settings" —
+one commit covering this doc and `learn-hub-all-topics-cleanup.md`. Working tree clean.
+Residual: no device pass — fold into the next one.
 
 ## What was done (this session)
 

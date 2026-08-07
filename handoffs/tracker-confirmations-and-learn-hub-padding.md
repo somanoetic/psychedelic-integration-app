@@ -7,7 +7,10 @@ Two unrelated UX fixes requested in one session:
 2. The Learning Hub sub-pages were cutting off the lowest full-screen tile —
    needed bottom padding so the last tile clears the device's bottom inset.
 
-## Status: DONE — batch 1 device-verified by user; batch 2 (Learn padding) NOT device-verified. NOT committed.
+## Status: CLOSED — committed `571c790` (2026-08-07 audit). Batch 1 device-verified; batch 2 (Learn padding) not.
+
+"feat: themed 'log saved' confirmations (navigate Home) + Learn hub bottom padding".
+Working tree clean. Residual: eyeball the Learn hub bottom padding on the next device pass.
 
 ## What was done
 

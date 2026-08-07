@@ -11,7 +11,10 @@ User decisions during the session:
 - Confirmed nothing unique is lost → **remove the 4 orphan topics**.
 - Confirmed the legacy grid hub is fully redundant → **remove button + dead hub code**.
 
-## Status: DONE (code-complete, parse-verified). NOT device-verified. Not committed.
+## Status: CLOSED — committed `ee8d79f` (2026-08-07 audit). NOT device-verified.
+
+Shipped alongside `learn-back-and-home-support-settings.md` in the same commit.
+Working tree clean. Residual: no device pass — fold into the next one.
 
 ## What was done
 - **Coverage analysis** proving the 4 orphans are redundant (each a weaker/static

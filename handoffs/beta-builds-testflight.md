@@ -8,7 +8,16 @@ build into TestFlight. Scope decisions made this session: **both platforms**,
 **defer the prod/dev Supabase split** (builds point at the current Pro project
 for now).
 
-## Status: iOS build IN TESTFLIGHT REVIEW (waiting). Android APK build NOT yet started.
+## Status: SUPERSEDED (2026-08-07 audit) — iOS beta is live on TestFlight; Android APK never started.
+
+The iOS build cleared review long ago and testers are on it; OTA delivery to that
+build is covered by `handoffs/testflight-ota-channel-fix.md` (the channel mismatch
+that was silently dropping every update), and iOS build/OTA mechanics now live in
+memory `reference_ios_dev_and_ota_setup.md`. Everything below about "nothing pushed
+to origin" is stale.
+
+Still genuinely open: **the Android APK beta build was never started.** That's the
+one real carry-forward from this doc.
 All code committed to `master` (3 commits, see below). **Nothing pushed to origin.**
 
 ## What was done

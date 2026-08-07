@@ -6,7 +6,7 @@ opened the keyboard with a gap below the text box; after dismissing, the gap
 (≈ nav-bar height) stayed. A later device test also showed the input being
 partially COVERED by the keyboard while open.
 
-## Status: DONE — device-verified on Android (2026-06-06), NOT committed yet.
+## Status: CLOSED — device-verified on Android (2026-06-06) and committed (`bd4b7d2`). No open items.
 
 ## What was done
 Two surfaces now share the same per-platform keyboard-avoidance pattern:

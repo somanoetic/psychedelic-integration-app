@@ -8,7 +8,16 @@ practitioner (saved, never shown to user); integrate as a **new mode + handler**
 launch from the **Inner Work hub**. Per ADR-009 (non-clinical wellness posture)
 the real AAI's classification coding is deliberately NOT surfaced.
 
-## Status: BUILT + committed + automated tests green — NOT device-verified
+## Status: CLOSED — built, committed, tests green (2026-08-07 audit). NOT device-verified.
+
+Verified present: `lib/modeHandlers/AdultAttachmentInterviewModeHandler.js`,
+`components/ConversationalAttachmentInterview.js`, mode entry in
+`lib/huxleyModeConfigs.js`, launch point in `screens/InnerWorkScreen.js`.
+Working tree clean.
+
+Residual: never run on a device. This is the highest-value untested item in the
+backlog — it's a full conversational mode, not a style tweak, so give it a real
+multi-turn session rather than a spot-check on the next device pass.
 
 ## What was done
 New mode follows the existing data-driven mode pattern (mode config + optional

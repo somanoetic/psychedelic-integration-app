@@ -2,7 +2,12 @@
 
 **Date:** 2026-06-22
 **Branch:** `fix/beta-ux-polish-batch`
-**Status:** Code complete, tsc clean, lib+component tests pass. Migrations applied to Supabase (live). NOT device-verified. NOT committed.
+**Status:** CLOSED — committed (2026-08-07 audit). NOT device-verified.
+
+Verified: `components/CognitiveDistortionTracker.js` and `components/CravingTracker.js`
+exist, are tracked, and are registered as routes in `App.js:684-692`. Migrations were
+already applied to Supabase (live). Working tree clean.
+Residual: no device pass — fold into the next one.
 
 ## Task
 

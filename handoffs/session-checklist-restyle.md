@@ -7,7 +7,12 @@ which clashed with the rest of the app. The current reference aesthetic is the
 Sessions hub: a soft full-screen `gradients.standard` backdrop with a dark serif
 hero title and clean white cards floating on top. Bring the checklist in line.
 
-## Status: DONE (styling only) — NOT committed, NOT device-verified
+## Status: CLOSED — committed (2026-08-07 audit). NOT device-verified.
+
+Verified in code: `renderBackHeader()` + `gradientFill` + serif hero in
+`screens/SessionChecklistScreen.js`; no `LinearGradient` left in
+`components/checklist/ChecklistHeader.js` (white-card conversion done).
+Working tree clean. Residual: no device pass — fold into the next one.
 
 ## What was done
 - `screens/SessionChecklistScreen.js`

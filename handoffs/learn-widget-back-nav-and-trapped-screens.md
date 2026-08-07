@@ -1,6 +1,16 @@
 # Handoff: Trapped screens — Nervous System Basics (no safe-area/back), Inner Atlas, Daily Journal
 
-## Status: FIX WRITTEN, NOT committed, NOT device-verified. Open item: build/run to confirm on device.
+## Status: CLOSED — committed (2026-08-07 audit). NOT device-verified.
+
+Shipped in two commits: `bebc3ee` (EducationScreen mojibake repair + `wrapWithChrome`
+on the six bare widget topics) and `4053256` (Inner Atlas + Daily Journal back
+affordance). Verified present in code: `wrapWithChrome` used 8× in
+`screens/EducationScreen.js`; `ArrowLeft`/`goBack()` header in
+`screens/InnerAtlasScreen.js:276`; `navigation?.goBack()` in
+`components/DailyJournal.js:610`. Working tree clean.
+
+Residual: never confirmed on a physical device. Fold into the next device pass —
+not worth a dedicated session.
 
 ## Task
 Beta tester (the user) reported three screens with no way back:
