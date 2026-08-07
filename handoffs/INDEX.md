@@ -15,7 +15,8 @@ If you add a handoff, add a line here. If you close one, move it down.
 
 ## Needs a device pass (code shipped, never run on a phone)
 
-Not worth dedicated sessions — batch these into one device sweep.
+**→ Batched into [device-sweep-checklist](device-sweep-checklist.md) (2026-08-07).
+Work from that, not from the individual docs below.**
 
 | Doc | Check |
 |---|---|
