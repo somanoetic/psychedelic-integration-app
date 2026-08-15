@@ -283,6 +283,7 @@ const CognitiveDistortionTracker = ({ navigation }) => {
         style={styles.content}
         contentContainerStyle={[styles.contentContainer, { paddingBottom: insets.bottom + 20 }]}
         keyboardShouldPersistTaps="handled"
+        automaticallyAdjustKeyboardInsets
       >
         {/* Huxley intro */}
         <View style={styles.huxleySection}>

@@ -414,6 +414,8 @@ const HabitTracker = ({ navigation }) => {
         style={styles.content}
         contentContainerStyle={[styles.contentContainer, { paddingBottom: insets.bottom + 20 }]}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        automaticallyAdjustKeyboardInsets
       >
         {/* Huxley intro */}
         <View style={styles.huxleySection}>
