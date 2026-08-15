@@ -281,7 +281,7 @@ const CognitiveDistortionTracker = ({ navigation }) => {
 
       <ScrollView
         style={styles.content}
-        contentContainerStyle={[styles.contentContainer, { paddingBottom: insets.bottom + 20 }]}
+        contentContainerStyle={[styles.contentContainer, { paddingBottom: insets.bottom + 120 }]}
         keyboardShouldPersistTaps="handled"
         automaticallyAdjustKeyboardInsets
       >

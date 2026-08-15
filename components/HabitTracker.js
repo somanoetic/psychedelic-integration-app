@@ -412,7 +412,7 @@ const HabitTracker = ({ navigation }) => {
 
       <ScrollView
         style={styles.content}
-        contentContainerStyle={[styles.contentContainer, { paddingBottom: insets.bottom + 20 }]}
+        contentContainerStyle={[styles.contentContainer, { paddingBottom: insets.bottom + 120 }]}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
         automaticallyAdjustKeyboardInsets
