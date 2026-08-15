@@ -1313,7 +1313,18 @@ You don't need to master these like a logic textbook. The move is the same as wi
         ],
       },
     ],
-    relatedExercises: ['CBT-003', 'CBT-001', 'CBT-002'],
+    relatedExercises: [
+      'CBT-003',
+      // The Thought Record is implemented as a real tool that saves to your
+      // history — not the static step list under CBT-001.
+      {
+        key: 'thought_record_tracker',
+        title: 'Thought Record',
+        meta: 'Guided tool · saves to your history',
+        route: 'CognitiveDistortionTracker',
+      },
+      'CBT-002',
+    ],
     sources: [
       'Distortions drawn from: John M. Grohol, Common Cognitive Distortions; the CBT Workbook for Therapists; Donald Robertson, The Philosophy of Cognitive-Behavioural Therapy; and Daniel Kahneman, Thinking, Fast and Slow.',
       'Biases & fallacies decks adapted from yourbias.is and yourlogicalfallacyis.com by Jesse Richardson / The School of Thought (Creative Commons BY-NC-ND), with bias framing from Kahneman, Thinking, Fast and Slow.',

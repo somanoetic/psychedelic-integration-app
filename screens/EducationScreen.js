@@ -65,6 +65,48 @@ const TOPIC_ICONS = {
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
+/**
+ * Resolve one `relatedExercises` entry into something tappable.
+ *
+ * Two forms are accepted:
+ *   'CBT-003'                                     — a library exercise ID; opens GuidedExercise
+ *   { title, route, params?, meta? }              — an explicit route to a real tool
+ *
+ * The second form exists because some articles teach a concept that the app
+ * already implements as a working screen (e.g. the Thought Record lives in
+ * CognitiveDistortionTracker, which persists to Supabase) rather than as a
+ * static step list. Returns null for entries that can't be resolved.
+ */
+const resolveRelatedExercise = (entry) => {
+  if (typeof entry === 'string') {
+    const ex = getExerciseById(entry);
+    if (!ex) return null;
+    const meta = [
+      ex.duration ? `${ex.duration} min` : '',
+      ex.steps?.length ? `${ex.steps.length} steps` : '',
+    ].filter(Boolean).join(' · ');
+    return {
+      key: ex.id,
+      title: ex.title,
+      meta,
+      route: 'GuidedExercise',
+      params: { exercise: ex, returnTo: 'Learn' },
+    };
+  }
+
+  if (entry && entry.route && entry.title) {
+    return {
+      key: entry.key || entry.route,
+      title: entry.title,
+      meta: entry.meta || '',
+      route: entry.route,
+      params: entry.params || {},
+    };
+  }
+
+  return null;
+};
+
 const EducationScreen = ({ navigation, route }) => {
   const [selectedTopic, setSelectedTopic] = useState(null);
   // Remember which guided category the user was in (e.g. 'about_myself') so
@@ -306,37 +348,28 @@ const EducationScreen = ({ navigation, route }) => {
             <LearnInteractive items={topic.interactive} />
           )}
 
-          {/* Practice these — tappable links to related interactive exercises */}
+          {/* Practice these — tappable links to related exercises or real tools */}
           {topic.relatedExercises && topic.relatedExercises.length > 0 && (() => {
             const related = topic.relatedExercises
-              .map((id) => getExerciseById(id))
+              .map((entry) => resolveRelatedExercise(entry))
               .filter(Boolean);
             if (related.length === 0) return null;
             return (
               <View style={styles.relatedExContainer}>
                 <Text style={styles.relatedExTitle}>Practice these</Text>
-                {related.map((ex) => (
+                {related.map((item) => (
                   <TouchableOpacity
-                    key={ex.id}
+                    key={item.key}
                     style={styles.relatedExChip}
-                    onPress={() =>
-                      navigation.navigate('GuidedExercise', {
-                        exercise: ex,
-                        returnTo: 'Learn',
-                      })
-                    }
+                    onPress={() => navigation.navigate(item.route, item.params)}
                   >
                     <View style={styles.relatedExIconWrap}>
                       <Play size={16} color={colors.primary} strokeWidth={2} fill={colors.primary} />
                     </View>
                     <View style={styles.relatedExTextWrap}>
-                      <Text style={styles.relatedExName}>{ex.title}</Text>
-                      {(ex.duration || ex.steps?.length) ? (
-                        <Text style={styles.relatedExMeta}>
-                          {ex.duration ? `${ex.duration} min` : ''}
-                          {ex.duration && ex.steps?.length ? ' · ' : ''}
-                          {ex.steps?.length ? `${ex.steps.length} steps` : ''}
-                        </Text>
+                      <Text style={styles.relatedExName}>{item.title}</Text>
+                      {item.meta ? (
+                        <Text style={styles.relatedExMeta}>{item.meta}</Text>
                       ) : null}
                     </View>
                     <ArrowRight size={16} color={colors.textSecondary} strokeWidth={2} />

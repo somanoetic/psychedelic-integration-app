@@ -355,6 +355,17 @@ const CognitiveDistortionTracker = ({ navigation }) => {
           })}
         </View>
 
+        {/* Quiet way back to the article that teaches these — the reverse of
+            the Learn article's "Practice these" link into this screen. */}
+        <TouchableOpacity
+          style={styles.learnMoreLink}
+          onPress={() => navigation.navigate('Learn', { selectedTopicId: 'cognitive_patterns' })}
+          activeOpacity={0.7}
+        >
+          <HelpCircle size={15} color={colors.textSecondary} strokeWidth={2} />
+          <Text style={styles.learnMoreText}>What are distortions?</Text>
+        </TouchableOpacity>
+
         {/* Other free-text (only when 'other' selected) */}
         {selectedDistortions.includes('other') && (
           <TextInput
@@ -534,6 +545,20 @@ const styles = StyleSheet.create({
   },
   required: {
     color: colors.error,
+  },
+  learnMoreLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    gap: 6,
+    paddingVertical: 8,
+    marginTop: -2,
+    marginBottom: 10,
+  },
+  learnMoreText: {
+    fontSize: 13,
+    color: colors.textSecondary,
+    textDecorationLine: 'underline',
   },
   collapsibleSection: {
     backgroundColor: '#fff',

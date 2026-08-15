@@ -1,5 +1,55 @@
 # Project Log
 
+## 2026-08-07 — The thinking-patterns lesson now links to the real thought-record tool
+
+Did the first fix from yesterday's plan, the small one that stands on its own.
+
+Tapping "Thought Record" at the bottom of the thinking-patterns lesson used to open a
+dead seven-step list — just words on a screen, nothing you could fill in, nothing saved.
+The actual working thought record, the one that walks you through naming the distortion
+and weighing the evidence and keeps what you write, was sitting elsewhere in the app with
+no connection to the lesson that teaches it. Now the lesson points at the real thing, and
+it's labelled so you can see it saves to your history before you tap.
+
+The connection also runs both ways now. Inside the thought record, at the point where
+you're asked which distortion the thought reflects — which is exactly where you'd want it
+— there's a quiet "What are distortions?" link back to the lesson.
+
+The underlying change is that lessons can now link to any real tool in the app, not just
+to read-only exercise lists. That was the actual blocker, and it applies to every lesson,
+not only this one. I checked all 26 lessons and every one of their practice links still
+resolves correctly.
+
+Not yet tried on a phone. The remaining steps — moving the flip-cards and quizzes into
+the practice area, then splitting the lesson itself — are still ahead, and still want
+your eye on the exercise grouping before anyone builds that part.
+
+## 2026-08-07 — Worked out why the thinking-patterns lesson feels like a wall of text
+
+You noticed the cognitive-patterns lesson reads as one long slab, and wondered whether
+it should be broken into steps. Digging in, the real reason turned out to be that this
+one lesson is carrying the load of about four — roughly 1,900 words plus 39 flip-cards
+and 15 quiz questions in a single scroll — because CBT has nowhere else to live in the
+app. Parts work and nervous-system work each have their own spread across the lesson
+area, the inner-work area and the trackers; the thinking-patterns material has just the
+one lesson. So the plan became giving it a proper home of its own, under the friendlier
+name "Working with Thoughts", which can also take in the Stoic and Buddhist material
+that's already written but currently surfaced nowhere.
+
+A few things fell out along the way. The flip-cards and quizzes are really practice, not
+reading, so they move to the practice area. The lesson's "practice these" links currently
+send you to a dead read-only list instead of the working thought-record tool, which is a
+straightforward fix. And the exercise library has 160 exercises where each one is only
+allowed to belong to a single group — which is why parts-work exercises are filed under
+nervous-system work, and one acceptance-therapy exercise sits under CBT. Nobody made a
+mistake there; the filing system only ever allowed one answer. Adding tags fixes it
+without disturbing what's there.
+
+Nothing has been built yet — this is all written up as a plan. The next step is the small
+link fix, which stands on its own and makes the lesson shorter regardless of what follows.
+Worth knowing: the suggested grouping of exercises is my best read of the list, not a
+clinical judgement, so it wants your eye before anyone builds it.
+
 ## 2026-08-07 — Cleared out a backlog that turned out to be mostly already done
 
 You suspected the Learn hub rebuild was already finished, and you were right — its
