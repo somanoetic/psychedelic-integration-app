@@ -10,6 +10,7 @@ If you add a handoff, add a line here. If you close one, move it down.
 
 | Doc | What's left |
 |---|---|
+| [huxley-cross-session-memory](huxley-cross-session-memory.md) | Committed, migration applied, denylist test added. Needs a 2-session device pass; event bar untuned. |
 | [intention-draft-keyboard-gap](intention-draft-keyboard-gap.md) | BLOCKED — needs an Android phone. Two separate checks. |
 | [beta-builds-testflight](beta-builds-testflight.md) | Android APK beta build never started (iOS is live). |
 

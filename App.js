@@ -10,6 +10,7 @@ import { useFonts, Fraunces_700Bold } from '@expo-google-fonts/fraunces';
 import { supabase } from './lib/supabase';
 import metricsService from './lib/metricsService';
 import huxleyService from './lib/huxleyService';
+import conversationalRoutingService from './lib/conversationalRoutingService';
 import { colors } from './theme/colors';
 import { ThemedAlertHost, installThemedAlert } from './components/ThemedAlert';
 
@@ -255,6 +256,11 @@ function App() {
         huxleyService.initialize(session.user.id).catch(err =>
           console.warn('HuxleyService init error:', err.message)
         );
+        // The main routing chat has its own copy of cross-session memory —
+        // without this it has none, and tells users it doesn't remember them.
+        conversationalRoutingService.loadUserContext(session.user.id).catch(err =>
+          console.warn('Routing context load error:', err.message)
+        );
       }
       setLoading(false);
 
@@ -269,6 +275,13 @@ function App() {
           huxleyService.initialize(session.user.id).catch(err =>
             console.warn('HuxleyService init error:', err.message)
           );
+          conversationalRoutingService.loadUserContext(session.user.id).catch(err =>
+            console.warn('Routing context load error:', err.message)
+          );
+        } else {
+          // Logged out — drop memory so a second account on this device never
+          // sees the previous user's context.
+          conversationalRoutingService.clearUserContext();
         }
       });
 

@@ -1,5 +1,33 @@
 # Project Log
 
+## 2026-08-15 — Huxley now remembers you between conversations
+
+You logged in, asked Huxley to pick up what we'd discussed last time, and it said it had
+no memory of previous conversations. It turned out that was true — but only on the main
+chat screen you land on after logging in. That screen was running on a completely separate
+system from the specialised chats, and while the specialised ones could see your themes
+and the parts you'd met, the main one had been given nothing at all. It wasn't broken so
+much as never connected.
+
+So the main chat now reads the same memory the rest of the app already had, and that
+memory got two new things: significant events in someone's life, and a short recap of
+where the last conversation ended. Events are stored deliberately thin — a short phrase
+like "grief around father's death" and the date it came up, never the details of what was
+actually said. Huxley can mention one gently if it fits, then drops it if the person
+doesn't pick it up. It also now knows the difference between having no memory and simply
+being at the start with someone new, which is the bit that produced the odd answer you got.
+
+The database change is applied. None of this has been run on a phone yet, though — and
+testing it properly takes two separate conversations, since there's nothing to remember
+until the first one has happened.
+
+We also added a test for the thing most worth protecting here. The private notes the
+attachment reflection keeps for a practitioner must never reach the person themselves,
+and this new shared memory is read by every part of the app — so it's the widest path
+those notes could escape through. The test walks a full reflection, then tries to smuggle
+those notes into memory three different ways and confirms each one is stripped. To be sure
+it actually works, we deliberately broke the protection and watched the test catch it.
+
 ## 2026-08-07 — The thinking-patterns lesson now links to the real thought-record tool
 
 Did the first fix from yesterday's plan, the small one that stands on its own.
