@@ -5,7 +5,7 @@
  * Captures: cause, body response, emotional response, behavior, coping, and current state
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -80,6 +80,13 @@ const TriggerTracker = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [expandedSection, setExpandedSection] = useState('cause'); // Track which section is expanded
   const insets = useSafeAreaInsets();
+
+  // Each collapsible's TextInput is only mounted while that section is expanded,
+  // so iOS never sees an existing input take focus and never scrolls it into
+  // view. We track each section's y-offset in the scroll content and scroll it
+  // up ourselves when it opens.
+  const scrollRef = useRef(null);
+  const sectionOffsets = useRef({});
 
   useEffect(() => {
     loadRecentTriggers();
@@ -181,15 +188,33 @@ const TriggerTracker = ({ navigation }) => {
     return date.toLocaleDateString();
   };
 
+  // Bring a just-expanded section near the top of the visible area, so its
+  // TextInput sits well clear of the keyboard once it opens. Runs after the
+  // input has mounted; the section header ends just below the screen header.
+  const scrollSectionIntoView = (id) => {
+    setTimeout(() => {
+      const y = sectionOffsets.current[id];
+      if (y == null || !scrollRef.current) return;
+      scrollRef.current.scrollTo({ y: Math.max(0, y - 12), animated: true });
+    }, 120);
+  };
+
   const renderCollapsibleSection = (id, title, icon, value, setValue, placeholder, isRequired = false) => {
     const isExpanded = expandedSection === id;
     const hasValue = value.trim().length > 0;
 
     return (
-      <View style={styles.collapsibleSection}>
+      <View
+        style={styles.collapsibleSection}
+        onLayout={(e) => { sectionOffsets.current[id] = e.nativeEvent.layout.y; }}
+      >
         <TouchableOpacity
           style={[styles.sectionHeader, hasValue && styles.sectionHeaderComplete]}
-          onPress={() => setExpandedSection(isExpanded ? null : id)}
+          onPress={() => {
+            const next = isExpanded ? null : id;
+            setExpandedSection(next);
+            if (next) scrollSectionIntoView(next);
+          }}
         >
           {(() => {
             const Icon = SECTION_ICON_MAP[icon] || HelpCircle;
@@ -210,6 +235,7 @@ const TriggerTracker = ({ navigation }) => {
             style={styles.textInput}
             value={value}
             onChangeText={setValue}
+            onFocus={() => scrollSectionIntoView(id)}
             placeholder={placeholder}
             placeholderTextColor={colors.textLight}
             multiline
@@ -237,10 +263,10 @@ const TriggerTracker = ({ navigation }) => {
       </View>
 
       <ScrollView
+        ref={scrollRef}
         style={styles.content}
-        contentContainerStyle={[styles.contentContainer, { paddingBottom: insets.bottom + 120 }]}
+        contentContainerStyle={[styles.contentContainer, { paddingBottom: insets.bottom + 320 }]}
         keyboardShouldPersistTaps="handled"
-        automaticallyAdjustKeyboardInsets
       >
         {/* Huxley intro */}
         <View style={styles.huxleySection}>
