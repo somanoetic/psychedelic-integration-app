@@ -161,6 +161,39 @@ describe('cross-mode memory denylist', () => {
     });
   });
 
+  describe('front-door write path (_updateAndSaveUserContext)', () => {
+    it('never writes practitioner-only material even if it rides in on a main-chat event', async () => {
+      const { supabase } = require('../../lib/supabase');
+      let written = null;
+      supabase.from.mockReturnValue({
+        upsert: (row) => {
+          written = row;
+          return { select: () => ({ single: () => Promise.resolve({ data: { id: 'ctx-1' }, error: null }) }) };
+        },
+      });
+
+      routingService.userId = 'user-under-test';
+      await routingService._updateAndSaveUserContext({
+        majorEvents: [{
+          label: 'recent bereavement',
+          backendPattern: summary.backendPattern,
+          _patternSignals: summary._patternSignals,
+        }],
+        sessionSummary: 'They mentioned grief around a grandfather.',
+      });
+
+      expect(written).not.toBeNull();
+      const serialized = JSON.stringify(written);
+      for (const key of DENIED_KEYS) expect(serialized).not.toContain(key);
+      expect(serialized).not.toMatch(DENIED_VOCAB);
+      // ...while the legitimate coarse memory did persist, and themes/parts
+      // (the specialized modes' own territory) were left untouched.
+      expect(written.major_events[0].label).toBe('recent bereavement');
+      expect(written).not.toHaveProperty('themes');
+      expect(written).not.toHaveProperty('parts');
+    });
+  });
+
   describe('front-door prompt block', () => {
     it('renders only coarse labels even if the stored row is contaminated', () => {
       // Defence in depth: assume a bad row already exists (written before this

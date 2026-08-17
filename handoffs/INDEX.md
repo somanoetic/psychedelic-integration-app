@@ -6,11 +6,17 @@ status banner corrected. Nothing was deleted; closed docs stay as reference.
 
 If you add a handoff, add a line here. If you close one, move it down.
 
+> **Start here after a break:** [WHERE-WE-ARE](WHERE-WE-ARE.md) — snapshot of the tree as
+> of 2026-08-16, while an OTA/push hold is in force. Records which work is staged vs
+> committed, which migrations are actually live, and the traps in the current tree.
+
 ## Open
 
 | Doc | What's left |
 |---|---|
-| [huxley-cross-session-memory](huxley-cross-session-memory.md) | Committed, migration applied, denylist test added. Needs a 2-session device pass; event bar untuned. |
+| [attachment-reflection-resume](attachment-reflection-resume.md) | **Committed + device-verified 2026-08-17.** Migration applied. Nothing left but a push. |
+| [huxley-cross-session-memory](huxley-cross-session-memory.md) | READ side committed `a83aa29`; WRITE side (main chat) was missing, found + fixed + device-verified 2026-08-17, now committed too. **Unpushed.** Event bar still untuned. |
+| [tracker-keyboard-scroll](tracker-keyboard-scroll.md) | iOS **fixed + user-verified** (`6341b43`, OTA'd). Only the **Android** pass is left. Commits unpushed. |
 | [intention-draft-keyboard-gap](intention-draft-keyboard-gap.md) | BLOCKED — needs an Android phone. Two separate checks. |
 | [beta-builds-testflight](beta-builds-testflight.md) | Android APK beta build never started (iOS is live). |
 

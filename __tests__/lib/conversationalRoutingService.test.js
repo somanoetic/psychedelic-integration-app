@@ -296,7 +296,7 @@ describe('ConversationalRoutingService', () => {
       expect(callClaude).toHaveBeenCalledWith(
         expect.objectContaining({
           model: MODELS.PRIMARY,
-          max_tokens: 300,
+          max_tokens: 500,
           messages: expect.arrayContaining([
             expect.objectContaining({ role: 'user', content: 'Hey there' })
           ]),
@@ -386,6 +386,109 @@ describe('ConversationalRoutingService', () => {
           status: 'error'
         })
       );
+    });
+  });
+
+  // =========================================================================
+  // MEMORY EXTRACTION (write side of cross-session memory)
+  //
+  // Before this existed, main chat could only READ memory written by the
+  // specialized modes (buildUserContextBlock) — it had no way to capture
+  // anything said in main chat itself (e.g. a breakup or work frustration
+  // mentioned only here). These tests cover the write path: the model's
+  // ---THERAPEUTIC_DATA--- tail gets parsed, stripped from the visible
+  // message (and doesn't interfere with ROUTE: parsing), merged into
+  // userContext, and persisted.
+  // =========================================================================
+
+  describe('memory extraction', () => {
+    it('strips the THERAPEUTIC_DATA tail from the visible message', async () => {
+      callClaude.mockResolvedValue({
+        content: [{
+          text: 'That sounds really hard.\n---THERAPEUTIC_DATA---\n{"majorEvents":[{"label":"breakup"}],"sessionSummary":"They mentioned a breakup and work stress."}',
+        }],
+        usage: { input_tokens: 200, output_tokens: 50 },
+      });
+
+      const message = await service.getAIResponse('My partner and I broke up');
+
+      expect(message).toBe('That sounds really hard.');
+      expect(message).not.toContain('THERAPEUTIC_DATA');
+    });
+
+    it('still extracts ROUTE: correctly when a memory tail follows it', async () => {
+      callClaude.mockResolvedValue({
+        content: [{
+          text: 'Let me take you to your journal. ROUTE: daily_journal\n---THERAPEUTIC_DATA---\n{"majorEvents":[],"sessionSummary":null}',
+        }],
+        usage: { input_tokens: 200, output_tokens: 50 },
+      });
+
+      const result = await service.sendMessage('I want to journal about my breakup');
+
+      expect(result.route).toBe('daily_journal');
+      expect(result.message).not.toContain('ROUTE:');
+      expect(result.message).not.toContain('THERAPEUTIC_DATA');
+    });
+
+    it('merges a new major event and persists it for a signed-in user', async () => {
+      service.userId = MOCK_USER_ID;
+      const { supabase } = require('../../lib/supabase');
+      let written = null;
+      supabase.from.mockReturnValue({
+        upsert: jest.fn((row) => {
+          written = row;
+          return { select: () => ({ single: () => Promise.resolve({ data: { id: 'ctx-1' }, error: null }) }) };
+        }),
+      });
+
+      callClaude.mockResolvedValue({
+        content: [{
+          text: "I'm sorry to hear that.\n---THERAPEUTIC_DATA---\n{\"majorEvents\":[{\"label\":\"breakup\"}],\"sessionSummary\":\"They shared a recent breakup and frustration with work.\"}",
+        }],
+        usage: { input_tokens: 200, output_tokens: 50 },
+      });
+
+      await service.getAIResponse('My partner and I broke up and work has been awful');
+      // The save is fire-and-forget; flush pending microtasks so it lands.
+      await new Promise((resolve) => setImmediate(resolve));
+
+      expect(written).not.toBeNull();
+      expect(written.major_events).toEqual([
+        expect.objectContaining({ label: 'breakup', mode: 'main_chat' }),
+      ]);
+      expect(written.session_summary).toMatch(/breakup/);
+      // Never writes themes/parts — that stays the specialized modes' job.
+      expect(written).not.toHaveProperty('themes');
+      expect(written).not.toHaveProperty('parts');
+    });
+
+    it('dedupes an event whose label already exists (case-insensitive)', async () => {
+      service.userId = MOCK_USER_ID;
+      service.userContext = { major_events: [{ label: 'Breakup', mode: 'ifs_chat', surfaced_at: '2026-01-01' }] };
+      const { supabase } = require('../../lib/supabase');
+      let written = null;
+      supabase.from.mockReturnValue({
+        upsert: jest.fn((row) => {
+          written = row;
+          return { select: () => ({ single: () => Promise.resolve({ data: { id: 'ctx-1' }, error: null }) }) };
+        }),
+      });
+
+      await service._updateAndSaveUserContext({ majorEvents: [{ label: 'breakup' }] });
+
+      expect(written.major_events).toHaveLength(1);
+      expect(written.major_events[0].label).toBe('Breakup'); // original entry kept, not duplicated
+    });
+
+    it('does not save anything when no userId is set (signed-out / not yet loaded)', async () => {
+      const { supabase } = require('../../lib/supabase');
+      const upsertSpy = jest.fn();
+      supabase.from.mockReturnValue({ upsert: upsertSpy });
+
+      await service._updateAndSaveUserContext({ majorEvents: [{ label: 'breakup' }] });
+
+      expect(upsertSpy).not.toHaveBeenCalled();
     });
   });
 
