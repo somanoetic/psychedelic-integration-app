@@ -1,5 +1,90 @@
 # Project Log
 
+## 2026-08-17 — Wrote a test guide for the two features waiting on a phone
+
+Nothing code-related changed today. Put together a step-by-step guide for testing the
+attachment reflection resume and the cross-session memory on an actual phone, covering
+both sittings each needs and what to watch for. It exists as a nicely formatted page and
+also as a plain file in the project so it opens without needing to log into anything.
+Both features are still exactly where they were yesterday — waiting on that phone test
+before anything ships.
+
+## 2026-08-16 — Session wrap: two features ready, both waiting on a phone
+
+Where today ended: the memory work is saved and the attachment reflection is finished but
+not yet saved, and both database changes are live, so neither is blocked by anything
+except you trying them on a phone. Each needs two separate sittings, because there's
+nothing to resume or remember until a first conversation has happened.
+
+Nothing has been published or pushed — four pieces of work are now sitting on your machine
+only. The one exception is the thinking-patterns lesson fix from last week, which did go
+out to testers. Everything's written down so it can be picked up cold.
+
+## 2026-08-16 — Saved the memory work properly, with a guard against private notes leaking
+
+The memory work was sitting in a half-saved state that looked finished but wasn't. It's
+now properly saved, on its own, without dragging in the three other unrelated things
+currently in progress — which took some care, since two of the written notes had entries
+from two different pieces of work mixed together.
+
+The part worth knowing about is the new guard test. The attachment reflection keeps
+private notes for a practitioner that the person themselves must never see, and the new
+memory is read by every part of the app — so it was the widest route those notes could
+escape by. The test tries to sneak them in three different ways and confirms each is
+stripped out. To check the test actually works rather than just passing, I deliberately
+broke the protection and confirmed it caught it, then put it back.
+
+Still nothing published or pushed. This needs you on a phone across two separate
+conversations before it can go out, and the thing to watch is whether it over-remembers —
+treating an ordinary hard day as a major life event.
+
+## 2026-08-16 — Checked the database change landed; holding before anything goes out
+
+You said you'd pushed the database change, so I checked it against the live database
+rather than taking it on trust — and found you'd actually applied both of the pending
+ones, not just the attachment one. So the memory work from yesterday is unblocked too.
+That's two features now waiting on nothing but a phone.
+
+Ran the tests while I was in there. The attachment reflection passes all eleven, including
+the ones confirming the private practitioner notes still never reach the AI or the screen.
+The memory work has its own guard test now, seven checks, all passing — that one matters
+because those new memory fields are read by every part of the app, so it's the widest
+place private material could have leaked. Worth knowing: five tests elsewhere in the app
+are failing, in the intention-setting area. They were already failing before any of this
+work — I checked by rewinding everything and running them again — so they're not from
+these changes, but nobody owns them and they are genuinely red.
+
+Nothing published, nothing pushed, as you asked. I've written down where everything
+stands in a single note so it's not scattered — including one thing that would mislead
+anyone glancing at it: the memory work looks committed at a glance but isn't, it's only
+staged. Both features still need the same thing before they ship, which is you sitting
+down with them on a phone twice each — there's nothing to resume or remember until a
+first conversation has happened.
+
+## 2026-08-16 — The attachment reflection no longer loses your work if you stop partway
+
+The attachment reflection is a long conversation — eleven stages, often thirty or more
+exchanges — and until now it only saved itself at the very end. If you backed out
+halfway, or the app closed, everything you'd said was gone. It now saves quietly after
+every exchange, and when you come back it picks up exactly where you stopped, with the
+earlier conversation still on screen and a short note at the top saying so.
+
+The fiddly part was making it resume in the right *place* rather than just remembering
+the words. The reflection tracks which caregiver you're on, which of their five
+descriptions you're working through, and how long you've spent in each stage — and none
+of that was being saved. Without it, coming back would have restarted stages you'd
+already finished or skipped you to the end. That's all preserved now, along with the
+private notes the reflection keeps for a practitioner, which stay private exactly as
+before — there are tests confirming they still never reach the AI or the screen.
+
+One thing still needed: a small database change has to be applied before any of this
+works. It's ready to paste in, and nothing saves until it is.
+
+We also wrote up the two larger ideas you raised — a summary you could review yourself or
+send to a therapist, and letting Huxley carry what it learns from one kind of session
+into another. Both are scoped rather than built, and both have a real design question
+worth your clinical eye before anyone starts.
+
 ## 2026-08-15 — Huxley now remembers you between conversations
 
 You logged in, asked Huxley to pick up what we'd discussed last time, and it said it had

@@ -170,6 +170,31 @@ education surface and B2B credibility material.
 
 ---
 
+## Medium Priority — Attachment Reflection follow-ons (added 2026-08-07)
+
+### FEAT-601: Attachment Reflection summary / therapist export
+**Priority:** Medium
+**Status:** Scoped — see [attachment-reflection-summary-export.md](attachment-reflection-summary-export.md)
+
+Render a completed reflection for self-review and export it for a therapist. Data is
+already fully captured and persisted; nothing reads it back, so this is largely a
+rendering + export job. Key open decision: self-review and therapist export probably
+should not be the same document (the adjective-vs-memory gap is clinically meaningful
+but risks reading as a verdict). Must not undo the no-label guardrail.
+
+---
+
+### FEAT-602: Cross-modality memory
+**Priority:** Medium
+**Status:** Scoped — see [cross-modality-memory.md](cross-modality-memory.md)
+
+Let Huxley carry curated material between modes (motivating case: attachment work
+informing IFS parts work). Needs deliberate design, not just wiring — the AAI's
+practitioner-only pattern must never leak into a mode that lacks that guardrail.
+Carry-forward set must be curated with a tested denylist.
+
+---
+
 ## Medium Priority — Deferred from Earlier Phases
 
 ### FEAT-202: Enhanced UX Layouts
