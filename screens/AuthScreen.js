@@ -169,22 +169,6 @@ export default function AuthScreen({ navigation }) {
     setLoading(false);
   }
 
-  // Quick test login helper
-  async function quickTestLogin() {
-    setEmail('test');
-    setPassword('');
-    setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
-      email: 'test@psychapp.com',
-      password: 'Test1234!',
-    });
-
-    if (error) {
-      Alert.alert('Test User Not Found', 'Please create the test user first by signing up with:\nUsername: test\nPassword: Test1234!');
-    }
-    setLoading(false);
-  }
-
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <LinearGradient
@@ -347,25 +331,6 @@ export default function AuthScreen({ navigation }) {
               </Text>
             </TouchableOpacity>
 
-            <View style={styles.divider}>
-              <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>Quick Access</Text>
-              <View style={styles.dividerLine} />
-            </View>
-
-            <TouchableOpacity
-              style={styles.secondaryButton}
-              onPress={quickTestLogin}
-            >
-              <Text style={styles.secondaryButtonText}>Test Login</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.tertiaryButton}
-              onPress={() => navigation.navigate('NetworkTest')}
-            >
-              <Text style={styles.tertiaryButtonText}>Test Connection</Text>
-            </TouchableOpacity>
           </View>
         </ScrollView>
       </LinearGradient>
