@@ -33,6 +33,7 @@ const paperTheme = {
 };
 
 import AuthScreen from './screens/AuthScreen';
+import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
 import OnboardingCarousel from './screens/OnboardingCarousel';
 import NonClinicalDisclosureScreen, { DISCLOSURE_STORAGE_KEY } from './screens/NonClinicalDisclosureScreen';
 // AnimatedSplash removed - go straight to app
@@ -881,6 +882,7 @@ function App() {
           ) : (
             <>
               <Stack.Screen name="Auth" component={AuthScreen} />
+              <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
               <Stack.Screen name="NetworkTest" component={QuickNetworkTest} />
               <Stack.Screen name="TermsOfService" component={TermsOfServiceScreen} />
               <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />

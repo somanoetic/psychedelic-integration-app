@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
-import { Alert, StyleSheet, View, Text, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { Alert, StyleSheet, View, Text, TouchableOpacity, Image, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { Button, Card, TextInput, Title } from 'react-native-paper';
 import { CheckSquare, Square } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -177,6 +177,11 @@ export default function AuthScreen({ navigation }) {
         end={{ x: 0.0, y: 1.0 }}
         style={styles.container}
       >
+        <KeyboardAvoidingView
+          style={styles.keyboardAvoid}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+        >
         <ScrollView
           contentContainerStyle={styles.content}
           showsVerticalScrollIndicator={false}
@@ -309,6 +314,15 @@ export default function AuthScreen({ navigation }) {
               </>
             )}
 
+            {!isSignUp && (
+              <TouchableOpacity
+                style={styles.forgotPasswordButton}
+                onPress={() => navigation.navigate('ForgotPassword')}
+              >
+                <Text style={styles.forgotPasswordText}>Forgot password?</Text>
+              </TouchableOpacity>
+            )}
+
             <TouchableOpacity
               style={[
                 styles.primaryButton,
@@ -333,6 +347,7 @@ export default function AuthScreen({ navigation }) {
 
           </View>
         </ScrollView>
+        </KeyboardAvoidingView>
       </LinearGradient>
     </SafeAreaView>
   );
@@ -344,6 +359,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#7794b6',
   },
   container: {
+    flex: 1,
+  },
+  keyboardAvoid: {
     flex: 1,
   },
   content: {
@@ -425,6 +443,15 @@ const styles = StyleSheet.create({
     color: colors.primary,
     fontWeight: '600',
     textDecorationLine: 'underline',
+  },
+  forgotPasswordButton: {
+    alignItems: 'flex-end',
+    marginBottom: spacing.xs,
+  },
+  forgotPasswordText: {
+    color: colors.slate,
+    fontSize: 13,
+    fontWeight: '600',
   },
   primaryButton: {
     backgroundColor: colors.primary,
