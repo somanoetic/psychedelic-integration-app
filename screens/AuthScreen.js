@@ -8,6 +8,7 @@ import { supabase } from '../lib/supabase';
 import { colors, gradients, spacing, borderRadius, shadows, typography } from '../theme/colors';
 import { icons } from '../lib/uiIcons';
 import { TOS_VERSION } from '../lib/legal/tosVersion';
+import { friendlyAuthErrorMessage } from '../lib/authErrors';
 
 function parseDobParts(monthStr, dayStr, yearStr) {
   const m = parseInt(monthStr, 10);
@@ -73,7 +74,7 @@ export default function AuthScreen({ navigation }) {
       });
 
       if (error) {
-        Alert.alert('Sign In Error', error.message);
+        Alert.alert('Sign In Error', friendlyAuthErrorMessage(error));
       }
       setLoading(false);
       return;
@@ -93,7 +94,7 @@ export default function AuthScreen({ navigation }) {
     });
 
     if (error) {
-      Alert.alert('Sign In Error', error.message);
+      Alert.alert('Sign In Error', friendlyAuthErrorMessage(error));
     }
     setLoading(false);
   }
@@ -145,24 +146,7 @@ export default function AuthScreen({ navigation }) {
 
     if (error) {
       console.error('Signup error:', error);
-      // The Supabase auth gateway can return a non-JSON 5xx (e.g. a 504
-      // timeout) during email/load bursts; in that case supabase-js stringifies
-      // the whole Response object into error.message. Never show that to a
-      // tester — map server/timeout errors to a friendly retry message and
-      // surface only known, actionable auth errors verbatim.
-      const status = error.status || error.statusCode;
-      const isServerOrTimeout =
-        (typeof status === 'number' && status >= 500) ||
-        /timeout|gateway|fetch|network/i.test(error.message || '');
-
-      if (isServerOrTimeout) {
-        Alert.alert(
-          'Server Busy',
-          'We could not reach the server just now. Please wait a moment and try again.'
-        );
-      } else {
-        Alert.alert('Sign Up Error', error.message);
-      }
+      Alert.alert('Sign Up Error', friendlyAuthErrorMessage(error));
     } else {
       Alert.alert('Success', 'Account created and ready to use!');
     }

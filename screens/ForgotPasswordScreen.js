@@ -15,6 +15,7 @@ import { ArrowLeft } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../lib/supabase';
 import { colors, gradients, spacing, borderRadius, shadows, typography } from '../theme/colors';
+import { friendlyAuthErrorMessage } from '../lib/authErrors';
 
 const inputTheme = {
   colors: {
@@ -42,7 +43,8 @@ export default function ForgotPasswordScreen({ navigation }) {
     setLoading(false);
 
     if (error) {
-      Alert.alert('Error', error.message);
+      console.error('Reset password error:', error);
+      Alert.alert('Error', friendlyAuthErrorMessage(error));
       return;
     }
     setStep('reset');
@@ -72,7 +74,8 @@ export default function ForgotPasswordScreen({ navigation }) {
 
     if (verifyError) {
       setLoading(false);
-      Alert.alert('Invalid Code', verifyError.message);
+      console.error('Verify OTP error:', verifyError);
+      Alert.alert('Invalid Code', friendlyAuthErrorMessage(verifyError));
       return;
     }
 
@@ -83,7 +86,8 @@ export default function ForgotPasswordScreen({ navigation }) {
     setLoading(false);
 
     if (updateError) {
-      Alert.alert('Error', updateError.message);
+      console.error('Update password error:', updateError);
+      Alert.alert('Error', friendlyAuthErrorMessage(updateError));
       return;
     }
 
