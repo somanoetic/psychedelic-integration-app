@@ -154,6 +154,22 @@ body {
     cursor: not-allowed;
 }
 
+.beta-cta {
+    display: inline-block;
+    padding: 0.875rem 2rem;
+    background-color: var(--primary);
+    color: var(--white);
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.15s ease;
+}
+
+.beta-cta:hover {
+    background-color: var(--primary-dark);
+}
+
 .honeypot {
     position: absolute !important;
     left: -9999px !important;
@@ -394,7 +410,7 @@ section {
     color: var(--charcoal);
 }
 
-.final-cta .waitlist-form {
+.final-cta .beta-cta {
     margin-top: 2rem;
 }
 
